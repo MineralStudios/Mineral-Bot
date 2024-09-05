@@ -1,0 +1,24 @@
+package gg.mineral.bot.api;
+
+import gg.mineral.bot.api.configuration.BotConfiguration;
+import gg.mineral.bot.api.entity.living.player.FakePlayer;
+import gg.mineral.bot.api.math.ServerLocation;
+
+import java.util.UUID;
+
+public abstract class BotAPI {
+
+    public static BotAPI INSTANCE = null;
+
+    public abstract FakePlayer spawn(BotConfiguration configuration, String serverIp, int serverPort);
+
+    public abstract FakePlayer spawn(BotConfiguration configuration, ServerLocation location);
+
+    public abstract boolean despawn(FakePlayer player);
+
+    public abstract boolean despawn(UUID uuid);
+
+    public abstract void despawnAll();
+
+    public abstract boolean isFakePlayer(UUID uuid);
+}

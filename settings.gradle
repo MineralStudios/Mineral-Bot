@@ -1,0 +1,8 @@
+rootProject.name = 'mineral-bot'
+
+include 'bot-api'
+include 'bot-shared-library'
+include 'bot-base-client'
+include 'bot-intelligence'
+include 'bot-bukkit'
+include 'bot-standalone'

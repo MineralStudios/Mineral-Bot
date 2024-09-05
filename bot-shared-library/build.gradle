@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+}
+
+group 'gg.mineral'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    implementation project(':bot-api')
+    compileOnly 'it.unimi.dsi:fastutil:8.5.14'
+}
+
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+compileJava {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+    options.compilerArgs += ['-parameters']
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
