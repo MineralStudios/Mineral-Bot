@@ -1,16 +1,4 @@
 
-plugins {
-    id 'java'
-}
-
-repositories {
-  mavenCentral()
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-} 
-
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'

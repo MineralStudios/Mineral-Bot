@@ -1,10 +1,8 @@
 plugins {
-    id 'java'
     id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
 repositories {
-    mavenCentral()
     maven {
         url 'https://libraries.minecraft.net/'
     }
@@ -17,16 +15,6 @@ dependencies {
     compileOnly project(':bot-shared-library')
     compileOnly project(':bot-api')
     compileOnly files('lib/mineralspigot-server-1.8.8-R0.1-SNAPSHOT.jar')
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-compileJava {
-    sourceCompatibility = '17'
-    targetCompatibility = '17'
-    options.compilerArgs += ['-parameters']
 }
 
 shadowJar {

@@ -1,9 +1,5 @@
-plugins {
-    id 'java'
-}
 
 repositories {
-    mavenCentral()
     maven {
         url 'https://libraries.minecraft.net/'
     }
@@ -13,7 +9,6 @@ dependencies {
     compileOnly project(':bot-api')
     implementation project(':bot-shared-library')
     implementation project(':bot-intelligence')
-
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
     compileOnly 'io.netty:netty-all:4.1.112.Final'
@@ -39,16 +34,6 @@ dependencies {
     implementation 'javax.vecmath:vecmath:1.5.2'
 }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-compileJava {
-    sourceCompatibility = '17'
-    targetCompatibility = '17'
-    options.compilerArgs += ['-parameters']
-}
-
 sourceSets {
     main.java.srcDirs += 'src/main/mc-client'
     main.resources.srcDirs += 'src/main/mc-resources'
@@ -69,13 +54,10 @@ import java.util.UUID
 
 apply plugin: 'application'
 
-// Set the main class for the application
 mainClassName = 'gg.mineral.bot.base.client.StandaloneLauncher'
 
-// Define a custom task to run the Minecraft client
 task runMinecraftClient {
     doLast {
-        // Define the temporary directory for Minecraft
         def tempDir = System.getProperty("java.io.tmpdir")
         def minecraftDir = new File(tempDir, "minecraft_temp")
 
@@ -88,10 +70,8 @@ task runMinecraftClient {
             }
         }
 
-        // Define the location of the natives directory relative to the build.gradle file
         def nativesDir = new File(projectDir, "natives")
 
-        // Run the Minecraft client with the constructed arguments
         javaexec {
             main = mainClassName
             classpath = sourceSets.main.runtimeClasspath
@@ -100,5 +80,4 @@ task runMinecraftClient {
     }
 }
 
-// Make the task depend on the build task
 runMinecraftClient.dependsOn build

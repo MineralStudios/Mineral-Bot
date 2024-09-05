@@ -1,4 +1,24 @@
+plugins {
+    id 'java'
+}
+
 allprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    compileJava {
+        sourceCompatibility = '17'
+        targetCompatibility = '17'
+        options.compilerArgs += ['-parameters']
+    }
+
     group = "gg.mineral"
     version = new Date().format('yyyyMMdd')
 }
