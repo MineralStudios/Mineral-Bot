@@ -1,0 +1,80 @@
+name: Daily Build and Release
+
+on:
+  schedule:
+    # Run at 11:59 PM UTC every day (adjust based on your time zone preference)
+    - cron: '59 23 * * *'
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up JDK 17 for the build
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    # Step 3: Run Gradle build to produce the JAR files
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    # Step 4: Check for changes in the codebase since the last commit
+    - name: Check for changes since last commit
+      id: check_changes
+      run: |
+        git fetch origin
+        LAST_COMMIT=$(git log -1 --format=%cd --date=short)
+        CURRENT_DATE=$(date +'%Y-%m-%d')
+        if [ "$LAST_COMMIT" != "$CURRENT_DATE" ]; then
+          echo "No changes today"
+          echo "::set-output name=changes::false"
+        else:
+          echo "::set-output name=changes::true"
+        fi
+
+    # Step 5: Create a new release if there were changes
+    - name: Create a release
+      if: steps.check_changes.outputs.changes == 'true'
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.release_tag.outputs.tag }}
+        name: Release for ${{ steps.release_tag.outputs.tag }}
+        body: "Automated daily release based on changes."
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # Step 6: Upload bot-standalone JAR to release
+    - name: Upload bot-standalone JAR to release
+      if: steps.check_changes.outputs.changes == 'true'
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: bot-standalone/build/libs/bot-standalone-*.jar
+        asset_name: bot-standalone-${{ steps.release_tag.outputs.tag }}.jar
+        asset_content_type: application/java-archive
+
+    # Step 7: Upload bot-bukkit JAR to release
+    - name: Upload bot-bukkit JAR to release
+      if: steps.check_changes.outputs.changes == 'true'
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: bot-bukkit/build/libs/bot-bukkit-*-all.jar
+        asset_name: bot-bukkit-${{ steps.release_tag.outputs.tag }}-all.jar
+        asset_content_type: application/java-archive
+
+    # Step 8: Set the release tag to the current date
+    - name: Set the release tag to the current date
+      if: steps.check_changes.outputs.changes == 'true'
+      id: release_tag
+      run: |
+        TAG_NAME=$(date +'%Y.%m.%d')
+        echo "::set-output name=tag::$TAG_NAME"
