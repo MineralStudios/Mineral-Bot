@@ -1,17 +1,18 @@
 package net.minecraft.client.gui.inventory;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
+import gg.mineral.bot.api.screen.type.ContainerScreen;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
-
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -22,29 +23,24 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
-public abstract class GuiContainer extends GuiScreen {
+public abstract class GuiContainer extends GuiScreen implements ContainerScreen {
     protected static final ResourceLocation field_147001_a = new ResourceLocation(
             "textures/gui/container/inventory.png");
-    protected int field_146999_f = 176;
-    protected int field_147000_g = 166;
-    public Container field_147002_h;
-    protected int field_147003_i;
-    protected int field_147009_r;
-    private Slot field_147006_u;
-    private Slot field_147005_v;
+    protected int field_146999_f = 176, field_147000_g = 166;
+    public Container container;
+    protected int xShift, yShift;
+    private Slot field_147006_u, field_147005_v;
     private boolean field_147004_w;
     private ItemStack field_147012_x;
-    private int field_147011_y;
-    private int field_147010_z;
+    private int field_147011_y, field_147010_z;
     private Slot field_146989_A;
     private long field_146990_B;
     private ItemStack field_146991_C;
     private Slot field_146985_D;
     private long field_146986_E;
-    protected final Set field_147008_s = new HashSet();
+    protected final Set<Slot> field_147008_s = new ObjectOpenHashSet<>();
     protected boolean field_147007_t;
-    private int field_146987_F;
-    private int field_146988_G;
+    private int field_146987_F, field_146988_G;
     private boolean field_146995_H;
     private int field_146996_I;
     private long field_146997_J;
@@ -52,11 +48,10 @@ public abstract class GuiContainer extends GuiScreen {
     private int field_146992_L;
     private boolean field_146993_M;
     private ItemStack field_146994_N;
-    private static final String __OBFID = "CL_00000737";
 
-    public GuiContainer(Minecraft mc, Container p_i1072_1_) {
+    public GuiContainer(Minecraft mc, Container container) {
         super(mc);
-        this.field_147002_h = p_i1072_1_;
+        this.container = container;
         this.field_146995_H = true;
     }
 
@@ -65,9 +60,9 @@ public abstract class GuiContainer extends GuiScreen {
      */
     public void initGui() {
         super.initGui();
-        this.mc.thePlayer.openContainer = this.field_147002_h;
-        this.field_147003_i = (this.width - this.field_146999_f) / 2;
-        this.field_147009_r = (this.height - this.field_147000_g) / 2;
+        this.mc.thePlayer.openContainer = this.container;
+        this.xShift = (this.width - this.field_146999_f) / 2;
+        this.yShift = (this.height - this.field_147000_g) / 2;
     }
 
     /**
@@ -75,8 +70,8 @@ public abstract class GuiContainer extends GuiScreen {
      */
     public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
         this.drawDefaultBackground();
-        int var4 = this.field_147003_i;
-        int var5 = this.field_147009_r;
+        int var4 = this.xShift;
+        int var5 = this.yShift;
         this.func_146976_a(p_73863_3_, p_73863_1_, p_73863_2_);
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         RenderHelper.disableStandardItemLighting();
@@ -95,11 +90,11 @@ public abstract class GuiContainer extends GuiScreen {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         int var11;
 
-        for (int var8 = 0; var8 < this.field_147002_h.inventorySlots.size(); ++var8) {
-            Slot var9 = (Slot) this.field_147002_h.inventorySlots.get(var8);
+        for (int var8 = 0; var8 < this.container.inventorySlots.size(); ++var8) {
+            Slot var9 = (Slot) this.container.inventorySlots.get(var8);
             this.func_146977_a(var9);
 
-            if (this.func_146981_a(var9, p_73863_1_, p_73863_2_) && var9.func_111238_b()) {
+            if (this.isMouseOver(var9, p_73863_1_, p_73863_2_) && var9.func_111238_b()) {
                 this.field_147006_u = var9;
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -181,40 +176,39 @@ public abstract class GuiContainer extends GuiScreen {
 
     protected abstract void func_146976_a(float p_146976_1_, int p_146976_2_, int p_146976_3_);
 
-    private void func_146977_a(Slot p_146977_1_) {
-        int var2 = p_146977_1_.xDisplayPosition;
-        int var3 = p_146977_1_.yDisplayPosition;
-        ItemStack var4 = p_146977_1_.getStack();
+    private void func_146977_a(Slot slot) {
+        int var2 = slot.xDisplayPosition;
+        int var3 = slot.yDisplayPosition;
+        ItemStack var4 = slot.getStack();
         boolean var5 = false;
-        boolean var6 = p_146977_1_ == this.field_147005_v && this.field_147012_x != null && !this.field_147004_w;
+        boolean var6 = slot == this.field_147005_v && this.field_147012_x != null && !this.field_147004_w;
         ItemStack var7 = this.mc.thePlayer.inventory.getItemStack();
         String var8 = null;
 
-        if (p_146977_1_ == this.field_147005_v && this.field_147012_x != null && this.field_147004_w && var4 != null) {
+        if (slot == this.field_147005_v && this.field_147012_x != null && this.field_147004_w && var4 != null) {
             var4 = var4.copy();
             var4.stackSize /= 2;
-        } else if (this.field_147007_t && this.field_147008_s.contains(p_146977_1_) && var7 != null) {
-            if (this.field_147008_s.size() == 1) {
+        } else if (this.field_147007_t && this.field_147008_s.contains(slot) && var7 != null) {
+            if (this.field_147008_s.size() == 1)
                 return;
-            }
 
-            if (Container.func_94527_a(p_146977_1_, var7, true) && this.field_147002_h.canDragIntoSlot(p_146977_1_)) {
+            if (Container.func_94527_a(slot, var7, true) && this.container.canDragIntoSlot(slot)) {
                 var4 = var7.copy();
                 var5 = true;
                 Container.func_94525_a(this.field_147008_s, this.field_146987_F, var4,
-                        p_146977_1_.getStack() == null ? 0 : p_146977_1_.getStack().stackSize);
+                        slot.getStack() == null ? 0 : slot.getStack().stackSize);
 
                 if (var4.stackSize > var4.getMaxStackSize()) {
                     var8 = EnumChatFormatting.YELLOW + "" + var4.getMaxStackSize();
                     var4.stackSize = var4.getMaxStackSize();
                 }
 
-                if (var4.stackSize > p_146977_1_.getSlotStackLimit()) {
-                    var8 = EnumChatFormatting.YELLOW + "" + p_146977_1_.getSlotStackLimit();
-                    var4.stackSize = p_146977_1_.getSlotStackLimit();
+                if (var4.stackSize > slot.getSlotStackLimit()) {
+                    var8 = EnumChatFormatting.YELLOW + "" + slot.getSlotStackLimit();
+                    var4.stackSize = slot.getSlotStackLimit();
                 }
             } else {
-                this.field_147008_s.remove(p_146977_1_);
+                this.field_147008_s.remove(slot);
                 this.func_146980_g();
             }
         }
@@ -223,7 +217,7 @@ public abstract class GuiContainer extends GuiScreen {
         itemRender.zLevel = 100.0F;
 
         if (var4 == null) {
-            IIcon var9 = p_146977_1_.getBackgroundIconIndex();
+            IIcon var9 = slot.getBackgroundIconIndex();
 
             if (var9 != null) {
                 GL11.glDisable(GL11.GL_LIGHTING);
@@ -235,9 +229,8 @@ public abstract class GuiContainer extends GuiScreen {
         }
 
         if (!var6) {
-            if (var5) {
+            if (var5)
                 drawRect(this.mc, var2, var3, var2 + 16, var3 + 16, -2130706433);
-            }
 
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), var4, var2, var3);
@@ -264,24 +257,23 @@ public abstract class GuiContainer extends GuiScreen {
                 var5 = var3.getStack() == null ? 0 : var3.getStack().stackSize;
                 Container.func_94525_a(this.field_147008_s, this.field_146987_F, var4, var5);
 
-                if (var4.stackSize > var4.getMaxStackSize()) {
+                if (var4.stackSize > var4.getMaxStackSize())
                     var4.stackSize = var4.getMaxStackSize();
-                }
 
-                if (var4.stackSize > var3.getSlotStackLimit()) {
+                if (var4.stackSize > var3.getSlotStackLimit())
                     var4.stackSize = var3.getSlotStackLimit();
-                }
+
             }
         }
     }
 
-    private Slot func_146975_c(int p_146975_1_, int p_146975_2_) {
-        for (int var3 = 0; var3 < this.field_147002_h.inventorySlots.size(); ++var3) {
-            Slot var4 = (Slot) this.field_147002_h.inventorySlots.get(var3);
+    @Nullable
+    private Slot getHoveringSlot(int x, int y) {
+        for (int index = 0; index < this.container.inventorySlots.size(); ++index) {
+            Slot slot = this.container.inventorySlots.get(index);
 
-            if (this.func_146981_a(var4, p_146975_1_, p_146975_2_)) {
-                return var4;
-            }
+            if (this.isMouseOver(slot, x, y))
+                return slot;
         }
 
         return null;
@@ -293,36 +285,34 @@ public abstract class GuiContainer extends GuiScreen {
     protected void mouseClicked(int p_73864_1_, int p_73864_2_, int p_73864_3_) {
         super.mouseClicked(p_73864_1_, p_73864_2_, p_73864_3_);
         boolean var4 = p_73864_3_ == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100;
-        Slot var5 = this.func_146975_c(p_73864_1_, p_73864_2_);
+        Slot hoveringSlot = this.getHoveringSlot(p_73864_1_, p_73864_2_);
         long var6 = Minecraft.getSystemTime();
-        this.field_146993_M = this.field_146998_K == var5 && var6 - this.field_146997_J < 250L
+        this.field_146993_M = this.field_146998_K == hoveringSlot && var6 - this.field_146997_J < 250L
                 && this.field_146992_L == p_73864_3_;
         this.field_146995_H = false;
 
         if (p_73864_3_ == 0 || p_73864_3_ == 1 || var4) {
-            int var8 = this.field_147003_i;
-            int var9 = this.field_147009_r;
+            int var8 = this.xShift;
+            int var9 = this.yShift;
             boolean var10 = p_73864_1_ < var8 || p_73864_2_ < var9 || p_73864_1_ >= var8 + this.field_146999_f
                     || p_73864_2_ >= var9 + this.field_147000_g;
-            int var11 = -1;
+            int hoveringSlotIndex = -1;
 
-            if (var5 != null) {
-                var11 = var5.slotNumber;
-            }
+            if (hoveringSlot != null)
+                hoveringSlotIndex = hoveringSlot.slotNumber;
 
-            if (var10) {
-                var11 = -999;
-            }
+            if (var10)
+                hoveringSlotIndex = -999;
 
             if (this.mc.gameSettings.touchscreen && var10 && this.mc.thePlayer.inventory.getItemStack() == null) {
                 this.mc.displayGuiScreen((GuiScreen) null);
                 return;
             }
 
-            if (var11 != -1) {
+            if (hoveringSlotIndex != -1) {
                 if (this.mc.gameSettings.touchscreen) {
-                    if (var5 != null && var5.getHasStack()) {
-                        this.field_147005_v = var5;
+                    if (hoveringSlot != null && hoveringSlot.getHasStack()) {
+                        this.field_147005_v = hoveringSlot;
                         this.field_147012_x = null;
                         this.field_147004_w = p_73864_3_ == 1;
                     } else {
@@ -331,20 +321,22 @@ public abstract class GuiContainer extends GuiScreen {
                 } else if (!this.field_147007_t) {
                     if (this.mc.thePlayer.inventory.getItemStack() == null) {
                         if (p_73864_3_ == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100) {
-                            this.func_146984_a(var5, var11, p_73864_3_, 3);
+                            this.func_146984_a(hoveringSlot, hoveringSlotIndex, p_73864_3_, 3);
                         } else {
-                            boolean var12 = var11 != -999
+                            boolean var12 = hoveringSlotIndex != -999
                                     && (this.mc.getKeyboard().isKeyDown(42) || this.mc.getKeyboard().isKeyDown(54));
                             byte var13 = 0;
 
                             if (var12) {
-                                this.field_146994_N = var5 != null && var5.getHasStack() ? var5.getStack() : null;
+                                this.field_146994_N = hoveringSlot != null && hoveringSlot.getHasStack()
+                                        ? hoveringSlot.getStack()
+                                        : null;
                                 var13 = 1;
-                            } else if (var11 == -999) {
+                            } else if (hoveringSlotIndex == -999) {
                                 var13 = 4;
                             }
 
-                            this.func_146984_a(var5, var11, p_73864_3_, var13);
+                            this.func_146984_a(hoveringSlot, hoveringSlotIndex, p_73864_3_, var13);
                         }
 
                         this.field_146995_H = true;
@@ -363,21 +355,21 @@ public abstract class GuiContainer extends GuiScreen {
             }
         }
 
-        this.field_146998_K = var5;
+        this.field_146998_K = hoveringSlot;
         this.field_146997_J = var6;
         this.field_146992_L = p_73864_3_;
     }
 
     protected void mouseClickMove(int p_146273_1_, int p_146273_2_, int p_146273_3_, long p_146273_4_) {
-        Slot var6 = this.func_146975_c(p_146273_1_, p_146273_2_);
+        Slot var6 = this.getHoveringSlot(p_146273_1_, p_146273_2_);
         ItemStack var7 = this.mc.thePlayer.inventory.getItemStack();
 
         if (this.field_147005_v != null && this.mc.gameSettings.touchscreen) {
             if (p_146273_3_ == 0 || p_146273_3_ == 1) {
                 if (this.field_147012_x == null) {
-                    if (var6 != this.field_147005_v) {
+                    if (var6 != this.field_147005_v)
                         this.field_147012_x = this.field_147005_v.getStack().copy();
-                    }
+
                 } else if (this.field_147012_x.stackSize > 1 && var6 != null
                         && Container.func_94527_a(var6, this.field_147012_x, false)) {
                     long var8 = Minecraft.getSystemTime();
@@ -398,45 +390,42 @@ public abstract class GuiContainer extends GuiScreen {
             }
         } else if (this.field_147007_t && var6 != null && var7 != null && var7.stackSize > this.field_147008_s.size()
                 && Container.func_94527_a(var6, var7, true) && var6.isItemValid(var7)
-                && this.field_147002_h.canDragIntoSlot(var6)) {
+                && this.container.canDragIntoSlot(var6)) {
             this.field_147008_s.add(var6);
             this.func_146980_g();
         }
     }
 
     protected void mouseMovedOrUp(int p_146286_1_, int p_146286_2_, int p_146286_3_) {
-        Slot var4 = this.func_146975_c(p_146286_1_, p_146286_2_);
-        int var5 = this.field_147003_i;
-        int var6 = this.field_147009_r;
+        Slot var4 = this.getHoveringSlot(p_146286_1_, p_146286_2_);
+        int var5 = this.xShift;
+        int var6 = this.yShift;
         boolean var7 = p_146286_1_ < var5 || p_146286_2_ < var6 || p_146286_1_ >= var5 + this.field_146999_f
                 || p_146286_2_ >= var6 + this.field_147000_g;
         int var8 = -1;
 
-        if (var4 != null) {
+        if (var4 != null)
             var8 = var4.slotNumber;
-        }
 
-        if (var7) {
+        if (var7)
             var8 = -999;
-        }
 
         Slot var10;
-        Iterator var11;
+        Iterator<Slot> var11;
 
         if (this.field_146993_M && var4 != null && p_146286_3_ == 0
-                && this.field_147002_h.func_94530_a((ItemStack) null, var4)) {
+                && this.container.func_94530_a((ItemStack) null, var4)) {
             if (isShiftKeyDown(this.mc)) {
                 if (var4 != null && var4.inventory != null && this.field_146994_N != null) {
-                    var11 = this.field_147002_h.inventorySlots.iterator();
+                    var11 = this.container.inventorySlots.iterator();
 
                     while (var11.hasNext()) {
-                        var10 = (Slot) var11.next();
+                        var10 = var11.next();
 
                         if (var10 != null && var10.canTakeStack(this.mc.thePlayer) && var10.getHasStack()
                                 && var10.inventory == var4.inventory
-                                && Container.func_94527_a(var10, this.field_146994_N, true)) {
+                                && Container.func_94527_a(var10, this.field_146994_N, true))
                             this.func_146984_a(var10, var10.slotNumber, p_146286_3_, 1);
-                        }
                     }
                 }
             } else {
@@ -498,7 +487,7 @@ public abstract class GuiContainer extends GuiScreen {
                 var11 = this.field_147008_s.iterator();
 
                 while (var11.hasNext()) {
-                    var10 = (Slot) var11.next();
+                    var10 = var11.next();
                     this.func_146984_a(var10, var10.slotNumber, Container.func_94534_d(1, this.field_146987_F), 5);
                 }
 
@@ -509,43 +498,56 @@ public abstract class GuiContainer extends GuiScreen {
                 } else {
                     var9 = var8 != -999 && (this.mc.getKeyboard().isKeyDown(42) || this.mc.getKeyboard().isKeyDown(54));
 
-                    if (var9) {
+                    if (var9)
                         this.field_146994_N = var4 != null && var4.getHasStack() ? var4.getStack() : null;
-                    }
 
                     this.func_146984_a(var4, var8, p_146286_3_, var9 ? 1 : 0);
                 }
             }
         }
 
-        if (this.mc.thePlayer.inventory.getItemStack() == null) {
+        if (this.mc.thePlayer.inventory.getItemStack() == null)
             this.field_146997_J = 0L;
-        }
 
         this.field_147007_t = false;
     }
 
-    private boolean func_146981_a(Slot p_146981_1_, int p_146981_2_, int p_146981_3_) {
-        return this.func_146978_c(p_146981_1_.xDisplayPosition, p_146981_1_.yDisplayPosition, 16, 16, p_146981_2_,
-                p_146981_3_);
+    private boolean isMouseOver(Slot slot, int x, int y) {
+        return this.isMouseOver(slot.xDisplayPosition, slot.yDisplayPosition, 16, 16, x,
+                y);
     }
 
-    protected boolean func_146978_c(int p_146978_1_, int p_146978_2_, int p_146978_3_, int p_146978_4_, int p_146978_5_,
-            int p_146978_6_) {
-        int var7 = this.field_147003_i;
-        int var8 = this.field_147009_r;
-        p_146978_5_ -= var7;
-        p_146978_6_ -= var8;
-        return p_146978_5_ >= p_146978_1_ - 1 && p_146978_5_ < p_146978_1_ + p_146978_3_ + 1
-                && p_146978_6_ >= p_146978_2_ - 1 && p_146978_6_ < p_146978_2_ + p_146978_4_ + 1;
+    protected boolean isMouseOver(int slotX, int slotY, int width, int height, int x,
+            int y) {
+        int xShift = this.xShift;
+        int yShift = this.yShift;
+        x -= xShift;
+        y -= yShift;
+        return x >= slotX - 1 && x < slotX + width + 1
+                && y >= slotY - 1 && y < slotY + height + 1;
+    }
+
+    @Override
+    public int getSlotX(gg.mineral.bot.api.inv.Slot slot) {
+        int xShift = this.xShift;
+        int slotWidth = 16;
+        int xCenter = slot.getXDisplayPosition() + (slotWidth / 2);
+        return xCenter + xShift;
+    }
+
+    @Override
+    public int getSlotY(gg.mineral.bot.api.inv.Slot slot) {
+        int yShift = this.yShift;
+        int slotHeight = 16;
+        int yCenter = slot.getYDisplayPosition() + (slotHeight / 2);
+        return yCenter + yShift;
     }
 
     protected void func_146984_a(Slot p_146984_1_, int p_146984_2_, int p_146984_3_, int p_146984_4_) {
-        if (p_146984_1_ != null) {
+        if (p_146984_1_ != null)
             p_146984_2_ = p_146984_1_.slotNumber;
-        }
 
-        this.mc.playerController.windowClick(this.field_147002_h.windowId, p_146984_2_, p_146984_3_, p_146984_4_,
+        this.mc.playerController.windowClick(this.container.windowId, p_146984_2_, p_146984_3_, p_146984_4_,
                 this.mc.thePlayer);
     }
 
@@ -554,9 +556,8 @@ public abstract class GuiContainer extends GuiScreen {
      * KeyListener.keyTyped(KeyEvent e).
      */
     protected void keyTyped(char p_73869_1_, int p_73869_2_) {
-        if (p_73869_2_ == 1 || p_73869_2_ == this.mc.gameSettings.keyBindInventory.getKeyCode()) {
+        if (p_73869_2_ == 1 || p_73869_2_ == this.mc.gameSettings.keyBindInventory.getKeyCode())
             this.mc.thePlayer.closeScreen();
-        }
 
         this.func_146983_a(p_73869_2_);
 
@@ -587,9 +588,8 @@ public abstract class GuiContainer extends GuiScreen {
      * "Called when the screen is unloaded. Used to disable keyboard repeat events."
      */
     public void onGuiClosed() {
-        if (this.mc.thePlayer != null) {
-            this.field_147002_h.onContainerClosed(this.mc.thePlayer);
-        }
+        if (this.mc.thePlayer != null)
+            this.container.onContainerClosed(this.mc.thePlayer);
     }
 
     /**
@@ -606,8 +606,7 @@ public abstract class GuiContainer extends GuiScreen {
     public void updateScreen() {
         super.updateScreen();
 
-        if (!this.mc.thePlayer.isEntityAlive() || this.mc.thePlayer.isDead) {
+        if (!this.mc.thePlayer.isEntityAlive() || this.mc.thePlayer.isDead)
             this.mc.thePlayer.closeScreen();
-        }
     }
 }

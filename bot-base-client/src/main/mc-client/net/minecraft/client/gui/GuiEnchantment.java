@@ -42,7 +42,7 @@ public class GuiEnchantment extends GuiContainer {
             int p_i46398_4_, int p_i46398_5_, String p_i46398_6_) {
         super(mc, new ContainerEnchantment(p_i46398_1_, p_i46398_2_, p_i46398_3_, p_i46398_4_, p_i46398_5_));
         this.field_147072_E = new ModelBook(mc);
-        this.field_147075_G = (ContainerEnchantment) this.field_147002_h;
+        this.field_147075_G = (ContainerEnchantment) this.container;
         this.field_147079_H = p_i46398_6_;
     }
 
@@ -189,7 +189,7 @@ public class GuiEnchantment extends GuiContainer {
     }
 
     public void func_147068_g() {
-        ItemStack var1 = this.field_147002_h.getSlot(0).getStack();
+        ItemStack var1 = this.container.getSlot(0).getStack();
 
         if (!ItemStack.areItemStacksEqual(var1, this.field_147077_B)) {
             this.field_147077_B = var1;

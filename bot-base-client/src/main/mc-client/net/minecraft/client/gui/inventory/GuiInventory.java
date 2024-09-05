@@ -62,8 +62,8 @@ public class GuiInventory extends InventoryEffectRenderer {
     protected void func_146976_a(float p_146976_1_, int p_146976_2_, int p_146976_3_) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(field_147001_a);
-        int var4 = this.field_147003_i;
-        int var5 = this.field_147009_r;
+        int var4 = this.xShift;
+        int var5 = this.yShift;
         this.drawTexturedModalRect(var4, var5, 0, 0, this.field_146999_f, this.field_147000_g);
         func_147046_a(this.mc.renderManager, var4 + 51, var5 + 75, 30, (float) (var4 + 51) - this.field_147048_u,
                 (float) (var5 + 75 - 50) - this.field_147047_v, this.mc.thePlayer);

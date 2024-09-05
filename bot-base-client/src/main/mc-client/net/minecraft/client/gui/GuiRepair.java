@@ -29,7 +29,7 @@ public class GuiRepair extends GuiContainer implements ICrafting {
             int p_i46381_5_) {
         super(mc, new ContainerRepair(p_i46381_1_, p_i46381_2_, p_i46381_3_, p_i46381_4_, p_i46381_5_, mc.thePlayer));
         this.field_147094_x = p_i46381_1_;
-        this.field_147092_v = (ContainerRepair) this.field_147002_h;
+        this.field_147092_v = (ContainerRepair) this.container;
     }
 
     /**
@@ -45,8 +45,8 @@ public class GuiRepair extends GuiContainer implements ICrafting {
         this.field_147091_w.func_146204_h(-1);
         this.field_147091_w.func_146185_a(false);
         this.field_147091_w.func_146203_f(40);
-        this.field_147002_h.removeCraftingFromCrafters(this);
-        this.field_147002_h.addCraftingToCrafters(this);
+        this.container.removeCraftingFromCrafters(this);
+        this.container.addCraftingToCrafters(this);
     }
 
     /**
@@ -55,7 +55,7 @@ public class GuiRepair extends GuiContainer implements ICrafting {
     public void onGuiClosed() {
         super.onGuiClosed();
         this.mc.getKeyboard().enableRepeatEvents(false);
-        this.field_147002_h.removeCraftingFromCrafters(this);
+        this.container.removeCraftingFromCrafters(this);
     }
 
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {

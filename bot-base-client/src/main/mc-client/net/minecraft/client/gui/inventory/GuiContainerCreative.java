@@ -51,7 +51,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
     public GuiContainerCreative(Minecraft mc, EntityPlayer p_i1088_1_) {
         super(mc, new GuiContainerCreative.ContainerCreative(p_i1088_1_));
-        p_i1088_1_.openContainer = this.field_147002_h;
+        p_i1088_1_.openContainer = this.container;
         this.field_146291_p = true;
         this.field_147000_g = 136;
         this.field_146999_f = 195;
@@ -184,18 +184,18 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
                         var11.setItemStack((ItemStack) null);
                     }
                 } else {
-                    this.field_147002_h.slotClick(p_146984_1_ == null ? p_146984_2_ : p_146984_1_.slotNumber,
+                    this.container.slotClick(p_146984_1_ == null ? p_146984_2_ : p_146984_1_.slotNumber,
                             p_146984_3_, p_146984_4_, this.mc.thePlayer);
 
                     if (Container.func_94532_c(p_146984_3_) == 2) {
                         for (var10 = 0; var10 < 9; ++var10) {
-                            this.mc.playerController.sendSlotPacket(this.field_147002_h.getSlot(45 + var10).getStack(),
+                            this.mc.playerController.sendSlotPacket(this.container.getSlot(45 + var10).getStack(),
                                     36 + var10);
                         }
                     } else if (p_146984_1_ != null) {
-                        var6 = this.field_147002_h.getSlot(p_146984_1_.slotNumber).getStack();
+                        var6 = this.container.getSlot(p_146984_1_.slotNumber).getStack();
                         this.mc.playerController.sendSlotPacket(var6,
-                                p_146984_1_.slotNumber - this.field_147002_h.inventorySlots.size() + 9 + 36);
+                                p_146984_1_.slotNumber - this.container.inventorySlots.size() + 9 + 36);
                     }
                 }
             }
@@ -210,8 +210,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
             super.initGui();
             this.buttonList.clear();
             this.mc.getKeyboard().enableRepeatEvents(true);
-            this.field_147062_A = new GuiTextField(this.mc, this.fontRendererObj, this.field_147003_i + 82,
-                    this.field_147009_r + 6, 89, this.fontRendererObj.FONT_HEIGHT);
+            this.field_147062_A = new GuiTextField(this.mc, this.fontRendererObj, this.xShift + 82,
+                    this.yShift + 6, 89, this.fontRendererObj.FONT_HEIGHT);
             this.field_147062_A.func_146203_f(15);
             this.field_147062_A.func_146185_a(false);
             this.field_147062_A.func_146189_e(false);
@@ -267,7 +267,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
     }
 
     private void func_147053_i() {
-        GuiContainerCreative.ContainerCreative var1 = (GuiContainerCreative.ContainerCreative) this.field_147002_h;
+        GuiContainerCreative.ContainerCreative var1 = (GuiContainerCreative.ContainerCreative) this.container;
         var1.field_148330_a.clear();
         Iterator var2 = Item.itemRegistry.iterator();
 
@@ -335,8 +335,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
      */
     protected void mouseClicked(int p_73864_1_, int p_73864_2_, int p_73864_3_) {
         if (p_73864_3_ == 0) {
-            int var4 = p_73864_1_ - this.field_147003_i;
-            int var5 = p_73864_2_ - this.field_147009_r;
+            int var4 = p_73864_1_ - this.xShift;
+            int var5 = p_73864_2_ - this.yShift;
             CreativeTabs[] var6 = CreativeTabs.creativeTabArray;
             int var7 = var6.length;
 
@@ -354,8 +354,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
     protected void mouseMovedOrUp(int p_146286_1_, int p_146286_2_, int p_146286_3_) {
         if (p_146286_3_ == 0) {
-            int var4 = p_146286_1_ - this.field_147003_i;
-            int var5 = p_146286_2_ - this.field_147009_r;
+            int var4 = p_146286_1_ - this.xShift;
+            int var5 = p_146286_2_ - this.yShift;
             CreativeTabs[] var6 = CreativeTabs.creativeTabArray;
             int var7 = var6.length;
 
@@ -375,13 +375,13 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
     private boolean func_147055_p() {
         return field_147058_w != CreativeTabs.tabInventory.getTabIndex()
                 && CreativeTabs.creativeTabArray[field_147058_w].shouldHidePlayerInventory()
-                && ((GuiContainerCreative.ContainerCreative) this.field_147002_h).func_148328_e();
+                && ((GuiContainerCreative.ContainerCreative) this.container).func_148328_e();
     }
 
     private void func_147050_b(CreativeTabs p_147050_1_) {
         int var2 = field_147058_w;
         field_147058_w = p_147050_1_.getTabIndex();
-        GuiContainerCreative.ContainerCreative var3 = (GuiContainerCreative.ContainerCreative) this.field_147002_h;
+        GuiContainerCreative.ContainerCreative var3 = (GuiContainerCreative.ContainerCreative) this.container;
         this.field_147008_s.clear();
         var3.field_148330_a.clear();
         p_147050_1_.displayAllReleventItems(var3.field_148330_a);
@@ -459,7 +459,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
         int var1 = this.mc.getMouse().getEventDWheel();
 
         if (var1 != 0 && this.func_147055_p()) {
-            int var2 = ((GuiContainerCreative.ContainerCreative) this.field_147002_h).field_148330_a.size() / 9 - 5 + 1;
+            int var2 = ((GuiContainerCreative.ContainerCreative) this.container).field_148330_a.size() / 9 - 5 + 1;
 
             if (var1 > 0) {
                 var1 = 1;
@@ -479,7 +479,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
                 this.field_147067_x = 1.0F;
             }
 
-            ((GuiContainerCreative.ContainerCreative) this.field_147002_h).func_148329_a(this.field_147067_x);
+            ((GuiContainerCreative.ContainerCreative) this.container).func_148329_a(this.field_147067_x);
         }
     }
 
@@ -488,8 +488,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
      */
     public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
         boolean var4 = this.mc.getMouse().isButtonDown(0);
-        int var5 = this.field_147003_i;
-        int var6 = this.field_147009_r;
+        int var5 = this.xShift;
+        int var6 = this.yShift;
         int var7 = var5 + 175;
         int var8 = var6 + 18;
         int var9 = var7 + 14;
@@ -517,7 +517,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
                 this.field_147067_x = 1.0F;
             }
 
-            ((GuiContainerCreative.ContainerCreative) this.field_147002_h).func_148329_a(this.field_147067_x);
+            ((GuiContainerCreative.ContainerCreative) this.container).func_148329_a(this.field_147067_x);
         }
 
         super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
@@ -533,7 +533,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
         }
 
         if (this.field_147064_C != null && field_147058_w == CreativeTabs.tabInventory.getTabIndex()
-                && this.func_146978_c(this.field_147064_C.xDisplayPosition, this.field_147064_C.yDisplayPosition, 16,
+                && this.isMouseOver(this.field_147064_C.xDisplayPosition, this.field_147064_C.yDisplayPosition, 16,
                         16, p_73863_1_, p_73863_2_)) {
             this.func_146279_a(I18n.format("inventory.binSlot", new Object[0]), p_73863_1_, p_73863_2_);
         }
@@ -605,12 +605,12 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
         this.mc.getTextureManager().bindTexture(
                 new ResourceLocation("textures/gui/container/creative_inventory/tab_" + var4.getBackgroundImageName()));
-        this.drawTexturedModalRect(this.field_147003_i, this.field_147009_r, 0, 0, this.field_146999_f,
+        this.drawTexturedModalRect(this.xShift, this.yShift, 0, 0, this.field_146999_f,
                 this.field_147000_g);
         this.field_147062_A.drawTextBox();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        int var9 = this.field_147003_i + 175;
-        var6 = this.field_147009_r + 18;
+        int var9 = this.xShift + 175;
+        var6 = this.yShift + 18;
         var7 = var6 + 112;
         this.mc.getTextureManager().bindTexture(field_147061_u);
 
@@ -622,9 +622,9 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
         this.func_147051_a(var4);
 
         if (var4 == CreativeTabs.tabInventory) {
-            GuiInventory.func_147046_a(this.mc.renderManager, this.field_147003_i + 43, this.field_147009_r + 45, 20,
-                    (float) (this.field_147003_i + 43 - p_146976_2_),
-                    (float) (this.field_147009_r + 45 - 30 - p_146976_3_), this.mc.thePlayer);
+            GuiInventory.func_147046_a(this.mc.renderManager, this.xShift + 43, this.yShift + 45, 20,
+                    (float) (this.xShift + 43 - p_146976_2_),
+                    (float) (this.yShift + 45 - 30 - p_146976_3_), this.mc.thePlayer);
         }
     }
 
@@ -669,7 +669,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
             var7 = var6 + this.field_147000_g;
         }
 
-        if (this.func_146978_c(var5 + 3, var7 + 3, 23, 27, p_147052_2_, p_147052_3_)) {
+        if (this.isMouseOver(var5 + 3, var7 + 3, 23, 27, p_147052_2_, p_147052_3_)) {
             this.func_146279_a(I18n.format(p_147052_1_.getTranslatedTabLabel(), new Object[0]), p_147052_2_,
                     p_147052_3_);
             return true;
@@ -684,8 +684,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
         int var4 = p_147051_1_.getTabColumn();
         int var5 = var4 * 28;
         int var6 = 0;
-        int var7 = this.field_147003_i + 28 * var4;
-        int var8 = this.field_147009_r;
+        int var7 = this.xShift + 28 * var4;
+        int var8 = this.yShift;
         byte var9 = 32;
 
         if (var2) {
@@ -693,7 +693,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
         }
 
         if (var4 == 5) {
-            var7 = this.field_147003_i + this.field_146999_f - 28;
+            var7 = this.xShift + this.field_146999_f - 28;
         } else if (var4 > 0) {
             var7 += var4;
         }

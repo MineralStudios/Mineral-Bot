@@ -15,6 +15,7 @@ import gg.mineral.bot.api.controls.Keyboard;
 import gg.mineral.bot.api.controls.Mouse;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.goal.Goal;
+import gg.mineral.bot.api.screen.Screen;
 import gg.mineral.bot.api.world.ClientWorld;
 
 public interface FakePlayer extends ClientPlayer {
@@ -155,4 +156,11 @@ public interface FakePlayer extends ClientPlayer {
      * @return the current latency
      */
     int getLatency();
+
+    /**
+     * Returns the current screen that the fake player is viewing.
+     *
+     * @return the current screen of the fake player
+     */
+    Screen getCurrentScreen();
 }

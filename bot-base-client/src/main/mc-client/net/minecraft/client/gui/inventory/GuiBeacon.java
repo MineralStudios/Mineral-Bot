@@ -40,9 +40,9 @@ public class GuiBeacon extends GuiContainer {
      */
     public void initGui() {
         super.initGui();
-        this.buttonList.add(this.field_147028_x = new GuiBeacon.ConfirmButton(-1, this.field_147003_i + 164,
-                this.field_147009_r + 107));
-        this.buttonList.add(new GuiBeacon.CancelButton(-2, this.field_147003_i + 190, this.field_147009_r + 107));
+        this.buttonList.add(this.field_147028_x = new GuiBeacon.ConfirmButton(-1, this.xShift + 164,
+                this.yShift + 107));
+        this.buttonList.add(new GuiBeacon.CancelButton(-2, this.xShift + 190, this.yShift + 107));
         this.field_147027_y = true;
         this.field_147028_x.enabled = false;
     }
@@ -67,8 +67,8 @@ public class GuiBeacon extends GuiContainer {
 
                 for (var4 = 0; var4 < var2; ++var4) {
                     var5 = TileEntityBeacon.field_146009_a[var1][var4].id;
-                    var6 = new GuiBeacon.PowerButton(var1 << 8 | var5, this.field_147003_i + 76 + var4 * 24 - var3 / 2,
-                            this.field_147009_r + 22 + var1 * 25, var5, var1);
+                    var6 = new GuiBeacon.PowerButton(var1 << 8 | var5, this.xShift + 76 + var4 * 24 - var3 / 2,
+                            this.yShift + 22 + var1 * 25, var5, var1);
                     this.buttonList.add(var6);
 
                     if (var1 >= this.field_147024_w.func_145998_l()) {
@@ -85,8 +85,8 @@ public class GuiBeacon extends GuiContainer {
 
             for (var4 = 0; var4 < var2 - 1; ++var4) {
                 var5 = TileEntityBeacon.field_146009_a[var7][var4].id;
-                var6 = new GuiBeacon.PowerButton(var7 << 8 | var5, this.field_147003_i + 167 + var4 * 24 - var3 / 2,
-                        this.field_147009_r + 47, var5, var7);
+                var6 = new GuiBeacon.PowerButton(var7 << 8 | var5, this.xShift + 167 + var4 * 24 - var3 / 2,
+                        this.yShift + 47, var5, var7);
                 this.buttonList.add(var6);
 
                 if (var7 >= this.field_147024_w.func_145998_l()) {
@@ -98,7 +98,7 @@ public class GuiBeacon extends GuiContainer {
 
             if (this.field_147024_w.func_146007_j() > 0) {
                 GuiBeacon.PowerButton var8 = new GuiBeacon.PowerButton(var7 << 8 | this.field_147024_w.func_146007_j(),
-                        this.field_147003_i + 167 + (var2 - 1) * 24 - var3 / 2, this.field_147009_r + 47,
+                        this.xShift + 167 + (var2 - 1) * 24 - var3 / 2, this.yShift + 47,
                         this.field_147024_w.func_146007_j(), var7);
                 this.buttonList.add(var8);
 
@@ -165,7 +165,7 @@ public class GuiBeacon extends GuiContainer {
             GuiButton var4 = (GuiButton) var3.next();
 
             if (var4.func_146115_a()) {
-                var4.func_146111_b(p_146979_1_ - this.field_147003_i, p_146979_2_ - this.field_147009_r);
+                var4.func_146111_b(p_146979_1_ - this.xShift, p_146979_2_ - this.yShift);
                 break;
             }
         }

@@ -18,7 +18,7 @@ public abstract class Container implements InventoryContainer {
     public List inventoryItemStacks = new ArrayList();
 
     /** the list of all slots in the inventory */
-    public List inventorySlots = new ArrayList();
+    public List<Slot> inventorySlots = new ArrayList<>();
     public int windowId;
     private short transactionID;
     private int field_94535_f = -1;

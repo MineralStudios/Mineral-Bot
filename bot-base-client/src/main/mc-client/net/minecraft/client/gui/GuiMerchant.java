@@ -88,7 +88,7 @@ public class GuiMerchant extends GuiContainer {
         }
 
         if (var2) {
-            ((ContainerMerchant) this.field_147002_h).setCurrentRecipeIndex(this.field_147041_z);
+            ((ContainerMerchant) this.container).setCurrentRecipeIndex(this.field_147041_z);
             ByteBuf var3 = Unpooled.buffer();
 
             try {
@@ -118,8 +118,8 @@ public class GuiMerchant extends GuiContainer {
                 this.mc.getTextureManager().bindTexture(field_147038_v);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 GL11.glDisable(GL11.GL_LIGHTING);
-                this.drawTexturedModalRect(this.field_147003_i + 83, this.field_147009_r + 21, 212, 0, 28, 21);
-                this.drawTexturedModalRect(this.field_147003_i + 83, this.field_147009_r + 51, 212, 0, 28, 21);
+                this.drawTexturedModalRect(this.xShift + 83, this.yShift + 21, 212, 0, 28, 21);
+                this.drawTexturedModalRect(this.xShift + 83, this.yShift + 51, 212, 0, 28, 21);
             }
         }
     }
@@ -165,11 +165,11 @@ public class GuiMerchant extends GuiContainer {
             itemRender.zLevel = 0.0F;
             GL11.glDisable(GL11.GL_LIGHTING);
 
-            if (this.func_146978_c(36, 24, 16, 16, p_73863_1_, p_73863_2_)) {
+            if (this.isMouseOver(36, 24, 16, 16, p_73863_1_, p_73863_2_)) {
                 this.func_146285_a(var9, p_73863_1_, p_73863_2_);
-            } else if (var10 != null && this.func_146978_c(62, 24, 16, 16, p_73863_1_, p_73863_2_)) {
+            } else if (var10 != null && this.isMouseOver(62, 24, 16, 16, p_73863_1_, p_73863_2_)) {
                 this.func_146285_a(var10, p_73863_1_, p_73863_2_);
-            } else if (this.func_146978_c(120, 24, 16, 16, p_73863_1_, p_73863_2_)) {
+            } else if (this.isMouseOver(120, 24, 16, 16, p_73863_1_, p_73863_2_)) {
                 this.func_146285_a(var11, p_73863_1_, p_73863_2_);
             }
 

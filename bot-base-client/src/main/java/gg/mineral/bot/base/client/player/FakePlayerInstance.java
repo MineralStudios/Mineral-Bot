@@ -20,6 +20,7 @@ import gg.mineral.bot.api.goal.Goal;
 import gg.mineral.bot.api.inv.Inventory;
 import gg.mineral.bot.api.inv.InventoryContainer;
 import gg.mineral.bot.api.math.BoundingBox;
+import gg.mineral.bot.api.screen.Screen;
 import gg.mineral.bot.api.world.ClientWorld;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.impl.thread.ThreadManager;
@@ -283,5 +284,10 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
     @Override
     public @Nullable InventoryContainer getInventoryContainer() {
         return this.thePlayer == null ? null : this.thePlayer.getInventoryContainer();
+    }
+
+    @Override
+    public Screen getCurrentScreen() {
+        return this.currentScreen;
     }
 }

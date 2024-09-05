@@ -15,13 +15,11 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-
+import gg.mineral.bot.api.screen.Screen;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
 
-import gg.mineral.bot.impl.config.BotGlobalConfig;
-
-public class GuiScreen extends Gui {
+public class GuiScreen extends Gui implements Screen {
     /**
      * Holds a instance of RenderItem, used to draw the achievement icons on screen
      * (is based on ItemStack)

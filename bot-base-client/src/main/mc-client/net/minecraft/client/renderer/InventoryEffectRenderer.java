@@ -26,7 +26,7 @@ public abstract class InventoryEffectRenderer extends GuiContainer {
         super.initGui();
 
         if (!this.mc.thePlayer.getActivePotionEffects().isEmpty()) {
-            this.field_147003_i = 160 + (this.width - this.field_146999_f - 200) / 2;
+            this.xShift = 160 + (this.width - this.field_146999_f - 200) / 2;
             this.field_147045_u = true;
         }
     }
@@ -43,8 +43,8 @@ public abstract class InventoryEffectRenderer extends GuiContainer {
     }
 
     private void func_147044_g() {
-        int var1 = this.field_147003_i - 124;
-        int var2 = this.field_147009_r;
+        int var1 = this.xShift - 124;
+        int var2 = this.yShift;
         boolean var3 = true;
         Collection var4 = this.mc.thePlayer.getActivePotionEffects();
 
