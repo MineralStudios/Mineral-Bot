@@ -36,6 +36,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class FakePlayerInstance extends Minecraft implements FakePlayer {
 
+    private Goal lastGoal;
+
     @Getter
     private final BotConfiguration configuration;
 
@@ -156,7 +158,14 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
 
         for (Goal goal : goals)
             if (goal.shouldExecute()) {
+                // If the goal has changed, stop all inputs to prevent conflicts
+                if (lastGoal.getClass() != goal.getClass()) {
+                    this.getKeyboard().stopAll();
+                    this.getMouse().stopAll();
+                }
+
                 goal.onGameLoop();
+                lastGoal = goal;
                 break;
             }
     }
