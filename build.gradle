@@ -1,0 +1,4 @@
+allprojects {
+    group = "gg.mineral"
+    version = new Date().format('yyyyMMdd')
+}

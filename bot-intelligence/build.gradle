@@ -2,9 +2,6 @@ plugins {
     id 'java'
 }
 
-group 'gg.mineral'
-version '1.0-SNAPSHOT'
-
 repositories {
     mavenCentral()
 }
@@ -16,7 +13,6 @@ dependencies {
     annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
     compileOnly project(':bot-api')
 }
-
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'

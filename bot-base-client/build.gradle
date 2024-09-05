@@ -2,9 +2,6 @@ plugins {
     id 'java'
 }
 
-group 'gg.mineral'
-version '1.0-SNAPSHOT'
-
 repositories {
     mavenCentral()
     maven {
@@ -13,7 +10,6 @@ repositories {
 }
 
 dependencies {
-
     compileOnly project(':bot-api')
     implementation project(':bot-shared-library')
     implementation project(':bot-intelligence')

@@ -2,9 +2,6 @@ plugins {
     id 'java'
 }
 
-group 'gg.mineral'
-version '1.0-SNAPSHOT'
-
 repositories {
     mavenCentral()
     maven {
@@ -25,7 +22,6 @@ dependencies {
     implementation 'it.unimi.dsi:fastutil:8.5.14'
     
 }
-
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
