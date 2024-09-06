@@ -45,38 +45,3 @@ allprojects {
         }
     }
 }
-
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven-publish'
-
-    afterEvaluate { subproject ->
-        def finalJarTask = subproject.tasks.findByName("shadowJar") ?: subproject.tasks.findByName("jar")
-
-        if (finalJarTask != null) {
-            publishing {
-                publications {
-                    maven(MavenPublication) {
-                        artifact finalJarTask.archiveFile.get() 
-                        artifactId = subproject.name 
-                    }
-                }
-
-                repositories {
-                    maven {
-                        name = "GitHubPackages"
-                        url = uri("https://maven.pkg.github.com/MineralStudios/Mineral-Bot")
-                        credentials {
-                            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
-                        }
-                    }
-                }
-            }
-
-            subproject.tasks.named('publish').configure {
-                dependsOn(finalJarTask)
-            }
-        }
-    }
-}
