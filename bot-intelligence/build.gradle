@@ -1,7 +1,7 @@
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.32'
-    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
     implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
     annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
     compileOnly project(':bot-api')
