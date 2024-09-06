@@ -25,7 +25,7 @@ dependencies {
     implementation 'com.paulscode:librarylwjglopenal:20100824'
     implementation 'com.paulscode:soundsystem:20120107'
     implementation 'com.google.guava:guava:33.3.0-jre'
-    implementation 'org.apache.commons:commons-lang3:3.16.0'
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation 'commons-io:commons-io:2.16.1'
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'org.lwjgl.lwjgl:lwjgl:2.9.3'
