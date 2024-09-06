@@ -6,15 +6,22 @@ repositories {
     maven {
         url 'https://libraries.minecraft.net/'
     }
+    maven {
+        url 'https://maven.pkg.github.com/MineralStudios/MineralSpigot'
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
+        }
+    }
 }
 
 dependencies {
+    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20240906-10.04.46'
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
     implementation project(':bot-base-client')
     compileOnly project(':bot-shared-library')
     compileOnly project(':bot-api')
-    compileOnly files('lib/mineralspigot-server-1.8.8-R0.1-SNAPSHOT.jar')
 }
 
 shadowJar {
