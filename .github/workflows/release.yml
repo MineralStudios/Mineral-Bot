@@ -34,14 +34,14 @@ jobs:
         CURRENT_DATE=$(date +'%Y-%m-%d')
         if [ "$LAST_COMMIT" != "$CURRENT_DATE" ]; then
           echo "No changes today"
-          echo "::set-output name=changes::false"
-        else:
-          echo "::set-output name=changes::true"
+          echo "changes=false" >> $GITHUB_ENV
+        else
+          echo "changes=true" >> $GITHUB_ENV
         fi
 
     # Step 5: Create a new release if there were changes
     - name: Create a release
-      if: steps.check_changes.outputs.changes == 'true'
+      if: env.changes == 'true'
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
@@ -53,7 +53,7 @@ jobs:
 
     # Step 6: Upload bot-standalone JAR to release
     - name: Upload bot-standalone JAR to release
-      if: steps.check_changes.outputs.changes == 'true'
+      if: env.changes == 'true'
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -63,7 +63,7 @@ jobs:
 
     # Step 7: Upload bot-bukkit JAR to release
     - name: Upload bot-bukkit JAR to release
-      if: steps.check_changes.outputs.changes == 'true'
+      if: env.changes == 'true'
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -73,8 +73,8 @@ jobs:
 
     # Step 8: Set the release tag to the current date
     - name: Set the release tag to the current date
-      if: steps.check_changes.outputs.changes == 'true'
+      if: env.changes == 'true'
       id: release_tag
       run: |
         TAG_NAME=$(date +'%Y.%m.%d')
-        echo "::set-output name=tag::$TAG_NAME"
+        echo "tag=$TAG_NAME" >> $GITHUB_ENV
