@@ -1,11 +1,15 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
-  - package-ecosystem: "gradle"
-    directory: "/"
+  - package-ecosystem: "gradle"  # Define the package manager
+    directory: "/"  # Location of the gradle package manifest (build.gradle)
     schedule:
-      interval: "daily"
+      interval: "daily"  # Schedule to check for updates daily
+    registries:
+      - github-packages  # This refers to the registry id defined below
+
+registries:
+  github-packages:
+    type: "maven-repository"  # Use Maven for Gradle repositories
+    url: "https://maven.pkg.github.com/"  # GitHub Packages Maven URL
+    username: "${{ github.actor }}"  # GitHub actor running the action
+    password: "${{ secrets.GITHUB_TOKEN }}"  # GitHub token for authentication
