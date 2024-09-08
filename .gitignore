@@ -40,3 +40,5 @@ saves
 resourcepacks
 eclipse-formatter.xml
 bin
+/target
+.settings
