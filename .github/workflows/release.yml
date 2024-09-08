@@ -21,21 +21,40 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Check for changes since last commit
+    - name: Check for changes since the last release
       id: check_changes
       run: |
         #!/bin/bash
 
-        git fetch origin
-        LAST_COMMIT=$(git log -1 --format=%cd --date=short)
-        CURRENT_DATE=$(date +'%Y-%m-%d')
+        git fetch --tags origin
 
-        if [ "$LAST_COMMIT" != "$CURRENT_DATE" ]; then
-          echo "No changes today"
-          echo "changes=false" >> $GITHUB_OUTPUT
-        else
+        # Get the most recent release tag
+        LAST_RELEASE_TAG=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || echo "")
+
+        if [ -z "$LAST_RELEASE_TAG" ]; then
+          echo "No previous releases found, treating this as a new release."
           echo "changes=true" >> $GITHUB_OUTPUT
+        else
+          # Get the latest commit date after the last release
+          LAST_COMMIT_DATE=$(git log -1 --format=%cd --date=short $LAST_RELEASE_TAG..HEAD)
+          CURRENT_DATE=$(date +'%Y-%m-%d')
+
+          if [ "$LAST_COMMIT_DATE" != "$CURRENT_DATE" ]; then
+            echo "No changes since the last release."
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected since the last release."
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
         fi
+
+    - name: Set the release tag to the current date
+      if: steps.check_changes.outputs.changes == 'true'
+      id: release_tag
+      run: |
+        TAG_NAME=$(date +'%Y.%m.%d')
+        echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+
     - name: Create a release
       if: steps.check_changes.outputs.changes == 'true'
       id: create_release
@@ -64,10 +83,3 @@ jobs:
         asset_path: bot-bukkit/build/libs/bot-bukkit-*-all.jar
         asset_name: bot-bukkit-${{ steps.release_tag.outputs.tag }}-all.jar
         asset_content_type: application/java-archive
-
-    - name: Set the release tag to the current date
-      if: steps.check_changes.outputs.changes == 'true'
-      id: release_tag
-      run: |
-        TAG_NAME=$(date +'%Y.%m.%d')
-        echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
