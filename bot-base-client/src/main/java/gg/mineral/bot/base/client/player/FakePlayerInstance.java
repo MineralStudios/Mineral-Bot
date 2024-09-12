@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -46,23 +45,24 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
 
     private Set<Goal> goals = new ObjectLinkedOpenHashSet<>();
 
-    private Queue<DelayedPacketTask> delayedPacketTasks = new ConcurrentLinkedQueue<>();
+    private Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
 
     @Getter
     private int latency = 0;
 
-    record DelayedPacketTask(Runnable runnable, long sendTime) {
+    record DelayedTask(Runnable runnable, long sendTime) {
         public boolean canSend() {
             return getSystemTime() >= sendTime;
         }
     }
 
-    public void schedulePacket(Runnable runnable, long delay) {
-        if (delay <= 0 && delayedPacketTasks.isEmpty()) {
+    public boolean scheduleTask(Runnable runnable, long delay) {
+        if (delay <= 0 && delayedTasks.isEmpty()) {
             runnable.run();
-            return;
+            return true;
         }
-        delayedPacketTasks.add(new DelayedPacketTask(runnable, getSystemTime() + delay));
+        delayedTasks.add(new DelayedTask(runnable, getSystemTime() + delay));
+        return false;
     }
 
     public FakePlayerInstance(BotConfiguration configuration, int width, int height,
@@ -146,11 +146,11 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
         this.getKeyboard().onGameLoop(getSystemTime());
         this.getMouse().onGameLoop(getSystemTime());
 
-        while (!delayedPacketTasks.isEmpty()) {
-            DelayedPacketTask task = delayedPacketTasks.peek();
+        while (!delayedTasks.isEmpty()) {
+            DelayedTask task = delayedTasks.peek();
             if (task.canSend()) {
                 task.runnable.run();
-                delayedPacketTasks.poll();
+                delayedTasks.poll();
                 continue;
             }
 
@@ -160,20 +160,33 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
         for (Goal goal : goals)
             if (goal.shouldExecute()) {
                 // If the goal has changed, stop all inputs to prevent conflicts
-                if (lastGoal.getClass() != goal.getClass()) {
+                if (lastGoal != null && lastGoal.getClass() != goal.getClass()) {
                     this.getKeyboard().stopAll();
                     this.getMouse().stopAll();
+                    lastGoal.getDelayedTasks().clear();
                 }
 
                 goal.onGameLoop();
+
+                while (!goal.getDelayedTasks().isEmpty()) {
+                    Goal.DelayedTask task = goal.getDelayedTasks().peek();
+                    if (task.canSend()) {
+                        task.runnable().run();
+                        goal.getDelayedTasks().poll();
+                        continue;
+                    }
+
+                    break;
+                }
+
                 lastGoal = goal;
                 break;
             }
     }
 
     @Override
-    public ScheduledFuture<?> schedule(Runnable runnable, long delay) {
-        return this.getGameLoopExecutor().schedule(runnable, delay, java.util.concurrent.TimeUnit.MILLISECONDS);
+    public boolean schedule(Runnable runnable, long delay) {
+        return this.scheduleTask(runnable, delay);
     }
 
     @Override
@@ -289,5 +302,25 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
     @Override
     public Screen getCurrentScreen() {
         return this.currentScreen;
+    }
+
+    @Override
+    public boolean isOnGround() {
+        return this.thePlayer == null ? false : this.thePlayer.onGround;
+    }
+
+    @Override
+    public double getLastX() {
+        return this.thePlayer == null ? 0.0 : this.thePlayer.lastTickPosX;
+    }
+
+    @Override
+    public double getLastY() {
+        return this.thePlayer == null ? 0.0 : this.thePlayer.lastTickPosY;
+    }
+
+    @Override
+    public double getLastZ() {
+        return this.thePlayer == null ? 0.0 : this.thePlayer.lastTickPosZ;
     }
 }

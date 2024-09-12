@@ -59,7 +59,7 @@ public class ClientNetworkManager extends NetworkManager {
             this.setConnectionState(var3);
 
         if (mc instanceof FakePlayerInstance instance && (!mc.isMainThread() || instance.getLatency() > 0))
-            instance.schedulePacket(() -> p_150732_1_.processPacket(translator), instance.getLatency());
+            instance.scheduleTask(() -> p_150732_1_.processPacket(translator), instance.getLatency());
         else
             p_150732_1_.processPacket(translator);
     }

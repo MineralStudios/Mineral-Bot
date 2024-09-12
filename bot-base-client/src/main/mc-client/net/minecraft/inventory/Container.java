@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import gg.mineral.bot.api.inv.Inventory;
 import gg.mineral.bot.api.inv.InventoryContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -101,7 +102,7 @@ public abstract class Container implements InventoryContainer {
 
     public Slot getSlotFromInventory(IInventory p_75147_1_, int p_75147_2_) {
         for (int var3 = 0; var3 < this.inventorySlots.size(); ++var3) {
-            Slot var4 = (Slot) this.inventorySlots.get(var3);
+            Slot var4 = this.inventorySlots.get(var3);
 
             if (var4.isSlotInInventory(p_75147_1_, p_75147_2_)) {
                 return var4;
@@ -111,8 +112,20 @@ public abstract class Container implements InventoryContainer {
         return null;
     }
 
+    public Slot getSlot(Inventory inv, int p_75139_1_) {
+        for (int var3 = 0; var3 < this.inventorySlots.size(); ++var3) {
+            Slot var4 = this.inventorySlots.get(var3);
+
+            if (var4.isSlotInInventory((IInventory) inv, p_75139_1_)) {
+                return var4;
+            }
+        }
+
+        return null;
+    }
+
     public Slot getSlot(int p_75139_1_) {
-        return (Slot) this.inventorySlots.get(p_75139_1_);
+        return this.inventorySlots.get(p_75139_1_);
     }
 
     /**

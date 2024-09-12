@@ -5,9 +5,11 @@ public interface InventoryContainer {
     /**
      * Retrieves the slot at the specified index.
      *
+     * @param inventory
      * @param slot
      *            the index of the slot to retrieve
+     * 
      * @return the slot at the specified index
      */
-    Slot getSlot(int slot);
+    Slot getSlot(Inventory inventory, int slot);
 }

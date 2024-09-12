@@ -9,9 +9,10 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.Container;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import gg.mineral.bot.api.screen.type.InvEffectRendererScreen;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
-public abstract class InventoryEffectRenderer extends GuiContainer {
+public abstract class InventoryEffectRenderer extends GuiContainer implements InvEffectRendererScreen {
     private boolean field_147045_u;
     private static final String __OBFID = "CL_00000755";
 

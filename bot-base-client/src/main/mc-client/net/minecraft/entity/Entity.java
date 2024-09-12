@@ -100,8 +100,24 @@ public abstract class Entity implements ClientEntity {
         return this.rotationYaw;
     }
 
+    @Override
+    public double getLastX() {
+        return this.prevPosX;
+    }
+
+    @Override
+    public double getLastY() {
+        return this.prevPosY;
+    }
+
+    @Override
+    public double getLastZ() {
+        return this.prevPosZ;
+    }
+
     /** Axis aligned bounding box. */
     public final AxisAlignedBB boundingBox;
+    @Getter
     public boolean onGround;
 
     /**

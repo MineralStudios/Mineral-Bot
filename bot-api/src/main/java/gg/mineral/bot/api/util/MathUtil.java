@@ -74,6 +74,22 @@ public interface MathUtil {
         return Math.max(a, b);
     }
 
+    default double min(double a, double b) {
+        return Math.min(a, b);
+    }
+
+    default double max(double a, double b) {
+        return Math.max(a, b);
+    }
+
+    default long min(long a, long b) {
+        return Math.min(a, b);
+    }
+
+    default long max(long a, long b) {
+        return Math.max(a, b);
+    }
+
     default double abs(double a) {
         return Math.abs(a);
     }
@@ -84,5 +100,29 @@ public interface MathUtil {
 
     default double tan(double a) {
         return Math.tan(a);
+    }
+
+    default double cos(double a) {
+        return Math.cos(a);
+    }
+
+    default double sin(double a) {
+        return Math.sin(a);
+    }
+
+    default float sin(float a) {
+        return (float) Math.sin(a);
+    }
+
+    default float cos(float a) {
+        return (float) Math.cos(a);
+    }
+
+    default double[] vectorForRotation(float pitch, float yaw) {
+        float f = cos(-yaw * 0.017453292F - (float) Math.PI);
+        float f1 = sin(-yaw * 0.017453292F - (float) Math.PI);
+        float f2 = -cos(-pitch * 0.017453292F);
+        float f3 = sin(-pitch * 0.017453292F);
+        return new double[] { (double) (f1 * f2), (double) f3, (double) (f * f2) };
     }
 }

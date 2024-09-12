@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,10 +69,9 @@ public interface FakePlayer extends ClientPlayer {
      * @param delay
      *            the delay in milliseconds
      * 
-     * 
-     * @return the scheduled future
+     * @return true if the task was executed immediately
      */
-    ScheduledFuture<?> schedule(@NonNull Runnable runnable, long delay);
+    boolean schedule(@NonNull Runnable runnable, long delay);
 
     /**
      * Schedules a task to run when an event occurs.

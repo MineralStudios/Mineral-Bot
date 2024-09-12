@@ -24,7 +24,7 @@ public class ServerNetworkManager extends NetworkManager {
     @Override
     public void handle(@SuppressWarnings("rawtypes") Packet packet) {
         if (mc instanceof FakePlayerInstance instance && (!mc.isMainThread() || instance.getLatency() > 0))
-            instance.schedulePacket(() -> translator.handlePacket(packet), instance.getLatency());
+            instance.scheduleTask(() -> translator.handlePacket(packet), instance.getLatency());
         else
             translator.handlePacket(packet);
 

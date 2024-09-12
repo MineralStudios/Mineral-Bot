@@ -15,16 +15,18 @@ import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.event.entity.EntityHurtEvent;
 import gg.mineral.bot.api.goal.Goal;
 import gg.mineral.bot.api.inv.Inventory;
+import gg.mineral.bot.api.inv.item.Item;
 import gg.mineral.bot.api.inv.item.ItemStack;
 import gg.mineral.bot.api.util.MathUtil;
 import gg.mineral.bot.api.world.ClientWorld;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class MeleeCombatGoal extends Goal implements MathUtil {
     @Nullable
     private ClientLivingEntity target;
-    int lastAttackerEntityId = -1;
+    private int lastAttackerEntityId = -1;
 
     private final long meanDelay, deviation;
 
@@ -196,15 +198,127 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
     private long nextClick = 0;
 
     private void attackTarget() {
-        nextClick = (long) (fakePlayer.timeMillis() + fakePlayer.getRandom().nextGaussian(meanDelay, deviation));
+        nextClick = (long) (timeMillis() + fakePlayer.getRandom().nextGaussian(meanDelay, deviation));
         fakePlayer.getMouse().pressButton(MouseButton.Type.LEFT_CLICK, 25);
     }
 
-    // TODO: better sprint resetting (block hit and s tap, hold keys until)
+    @Setter
+    private ResetType resetType = ResetType.OFFENSIVE, lastResetType = ResetType.OFFENSIVE;
+    @Setter
+    private byte strafeDirection = 0;
+
+    private void strafe() {
+        ClientLivingEntity target = this.target;
+
+        if (target == null)
+            return;
+
+        double distance = fakePlayer.distance2DTo(target.getX(), target.getZ());
+        if (!fakePlayer.isOnGround() || distance > 2.85 /*
+                                                         * || timeMillis() - fakePlayer.getLastHitSelected()
+                                                         * < 1000
+                                                         */)
+            return;
+
+        strafeDirection = strafeDirection(target);
+        if (strafeDirection == 1)
+            fakePlayer.getKeyboard().pressKey(50, Key.Type.KEY_A);
+        else if (strafeDirection == 2)
+            fakePlayer.getKeyboard().pressKey(50, Key.Type.KEY_D);
+    }
+
+    private byte strafeDirection(ClientEntity target) {
+        double[] toPlayer = new double[] { fakePlayer.getX() - target.getX(),
+                fakePlayer.getY() - target.getY(),
+                fakePlayer.getZ() - target.getZ() };
+        double[] aimVector = vectorForRotation(target.getPitch(),
+                target.getYaw());
+
+        float crossProduct = crossProduct2D(toPlayer, aimVector);
+
+        // If cross product is positive, player is to the right of the aim direction
+        // If cross product is negative, player is to the left of the aim direction
+        return crossProduct > 0 ? (byte) 2 : 1;
+    }
+
+    public float crossProduct2D(double[] vec, double[] other) {
+        return (float) (vec[0] * other[2] - vec[2] * other[0]);
+    }
+
     private void sprintReset() {
-        if (fakePlayer.getConfiguration().getSprintResetAccuracy() >= 1
-                || fakePlayer.getRandom().nextFloat() < fakePlayer.getConfiguration().getSprintResetAccuracy())
-            fakePlayer.getKeyboard().unpressKey(150, Key.Type.KEY_W);
+
+        ClientLivingEntity target = this.target;
+
+        if (target == null)
+            return;
+
+        double meanX = (fakePlayer.getX() + target.getX()) / 2, meanY = (fakePlayer.getY() + target.getY()) / 2,
+                meanZ = (fakePlayer.getZ() + target.getZ()) / 2;
+
+        // Offensive if dealing more kb to the target
+        double kb = getKB(fakePlayer, meanX, meanY, meanZ);
+        double targetKB = getKB(target, meanX, meanY, meanZ);
+
+        double dist = fakePlayer.distance3DTo(target);
+
+        Inventory inventory = fakePlayer.getInventory();
+        ItemStack itemStack = inventory != null ? inventory.getHeldItemStack() : null;
+
+        if (kb < targetKB)
+            setResetType(
+                    dist < 2 && fakePlayer.isOnGround()
+                            ? ResetType.EXTRA_OFFENSIVE
+                            : ResetType.OFFENSIVE);
+        else if (lastResetType == ResetType.DEFENSIVE
+                && itemStack != null && itemStack.getItem().getId() == Item.DIAMOND_SWORD)
+            setResetType(ResetType.EXTRA_DEFENSIVE);
+        else
+            setResetType(ResetType.DEFENSIVE);
+
+        Runnable runnable = () -> {
+            switch (resetType) {
+                case EXTRA_OFFENSIVE:
+                    if (fakePlayer.getConfiguration().getSprintResetAccuracy() >= 1
+                            || fakePlayer.getRandom().nextFloat() < fakePlayer.getConfiguration()
+                                    .getSprintResetAccuracy())
+                        fakePlayer.getKeyboard().pressKey(150, Key.Type.KEY_S);
+                case DEFENSIVE:
+                case OFFENSIVE:
+                    if (fakePlayer.getConfiguration().getSprintResetAccuracy() >= 1
+                            || fakePlayer.getRandom().nextFloat() < fakePlayer.getConfiguration()
+                                    .getSprintResetAccuracy())
+                        fakePlayer.getKeyboard().unpressKey(150, Key.Type.KEY_W);
+                    break;
+                case EXTRA_DEFENSIVE:
+                    if (fakePlayer.getConfiguration().getSprintResetAccuracy() >= 1
+                            || fakePlayer.getRandom().nextFloat() < fakePlayer.getConfiguration()
+                                    .getSprintResetAccuracy())
+                        fakePlayer.getMouse().pressButton(MouseButton.Type.RIGHT_CLICK, 75);
+                    break;
+            }
+        };
+
+        if (resetType == ResetType.OFFENSIVE || resetType == ResetType.EXTRA_OFFENSIVE) {
+            runnable.run();
+            return;
+        }
+
+        schedule(runnable, 350);
+    }
+
+    private double getKB(@NonNull ClientLivingEntity entity, double meanX, double meanY, double meanZ) {
+        double motX = entity.getX() - entity.getLastX(), motY = entity.getY() - entity.getLastY(),
+                motZ = entity.getZ() - entity.getLastZ();
+
+        double newX = entity.getX() + motX, newY = entity.getY() + motY, newZ = entity.getZ() + motZ;
+
+        double kbX = newX - meanX, kbY = newY - meanY, kbZ = newZ - meanZ;
+
+        return sqrt(kbX * kbX + kbY * kbY + kbZ * kbZ);
+    }
+
+    static enum ResetType {
+        EXTRA_OFFENSIVE, OFFENSIVE, DEFENSIVE, EXTRA_DEFENSIVE;
     }
 
     @Override
@@ -214,6 +328,7 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
         findTarget();
         switchToBestMeleeWeapon();
         aimAtTarget();
+        strafe();
     }
 
     @Override
@@ -231,9 +346,14 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
     }
 
     public boolean onEntityHurt(EntityHurtEvent event) {
+        ClientEntity entity = event.getAttackedEntity();
+
+        if (entity == null)
+            return false;
+
         ClientLivingEntity target = this.target;
 
-        if (target != null && event.getAttackedEntity().getUuid().equals(target.getUuid()))
+        if (target != null && entity.getUuid().equals(target.getUuid()))
             sprintReset();
 
         ClientWorld world = fakePlayer.getWorld();
@@ -278,7 +398,7 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
 
     @Override
     public void onGameLoop() {
-        if (fakePlayer.timeMillis() >= nextClick)
+        if (timeMillis() >= nextClick)
             attackTarget();
     }
 }

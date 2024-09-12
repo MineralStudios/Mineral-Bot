@@ -16,7 +16,7 @@ public class LatencySimulatorHandler extends ChannelOutboundHandlerAdapter {
     public void write(final ChannelHandlerContext ctx, final Object msg, final ChannelPromise promise)
             throws Exception {
         if (this.mc instanceof FakePlayerInstance instance) {
-            instance.schedulePacket(() -> {
+            instance.scheduleTask(() -> {
                 try {
                     super.write(ctx, msg, promise);
                 } catch (Exception e) {

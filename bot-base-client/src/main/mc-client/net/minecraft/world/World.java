@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import lombok.Setter;
+import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHopper;
 import net.minecraft.block.BlockLiquid;
@@ -2506,6 +2506,8 @@ public abstract class World implements IBlockAccess {
     protected abstract int func_152379_p();
 
     protected void func_147467_a(int p_147467_1_, int p_147467_2_, Chunk p_147467_3_) {
+        if (BotGlobalConfig.isOptimizedGameLoop())
+            return;
         this.theProfiler.endStartSection("moodSound");
 
         if (this.ambientTickCountdown == 0 && !this.isClient) {

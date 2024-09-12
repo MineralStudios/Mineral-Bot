@@ -64,4 +64,32 @@ public interface ClientEntity extends Positionable {
      * @return the entity's pitch
      */
     float getPitch();
+
+    /**
+     * Gets whether the entity is on the ground.
+     * 
+     * @return true if the entity is on the ground
+     */
+    boolean isOnGround();
+
+    /**
+     * Gets the entity's last X position.
+     * 
+     * @return the entity's last X position
+     */
+    double getLastX();
+
+    /**
+     * Gets the entity's last Y position.
+     * 
+     * @return the entity's last Y position
+     */
+    double getLastY();
+
+    /**
+     * Gets the entity's last Z position.
+     * 
+     * @return the entity's last Z position
+     */
+    double getLastZ();
 }

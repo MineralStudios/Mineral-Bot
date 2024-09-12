@@ -2,7 +2,6 @@ package net.minecraft.entity.player;
 
 import java.util.concurrent.Callable;
 
-import gg.mineral.bot.api.inv.Inventory;
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -14,7 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ReportedException;
 
-public class InventoryPlayer implements IInventory, Inventory {
+public class InventoryPlayer implements IInventory {
     /**
      * An array of 36 item stacks indicating the main player inventory (including
      * the visible bar).

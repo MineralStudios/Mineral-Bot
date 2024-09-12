@@ -11,10 +11,11 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import gg.mineral.bot.api.screen.type.InventoryScreen;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
 
-public class GuiInventory extends InventoryEffectRenderer {
+public class GuiInventory extends InventoryEffectRenderer implements InventoryScreen {
     private float field_147048_u;
     private float field_147047_v;
     private static final String __OBFID = "CL_00000761";
