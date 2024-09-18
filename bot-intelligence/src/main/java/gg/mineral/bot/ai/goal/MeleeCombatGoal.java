@@ -58,7 +58,7 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
             }
         }
 
-        fakePlayer.getKeyboard().pressKey(10, Key.Type.valueOf("KEY_" + (bestMeleeWeaponSlot + 1)));
+        getKeyboard().pressKey(10, Key.Type.valueOf("KEY_" + (bestMeleeWeaponSlot + 1)));
     }
 
     private void findTarget() {
@@ -142,8 +142,8 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
         float[] optimalAngles = computeOptimalYawAndPitch(fakePlayer, target);
 
         if (fakePlayer.distance3DTo(target) > 6.0f) {
-            fakePlayer.getMouse().setYaw(optimalAngles[1]);
-            fakePlayer.getMouse().setPitch(optimalAngles[0]);
+            getMouse().setYaw(optimalAngles[1]);
+            getMouse().setPitch(optimalAngles[0]);
             return;
         }
 
@@ -157,7 +157,7 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
         double yawSpeed = calculateHorizontalAimSpeed(sqrt(distX * distX + distZ * distZ), yawDiff),
                 pitchSpeed = calculateVerticalAimSpeed(pitchDiff);
 
-        fakePlayer.getMouse().setYaw(getRotationTarget(fakePlayer.getYaw(), optimalAngles[1],
+        getMouse().setYaw(getRotationTarget(fakePlayer.getYaw(), optimalAngles[1],
                 (float) abs(yawSpeed
                         * fakePlayer.getConfiguration().getHorizontalAimSpeed() * 2d),
                 fakePlayer.getConfiguration().getHorizontalAimAccuracy(),
@@ -168,7 +168,7 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
         verAccuracy = max(0.01f, verAccuracy);
         float deviation = verAccuracy >= 1 ? 0 : 3f / verAccuracy;
 
-        fakePlayer.getMouse().setPitch(getRotationTarget(fakePlayer.getPitch(),
+        getMouse().setPitch(getRotationTarget(fakePlayer.getPitch(),
                 optimalAngles[0] + deviation,
                 (float) abs(pitchSpeed
                         * fakePlayer.getConfiguration().getVerticalAimSpeed() * 2d),
@@ -199,7 +199,7 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
 
     private void attackTarget() {
         nextClick = (long) (timeMillis() + fakePlayer.getRandom().nextGaussian(meanDelay, deviation));
-        fakePlayer.getMouse().pressButton(MouseButton.Type.LEFT_CLICK, 25);
+        getMouse().pressButton(25, MouseButton.Type.LEFT_CLICK);
     }
 
     @Setter
@@ -222,9 +222,9 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
 
         strafeDirection = strafeDirection(target);
         if (strafeDirection == 1)
-            fakePlayer.getKeyboard().pressKey(50, Key.Type.KEY_A);
+            getKeyboard().pressKey(50, Key.Type.KEY_A);
         else if (strafeDirection == 2)
-            fakePlayer.getKeyboard().pressKey(50, Key.Type.KEY_D);
+            getKeyboard().pressKey(50, Key.Type.KEY_D);
     }
 
     private byte strafeDirection(ClientEntity target) {
@@ -281,19 +281,19 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
                     if (fakePlayer.getConfiguration().getSprintResetAccuracy() >= 1
                             || fakePlayer.getRandom().nextFloat() < fakePlayer.getConfiguration()
                                     .getSprintResetAccuracy())
-                        fakePlayer.getKeyboard().pressKey(150, Key.Type.KEY_S);
+                        getKeyboard().pressKey(150, Key.Type.KEY_S);
                 case DEFENSIVE:
                 case OFFENSIVE:
                     if (fakePlayer.getConfiguration().getSprintResetAccuracy() >= 1
                             || fakePlayer.getRandom().nextFloat() < fakePlayer.getConfiguration()
                                     .getSprintResetAccuracy())
-                        fakePlayer.getKeyboard().unpressKey(150, Key.Type.KEY_W);
+                        getKeyboard().unpressKey(150, Key.Type.KEY_W);
                     break;
                 case EXTRA_DEFENSIVE:
                     if (fakePlayer.getConfiguration().getSprintResetAccuracy() >= 1
                             || fakePlayer.getRandom().nextFloat() < fakePlayer.getConfiguration()
                                     .getSprintResetAccuracy())
-                        fakePlayer.getMouse().pressButton(MouseButton.Type.RIGHT_CLICK, 75);
+                        getMouse().pressButton(75, MouseButton.Type.RIGHT_CLICK);
                     break;
             }
         };
@@ -323,7 +323,7 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
 
     @Override
     public void onTick() {
-        fakePlayer.getKeyboard().pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL);
+        getKeyboard().pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL);
 
         findTarget();
         switchToBestMeleeWeapon();

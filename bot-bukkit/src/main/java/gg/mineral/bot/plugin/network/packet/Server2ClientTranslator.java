@@ -15,6 +15,11 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemFactory;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import com.mojang.authlib.GameProfile;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
@@ -28,9 +33,13 @@ import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.play.server.S00PacketKeepAlive;
 import net.minecraft.network.play.server.S01PacketJoinGame;
 import net.minecraft.network.play.server.S02PacketChat;
@@ -189,6 +198,7 @@ import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import java.util.Map;
 
 public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLoginOutListener, PacketStatusOutListener {
 
@@ -210,43 +220,146 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
         WINDOW_TYPE_REGISTRY.put("EntityHorse", 11);
     }
 
+    public static Item getItem(Material material) {
+        @SuppressWarnings("deprecation")
+        Item item = Item.getItemById(material.getId());
+        return item;
+    }
+
+    @SuppressWarnings("deprecation")
+    public ItemStack asNMCCopy(org.bukkit.inventory.ItemStack original) {
+        if (original != null && original.getTypeId() > 0) {
+            Item item = getItem(original.getType());
+            if (item == null)
+                return null;
+
+            ItemStack stack = new ItemStack(item,
+                    original.getAmount(), original.getDurability());
+            if (original.hasItemMeta()) {
+                setItemMeta(stack, original.getItemMeta());
+            }
+
+            return stack;
+        }
+
+        return null;
+    }
+
+    public boolean setItemMeta(ItemStack item, ItemMeta itemMeta) {
+        if (item == null)
+            return false;
+        if (CraftItemFactory.instance().equals(itemMeta, (ItemMeta) null)) {
+            item.setTagCompound(null);
+            return true;
+        }
+        if (!CraftItemFactory.instance().isApplicable(itemMeta, getType(item)))
+            return false;
+
+        itemMeta = CraftItemFactory.instance().asMetaFor(itemMeta, getType(item));
+        if (itemMeta == null)
+            return true;
+
+        NBTTagCompound tag = new NBTTagCompound();
+        item.setTagCompound(tag);
+        applyToItem(itemMeta, tag);
+        return true;
+    }
+
+    static Material getType(ItemStack item) {
+        if (item == null)
+            return Material.AIR;
+        @SuppressWarnings("deprecation")
+        Material material = Material.getMaterial(Item.getIdFromItem(item.getItem()));
+        return material == null ? Material.AIR : material;
+    }
+
+    void setDisplayTag(NBTTagCompound tag, String key, NBTBase value) {
+        NBTTagCompound display = tag.getCompoundTag("display");
+        if (!tag.hasKey("display"))
+            tag.setTag("display", display);
+
+        display.setTag(key, value);
+    }
+
+    static NBTTagList createStringList(List<String> list) {
+        if (list == null || list.isEmpty())
+            return null;
+
+        NBTTagList tagList = new NBTTagList();
+        for (String value : list)
+            tagList.appendTag(new NBTTagString(value));
+
+        return tagList;
+    }
+
+    void applyToItem(ItemMeta meta, NBTTagCompound itemTag) {
+        if (meta.hasDisplayName())
+            setDisplayTag(itemTag, "Name", new NBTTagString(meta.getDisplayName()));
+
+        if (meta.hasLore())
+            setDisplayTag(itemTag, "Lore", createStringList(meta.getLore()));
+
+        int hideFlag = getHideFlagFromSet(meta.getItemFlags());
+        if (hideFlag != 0)
+            itemTag.setInteger("HideFlags", hideFlag);
+
+        applyEnchantments(meta.getEnchants(), itemTag);
+        if (meta.spigot().isUnbreakable())
+            itemTag.setBoolean("Unbreakable", true);
+
+        // TODO: if (meta.hasRepairCost())
+        // itemTag.setInt(REPAIR.NBT, this.repairCost);
+
+        // Iterator var2 = meta.unhandledTags.entrySet().iterator();
+
+        // while (var2.hasNext()) {
+        // Entry<String, NBTBase> e = (Entry) var2.next();
+        // itemTag.set((String) e.getKey(), (NBTBase) e.getValue());
+        // }
+
+    }
+
+    @SuppressWarnings("deprecation")
+    static void applyEnchantments(Map<org.bukkit.enchantments.Enchantment, Integer> enchantments, NBTTagCompound tag) {
+        if (enchantments == null)
+            return;
+
+        NBTTagList list = new NBTTagList();
+
+        for (Map.Entry<org.bukkit.enchantments.Enchantment, Integer> entry : enchantments.entrySet()) {
+            NBTTagCompound subtag = new NBTTagCompound();
+
+            subtag.setShort("id", (short) entry.getKey().getId());
+            subtag.setShort("lvl", entry.getValue().shortValue());
+
+            list.appendTag(subtag);
+        }
+
+        tag.setTag("ench", list);
+    }
+
+    public int getHideFlagFromSet(Set<ItemFlag> itemFlags) {
+        int hideFlag = 0; // Start with no flags
+
+        for (ItemFlag flag : itemFlags)
+            hideFlag |= getBitModifier(flag);
+
+        return hideFlag;
+    }
+
+    private byte getBitModifier(ItemFlag hideFlag) {
+        return (byte) (1 << hideFlag.ordinal());
+    }
+
     @Nullable
     private ItemStack fromNMS(net.minecraft.server.v1_8_R3.ItemStack itemNMS) {
         if (itemNMS == null)
             return null;
 
-        net.minecraft.server.v1_8_R3.NBTTagCompound nmsNbt = new net.minecraft.server.v1_8_R3.NBTTagCompound();
-        itemNMS.save(nmsNbt);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream buf = new DataOutputStream(baos);
+        org.bukkit.inventory.ItemStack itemStack = org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack
+                .asBukkitCopy(itemNMS);
 
-        try {
-            NBTCompressedStreamTools.a(nmsNbt, (DataOutput) buf);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        byte[] bytes = baos.toByteArray();
-
-        try {
-            baos.close();
-            buf.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
-
-        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
-
-        try {
-            NBTTagCompound nbt = CompressedStreamTools.read(dis);
-            ItemStack item = ItemStack.loadItemStackFromNBT(nbt);
-            return item;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return itemStack == null ? null : asNMCCopy(itemStack);
     }
 
     @Nullable
@@ -552,11 +665,8 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     public void a(PacketPlayOutWindowItems arg0) {
         ItemStack[] items = new ItemStack[arg0.getB().length];
 
-        for (int i = 0; i < items.length; i++) {
-            @Nullable
-            net.minecraft.server.v1_8_R3.ItemStack itemNMS = arg0.getB()[i];
-            items[i] = fromNMS(itemNMS);
-        }
+        for (int i = 0; i < items.length; i++)
+            items[i] = fromNMS(arg0.getB()[i]);
 
         S30PacketWindowItems packet = new S30PacketWindowItems(arg0.getA(), items);
         netHandlerPlayClient.handleWindowItems(packet);
@@ -585,9 +695,6 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
 
         S2FPacketSetSlot packet = new S2FPacketSetSlot(arg0.getA(), arg0.getB(),
                 item);
-
-        if (item != null)
-            System.out.println(item.hasDisplayName());
         netHandlerPlayClient.handleSetSlot(packet);
     }
 

@@ -1608,7 +1608,7 @@ public class Minecraft {
 
             int var9;
 
-            while (this.mouse.next()) {
+            while (this.getMouse().next()) {
                 var9 = this.getMouse().getEventButton();
                 KeyBinding.setKeyBindState(this, var9 - 100, this.getMouse().getEventButtonState());
 
@@ -1638,7 +1638,7 @@ public class Minecraft {
                     }
 
                     if (this.currentScreen == null) {
-                        if (!this.inGameHasFocus && this.mouse.getEventButtonState()) {
+                        if (!this.inGameHasFocus && this.getMouse().getEventButtonState()) {
                             this.setIngameFocus();
                         }
                     } else if (this.currentScreen != null) {

@@ -5,6 +5,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.jdt.annotation.NonNull;
 
+import gg.mineral.bot.api.controls.Keyboard;
+import gg.mineral.bot.api.controls.Mouse;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
 import lombok.Getter;
@@ -42,5 +44,13 @@ public abstract class Goal {
         }
         delayedTasks.add(new DelayedTask(runnable, timeMillis() + delay));
         return false;
+    }
+
+    public Mouse getMouse() {
+        return fakePlayer.getMouse();
+    }
+
+    public Keyboard getKeyboard() {
+        return fakePlayer.getKeyboard();
     }
 }

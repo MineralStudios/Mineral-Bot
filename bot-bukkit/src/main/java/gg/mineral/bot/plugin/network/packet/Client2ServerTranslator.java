@@ -1,17 +1,15 @@
 package gg.mineral.bot.plugin.network.packet;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import javax.annotation.Nullable;
+
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
 import io.netty.buffer.Unpooled;
 import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.handshake.INetHandlerHandshakeServer;
 import net.minecraft.network.handshake.client.C00Handshake;
@@ -45,8 +43,6 @@ import net.minecraft.network.status.client.C00PacketServerQuery;
 import net.minecraft.network.status.client.C01PacketPing;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.NBTCompressedStreamTools;
-import net.minecraft.server.v1_8_R3.NBTReadLimiter;
 import net.minecraft.server.v1_8_R3.PacketDataSerializer;
 import net.minecraft.server.v1_8_R3.PacketPlayInAbilities;
 import net.minecraft.server.v1_8_R3.PacketPlayInArmAnimation;
@@ -156,44 +152,47 @@ public class Client2ServerTranslator
         playerConnection.a(packet);
     }
 
+    public static Material getMaterial(Item item) {
+        @SuppressWarnings("deprecation")
+        Material material = Material.getMaterial(Item.getIdFromItem(item));
+        return material == null ? Material.AIR : material;
+    }
+
+    public static org.bukkit.inventory.ItemStack asBukkitCopy(ItemStack original) {
+        if (original == null)
+            return new org.bukkit.inventory.ItemStack(Material.AIR);
+
+        org.bukkit.inventory.ItemStack stack = new org.bukkit.inventory.ItemStack(getMaterial(original.getItem()),
+                original.stackSize,
+                (short) original.getDurability());
+        // TODO: if (hasItemMeta(original))
+        // stack.setItemMeta(getItemMeta(original));
+
+        return stack;
+    }
+
+    @Nullable
+    private net.minecraft.server.v1_8_R3.ItemStack fromNMC(ItemStack itemNMC) {
+        if (itemNMC == null)
+            return null;
+
+        org.bukkit.inventory.ItemStack itemStack = asBukkitCopy(itemNMC);
+
+        return itemStack == null ? null : CraftItemStack.asNMSCopy(itemStack);
+    }
+
+    static boolean hasItemMeta(ItemStack item) {
+        return item != null && item.getTagCompound() != null && !item.getTagCompound().hasNoTags();
+    }
+
     @Override
     public void processClickWindow(C0EPacketClickWindow p_147351_1_) {
-        ItemStack clickedItem = p_147351_1_.getClickedItem();
-        NBTTagCompound nbt = new NBTTagCompound();
-        clickedItem.writeToNBT(nbt);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream buf = new DataOutputStream(baos);
-
-        try {
-            CompressedStreamTools.write(nbt, buf);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        byte[] bytes = baos.toByteArray();
-
-        try {
-            baos.close();
-            buf.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
-
-        try {
-            net.minecraft.server.v1_8_R3.NBTTagCompound nmsNbt = NBTCompressedStreamTools.a(dis,
-                    new NBTReadLimiter(50000L));
-
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = net.minecraft.server.v1_8_R3.ItemStack.createStack(nmsNbt);
-            PacketPlayInWindowClick packet = new PacketPlayInWindowClick(p_147351_1_.getWindowId(),
-                    p_147351_1_.getSlot(),
-                    p_147351_1_.getButton(), p_147351_1_.getActionNumber(), nmsItem,
-                    p_147351_1_.getMode());
-            playerConnection.a(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = fromNMC(p_147351_1_.getClickedItem());
+        PacketPlayInWindowClick packet = new PacketPlayInWindowClick(p_147351_1_.getWindowId(),
+                p_147351_1_.getSlot(),
+                p_147351_1_.getButton(), p_147351_1_.getActionNumber(), nmsItem,
+                p_147351_1_.getMode());
+        playerConnection.a(packet);
     }
 
     @Override
@@ -291,39 +290,11 @@ public class Client2ServerTranslator
     @Override
     public void processCreativeInventoryAction(C10PacketCreativeInventoryAction p_147344_1_) {
         ItemStack clickedItem = p_147344_1_.getClickedItem();
-        NBTTagCompound nbt = new NBTTagCompound();
-        clickedItem.writeToNBT(nbt);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream buf = new DataOutputStream(baos);
 
-        try {
-            CompressedStreamTools.write(nbt, buf);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        byte[] bytes = baos.toByteArray();
-
-        try {
-            baos.close();
-            buf.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
-
-        try {
-            net.minecraft.server.v1_8_R3.NBTTagCompound nmsNbt = NBTCompressedStreamTools.a(dis,
-                    new NBTReadLimiter(50000L));
-
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = net.minecraft.server.v1_8_R3.ItemStack.createStack(nmsNbt);
-            PacketPlayInSetCreativeSlot packet = new PacketPlayInSetCreativeSlot(p_147344_1_.getSlot(),
-                    nmsItem);
-            playerConnection.a(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = fromNMC(clickedItem);
+        PacketPlayInSetCreativeSlot packet = new PacketPlayInSetCreativeSlot(p_147344_1_.getSlot(),
+                nmsItem);
+        playerConnection.a(packet);
     }
 
     @Override
@@ -341,41 +312,13 @@ public class Client2ServerTranslator
     @Override
     public void processPlayerBlockPlacement(C08PacketPlayerBlockPlacement p_147346_1_) {
         ItemStack clickedItem = p_147346_1_.getHeldItem();
-        NBTTagCompound nbt = new NBTTagCompound();
-        clickedItem.writeToNBT(nbt);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream buf = new DataOutputStream(baos);
 
-        try {
-            CompressedStreamTools.write(nbt, buf);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        byte[] bytes = baos.toByteArray();
-
-        try {
-            baos.close();
-            buf.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
-
-        try {
-            net.minecraft.server.v1_8_R3.NBTTagCompound nmsNbt = NBTCompressedStreamTools.a(dis,
-                    new NBTReadLimiter(50000L));
-
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = net.minecraft.server.v1_8_R3.ItemStack.createStack(nmsNbt);
-            PacketPlayInBlockPlace packet = new PacketPlayInBlockPlace(new BlockPosition(p_147346_1_.getX(),
-                    p_147346_1_.getY(), p_147346_1_.getZ()), p_147346_1_.getDirection(),
-                    nmsItem,
-                    p_147346_1_.getCursorX(), p_147346_1_.getCursorY(), p_147346_1_.getCursorZ());
-            playerConnection.a(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = fromNMC(clickedItem);
+        PacketPlayInBlockPlace packet = new PacketPlayInBlockPlace(new BlockPosition(p_147346_1_.getX(),
+                p_147346_1_.getY(), p_147346_1_.getZ()), p_147346_1_.getDirection(),
+                nmsItem,
+                p_147346_1_.getCursorX(), p_147346_1_.getCursorY(), p_147346_1_.getCursorZ());
+        playerConnection.a(packet);
     }
 
     @Override

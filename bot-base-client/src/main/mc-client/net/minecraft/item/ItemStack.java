@@ -543,8 +543,8 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
     /**
      * Return a list of strings containing information about the item
      */
-    public List getTooltip(EntityPlayer p_82840_1_, boolean p_82840_2_) {
-        ArrayList var3 = new ArrayList();
+    public List<String> getTooltip(EntityPlayer p_82840_1_, boolean p_82840_2_) {
+        ArrayList<String> var3 = new ArrayList<>();
         String var4 = this.getDisplayName();
 
         if (this.hasDisplayName()) {

@@ -52,31 +52,36 @@ public abstract class Mouse implements gg.mineral.bot.api.controls.Mouse {
     }
 
     @Override
-    public void pressButton(MouseButton.Type type, int durationMillis) {
-        MouseButton button = getButton(type);
+    public void pressButton(int durationMillis, MouseButton.Type... types) {
+        for (MouseButton.Type type : types) {
+            MouseButton button = getButton(type);
 
-        if (button == null || button.isPressed())
-            return;
+            if (button == null || button.isPressed())
+                return;
 
-        button.setPressed(true);
-        if (currentLog != null)
-            logs.add(currentLog);
-        currentLog = new Log(type, true, x, y, dX, dY,
-                dWheel);
-        if (durationMillis > 0 && durationMillis < Integer.MAX_VALUE)
-            schedule(() -> unpressButton(type), durationMillis);
+            button.setPressed(true);
+            if (currentLog != null)
+                logs.add(currentLog);
+            currentLog = new Log(type, true, x, y, dX, dY,
+                    dWheel);
+            if (durationMillis > 0 && durationMillis < Integer.MAX_VALUE)
+                schedule(() -> unpressButton(type), durationMillis);
+        }
     }
 
-    public void unpressButton(MouseButton.Type type) {
-        MouseButton button = getButton(type);
+    @Override
+    public void unpressButton(int durationMillis, MouseButton.Type... types) {
+        for (MouseButton.Type type : types) {
+            MouseButton button = getButton(type);
 
-        if (button == null || !button.isPressed())
-            return;
+            if (button == null || !button.isPressed())
+                return;
 
-        button.setPressed(false);
-        if (currentLog != null)
-            logs.add(currentLog);
-        currentLog = new Log(type, false, x, y, dX, dY, dWheel);
+            button.setPressed(false);
+            if (currentLog != null)
+                logs.add(currentLog);
+            currentLog = new Log(type, false, x, y, dX, dY, dWheel);
+        }
     }
 
     @Override
@@ -192,13 +197,7 @@ public abstract class Mouse implements gg.mineral.bot.api.controls.Mouse {
 
     @Override
     public void stopAll() {
-        for (MouseButton button : mouseButtons)
-            button.setPressed(false);
-
-        logs.clear();
-        currentLog = null;
-        eventLog = null;
-        iterator = null;
+        unpressButton(MouseButton.Type.values());
         scheduledTasks.clear();
     }
 }

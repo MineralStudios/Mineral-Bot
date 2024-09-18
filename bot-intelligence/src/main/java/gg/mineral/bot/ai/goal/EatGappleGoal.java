@@ -2,6 +2,7 @@ package gg.mineral.bot.ai.goal;
 
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.MouseButton;
+import gg.mineral.bot.api.entity.effect.PotionEffectType;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.event.network.ClientboundPacketEvent;
@@ -11,7 +12,6 @@ import gg.mineral.bot.api.inv.InventoryContainer;
 import gg.mineral.bot.api.inv.Slot;
 import gg.mineral.bot.api.inv.item.Item;
 import gg.mineral.bot.api.inv.item.ItemStack;
-import gg.mineral.bot.api.inv.potion.Potion;
 import gg.mineral.bot.api.packet.play.clientbound.EntityStatusPacket;
 import gg.mineral.bot.api.screen.Screen;
 import gg.mineral.bot.api.screen.type.ContainerScreen;
@@ -20,23 +20,29 @@ import gg.mineral.bot.api.world.ClientWorld;
 import lombok.Getter;
 
 @Getter
-public class DrinkPotionGoal extends Goal implements MathUtil {
+public class EatGappleGoal extends Goal implements MathUtil {
 
-    private boolean inventoryOpen = false, drinking = false;
+    private boolean inventoryOpen = false, eating = false;
 
     @Override
     public boolean shouldExecute() {
-        return drinking || canSeeEnemy() && hasDrinkablePotion();
+        int regenId = PotionEffectType.REGENERATION.getId();
+        int[] activeIds = fakePlayer.getActivePotionEffectIds();
+
+        for (int i = 0; i < activeIds.length; i++)
+            if (activeIds[i] == regenId)
+                return false;
+
+        return eating || canSeeEnemy() && hasDrinkablePotion();
     }
 
-    public DrinkPotionGoal(FakePlayer fakePlayer) {
+    public EatGappleGoal(FakePlayer fakePlayer) {
         super(fakePlayer);
     }
 
     private boolean hasDrinkablePotion() {
         Inventory inventory = fakePlayer.getInventory();
-        // TODO: is drinkable
-        return inventory == null ? false : inventory.contains(Item.POTION);
+        return inventory == null ? false : inventory.contains(Item.GOLDEN_APPLE);
     }
 
     private boolean canSeeEnemy() {
@@ -46,13 +52,13 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
                         .anyMatch(entity -> !fakePlayer.getFriendlyEntityUUIDs().contains(entity.getUuid()));
     }
 
-    private void drinkPotion() {
-        drinking = true;
+    private void eatGapple() {
+        eating = true;
         getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
     }
 
-    private void switchToDrinkablePotion() {
-        int potionSlot = -1;
+    private void switchToGapple() {
+        int gappleSlot = -1;
         Inventory inventory = fakePlayer.getInventory();
 
         if (inventory == null)
@@ -64,19 +70,13 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
             if (itemStack == null)
                 continue;
             Item item = itemStack.getItem();
-            if (item.getId() == Item.POTION) {
-                Potion potion = itemStack.getPotion();
-                if (potion.isSplash())
-                    continue;
-
-                // TODO: ensure it is not a debuff potion and doesn't already have the effect
-
-                potionSlot = i;
+            if (item.getId() == Item.GOLDEN_APPLE) {
+                gappleSlot = i;
                 break;
             }
         }
 
-        if (potionSlot > 8) {
+        if (gappleSlot > 8) {
             if (!inventoryOpen) {
                 inventoryOpen = true;
                 getKeyboard().pressKey(10, Key.Type.KEY_E);
@@ -97,7 +97,7 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
                 return;
             }
 
-            Slot slot = inventoryContainer.getSlot(inventory, potionSlot);
+            Slot slot = inventoryContainer.getSlot(inventory, gappleSlot);
 
             if (slot == null) {
                 inventoryOpen = false;
@@ -131,7 +131,7 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
             return;
         }
 
-        getKeyboard().pressKey(10, Key.Type.valueOf("KEY_" + (potionSlot + 1)));
+        getKeyboard().pressKey(10, Key.Type.valueOf("KEY_" + (gappleSlot + 1)));
     }
 
     @Override
@@ -144,10 +144,10 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
 
         ItemStack itemStack = inventory.getHeldItemStack();
         // TODO: lookaway
-        if (itemStack != null && itemStack.getItem().getId() == Item.POTION) // TODO: is drinkable and needs to consume
-            drinkPotion();
+        if (itemStack != null && itemStack.getItem().getId() == Item.GOLDEN_APPLE)
+            eatGapple();
         else
-            switchToDrinkablePotion();
+            switchToGapple();
     }
 
     @Override
@@ -157,7 +157,7 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
             if (packetEvent.getPacket() instanceof EntityStatusPacket entityStatusPacket) {
                 if (entityStatusPacket.getEntityId() == fakePlayer.getEntityId()) {
                     getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
-                    drinking = false;
+                    eating = false;
                 }
             }
 

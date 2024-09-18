@@ -9,4 +9,11 @@ public interface ClientLivingEntity extends ClientEntity {
      * @return the entity's head Y position
      */
     double getHeadY();
+
+    /**
+     * Gets the entity's active potion effect IDs.
+     * 
+     * @return the entity's active potion effect IDs
+     */
+    int[] getActivePotionEffectIds();
 }

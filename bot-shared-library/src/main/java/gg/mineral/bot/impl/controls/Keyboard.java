@@ -90,7 +90,6 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
                     for (Log log : logs)
                         if (log.type == key.getType())
                             continue keysLoop;
-
                     logs.add(new Log(key.getType(), true));
                 }
             }
@@ -132,13 +131,7 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
 
     @Override
     public void stopAll() {
-        for (Key key : keys)
-            key.setPressed(false);
-
-        logs.clear();
-        currentLog = null;
-        eventLog = null;
-        iterator = null;
+        unpressKey(Key.Type.values());
         scheduledTasks.clear();
     }
 

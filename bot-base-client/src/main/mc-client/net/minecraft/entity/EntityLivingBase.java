@@ -195,6 +195,11 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
         return this.posY + (double) this.getEyeHeight();
     }
 
+    @Override
+    public int[] getActivePotionEffectIds() {
+        return this.activePotionsMap.keySet().toIntArray();
+    }
+
     public EntityLivingBase(World p_i1594_1_) {
         super(p_i1594_1_);
         this.applyEntityAttributes();

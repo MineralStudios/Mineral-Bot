@@ -2,9 +2,11 @@ package gg.mineral.bot.base.client.player;
 
 import java.io.File;
 import java.net.Proxy;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -31,12 +33,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Session;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 public class FakePlayerInstance extends Minecraft implements FakePlayer {
-
-    private Goal lastGoal;
 
     @Getter
     private final BotConfiguration configuration;
@@ -159,12 +156,6 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
 
         for (Goal goal : goals)
             if (goal.shouldExecute()) {
-                // If the goal has changed, stop all inputs to prevent conflicts
-                if (lastGoal != null && lastGoal.getClass() != goal.getClass()) {
-                    this.getKeyboard().stopAll();
-                    this.getMouse().stopAll();
-                    lastGoal.getDelayedTasks().clear();
-                }
 
                 goal.onGameLoop();
 
@@ -179,7 +170,6 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
                     break;
                 }
 
-                lastGoal = goal;
                 break;
             }
     }
@@ -322,5 +312,10 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
     @Override
     public double getLastZ() {
         return this.thePlayer == null ? 0.0 : this.thePlayer.lastTickPosZ;
+    }
+
+    @Override
+    public int[] getActivePotionEffectIds() {
+        return this.thePlayer == null ? new int[0] : this.thePlayer.getActivePotionEffectIds();
     }
 }

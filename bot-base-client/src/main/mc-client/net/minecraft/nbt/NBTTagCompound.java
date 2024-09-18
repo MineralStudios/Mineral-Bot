@@ -75,8 +75,8 @@ public class NBTTagCompound extends NBTBase {
      * Stores the given tag into the map with the given string key. This is mostly
      * used to store tag lists.
      */
-    public void setTag(String p_74782_1_, NBTBase p_74782_2_) {
-        this.tagMap.put(p_74782_1_, p_74782_2_);
+    public void setTag(String key, NBTBase val) {
+        this.tagMap.put(key, val);
     }
 
     /**
@@ -175,8 +175,8 @@ public class NBTTagCompound extends NBTBase {
      * Returns whether the given string has been previously stored as a key in the
      * map.
      */
-    public boolean hasKey(String p_74764_1_) {
-        return this.tagMap.containsKey(p_74764_1_);
+    public boolean hasKey(String key) {
+        return this.tagMap.containsKey(key);
     }
 
     public boolean func_150297_b(String p_150297_1_, int p_150297_2_) {

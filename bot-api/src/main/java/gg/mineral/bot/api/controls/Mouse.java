@@ -15,15 +15,44 @@ public interface Mouse {
   MouseButton getButton(MouseButton.Type type);
 
   /**
-   * Presses a mouse button for a specified duration.
-   *
-   * @param type
-   *          The type of the mouse button to press.
+   * Presses a button for a specified duration.
+   * 
    * @param durationMillis
-   *          The duration in milliseconds the button is to be
-   *          pressed.
+   *          The duration in milliseconds the button is to be pressed.
+   * @param type
+   *          The type of the button to press.
    */
-  void pressButton(MouseButton.Type type, int durationMillis);
+  void pressButton(int durationMillis, MouseButton.Type... type);
+
+  /**
+   * Presses a button indefinitely.
+   * 
+   * @param type
+   *          The type of the button to press.
+   */
+  default void pressButton(MouseButton.Type... type) {
+    pressButton(Integer.MAX_VALUE, type);
+  }
+
+  /**
+   * Unpresses a button.
+   * 
+   * @param type
+   *          The type of the button to unpress.
+   * @param durationMillis
+   *          The duration in milliseconds the button is to be unpressed.
+   */
+  void unpressButton(int durationMillis, MouseButton.Type... type);
+
+  /**
+   * Unpresses a button indefinitely.
+   * 
+   * @param type
+   *          The type of the button to unpress.
+   */
+  default void unpressButton(MouseButton.Type... type) {
+    unpressButton(Integer.MAX_VALUE, type);
+  }
 
   /**
    * Advances to the next log event.
