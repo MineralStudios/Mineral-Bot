@@ -7,8 +7,8 @@ repositories {
         url 'https://libraries.minecraft.net/'
     }
     maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/MineralStudios/MineralSpigot")
+        name "mineralDevPrivate"
+        url "https://repo.mineral.gg/private"
         credentials {
             username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
             password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")

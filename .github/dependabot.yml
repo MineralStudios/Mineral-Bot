@@ -5,11 +5,11 @@ updates:
     schedule:
       interval: "daily"  # Schedule to check for updates daily
     registries:
-      - github-packages  # This refers to the registry id defined below
+      - mineral-dev  # This refers to the registry id defined below
 
 registries:
-  github-packages:
+  mineral-dev:
     type: "maven-repository"  # Use Maven for Gradle repositories
-    url: "https://maven.pkg.github.com/"  # GitHub Packages Maven URL
-    username: "${{ github.actor }}"  # GitHub actor running the action
-    password: "${{ secrets.GITHUB_TOKEN }}"  # GitHub token for authentication
+    url: "https://repo.mineral.gg/private"  # GitHub Packages Maven URL
+    username: "${{ secrets.REPOSILITE_USERNAME }}"  
+    password: "${{ secrets.REPOSILITE_PASSWORD }}"
