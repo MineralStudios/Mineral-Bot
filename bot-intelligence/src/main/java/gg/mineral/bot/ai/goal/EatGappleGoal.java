@@ -26,14 +26,15 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
     @Override
     public boolean shouldExecute() {
+        boolean hasRegen = false;
         int regenId = PotionEffectType.REGENERATION.getId();
         int[] activeIds = fakePlayer.getActivePotionEffectIds();
 
         for (int i = 0; i < activeIds.length; i++)
             if (activeIds[i] == regenId)
-                return false;
+                hasRegen = true;
 
-        return eating || canSeeEnemy() && hasDrinkablePotion();
+        return eating || canSeeEnemy() && hasDrinkablePotion() && !hasRegen;
     }
 
     public EatGappleGoal(FakePlayer fakePlayer) {
