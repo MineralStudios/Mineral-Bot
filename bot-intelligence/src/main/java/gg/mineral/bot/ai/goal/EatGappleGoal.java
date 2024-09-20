@@ -155,9 +155,6 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
         boolean rmbHeld = getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed();
 
-        System.out.println("rmbHeld: " + rmbHeld);
-        System.out.println("eating: " + eating);
-
         if (eating && !rmbHeld)
             getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
 

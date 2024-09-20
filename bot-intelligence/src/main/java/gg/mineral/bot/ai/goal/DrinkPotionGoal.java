@@ -2,7 +2,6 @@ package gg.mineral.bot.ai.goal;
 
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.MouseButton;
-import gg.mineral.bot.api.entity.effect.PotionEffect;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.goal.Goal;
@@ -141,22 +140,7 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
 
         ItemStack itemStack = inventory.getHeldItemStack();
 
-        Potion potion = itemStack == null ? null
-                : itemStack.getItem().getId() == Item.POTION ? itemStack.getPotion() : null;
-
-        boolean hasEffect = false;
-        int[] potionIds = potion != null ? potion.getEffects().stream().mapToInt(PotionEffect::getPotionID).toArray()
-                : new int[0];
-        int[] activeIds = fakePlayer.getActivePotionEffectIds();
-
-        for (int i = 0; i < activeIds.length; i++)
-            for (int j = 0; j < potionIds.length; j++)
-                if (activeIds[i] == potionIds[j]) {
-                    hasEffect = true;
-                    break;
-                }
-
-        if (drinking && hasEffect)
+        if (drinking && (itemStack == null || itemStack.getItem().getId() != Item.POTION))
             drinking = false;
 
         boolean rmbHeld = getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed();
@@ -167,11 +151,11 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
         if (!drinking && rmbHeld)
             getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
 
-        if (drinking || hasEffect)
+        if (drinking)
             return;
 
         // TODO: lookaway
-        if (itemStack != null && potion != null)
+        if (itemStack != null && itemStack.getItem().getId() == Item.POTION)
             drinkPotion();
         else
             switchToDrinkablePotion();
