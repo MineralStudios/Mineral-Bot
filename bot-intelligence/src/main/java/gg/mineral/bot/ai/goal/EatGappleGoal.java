@@ -150,9 +150,8 @@ public class EatGappleGoal extends Goal implements MathUtil {
                     getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
                     break;
                 }
-        } else if (rightClickPressed) {
-            getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
-        }
+        } else if (rightClickPressed)
+            getMouse().stopAll();
 
         Inventory inventory = fakePlayer.getInventory();
 
