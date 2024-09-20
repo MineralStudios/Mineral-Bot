@@ -55,7 +55,7 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
     private void eatGapple() {
         eating = true;
-        schedule(() -> getMouse().pressButton(MouseButton.Type.RIGHT_CLICK), 50);
+        getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
     }
 
     private void switchToGapple() {
@@ -138,10 +138,8 @@ public class EatGappleGoal extends Goal implements MathUtil {
     @Override
     public void onTick() {
 
-        if (getMouse().getButton(MouseButton.Type.LEFT_CLICK).isPressed()) {
-            getMouse().unpressButton(MouseButton.Type.LEFT_CLICK);
+        if (eating)
             return;
-        }
 
         Inventory inventory = fakePlayer.getInventory();
 
@@ -162,10 +160,8 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
             if (packetEvent.getPacket() instanceof EntityStatusPacket entityStatusPacket) {
                 if (entityStatusPacket.getEntityId() == fakePlayer.getEntityId()) {
-                    schedule(() -> {
-                        getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
-                        eating = false;
-                    }, 50);
+                    getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
+                    eating = false;
                 }
             }
 

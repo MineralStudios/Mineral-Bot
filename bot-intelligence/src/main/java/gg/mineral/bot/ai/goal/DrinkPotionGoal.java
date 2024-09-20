@@ -48,7 +48,7 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
 
     private void drinkPotion() {
         drinking = true;
-        schedule(() -> getMouse().pressButton(MouseButton.Type.RIGHT_CLICK), 50);
+        getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
     }
 
     private void switchToDrinkablePotion() {
@@ -137,6 +137,9 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
     @Override
     public void onTick() {
 
+        if (drinking)
+            return;
+
         Inventory inventory = fakePlayer.getInventory();
 
         if (inventory == null)
@@ -156,10 +159,8 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
 
             if (packetEvent.getPacket() instanceof EntityStatusPacket entityStatusPacket) {
                 if (entityStatusPacket.getEntityId() == fakePlayer.getEntityId()) {
-                    schedule(() -> {
-                        getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
-                        drinking = false;
-                    }, 1);
+                    getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
+                    drinking = false;
                 }
             }
 
