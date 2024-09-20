@@ -53,6 +53,7 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
     private void eatGapple() {
         eating = true;
+        getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
     }
 
     private void switchToGapple() {
@@ -140,8 +141,6 @@ public class EatGappleGoal extends Goal implements MathUtil {
         if (inventory == null)
             return;
 
-        ItemStack itemStack = inventory.getHeldItemStack();
-
         boolean hasRegen = false;
         int regenId = PotionEffectType.REGENERATION.getId();
         int[] activeIds = fakePlayer.getActivePotionEffectIds();
@@ -166,6 +165,9 @@ public class EatGappleGoal extends Goal implements MathUtil {
         if (eating || hasRegen)
             return;
         // TODO: lookaway
+
+        ItemStack itemStack = inventory.getHeldItemStack();
+
         if (itemStack != null && itemStack.getItem().getId() == Item.GOLDEN_APPLE)
             eatGapple();
         else
