@@ -142,7 +142,8 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
 
         ItemStack itemStack = inventory.getHeldItemStack();
 
-        Potion potion = itemStack == null ? null : itemStack.getPotion();
+        Potion potion = itemStack == null ? null
+                : itemStack.getItem().getId() == Item.POTION ? itemStack.getPotion() : null;
 
         boolean hasEffect = false;
         int[] potionIds = potion != null ? potion.getEffects().stream().mapToInt(PotionEffect::getPotionID).toArray()
