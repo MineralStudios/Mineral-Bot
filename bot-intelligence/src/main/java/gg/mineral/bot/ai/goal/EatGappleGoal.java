@@ -138,6 +138,11 @@ public class EatGappleGoal extends Goal implements MathUtil {
     @Override
     public void onTick() {
 
+        if (getMouse().getButton(MouseButton.Type.LEFT_CLICK).isPressed()) {
+            getMouse().unpressButton(MouseButton.Type.LEFT_CLICK);
+            return;
+        }
+
         Inventory inventory = fakePlayer.getInventory();
 
         if (inventory == null)
