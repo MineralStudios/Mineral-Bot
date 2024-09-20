@@ -2,9 +2,9 @@ package gg.mineral.bot.ai.goal;
 
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.MouseButton;
+import gg.mineral.bot.api.entity.effect.PotionEffect;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
-import gg.mineral.bot.api.event.network.ClientboundPacketEvent;
 import gg.mineral.bot.api.goal.Goal;
 import gg.mineral.bot.api.inv.Inventory;
 import gg.mineral.bot.api.inv.InventoryContainer;
@@ -12,7 +12,6 @@ import gg.mineral.bot.api.inv.Slot;
 import gg.mineral.bot.api.inv.item.Item;
 import gg.mineral.bot.api.inv.item.ItemStack;
 import gg.mineral.bot.api.inv.potion.Potion;
-import gg.mineral.bot.api.packet.play.clientbound.EntityStatusPacket;
 import gg.mineral.bot.api.screen.Screen;
 import gg.mineral.bot.api.screen.type.ContainerScreen;
 import gg.mineral.bot.api.util.MathUtil;
@@ -35,8 +34,7 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
 
     private boolean hasDrinkablePotion() {
         Inventory inventory = fakePlayer.getInventory();
-        // TODO: is drinkable
-        return inventory == null ? false : inventory.contains(Item.POTION);
+        return inventory == null ? false : inventory.containsPotion(potion -> !potion.isSplash());
     }
 
     private boolean canSeeEnemy() {
@@ -137,35 +135,51 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
     @Override
     public void onTick() {
 
-        if (drinking)
-            return;
-
         Inventory inventory = fakePlayer.getInventory();
 
         if (inventory == null)
             return;
 
         ItemStack itemStack = inventory.getHeldItemStack();
+
+        Potion potion = itemStack == null ? null : itemStack.getPotion();
+
+        boolean hasEffect = false;
+        int[] potionIds = potion != null ? potion.getEffects().stream().mapToInt(PotionEffect::getPotionID).toArray()
+                : new int[0];
+        int[] activeIds = fakePlayer.getActivePotionEffectIds();
+
+        for (int i = 0; i < activeIds.length; i++)
+            for (int j = 0; j < potionIds.length; j++)
+                if (activeIds[i] == potionIds[j]) {
+                    hasEffect = true;
+                    break;
+                }
+
+        if (drinking && hasEffect)
+            drinking = false;
+
+        boolean rmbHeld = getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed();
+
+        if (drinking && !rmbHeld)
+            getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
+
+        if (!drinking && rmbHeld)
+            getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
+
+        if (drinking || hasEffect)
+            return;
+
         // TODO: lookaway
-        if (itemStack != null && itemStack.getItem().getId() == Item.POTION) // TODO: is drinkable and needs to consume
+        if (itemStack != null && potion != null)
             drinkPotion();
         else
             switchToDrinkablePotion();
+
     }
 
     @Override
     public boolean onEvent(Event event) {
-        if (event instanceof ClientboundPacketEvent packetEvent) {
-
-            if (packetEvent.getPacket() instanceof EntityStatusPacket entityStatusPacket) {
-                if (entityStatusPacket.getEntityId() == fakePlayer.getEntityId()) {
-                    getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
-                    drinking = false;
-                }
-            }
-
-        }
-        // Stop drinking when drank potion
         return false;
     }
 

@@ -1,9 +1,12 @@
 package gg.mineral.bot.api.inv;
 
+import java.util.function.Function;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.bot.api.inv.item.Item;
 import gg.mineral.bot.api.inv.item.ItemStack;
+import gg.mineral.bot.api.inv.potion.Potion;
 
 public interface Inventory {
     /**
@@ -63,5 +66,29 @@ public interface Inventory {
      */
     default boolean contains(int id) {
         return findSlot(id) != -1;
+    }
+
+    /**
+     * Checks if the inventory contains a potion that matches the specified filter.
+     *
+     * @param filter
+     *            the filter to apply
+     * @return true if the inventory contains a potion that matches the filter,
+     *         false
+     *         otherwise
+     */
+    default boolean containsPotion(Function<Potion, Boolean> filter) {
+        for (int i = 0; i < 36; i++) {
+            ItemStack itemStack = getItemStackAt(i);
+            if (itemStack == null)
+                continue;
+            Item item = itemStack.getItem();
+            if (item.getId() == Item.POTION) {
+                Potion potion = itemStack.getPotion();
+                if (filter.apply(potion))
+                    return true;
+            }
+        }
+        return false;
     }
 }

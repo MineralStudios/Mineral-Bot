@@ -5,14 +5,12 @@ import gg.mineral.bot.api.controls.MouseButton;
 import gg.mineral.bot.api.entity.effect.PotionEffectType;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
-import gg.mineral.bot.api.event.network.ClientboundPacketEvent;
 import gg.mineral.bot.api.goal.Goal;
 import gg.mineral.bot.api.inv.Inventory;
 import gg.mineral.bot.api.inv.InventoryContainer;
 import gg.mineral.bot.api.inv.Slot;
 import gg.mineral.bot.api.inv.item.Item;
 import gg.mineral.bot.api.inv.item.ItemStack;
-import gg.mineral.bot.api.packet.play.clientbound.EntityStatusPacket;
 import gg.mineral.bot.api.screen.Screen;
 import gg.mineral.bot.api.screen.type.ContainerScreen;
 import gg.mineral.bot.api.util.MathUtil;
@@ -137,6 +135,13 @@ public class EatGappleGoal extends Goal implements MathUtil {
     @Override
     public void onTick() {
 
+        Inventory inventory = fakePlayer.getInventory();
+
+        if (inventory == null)
+            return;
+
+        ItemStack itemStack = inventory.getHeldItemStack();
+
         boolean hasRegen = false;
         int regenId = PotionEffectType.REGENERATION.getId();
         int[] activeIds = fakePlayer.getActivePotionEffectIds();
@@ -147,28 +152,19 @@ public class EatGappleGoal extends Goal implements MathUtil {
                 break;
             }
 
-        System.out.println("hasRegen: " + hasRegen);
-        System.out.println("eating: " + eating);
-        System.out.println("right click pressed: " + getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed());
-
         if (eating && hasRegen)
             eating = false;
 
-        if (eating && !getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed())
+        boolean rmbHeld = getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed();
+
+        if (eating && !rmbHeld)
             getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
 
-        if (!eating && getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed())
+        if (!eating && rmbHeld)
             getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
 
         if (eating || hasRegen)
             return;
-
-        Inventory inventory = fakePlayer.getInventory();
-
-        if (inventory == null)
-            return;
-
-        ItemStack itemStack = inventory.getHeldItemStack();
         // TODO: lookaway
         if (itemStack != null && itemStack.getItem().getId() == Item.GOLDEN_APPLE)
             eatGapple();
@@ -178,13 +174,6 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
     @Override
     public boolean onEvent(Event event) {
-        if (event instanceof ClientboundPacketEvent packetEvent) {
-
-            if (packetEvent.getPacket() instanceof EntityStatusPacket entityStatusPacket)
-                if (entityStatusPacket.getEntityId() == fakePlayer.getEntityId())
-                    getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
-        }
-        // Stop drinking when drank potion
         return false;
     }
 
