@@ -53,7 +53,6 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
     private void eatGapple() {
         eating = true;
-        getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
     }
 
     private void switchToGapple() {
@@ -155,6 +154,9 @@ public class EatGappleGoal extends Goal implements MathUtil {
             eating = false;
 
         boolean rmbHeld = getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed();
+
+        System.out.println("rmbHeld: " + rmbHeld);
+        System.out.println("eating: " + eating);
 
         if (eating && !rmbHeld)
             getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
