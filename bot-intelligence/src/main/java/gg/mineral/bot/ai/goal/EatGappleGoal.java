@@ -5,14 +5,12 @@ import gg.mineral.bot.api.controls.MouseButton;
 import gg.mineral.bot.api.entity.effect.PotionEffectType;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
-import gg.mineral.bot.api.event.network.ClientboundPacketEvent;
 import gg.mineral.bot.api.goal.Goal;
 import gg.mineral.bot.api.inv.Inventory;
 import gg.mineral.bot.api.inv.InventoryContainer;
 import gg.mineral.bot.api.inv.Slot;
 import gg.mineral.bot.api.inv.item.Item;
 import gg.mineral.bot.api.inv.item.ItemStack;
-import gg.mineral.bot.api.packet.play.clientbound.EntityStatusPacket;
 import gg.mineral.bot.api.screen.Screen;
 import gg.mineral.bot.api.screen.type.ContainerScreen;
 import gg.mineral.bot.api.util.MathUtil;
@@ -137,6 +135,25 @@ public class EatGappleGoal extends Goal implements MathUtil {
     @Override
     public void onTick() {
 
+        boolean rightClickPressed = getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed();
+
+        if (eating) {
+            if (!rightClickPressed) {
+                eating = false;
+                return;
+            }
+            int regenId = PotionEffectType.REGENERATION.getId();
+            int[] activeIds = fakePlayer.getActivePotionEffectIds();
+
+            for (int i = 0; i < activeIds.length; i++)
+                if (activeIds[i] == regenId) {
+                    getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
+                    break;
+                }
+        } else if (rightClickPressed) {
+            getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
+        }
+
         Inventory inventory = fakePlayer.getInventory();
 
         if (inventory == null)
@@ -152,17 +169,6 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
     @Override
     public boolean onEvent(Event event) {
-        if (event instanceof ClientboundPacketEvent packetEvent) {
-
-            if (packetEvent.getPacket() instanceof EntityStatusPacket entityStatusPacket) {
-                if (entityStatusPacket.getEntityId() == fakePlayer.getEntityId()) {
-                    getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
-                    eating = false;
-                }
-            }
-
-        }
-        // Stop drinking when drank potion
         return false;
     }
 
