@@ -143,12 +143,15 @@ public class EatGappleGoal extends Goal implements MathUtil {
         int[] activeIds = fakePlayer.getActivePotionEffectIds();
 
         for (int i = 0; i < activeIds.length; i++)
-            if (activeIds[i] == regenId)
+            if (activeIds[i] == regenId) {
                 hasRegen = true;
+                break;
+            }
 
         if (eating && hasRegen)
             eating = false;
 
+        System.out.println("Eating: " + eating + " Has Regen: " + hasRegen);
         if (eating || hasRegen)
             return;
 
