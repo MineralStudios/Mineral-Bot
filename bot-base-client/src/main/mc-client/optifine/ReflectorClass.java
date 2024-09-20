@@ -1,5 +1,7 @@
 package optifine;
 
+import gg.mineral.bot.impl.config.BotGlobalConfig;
+
 public class ReflectorClass {
     private String[] targetClassNames = null;
     private boolean checked = false;
@@ -22,6 +24,8 @@ public class ReflectorClass {
     }
 
     public Class getTargetClass() {
+        if (BotGlobalConfig.isOptimizedGameLoop())
+            return null;
         if (this.checked) {
             return this.targetClass;
         } else {

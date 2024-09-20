@@ -2,53 +2,44 @@ package optifine;
 
 import java.lang.reflect.Constructor;
 
-public class ReflectorConstructor
-{
+import gg.mineral.bot.impl.config.BotGlobalConfig;
+
+public class ReflectorConstructor {
     private ReflectorClass reflectorClass = null;
     private Class[] parameterTypes = null;
     private boolean checked = false;
     private Constructor targetConstructor = null;
 
-    public ReflectorConstructor(ReflectorClass reflectorClass, Class[] parameterTypes)
-    {
+    public ReflectorConstructor(ReflectorClass reflectorClass, Class[] parameterTypes) {
         this.reflectorClass = reflectorClass;
         this.parameterTypes = parameterTypes;
         Constructor c = this.getTargetConstructor();
     }
 
-    public Constructor getTargetConstructor()
-    {
-        if (this.checked)
-        {
+    public Constructor getTargetConstructor() {
+        if (BotGlobalConfig.isOptimizedGameLoop())
+            return null;
+        if (this.checked) {
             return this.targetConstructor;
-        }
-        else
-        {
+        } else {
             this.checked = true;
             Class cls = this.reflectorClass.getTargetClass();
 
-            if (cls == null)
-            {
+            if (cls == null) {
                 return null;
-            }
-            else
-            {
-                try
-                {
+            } else {
+                try {
                     this.targetConstructor = findConstructor(cls, this.parameterTypes);
 
-                    if (this.targetConstructor == null)
-                    {
-                        Config.dbg("(Reflector) Constructor not present: " + cls.getName() + ", params: " + Config.arrayToString((Object[])this.parameterTypes));
+                    if (this.targetConstructor == null) {
+                        Config.dbg("(Reflector) Constructor not present: " + cls.getName() + ", params: "
+                                + Config.arrayToString((Object[]) this.parameterTypes));
                     }
 
-                    if (this.targetConstructor != null)
-                    {
+                    if (this.targetConstructor != null) {
                         this.targetConstructor.setAccessible(true);
                     }
-                }
-                catch (Throwable var3)
-                {
+                } catch (Throwable var3) {
                     var3.printStackTrace();
                 }
 
@@ -57,17 +48,14 @@ public class ReflectorConstructor
         }
     }
 
-    private static Constructor findConstructor(Class cls, Class[] paramTypes)
-    {
+    private static Constructor findConstructor(Class cls, Class[] paramTypes) {
         Constructor[] cs = cls.getDeclaredConstructors();
 
-        for (int i = 0; i < cs.length; ++i)
-        {
+        for (int i = 0; i < cs.length; ++i) {
             Constructor c = cs[i];
             Class[] types = c.getParameterTypes();
 
-            if (Reflector.matchesTypes(paramTypes, types))
-            {
+            if (Reflector.matchesTypes(paramTypes, types)) {
                 return c;
             }
         }
@@ -75,13 +63,12 @@ public class ReflectorConstructor
         return null;
     }
 
-    public boolean exists()
-    {
-        return this.checked ? this.targetConstructor != null : this.getTargetConstructor() != null;
+    public boolean exists() {
+        return !BotGlobalConfig.isOptimizedGameLoop()
+                && (this.checked ? this.targetConstructor != null : this.getTargetConstructor() != null);
     }
 
-    public void deactivate()
-    {
+    public void deactivate() {
         this.checked = true;
         this.targetConstructor = null;
     }
