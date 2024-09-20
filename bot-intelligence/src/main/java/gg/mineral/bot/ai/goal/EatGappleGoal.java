@@ -34,14 +34,14 @@ public class EatGappleGoal extends Goal implements MathUtil {
             if (activeIds[i] == regenId)
                 hasRegen = true;
 
-        return eating || canSeeEnemy() && hasDrinkablePotion() && !hasRegen;
+        return eating || canSeeEnemy() && hasGapple() && !hasRegen;
     }
 
     public EatGappleGoal(FakePlayer fakePlayer) {
         super(fakePlayer);
     }
 
-    private boolean hasDrinkablePotion() {
+    private boolean hasGapple() {
         Inventory inventory = fakePlayer.getInventory();
         return inventory == null ? false : inventory.contains(Item.GOLDEN_APPLE);
     }
@@ -55,7 +55,7 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
     private void eatGapple() {
         eating = true;
-        getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
+        getMouse().pressButton(2000, MouseButton.Type.RIGHT_CLICK);
     }
 
     private void switchToGapple() {
@@ -138,7 +138,18 @@ public class EatGappleGoal extends Goal implements MathUtil {
     @Override
     public void onTick() {
 
-        if (eating)
+        boolean hasRegen = false;
+        int regenId = PotionEffectType.REGENERATION.getId();
+        int[] activeIds = fakePlayer.getActivePotionEffectIds();
+
+        for (int i = 0; i < activeIds.length; i++)
+            if (activeIds[i] == regenId)
+                hasRegen = true;
+
+        if (eating && hasRegen)
+            eating = false;
+
+        if (eating || hasRegen)
             return;
 
         Inventory inventory = fakePlayer.getInventory();
@@ -158,13 +169,9 @@ public class EatGappleGoal extends Goal implements MathUtil {
     public boolean onEvent(Event event) {
         if (event instanceof ClientboundPacketEvent packetEvent) {
 
-            if (packetEvent.getPacket() instanceof EntityStatusPacket entityStatusPacket) {
-                if (entityStatusPacket.getEntityId() == fakePlayer.getEntityId()) {
+            if (packetEvent.getPacket() instanceof EntityStatusPacket entityStatusPacket)
+                if (entityStatusPacket.getEntityId() == fakePlayer.getEntityId())
                     getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
-                    eating = false;
-                }
-            }
-
         }
         // Stop drinking when drank potion
         return false;

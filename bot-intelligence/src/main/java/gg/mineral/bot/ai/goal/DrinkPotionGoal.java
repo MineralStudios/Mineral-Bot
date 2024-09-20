@@ -48,7 +48,7 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
 
     private void drinkPotion() {
         drinking = true;
-        getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
+        getMouse().pressButton(2000, MouseButton.Type.RIGHT_CLICK);
     }
 
     private void switchToDrinkablePotion() {
