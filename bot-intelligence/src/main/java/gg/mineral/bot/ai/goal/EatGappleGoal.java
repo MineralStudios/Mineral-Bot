@@ -54,7 +54,7 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
     private void eatGapple() {
         eating = true;
-        getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
+        schedule(() -> getMouse().pressButton(MouseButton.Type.RIGHT_CLICK), 50);
     }
 
     private void switchToGapple() {
@@ -159,7 +159,7 @@ public class EatGappleGoal extends Goal implements MathUtil {
                     schedule(() -> {
                         getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
                         eating = false;
-                    }, 1);
+                    }, 50);
                 }
             }
 
