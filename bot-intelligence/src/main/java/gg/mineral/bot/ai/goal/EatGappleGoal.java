@@ -141,17 +141,22 @@ public class EatGappleGoal extends Goal implements MathUtil {
         int regenId = PotionEffectType.REGENERATION.getId();
         int[] activeIds = fakePlayer.getActivePotionEffectIds();
 
-        for (int i = 0; i < activeIds.length; i++)
+        for (int i = 0; i < activeIds.length; i++) {
+            System.out.println(activeIds[i]);
             if (activeIds[i] == regenId) {
                 hasRegen = true;
                 break;
             }
+        }
 
         if (eating && hasRegen)
             eating = false;
 
         if (eating && !getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed())
-            getMouse().pressButton(2000, MouseButton.Type.RIGHT_CLICK);
+            getMouse().pressButton(MouseButton.Type.RIGHT_CLICK);
+
+        if (!eating && getMouse().getButton(MouseButton.Type.RIGHT_CLICK).isPressed())
+            getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
 
         if (eating || hasRegen)
             return;
