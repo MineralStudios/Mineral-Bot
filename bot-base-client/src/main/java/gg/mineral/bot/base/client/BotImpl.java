@@ -64,7 +64,9 @@ public abstract class BotImpl extends BotAPI {
 
     @Override
     public boolean isFakePlayer(UUID uuid) {
-        return InstanceManager.getInstances().containsKey(uuid);
+        synchronized (InstanceManager.getInstances()) {
+            return InstanceManager.getInstances().containsKey(uuid);
+        }
     }
 
     @Override
