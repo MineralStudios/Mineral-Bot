@@ -1,5 +1,9 @@
 package gg.mineral.bot.base.client;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.UUID;
+
 import com.google.common.collect.HashMultimap;
 
 import gg.mineral.bot.api.BotAPI;
@@ -9,9 +13,8 @@ import gg.mineral.bot.api.math.ServerLocation;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.client.player.FakePlayerInstance;
 
-import java.io.File;
-
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BotImpl extends BotAPI {
 
@@ -73,5 +76,14 @@ public abstract class BotImpl extends BotAPI {
     public void despawnAll() {
         InstanceManager.getInstances().values().forEach(FakePlayerInstance::shutdown);
         InstanceManager.getInstances().clear();
+    }
+
+    @Override
+    public Collection<FakePlayer> getFakePlayers() {
+        List<FakePlayer> fakePlayers = new ArrayList<>();
+
+        for (FakePlayerInstance instance : InstanceManager.getInstances().values())
+            fakePlayers.add(instance);
+        return fakePlayers;
     }
 }

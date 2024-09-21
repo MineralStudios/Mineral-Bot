@@ -1,10 +1,12 @@
 package gg.mineral.bot.api;
 
+import java.util.UUID;
+
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.math.ServerLocation;
 
-import java.util.UUID;
+import java.util.Collection;
 
 public abstract class BotAPI {
 
@@ -21,4 +23,6 @@ public abstract class BotAPI {
     public abstract void despawnAll();
 
     public abstract boolean isFakePlayer(UUID uuid);
+
+    public abstract Collection<FakePlayer> getFakePlayers();
 }
