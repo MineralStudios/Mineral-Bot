@@ -408,40 +408,40 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     @Setter
     private NetHandlerPlayClient netHandlerPlayClient;
 
-    public void handlePacket(Packet<PacketListenerPlayOut> packet) {
+    public synchronized void handlePacket(Packet<PacketListenerPlayOut> packet) {
         packet.a(this);
     }
 
     @Override
-    public void a(IChatBaseComponent arg0) {
+    public synchronized void a(IChatBaseComponent arg0) {
         String text = IChatBaseComponent.ChatSerializer.a(arg0);
         IChatComponent chatComponent = IChatComponent.Serializer.fromJson(text);
         netHandlerPlayClient.onDisconnect(chatComponent);
     }
 
     @Override
-    public void a(PacketPlayOutSpawnEntity arg0) {
+    public synchronized void a(PacketPlayOutSpawnEntity arg0) {
         S0EPacketSpawnObject packet = new S0EPacketSpawnObject(arg0.getA(), arg0.getB(), arg0.getC(), arg0.getD(),
                 arg0.getE(), arg0.getF(), arg0.getG(), arg0.getH(), arg0.getI(), arg0.getJ(), arg0.getK());
         netHandlerPlayClient.handleSpawnObject(packet);
     }
 
     @Override
-    public void a(PacketPlayOutSpawnEntityExperienceOrb arg0) {
+    public synchronized void a(PacketPlayOutSpawnEntityExperienceOrb arg0) {
         S11PacketSpawnExperienceOrb packet = new S11PacketSpawnExperienceOrb(arg0.getA(), arg0.getB(), arg0.getC(),
                 arg0.getD(), arg0.getE());
         netHandlerPlayClient.handleSpawnExperienceOrb(packet);
     }
 
     @Override
-    public void a(PacketPlayOutSpawnEntityWeather arg0) {
+    public synchronized void a(PacketPlayOutSpawnEntityWeather arg0) {
         S2CPacketSpawnGlobalEntity packet = new S2CPacketSpawnGlobalEntity(arg0.getA(), arg0.getB(), arg0.getC(),
                 arg0.getD(), arg0.getE());
         netHandlerPlayClient.handleSpawnGlobalEntity(packet);
     }
 
     @Override
-    public void a(PacketPlayOutSpawnEntityLiving arg0) {
+    public synchronized void a(PacketPlayOutSpawnEntityLiving arg0) {
         int entityTypeId = arg0.getB();
 
         if (entityTypeId == 101) // TODO: Rabbit
@@ -473,7 +473,7 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutScoreboardObjective arg0) {
+    public synchronized void a(PacketPlayOutScoreboardObjective arg0) {
         String name = arg0.getA();
         String value = arg0.getB();
         int mode = arg0.getD();
@@ -482,14 +482,14 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutSpawnEntityPainting arg0) {
+    public synchronized void a(PacketPlayOutSpawnEntityPainting arg0) {
         S10PacketSpawnPainting packet = new S10PacketSpawnPainting(arg0.getA(), arg0.getB().getX(), arg0.getB().getY(),
                 arg0.getB().getZ(), arg0.getC().a(), arg0.getD());
         netHandlerPlayClient.handleSpawnPainting(packet);
     }
 
     @Override
-    public void a(PacketPlayOutNamedEntitySpawn arg0) {
+    public synchronized void a(PacketPlayOutNamedEntitySpawn arg0) {
         @Nullable
         List<net.minecraft.server.v1_8_R3.DataWatcher.WatchableObject> list = arg0.getJ();
         List<DataWatcher.WatchableObject> dataWatcherList = new ArrayList<>();
@@ -517,13 +517,13 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutAnimation arg0) {
+    public synchronized void a(PacketPlayOutAnimation arg0) {
         S0BPacketAnimation packet = new S0BPacketAnimation(arg0.getA(), arg0.getB());
         netHandlerPlayClient.handleAnimation(packet);
     }
 
     @Override
-    public void a(PacketPlayOutStatistic arg0) {
+    public synchronized void a(PacketPlayOutStatistic arg0) {
         Object2IntOpenHashMap<Statistic> statisticMap = arg0.getA();
         Object2IntOpenHashMap<StatBase> statMap = new Object2IntOpenHashMap<>();
 
@@ -537,21 +537,21 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutBlockBreakAnimation arg0) {
+    public synchronized void a(PacketPlayOutBlockBreakAnimation arg0) {
         S25PacketBlockBreakAnim packet = new S25PacketBlockBreakAnim(arg0.getA(), arg0.getB().getX(),
                 arg0.getB().getY(), arg0.getB().getZ(), arg0.getC());
         netHandlerPlayClient.handleBlockBreakAnim(packet);
     }
 
     @Override
-    public void a(PacketPlayOutOpenSignEditor arg0) {
+    public synchronized void a(PacketPlayOutOpenSignEditor arg0) {
         S36PacketSignEditorOpen packet = new S36PacketSignEditorOpen(arg0.getA().getX(), arg0.getA().getY(),
                 arg0.getA().getZ());
         netHandlerPlayClient.handleSignEditorOpen(packet);
     }
 
     @Override
-    public void a(PacketPlayOutTileEntityData arg0) {
+    public synchronized void a(PacketPlayOutTileEntityData arg0) {
 
         net.minecraft.server.v1_8_R3.NBTTagCompound nmsNbt = arg0.getC();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -588,7 +588,7 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutBlockAction arg0) {
+    public synchronized void a(PacketPlayOutBlockAction arg0) {
         int blockId = net.minecraft.server.v1_8_R3.Block.getId(arg0.getD()) & 4095;
         Block block = Block.getBlockById(blockId);
         S24PacketBlockAction packet = new S24PacketBlockAction(arg0.getA().getX(), arg0.getA().getY(),
@@ -597,7 +597,7 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutBlockChange arg0) {
+    public synchronized void a(PacketPlayOutBlockChange arg0) {
         int idAndMeta = net.minecraft.server.v1_8_R3.Block.d.b(arg0.getBlock());
         int blockId = idAndMeta >> 4;
         int blockMeta = idAndMeta & 15;
@@ -608,7 +608,7 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutChat arg0) {
+    public synchronized void a(PacketPlayOutChat arg0) {
         String text = IChatBaseComponent.ChatSerializer.a(arg0.getA());
         IChatComponent chatComponent = IChatComponent.Serializer.fromJson(text);
         if (chatComponent == null)
@@ -618,13 +618,13 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutTabComplete arg0) {
+    public synchronized void a(PacketPlayOutTabComplete arg0) {
         S3APacketTabComplete packet = new S3APacketTabComplete(arg0.getA());
         netHandlerPlayClient.handleTabComplete(packet);
     }
 
     @Override
-    public void a(PacketPlayOutMultiBlockChange arg0) {
+    public synchronized void a(PacketPlayOutMultiBlockChange arg0) {
         net.minecraft.server.v1_8_R3.ChunkCoordIntPair chunkCoordIntPair = arg0.getA();
         ChunkCoordIntPair chunkCoordIntPair1 = new ChunkCoordIntPair(chunkCoordIntPair.x, chunkCoordIntPair.z);
 
@@ -645,24 +645,24 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutMap arg0) {
+    public synchronized void a(PacketPlayOutMap arg0) {
         // TODO: implement
     }
 
     @Override
-    public void a(PacketPlayOutTransaction arg0) {
+    public synchronized void a(PacketPlayOutTransaction arg0) {
         S32PacketConfirmTransaction packet = new S32PacketConfirmTransaction(arg0.getA(), arg0.getB(), arg0.isC());
         netHandlerPlayClient.handleConfirmTransaction(packet);
     }
 
     @Override
-    public void a(PacketPlayOutCloseWindow arg0) {
+    public synchronized void a(PacketPlayOutCloseWindow arg0) {
         S2EPacketCloseWindow packet = new S2EPacketCloseWindow(arg0.getA());
         netHandlerPlayClient.handleCloseWindow(packet);
     }
 
     @Override
-    public void a(PacketPlayOutWindowItems arg0) {
+    public synchronized void a(PacketPlayOutWindowItems arg0) {
         ItemStack[] items = new ItemStack[arg0.getB().length];
 
         for (int i = 0; i < items.length; i++)
@@ -673,7 +673,7 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutOpenWindow arg0) {
+    public synchronized void a(PacketPlayOutOpenWindow arg0) {
         S2DPacketOpenWindow packet = new S2DPacketOpenWindow(arg0.getA(), WINDOW_TYPE_REGISTRY.getInt(arg0.getB()),
                 arg0.getC().c(), arg0.getD(), true,
                 arg0.getE());
@@ -681,13 +681,13 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutWindowData arg0) {
+    public synchronized void a(PacketPlayOutWindowData arg0) {
         S31PacketWindowProperty packet = new S31PacketWindowProperty(arg0.getA(), arg0.getB(), arg0.getC());
         netHandlerPlayClient.handleWindowProperty(packet);
     }
 
     @Override
-    public void a(PacketPlayOutSetSlot arg0) {
+    public synchronized void a(PacketPlayOutSetSlot arg0) {
         @Nullable
         net.minecraft.server.v1_8_R3.ItemStack itemNMS = arg0.getC();
         @Nullable
@@ -699,13 +699,13 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutCustomPayload arg0) {
+    public synchronized void a(PacketPlayOutCustomPayload arg0) {
         S3FPacketCustomPayload packet = new S3FPacketCustomPayload(arg0.getA(), arg0.getB());
         netHandlerPlayClient.handleCustomPayload(packet);
     }
 
     @Override
-    public void a(PacketPlayOutKickDisconnect arg0) {
+    public synchronized void a(PacketPlayOutKickDisconnect arg0) {
         String text = IChatBaseComponent.ChatSerializer.a(arg0.getA());
         IChatComponent chatComponent = IChatComponent.Serializer.fromJson(text);
         S40PacketDisconnect packet = new S40PacketDisconnect(chatComponent);
@@ -713,26 +713,26 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutBed arg0) {
+    public synchronized void a(PacketPlayOutBed arg0) {
         S0APacketUseBed packet = new S0APacketUseBed(arg0.getA(), arg0.getB().getX(), arg0.getB().getY(),
                 arg0.getB().getZ());
         netHandlerPlayClient.handleUseBed(packet);
     }
 
     @Override
-    public void a(PacketPlayOutEntityStatus arg0) {
+    public synchronized void a(PacketPlayOutEntityStatus arg0) {
         S19PacketEntityStatus packet = new S19PacketEntityStatus(arg0.getA(), arg0.getB());
         netHandlerPlayClient.handleEntityStatus(packet);
     }
 
     @Override
-    public void a(PacketPlayOutAttachEntity arg0) {
+    public synchronized void a(PacketPlayOutAttachEntity arg0) {
         S1BPacketEntityAttach packet = new S1BPacketEntityAttach(arg0.getA(), arg0.getB(), arg0.getC());
         netHandlerPlayClient.handleEntityAttach(packet);
     }
 
     @Override
-    public void a(PacketPlayOutExplosion arg0) {
+    public synchronized void a(PacketPlayOutExplosion arg0) {
         List<net.minecraft.server.v1_8_R3.BlockPosition> list = arg0.getE();
         List<ChunkPosition> chunkPositionList = new ArrayList<>();
 
@@ -746,19 +746,19 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutGameStateChange arg0) {
+    public synchronized void a(PacketPlayOutGameStateChange arg0) {
         S2BPacketChangeGameState packet = new S2BPacketChangeGameState(arg0.getB(), arg0.getC());
         netHandlerPlayClient.handleChangeGameState(packet);
     }
 
     @Override
-    public void a(PacketPlayOutKeepAlive arg0) {
+    public synchronized void a(PacketPlayOutKeepAlive arg0) {
         S00PacketKeepAlive packet = new S00PacketKeepAlive(arg0.getA());
         netHandlerPlayClient.handleKeepAlive(packet);
     }
 
     @Override
-    public void a(PacketPlayOutMapChunk arg0) {
+    public synchronized void a(PacketPlayOutMapChunk arg0) {
         net.minecraft.server.v1_8_R3.PacketPlayOutMapChunk.ChunkMap chunkMap = arg0.getC();
 
         byte[] data = chunkMap.a;
@@ -863,7 +863,7 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutMapChunkBulk arg0) {
+    public synchronized void a(PacketPlayOutMapChunkBulk arg0) {
         int[] chunkXArr = arg0.getA();
         int[] chunkZArr = arg0.getB();
         net.minecraft.server.v1_8_R3.PacketPlayOutMapChunk.ChunkMap[] chunkMapArr = arg0.getC();
@@ -894,14 +894,14 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutWorldEvent arg0) {
+    public synchronized void a(PacketPlayOutWorldEvent arg0) {
         S28PacketEffect packet = new S28PacketEffect(arg0.getA(), arg0.getB().getX(), arg0.getB().getY(),
                 arg0.getB().getZ(), arg0.getC(), arg0.isD());
         netHandlerPlayClient.handleEffect(packet);
     }
 
     @Override
-    public void a(PacketPlayOutLogin arg0) {
+    public synchronized void a(PacketPlayOutLogin arg0) {
         net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode enumGamemode = arg0.getC();
         net.minecraft.server.v1_8_R3.EnumDifficulty enumDifficulty = arg0.getE();
         net.minecraft.server.v1_8_R3.WorldType worldType = arg0.getG();
@@ -915,14 +915,14 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutEntity arg0) {
+    public synchronized void a(PacketPlayOutEntity arg0) {
         S14PacketEntity packet = new S14PacketEntity(arg0.getA(), arg0.getB(), arg0.getC(), arg0.getD(), arg0.getE(),
                 arg0.getF(), arg0.isG());
         netHandlerPlayClient.handleEntityMovement(packet);
     }
 
     @Override
-    public void a(PacketPlayOutPosition arg0) {
+    public synchronized void a(PacketPlayOutPosition arg0) {
         Set<net.minecraft.server.v1_8_R3.PacketPlayOutPosition.EnumPlayerTeleportFlags> set = arg0.getF();
         final double x = arg0.getA();
         double y = arg0.getB();
@@ -962,7 +962,7 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutWorldParticles arg0) {
+    public synchronized void a(PacketPlayOutWorldParticles arg0) {
         net.minecraft.server.v1_8_R3.EnumParticle enumParticle = arg0.getA();
         String particleName = enumParticle.b();
 
@@ -975,14 +975,14 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutAbilities arg0) {
+    public synchronized void a(PacketPlayOutAbilities arg0) {
         S39PacketPlayerAbilities packet = new S39PacketPlayerAbilities(arg0.isA(), arg0.isB(), arg0.isC(),
                 arg0.isD(), arg0.getE(), arg0.getF());
         netHandlerPlayClient.handlePlayerAbilities(packet);
     }
 
     @Override
-    public void a(PacketPlayOutPlayerInfo arg0) {
+    public synchronized void a(PacketPlayOutPlayerInfo arg0) {
         net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction a = arg0.getA();
         List<net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.PlayerInfoData> b = arg0.getB();
 
@@ -1019,19 +1019,19 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutEntityDestroy arg0) {
+    public synchronized void a(PacketPlayOutEntityDestroy arg0) {
         S13PacketDestroyEntities packet = new S13PacketDestroyEntities(arg0.getA());
         netHandlerPlayClient.handleDestroyEntities(packet);
     }
 
     @Override
-    public void a(PacketPlayOutRemoveEntityEffect arg0) {
+    public synchronized void a(PacketPlayOutRemoveEntityEffect arg0) {
         S1EPacketRemoveEntityEffect packet = new S1EPacketRemoveEntityEffect(arg0.getA(), arg0.getB());
         netHandlerPlayClient.handleRemoveEntityEffect(packet);
     }
 
     @Override
-    public void a(PacketPlayOutRespawn arg0) {
+    public synchronized void a(PacketPlayOutRespawn arg0) {
         net.minecraft.server.v1_8_R3.EnumDifficulty enumDifficulty = arg0.getB();
         net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode enumGamemode = arg0.getC();
         net.minecraft.server.v1_8_R3.WorldType worldType = arg0.getD();
@@ -1044,25 +1044,25 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutEntityHeadRotation arg0) {
+    public synchronized void a(PacketPlayOutEntityHeadRotation arg0) {
         S19PacketEntityHeadLook packet = new S19PacketEntityHeadLook(arg0.getA(), arg0.getB());
         netHandlerPlayClient.handleEntityHeadLook(packet);
     }
 
     @Override
-    public void a(PacketPlayOutHeldItemSlot arg0) {
+    public synchronized void a(PacketPlayOutHeldItemSlot arg0) {
         S09PacketHeldItemChange packet = new S09PacketHeldItemChange(arg0.getA());
         netHandlerPlayClient.handleHeldItemChange(packet);
     }
 
     @Override
-    public void a(PacketPlayOutScoreboardDisplayObjective arg0) {
+    public synchronized void a(PacketPlayOutScoreboardDisplayObjective arg0) {
         S3DPacketDisplayScoreboard packet = new S3DPacketDisplayScoreboard(arg0.getA(), arg0.getB());
         netHandlerPlayClient.handleDisplayScoreboard(packet);
     }
 
     @Override
-    public void a(PacketPlayOutEntityMetadata arg0) {
+    public synchronized void a(PacketPlayOutEntityMetadata arg0) {
         List<net.minecraft.server.v1_8_R3.DataWatcher.WatchableObject> list = arg0.getB();
         List<DataWatcher.WatchableObject> dataWatcherList = new ArrayList<>();
 
@@ -1085,7 +1085,7 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutEntityVelocity arg0) {
+    public synchronized void a(PacketPlayOutEntityVelocity arg0) {
         S12PacketEntityVelocity packet = new S12PacketEntityVelocity(arg0.getA(), arg0.getB() / 8000D,
                 arg0.getC() / 8000D,
                 arg0.getD() / 8000D);
@@ -1093,7 +1093,7 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutEntityEquipment arg0) {
+    public synchronized void a(PacketPlayOutEntityEquipment arg0) {
 
         @Nullable
         net.minecraft.server.v1_8_R3.ItemStack itemNMS = arg0.getC();
@@ -1106,46 +1106,46 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutExperience arg0) {
+    public synchronized void a(PacketPlayOutExperience arg0) {
         S1FPacketSetExperience packet = new S1FPacketSetExperience(arg0.getA(), arg0.getB(), arg0.getC());
         netHandlerPlayClient.handleSetExperience(packet);
     }
 
     @Override
-    public void a(PacketPlayOutUpdateHealth arg0) {
+    public synchronized void a(PacketPlayOutUpdateHealth arg0) {
         S06PacketUpdateHealth packet = new S06PacketUpdateHealth(arg0.getA(), arg0.getB(), arg0.getC());
         netHandlerPlayClient.handleUpdateHealth(packet);
     }
 
     @Override
-    public void a(PacketPlayOutScoreboardTeam arg0) {
+    public synchronized void a(PacketPlayOutScoreboardTeam arg0) {
         S3EPacketTeams packet = new S3EPacketTeams(arg0.getA(), arg0.getB(), arg0.getC(), arg0.getD(), arg0.getG(),
                 arg0.getH(), arg0.getI());
         netHandlerPlayClient.handleTeams(packet);
     }
 
     @Override
-    public void a(PacketPlayOutScoreboardScore arg0) {
+    public synchronized void a(PacketPlayOutScoreboardScore arg0) {
         S3CPacketUpdateScore packet = new S3CPacketUpdateScore(arg0.getA(), arg0.getB(), arg0.getC(),
                 arg0.getD().ordinal());
         netHandlerPlayClient.handleUpdateScore(packet);
     }
 
     @Override
-    public void a(PacketPlayOutSpawnPosition arg0) {
+    public synchronized void a(PacketPlayOutSpawnPosition arg0) {
         S05PacketSpawnPosition packet = new S05PacketSpawnPosition(arg0.getPosition().getX(),
                 arg0.getPosition().getY(), arg0.getPosition().getZ());
         netHandlerPlayClient.handleSpawnPosition(packet);
     }
 
     @Override
-    public void a(PacketPlayOutUpdateTime arg0) {
+    public synchronized void a(PacketPlayOutUpdateTime arg0) {
         S03PacketTimeUpdate packet = new S03PacketTimeUpdate(arg0.getA(), arg0.getB());
         netHandlerPlayClient.handleTimeUpdate(packet);
     }
 
     @Override
-    public void a(PacketPlayOutUpdateSign arg0) {
+    public synchronized void a(PacketPlayOutUpdateSign arg0) {
         net.minecraft.server.v1_8_R3.IChatBaseComponent[] c = arg0.getC();
         String[] lines = new String[c.length];
 
@@ -1161,27 +1161,27 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutNamedSoundEffect arg0) {
+    public synchronized void a(PacketPlayOutNamedSoundEffect arg0) {
         S29PacketSoundEffect packet = new S29PacketSoundEffect(arg0.getA(), arg0.getB(), arg0.getC(), arg0.getD(),
                 arg0.getE(), arg0.getF());
         netHandlerPlayClient.handleSoundEffect(packet);
     }
 
     @Override
-    public void a(PacketPlayOutCollect arg0) {
+    public synchronized void a(PacketPlayOutCollect arg0) {
         S0DPacketCollectItem packet = new S0DPacketCollectItem(arg0.getA(), arg0.getB());
         netHandlerPlayClient.handleCollectItem(packet);
     }
 
     @Override
-    public void a(PacketPlayOutEntityTeleport arg0) {
+    public synchronized void a(PacketPlayOutEntityTeleport arg0) {
         S18PacketEntityTeleport packet = new S18PacketEntityTeleport(arg0.getA(), arg0.getB(), arg0.getC(),
                 arg0.getD(), arg0.getE(), arg0.getF());
         netHandlerPlayClient.handleEntityTeleport(packet);
     }
 
     @Override
-    public void a(PacketPlayOutUpdateAttributes arg0) {
+    public synchronized void a(PacketPlayOutUpdateAttributes arg0) {
         List<net.minecraft.server.v1_8_R3.PacketPlayOutUpdateAttributes.AttributeSnapshot> list = arg0.getB();
         List<S20PacketEntityProperties.Snapshot> snapshotList = new ArrayList<>();
 
@@ -1210,89 +1210,89 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     }
 
     @Override
-    public void a(PacketPlayOutEntityEffect arg0) {
+    public synchronized void a(PacketPlayOutEntityEffect arg0) {
         S1DPacketEntityEffect packet = new S1DPacketEntityEffect(arg0.getA(), arg0.getB(), arg0.getC(),
                 (short) arg0.getD());
         netHandlerPlayClient.handleEntityEffect(packet);
     }
 
     @Override
-    public void a(PacketPlayOutCombatEvent arg0) {
+    public synchronized void a(PacketPlayOutCombatEvent arg0) {
         // TODO: implement
     }
 
     @Override
-    public void a(PacketPlayOutServerDifficulty arg0) {
+    public synchronized void a(PacketPlayOutServerDifficulty arg0) {
         // TODO: implement
     }
 
     @Override
-    public void a(PacketPlayOutCamera arg0) {
+    public synchronized void a(PacketPlayOutCamera arg0) {
         // TODO: implement
     }
 
     @Override
-    public void a(PacketPlayOutWorldBorder arg0) {
+    public synchronized void a(PacketPlayOutWorldBorder arg0) {
         // TODO: implement
     }
 
     @Override
-    public void a(PacketPlayOutTitle arg0) {
+    public synchronized void a(PacketPlayOutTitle arg0) {
         // TODO: implement
     }
 
     @Override
-    public void a(PacketPlayOutSetCompression arg0) {
+    public synchronized void a(PacketPlayOutSetCompression arg0) {
         // TODO: implement
     }
 
     @Override
-    public void a(PacketPlayOutPlayerListHeaderFooter arg0) {
+    public synchronized void a(PacketPlayOutPlayerListHeaderFooter arg0) {
         // TODO: implement
     }
 
     @Override
-    public void a(PacketPlayOutResourcePackSend arg0) {
+    public synchronized void a(PacketPlayOutResourcePackSend arg0) {
         // TODO: implement
     }
 
     @Override
-    public void a(PacketPlayOutUpdateEntityNBT arg0) {
+    public synchronized void a(PacketPlayOutUpdateEntityNBT arg0) {
         // TODO: implement
     }
 
     @Override
-    public void a(PacketStatusOutServerInfo arg0) {
+    public synchronized void a(PacketStatusOutServerInfo arg0) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'a'");
     }
 
     @Override
-    public void a(PacketStatusOutPong arg0) {
+    public synchronized void a(PacketStatusOutPong arg0) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'a'");
     }
 
     @Override
-    public void a(PacketLoginOutEncryptionBegin arg0) {
+    public synchronized void a(PacketLoginOutEncryptionBegin arg0) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'a'");
     }
 
     @Override
-    public void a(PacketLoginOutSuccess arg0) {
+    public synchronized void a(PacketLoginOutSuccess arg0) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'a'");
     }
 
     @Override
-    public void a(PacketLoginOutDisconnect arg0) {
+    public synchronized void a(PacketLoginOutDisconnect arg0) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'a'");
     }
 
     @Override
-    public void a(PacketLoginOutSetCompression arg0) {
+    public synchronized void a(PacketLoginOutSetCompression arg0) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'a'");
     }
