@@ -985,10 +985,8 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     public void a(PacketPlayOutPlayerInfo arg0) {
         net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction a = arg0.getA();
         List<net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.PlayerInfoData> b = arg0.getB();
-        int numberOfPlayers = b.size();
 
-        for (int i = 0; i < numberOfPlayers; i++) {
-            PlayerInfoData playerInfoData = b.get(i);
+        for (PlayerInfoData playerInfoData : b) {
             GameProfile gameProfile = playerInfoData.a();
             String name = gameProfile.getName();
             int ping = playerInfoData.b();

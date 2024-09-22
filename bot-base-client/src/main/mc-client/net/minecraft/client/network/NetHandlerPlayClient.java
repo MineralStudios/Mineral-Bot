@@ -507,9 +507,9 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         double var6 = (double) p_147237_1_.func_148946_h() / 32.0D;
         float var8 = (float) (p_147237_1_.func_148941_i() * 360) / 256.0F;
         float var9 = (float) (p_147237_1_.func_148945_j() * 360) / 256.0F;
-        GameProfile var10 = p_147237_1_.func_148948_e();
+        GameProfile var10 = p_147237_1_.getGameProfile();
         EntityOtherPlayerMP var11 = new EntityOtherPlayerMP(this.gameController, this.gameController.theWorld,
-                p_147237_1_.func_148948_e());
+                p_147237_1_.getGameProfile());
         var11.prevPosX = var11.lastTickPosX = (double) (var11.serverPosX = p_147237_1_.func_148942_f());
         var11.prevPosY = var11.lastTickPosY = (double) (var11.serverPosY = p_147237_1_.func_148949_g());
         var11.prevPosZ = var11.lastTickPosZ = (double) (var11.serverPosZ = p_147237_1_.func_148946_h());

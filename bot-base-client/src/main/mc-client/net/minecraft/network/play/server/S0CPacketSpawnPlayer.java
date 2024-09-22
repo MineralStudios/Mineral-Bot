@@ -129,7 +129,7 @@ public class S0CPacketSpawnPlayer extends Packet {
         return this.field_148957_a;
     }
 
-    public GameProfile func_148948_e() {
+    public GameProfile getGameProfile() {
         return this.field_148955_b;
     }
 
