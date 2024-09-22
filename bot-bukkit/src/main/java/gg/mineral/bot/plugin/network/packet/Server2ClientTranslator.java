@@ -10,10 +10,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.annotation.Nullable;
 
@@ -200,6 +198,7 @@ import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import java.util.Map;
 
 public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLoginOutListener, PacketStatusOutListener {
 
@@ -985,38 +984,39 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
     @Override
     public void a(PacketPlayOutPlayerInfo arg0) {
         net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction a = arg0.getA();
-        ConcurrentLinkedQueue<net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.PlayerInfoData> b = new ConcurrentLinkedQueue<>(
-                arg0.getB());
+        List<net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.PlayerInfoData> b = arg0.getB();
 
-        for (PlayerInfoData playerInfoData : b) {
-            GameProfile gameProfile = playerInfoData.a();
-            String name = gameProfile.getName();
-            int ping = playerInfoData.b();
+        synchronized (b) {
+            for (PlayerInfoData playerInfoData : b) {
+                GameProfile gameProfile = playerInfoData.a();
+                String name = gameProfile.getName();
+                int ping = playerInfoData.b();
 
-            S38PacketPlayerListItem packet = null;
+                S38PacketPlayerListItem packet = null;
 
-            switch (a) {
-                case ADD_PLAYER:
-                    packet = new S38PacketPlayerListItem(name, true, ping);
-                    break;
-                case REMOVE_PLAYER:
-                    packet = new S38PacketPlayerListItem(name, false, ping);
-                    break;
-                case UPDATE_DISPLAY_NAME:
-                    // TODO: implement display name
-                    break;
-                case UPDATE_GAME_MODE:
-                    // TODO: set equiped item if gamemode 3
-                    break;
-                case UPDATE_LATENCY:
-                    // TODO: update latency
-                    break;
-                default:
-                    break;
+                switch (a) {
+                    case ADD_PLAYER:
+                        packet = new S38PacketPlayerListItem(name, true, ping);
+                        break;
+                    case REMOVE_PLAYER:
+                        packet = new S38PacketPlayerListItem(name, false, ping);
+                        break;
+                    case UPDATE_DISPLAY_NAME:
+                        // TODO: implement display name
+                        break;
+                    case UPDATE_GAME_MODE:
+                        // TODO: set equiped item if gamemode 3
+                        break;
+                    case UPDATE_LATENCY:
+                        // TODO: update latency
+                        break;
+                    default:
+                        break;
+                }
+
+                if (packet != null)
+                    netHandlerPlayClient.handlePlayerListItem(packet);
             }
-
-            if (packet != null)
-                netHandlerPlayClient.handlePlayerListItem(packet);
         }
     }
 
