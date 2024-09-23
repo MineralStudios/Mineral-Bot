@@ -312,7 +312,7 @@ public class Minecraft {
     private TextureMap textureMapBlocks;
     protected SoundHandler mcSoundHandler;
     private MusicTicker mcMusicTicker;
-    private ResourceLocation field_152354_ay;
+    private ResourceLocation minecraftLogoTexture;
     private final MinecraftSessionService field_152355_az;
     private SkinManager field_152350_aA;
     private final Queue field_152351_aB = Queues.newArrayDeque();
@@ -634,8 +634,8 @@ public class Minecraft {
         else
             this.displayGuiScreen(new GuiMainMenu(this));
 
-        this.renderEngine.func_147645_c(this.field_152354_ay);
-        this.field_152354_ay = null;
+        this.renderEngine.func_147645_c(this.minecraftLogoTexture);
+        this.minecraftLogoTexture = null;
         this.loadingScreen = new LoadingScreenRenderer(this);
 
         if (this.gameSettings.fullScreen && !this.fullscreen)
@@ -770,13 +770,15 @@ public class Minecraft {
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-        try {
-            this.field_152354_ay = this.renderEngine.getDynamicTextureLocation("logo",
-                    new DynamicTexture(this, textureUtil.dataBuffer,
-                            ImageIO.read(this.mcDefaultResourcePack.getInputStream(locationMojangPng))));
-            this.renderEngine.bindTexture(this.field_152354_ay);
-        } catch (IOException var7) {
-            logger.error("Unable to load logo: " + locationMojangPng, var7);
+        if (!BotGlobalConfig.isOptimizedGameLoop()) {
+            try {
+                this.minecraftLogoTexture = this.renderEngine.getDynamicTextureLocation("logo",
+                        new DynamicTexture(this, textureUtil.dataBuffer,
+                                ImageIO.read(this.mcDefaultResourcePack.getInputStream(locationMojangPng))));
+                this.renderEngine.bindTexture(this.minecraftLogoTexture);
+            } catch (IOException var7) {
+                logger.error("Unable to load logo: " + locationMojangPng, var7);
+            }
         }
 
         Tessellator var4 = this.getTessellator();
