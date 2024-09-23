@@ -13,6 +13,7 @@ public class GameLoop {
     static {
         ThreadManager.getGameLoopExecutor().scheduleAtFixedRate(() -> {
             for (Minecraft instance : InstanceManager.getInstances().values()) {
+                System.out.println("-1");
                 try {
                     if (instance.running) {
                         System.out.println("0");
