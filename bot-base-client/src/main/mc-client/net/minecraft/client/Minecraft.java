@@ -968,13 +968,10 @@ public class Minecraft {
      * Called repeatedly from run()
      */
     public void runGameLoop() {
-        System.out.println("1");
         this.mcProfiler.startSection("root");
 
         if (Display.isCreated() && Display.isCloseRequested())
             this.shutdown();
-
-        System.out.println("2");
 
         if (this.isGamePaused && this.theWorld != null) {
             float var1 = this.timer.renderPartialTicks;
@@ -984,22 +981,16 @@ public class Minecraft {
             this.timer.updateTimer();
         }
 
-        System.out.println("3");
-
         if ((this.theWorld == null || this.currentScreen == null) && this.refreshTexturePacksScheduled) {
             this.refreshTexturePacksScheduled = false;
             this.refreshResources();
         }
-
-        System.out.println("4");
 
         long var5 = System.nanoTime();
         this.mcProfiler.startSection("tick");
 
         for (int var3 = 0; var3 < this.timer.elapsedTicks; ++var3)
             this.runTick();
-
-        System.out.println("5");
 
         this.mcProfiler.endStartSection("preRenderErrors");
         long var6 = System.nanoTime() - var5;
@@ -1015,14 +1006,9 @@ public class Minecraft {
         this.mcProfiler.startSection("display");
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-        System.out.println("6");
-
         if (!BotGlobalConfig.isOptimizedGameLoop() && this.thePlayer != null
-                && this.thePlayer.isEntityInsideOpaqueBlock()) {
+                && this.thePlayer.isEntityInsideOpaqueBlock())
             this.gameSettings.thirdPersonView = 0;
-        }
-
-        System.out.println("7");
 
         this.mcProfiler.endSection();
 
@@ -1032,17 +1018,12 @@ public class Minecraft {
             this.mcProfiler.endSection();
         }
 
-        System.out.println("8");
-
         GL11.glFlush();
 
         this.mcProfiler.endSection();
 
-        if (!Display.isActive() && this.fullscreen) {
+        if (!Display.isActive() && this.fullscreen)
             this.toggleFullscreen();
-        }
-
-        System.out.println("9");
 
         if (this.gameSettings.showDebugInfo && this.gameSettings.showDebugProfilerChart) {
             if (!this.mcProfiler.profilingEnabled) {
@@ -1055,8 +1036,6 @@ public class Minecraft {
             this.mcProfiler.profilingEnabled = false;
             this.prevFrameTime = System.nanoTime();
         }
-
-        System.out.println("10");
 
         this.guiAchievement.func_146254_a();
         this.mcFramebuffer.unbindFramebuffer();
@@ -1098,8 +1077,6 @@ public class Minecraft {
 
         if (this.isFramerateLimitBelowMax())
             Display.sync(this.getLimitFramerate());
-
-        System.out.println("11");
     }
 
     public void func_147120_f() {

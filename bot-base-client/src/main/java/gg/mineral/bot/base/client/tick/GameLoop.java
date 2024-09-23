@@ -12,14 +12,10 @@ import net.minecraft.util.ReportedException;
 public class GameLoop {
     static {
         ThreadManager.getGameLoopExecutor().scheduleAtFixedRate(() -> {
-            System.out.println("Game loop");
             for (Minecraft instance : InstanceManager.getInstances().values()) {
-                System.out.println("-1");
                 try {
                     if (instance.running) {
-                        System.out.println("0");
                         if (!instance.hasCrashed || instance.crashReporter == null) {
-                            System.out.println("0.5");
                             try {
                                 instance.runGameLoop();
                             } catch (OutOfMemoryError var10) {
