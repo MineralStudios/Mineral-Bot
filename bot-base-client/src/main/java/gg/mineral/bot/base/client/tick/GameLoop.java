@@ -12,6 +12,7 @@ import net.minecraft.util.ReportedException;
 public class GameLoop {
     static {
         ThreadManager.getGameLoopExecutor().scheduleAtFixedRate(() -> {
+            System.out.println("Game loop");
             for (Minecraft instance : InstanceManager.getInstances().values()) {
                 System.out.println("-1");
                 try {
