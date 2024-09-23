@@ -39,18 +39,18 @@ public class S21PacketChunkData extends Packet {
         this.groundUpContinuous = groundUpContinuous;
         S21PacketChunkData.Extracted var4 = func_149269_a(mc, chunkSections, biomeArray,
                 groundUpContinuous, primaryBitMask);
-        Deflater var5 = new Deflater(-1);
+        // Deflater var5 = new Deflater(-1);
         this.addBitMap = var4.addBitMap;
         this.primaryBitMap = var4.primaryBitMap;
 
         try {
             this.uncompressedData = var4.data;
-            var5.setInput(var4.data, 0, var4.data.length);
-            var5.finish();
-            this.compressedData = new byte[var4.data.length];
-            this.compressedSize = var5.deflate(this.compressedData);
+            // var5.setInput(var4.data, 0, var4.data.length);
+            // var5.finish();
+            // this.compressedData = new byte[var4.data.length];
+            // this.compressedSize = var5.deflate(this.compressedData);
         } finally {
-            var5.end();
+            // var5.end();
         }
     }
 

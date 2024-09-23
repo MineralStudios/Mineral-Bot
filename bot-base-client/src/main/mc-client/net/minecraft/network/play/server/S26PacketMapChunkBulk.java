@@ -59,16 +59,18 @@ public class S26PacketMapChunkBulk extends Packet {
             this.dataArr[var4] = var6.data;
         }
 
-        Deflater var11 = new Deflater(-1);
-
-        try {
-            var11.setInput(buffer, 0, var3);
-            var11.finish();
-            this.compressedByteArray = new byte[var3];
-            this.compressedSize = var11.deflate(this.compressedByteArray);
-        } finally {
-            var11.end();
-        }
+        /*
+         * Deflater var11 = new Deflater(-1);
+         * 
+         * try {
+         * var11.setInput(buffer, 0, var3);
+         * var11.finish();
+         * this.compressedByteArray = new byte[var3];
+         * this.compressedSize = var11.deflate(this.compressedByteArray);
+         * } finally {
+         * var11.end();
+         * }
+         */
     }
 
     public S26PacketMapChunkBulk(Minecraft mc, List<Chunk> chunks) {
