@@ -269,7 +269,7 @@ public class Minecraft {
      * debug screen. It's also sent as part of
      * the usage snooping.
      */
-    private static int debugFPS;
+    private int debugFPS;
 
     /**
      * When you place a block, it's set to 6, decremented once per tick, when it's
@@ -1042,6 +1042,8 @@ public class Minecraft {
             this.toggleFullscreen();
         }
 
+        System.out.println("9");
+
         if (this.gameSettings.showDebugInfo && this.gameSettings.showDebugProfilerChart) {
             if (!this.mcProfiler.profilingEnabled) {
                 this.mcProfiler.clearProfiling();
@@ -1053,6 +1055,8 @@ public class Minecraft {
             this.mcProfiler.profilingEnabled = false;
             this.prevFrameTime = System.nanoTime();
         }
+
+        System.out.println("10");
 
         this.guiAchievement.func_146254_a();
         this.mcFramebuffer.unbindFramebuffer();
@@ -1094,6 +1098,8 @@ public class Minecraft {
 
         if (this.isFramerateLimitBelowMax())
             Display.sync(this.getLimitFramerate());
+
+        System.out.println("11");
     }
 
     public void func_147120_f() {
