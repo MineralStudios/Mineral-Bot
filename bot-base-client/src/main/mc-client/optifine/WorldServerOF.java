@@ -11,6 +11,9 @@ import java.util.TreeSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gg.mineral.bot.api.util.MathUtil;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -34,8 +37,8 @@ public class WorldServerOF extends WorldServer {
     private List pendingTickListEntriesThisTick = new ArrayList();
     private int lastViewDistance = 0;
     private boolean allChunksTicked = false;
-    public Set setChunkCoordsToTickOnce = new HashSet();
-    private Set limitedChunkSet = new HashSet();
+    public LongSet setChunkCoordsToTickOnce = new LongOpenHashSet();
+    private LongSet limitedChunkSet = new LongOpenHashSet();
     private static final Logger logger = LogManager.getLogger();
 
     public WorldServerOF(Minecraft mc, MinecraftServer par1MinecraftServer, ISaveHandler par2iSaveHandler,
@@ -301,11 +304,9 @@ public class WorldServerOF extends WorldServer {
                     int pcz = MathHelper.floor_double(player.posZ / 16.0D);
                     byte dist = 10;
 
-                    for (int cx = -dist; cx <= dist; ++cx) {
-                        for (int cz = -dist; cz <= dist; ++cz) {
-                            this.limitedChunkSet.add(new ChunkCoordIntPair(cx + pcx, cz + pcz));
-                        }
-                    }
+                    for (int cx = -dist; cx <= dist; ++cx)
+                        for (int cz = -dist; cz <= dist; ++cz)
+                            this.limitedChunkSet.add(MathUtil.combineIntsToLong(cx + pcx, cz + pcz));
                 }
 
                 if (this.setChunkCoordsToTickOnce.size() > 0) {
@@ -319,13 +320,12 @@ public class WorldServerOF extends WorldServer {
     public void addChunkToTickOnce(int cx, int cz) {
         int viewDistance = this.func_152379_p();
 
-        if (viewDistance > 10) {
-            this.setChunkCoordsToTickOnce.add(new ChunkCoordIntPair(cx, cz));
-        }
+        if (viewDistance > 10)
+            this.setChunkCoordsToTickOnce.add(MathUtil.combineIntsToLong(cx, cz));
     }
 
     protected void func_147456_g() {
-        Set oldSet = this.activeChunkSet;
+        LongSet oldSet = this.activeChunkSet;
 
         if (this.limitedChunkSet.size() > 0) {
             this.activeChunkSet = this.limitedChunkSet;

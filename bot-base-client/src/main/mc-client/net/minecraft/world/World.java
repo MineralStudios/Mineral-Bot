@@ -3,15 +3,16 @@ package net.minecraft.world;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import gg.mineral.bot.api.util.MathUtil;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHopper;
 import net.minecraft.block.BlockLiquid;
@@ -133,7 +134,7 @@ public abstract class World implements IBlockAccess {
     public boolean isClient;
 
     /** Positions to update */
-    protected Set activeChunkSet = new HashSet();
+    protected LongSet activeChunkSet = new LongOpenHashSet();
 
     /** number of ticks until the next random ambients play */
     private int ambientTickCountdown;
@@ -2476,18 +2477,15 @@ public abstract class World implements IBlockAccess {
             var4 = MathHelper.floor_double(var2.posZ / 16.0D);
             var5 = this.func_152379_p();
 
-            for (int var6 = -var5; var6 <= var5; ++var6) {
-                for (int var7 = -var5; var7 <= var5; ++var7) {
-                    this.activeChunkSet.add(new ChunkCoordIntPair(var6 + var3, var7 + var4));
-                }
-            }
+            for (int var6 = -var5; var6 <= var5; ++var6)
+                for (int var7 = -var5; var7 <= var5; ++var7)
+                    this.activeChunkSet.add(MathUtil.combineIntsToLong(var6 + var3, var7 + var4));
         }
 
         this.theProfiler.endSection();
 
-        if (this.ambientTickCountdown > 0) {
+        if (this.ambientTickCountdown > 0)
             --this.ambientTickCountdown;
-        }
 
         this.theProfiler.startSection("playerCheckLight");
 

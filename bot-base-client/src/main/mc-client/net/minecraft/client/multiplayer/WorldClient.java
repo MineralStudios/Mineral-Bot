@@ -2,17 +2,17 @@ package net.minecraft.client.multiplayer;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import gg.mineral.bot.api.entity.ClientEntity;
-import gg.mineral.bot.api.entity.living.ClientLivingEntity;
+import gg.mineral.bot.api.util.MathUtil;
 import gg.mineral.bot.api.world.ClientWorld;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -62,7 +62,7 @@ public class WorldClient extends World implements ClientWorld {
      */
     private Set entitySpawnQueue = new HashSet();
     public final Minecraft mc;
-    private final Set previousActiveChunkSet = new HashSet();
+    private final LongSet previousActiveChunkSet = new LongOpenHashSet();
     private static final String __OBFID = "CL_00000882";
 
     public WorldClient(Minecraft mc, NetHandlerPlayClient p_i45063_1_, WorldSettings p_i45063_2_, int p_i45063_3_,
@@ -129,29 +129,30 @@ public class WorldClient extends World implements ClientWorld {
         super.func_147456_g();
         this.previousActiveChunkSet.retainAll(this.activeChunkSet);
 
-        if (this.previousActiveChunkSet.size() == this.activeChunkSet.size()) {
+        if (this.previousActiveChunkSet.size() == this.activeChunkSet.size())
             this.previousActiveChunkSet.clear();
-        }
 
         int var1 = 0;
-        Iterator var2 = this.activeChunkSet.iterator();
+        LongIterator var2 = this.activeChunkSet.iterator();
 
         while (var2.hasNext()) {
-            ChunkCoordIntPair var3 = (ChunkCoordIntPair) var2.next();
+            long var3 = var2.nextLong();
 
             if (!this.previousActiveChunkSet.contains(var3)) {
-                int var4 = var3.chunkXPos * 16;
-                int var5 = var3.chunkZPos * 16;
+                int chunkXPos = MathUtil.getHighInt(var3);
+                int chunkZPos = MathUtil.getLowInt(var3);
+                int var4 = chunkXPos * 16;
+                int var5 = chunkZPos * 16;
                 this.theProfiler.startSection("getChunk");
-                Chunk var6 = this.getChunkFromChunkCoords(var3.chunkXPos, var3.chunkZPos);
+                Chunk var6 = this.getChunkFromChunkCoords(chunkXPos, chunkZPos);
                 this.func_147467_a(var4, var5, var6);
                 this.theProfiler.endSection();
                 this.previousActiveChunkSet.add(var3);
                 ++var1;
 
-                if (var1 >= 10) {
+                if (var1 >= 10)
                     return;
-                }
+
             }
         }
     }

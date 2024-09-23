@@ -125,4 +125,39 @@ public interface MathUtil {
         float f3 = sin(-pitch * 0.017453292F);
         return new double[] { (double) (f1 * f2), (double) f3, (double) (f * f2) };
     }
+
+    /**
+     * Combines two integers into a long.
+     * 
+     * @param high
+     *            The high 32 bits of the resulting long.
+     * @param low
+     *            The low 32 bits of the resulting long.
+     * @return A long containing the two input integers.
+     */
+    public static long combineIntsToLong(int high, int low) {
+        return (((long) high) << 32) | (low & 0xFFFFFFFFL);
+    }
+
+    /**
+     * Extracts the high 32 bits from a long as an int.
+     * 
+     * @param value
+     *            The long value to extract from.
+     * @return The high 32 bits of the input long as an int.
+     */
+    public static int getHighInt(long value) {
+        return (int) (value >> 32);
+    }
+
+    /**
+     * Extracts the low 32 bits from a long as an int.
+     * 
+     * @param value
+     *            The long value to extract from.
+     * @return The low 32 bits of the input long as an int.
+     */
+    public static int getLowInt(long value) {
+        return (int) value;
+    }
 }

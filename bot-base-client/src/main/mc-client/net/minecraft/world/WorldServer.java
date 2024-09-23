@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Lists;
 
+import gg.mineral.bot.api.util.MathUtil;
+import it.unimi.dsi.fastutil.longs.LongIterator;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEventData;
 import net.minecraft.block.material.Material;
@@ -294,14 +296,16 @@ public class WorldServer extends World {
         super.func_147456_g();
         int var1 = 0;
         int var2 = 0;
-        Iterator var3 = this.activeChunkSet.iterator();
+        LongIterator var3 = this.activeChunkSet.iterator();
 
         while (var3.hasNext()) {
-            ChunkCoordIntPair var4 = (ChunkCoordIntPair) var3.next();
-            int var5 = var4.chunkXPos * 16;
-            int var6 = var4.chunkZPos * 16;
+            long var4 = var3.nextLong();
+            int chunkXPos = MathUtil.getHighInt(var4);
+            int chunkZPos = MathUtil.getLowInt(var4);
+            int var5 = chunkXPos * 16;
+            int var6 = chunkZPos * 16;
             this.theProfiler.startSection("getChunk");
-            Chunk var7 = this.getChunkFromChunkCoords(var4.chunkXPos, var4.chunkZPos);
+            Chunk var7 = this.getChunkFromChunkCoords(chunkXPos, chunkZPos);
             this.func_147467_a(var5, var6, var7);
             this.theProfiler.endStartSection("tickChunk");
             var7.func_150804_b(false);
