@@ -23,7 +23,7 @@ public class ServerNetworkManager extends NetworkManager {
     @SuppressWarnings("unchecked")
     @Override
     public void handle(@SuppressWarnings("rawtypes") Packet packet) {
-        if (mc instanceof FakePlayerInstance instance)
+        if (mc instanceof FakePlayerInstance instance && (!mc.isMainThread() || instance.getLatency() > 0))
             instance.scheduleTask(() -> translator.handlePacket(packet), instance.getLatency());
         else
             translator.handlePacket(packet);
