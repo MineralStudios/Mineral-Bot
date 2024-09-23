@@ -15,7 +15,9 @@ public class GameLoop {
             for (Minecraft instance : InstanceManager.getInstances().values()) {
                 try {
                     if (instance.running) {
+                        System.out.println("0");
                         if (!instance.hasCrashed || instance.crashReporter == null) {
+                            System.out.println("0.5");
                             try {
                                 instance.runGameLoop();
                             } catch (OutOfMemoryError var10) {
