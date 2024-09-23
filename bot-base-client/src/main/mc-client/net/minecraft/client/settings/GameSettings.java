@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.resources.I18n;
@@ -893,8 +894,13 @@ public class GameSettings {
 
         if (par1EnumOptions == GameSettings.Options.CUSTOM_FONTS) {
             this.ofCustomFonts = !this.ofCustomFonts;
-            this.mc.fontRenderer.onResourceManagerReload(Config.getResourceManager());
-            this.mc.standardGalacticFontRenderer.onResourceManagerReload(Config.getResourceManager());
+            FontRenderer fontRenderer = this.mc.fontRenderer;
+
+            if (fontRenderer != null)
+                fontRenderer.onResourceManagerReload(Config.getResourceManager());
+            FontRenderer stdGalacticFontRenderer = this.mc.standardGalacticFontRenderer;
+            if (stdGalacticFontRenderer != null)
+                stdGalacticFontRenderer.onResourceManagerReload(Config.getResourceManager());
         }
 
         if (par1EnumOptions == GameSettings.Options.CUSTOM_COLORS) {
@@ -1004,8 +1010,11 @@ public class GameSettings {
 
         if (par1EnumOptions == GameSettings.Options.FORCE_UNICODE_FONT) {
             this.forceUnicodeFont = !this.forceUnicodeFont;
-            this.mc.fontRenderer
-                    .setUnicodeFlag(this.mc.getLanguageManager().isCurrentLocaleUnicode() || this.forceUnicodeFont);
+            FontRenderer fontRenderer = this.mc.fontRenderer;
+
+            if (fontRenderer != null)
+                fontRenderer
+                        .setUnicodeFlag(this.mc.getLanguageManager().isCurrentLocaleUnicode() || this.forceUnicodeFont);
         }
 
         if (par1EnumOptions == GameSettings.Options.ADVANCED_OPENGL) {

@@ -16,11 +16,11 @@ public class GuiKeyBindingList extends GuiListExtended {
     private int field_148188_n = 0;
     private static final String __OBFID = "CL_00000732";
 
-    public GuiKeyBindingList(GuiControls p_i45031_1_, Minecraft p_i45031_2_) {
-        super(p_i45031_2_, p_i45031_1_.width, p_i45031_1_.height, 63, p_i45031_1_.height - 32, 20);
+    public GuiKeyBindingList(GuiControls p_i45031_1_, Minecraft mc) {
+        super(mc, p_i45031_1_.width, p_i45031_1_.height, 63, p_i45031_1_.height - 32, 20);
         this.field_148191_k = p_i45031_1_;
-        this.field_148189_l = p_i45031_2_;
-        KeyBinding[] var3 = (KeyBinding[]) ArrayUtils.clone(p_i45031_2_.gameSettings.keyBindings);
+        this.field_148189_l = mc;
+        KeyBinding[] var3 = (KeyBinding[]) ArrayUtils.clone(mc.gameSettings.keyBindings);
         this.field_148190_m = new GuiListExtended.IGuiListEntry[var3.length + KeyBinding.func_151467_c().size()];
         Arrays.sort(var3);
         int var4 = 0;
@@ -37,10 +37,14 @@ public class GuiKeyBindingList extends GuiListExtended {
                 this.field_148190_m[var4++] = new GuiKeyBindingList.CategoryEntry(var10);
             }
 
-            int var11 = p_i45031_2_.fontRenderer.getStringWidth(I18n.format(var9.getKeyDescription(), new Object[0]));
+            FontRenderer fontRenderer = mc.fontRenderer;
 
-            if (var11 > this.field_148188_n) {
-                this.field_148188_n = var11;
+            if (fontRenderer != null) {
+                int var11 = fontRenderer.getStringWidth(I18n.format(var9.getKeyDescription(), new Object[0]));
+
+                if (var11 > this.field_148188_n) {
+                    this.field_148188_n = var11;
+                }
             }
 
             this.field_148190_m[var4++] = new GuiKeyBindingList.KeyEntry(var9, null);
@@ -70,15 +74,20 @@ public class GuiKeyBindingList extends GuiListExtended {
 
         public CategoryEntry(String p_i45028_2_) {
             this.field_148285_b = I18n.format(p_i45028_2_, new Object[0]);
-            this.field_148286_c = GuiKeyBindingList.this.field_148189_l.fontRenderer
-                    .getStringWidth(this.field_148285_b);
+            FontRenderer fontRenderer = GuiKeyBindingList.this.field_148189_l.fontRenderer;
+            this.field_148286_c = fontRenderer != null ? fontRenderer
+                    .getStringWidth(this.field_148285_b) : 0;
         }
 
         public void func_148279_a(int p_148279_1_, int p_148279_2_, int p_148279_3_, int p_148279_4_, int p_148279_5_,
                 Tessellator p_148279_6_, int p_148279_7_, int p_148279_8_, boolean p_148279_9_) {
-            GuiKeyBindingList.this.field_148189_l.fontRenderer.drawString(this.field_148285_b,
+            FontRenderer fontRenderer = GuiKeyBindingList.this.field_148189_l.fontRenderer;
+
+            if (fontRenderer == null)
+                return;
+            fontRenderer.drawString(this.field_148285_b,
                     GuiKeyBindingList.this.field_148189_l.currentScreen.width / 2 - this.field_148286_c / 2,
-                    p_148279_3_ + p_148279_5_ - GuiKeyBindingList.this.field_148189_l.fontRenderer.FONT_HEIGHT - 1,
+                    p_148279_3_ + p_148279_5_ - fontRenderer.FONT_HEIGHT - 1,
                     16777215);
         }
 
@@ -111,10 +120,13 @@ public class GuiKeyBindingList extends GuiListExtended {
         public void func_148279_a(int p_148279_1_, int p_148279_2_, int p_148279_3_, int p_148279_4_, int p_148279_5_,
                 Tessellator p_148279_6_, int p_148279_7_, int p_148279_8_, boolean p_148279_9_) {
             boolean var10 = GuiKeyBindingList.this.field_148191_k.field_146491_f == this.field_148282_b;
-            GuiKeyBindingList.this.field_148189_l.fontRenderer.drawString(this.field_148283_c,
-                    p_148279_2_ + 90 - GuiKeyBindingList.this.field_148188_n,
-                    p_148279_3_ + p_148279_5_ / 2 - GuiKeyBindingList.this.field_148189_l.fontRenderer.FONT_HEIGHT / 2,
-                    16777215);
+            FontRenderer fontRenderer = GuiKeyBindingList.this.field_148189_l.fontRenderer;
+            if (fontRenderer != null)
+                fontRenderer.drawString(this.field_148283_c,
+                        p_148279_2_ + 90 - GuiKeyBindingList.this.field_148188_n,
+                        p_148279_3_ + p_148279_5_ / 2
+                                - fontRenderer.FONT_HEIGHT / 2,
+                        16777215);
             this.field_148281_e.field_146128_h = p_148279_2_ + 190;
             this.field_148281_e.field_146129_i = p_148279_3_;
             this.field_148281_e.enabled = this.field_148282_b.getKeyCode() != this.field_148282_b.getKeyCodeDefault();

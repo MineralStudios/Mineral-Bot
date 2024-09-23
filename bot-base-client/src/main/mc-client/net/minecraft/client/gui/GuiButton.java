@@ -56,10 +56,10 @@ public class GuiButton extends Gui {
     /**
      * Draws this button to the screen.
      */
-    public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_) {
+    public void drawButton(Minecraft mc, int p_146112_2_, int p_146112_3_) {
         if (this.field_146125_m) {
-            FontRenderer var4 = p_146112_1_.fontRenderer;
-            p_146112_1_.getTextureManager().bindTexture(field_146122_a);
+            FontRenderer fontRenderer = mc.fontRenderer;
+            mc.getTextureManager().bindTexture(field_146122_a);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             this.field_146123_n = p_146112_2_ >= this.field_146128_h && p_146112_3_ >= this.field_146129_i
                     && p_146112_2_ < this.field_146128_h + this.field_146120_f
@@ -72,7 +72,7 @@ public class GuiButton extends Gui {
                     this.field_146120_f / 2, this.field_146121_g);
             this.drawTexturedModalRect(this.field_146128_h + this.field_146120_f / 2, this.field_146129_i,
                     200 - this.field_146120_f / 2, 46 + var5 * 20, this.field_146120_f / 2, this.field_146121_g);
-            this.mouseDragged(p_146112_1_, p_146112_2_, p_146112_3_);
+            this.mouseDragged(mc, p_146112_2_, p_146112_3_);
             int var6 = 14737632;
 
             if (!this.enabled) {
@@ -81,8 +81,9 @@ public class GuiButton extends Gui {
                 var6 = 16777120;
             }
 
-            this.drawCenteredString(var4, this.displayString, this.field_146128_h + this.field_146120_f / 2,
-                    this.field_146129_i + (this.field_146121_g - 8) / 2, var6);
+            if (fontRenderer != null)
+                this.drawCenteredString(fontRenderer, this.displayString, this.field_146128_h + this.field_146120_f / 2,
+                        this.field_146129_i + (this.field_146121_g - 8) / 2, var6);
         }
     }
 

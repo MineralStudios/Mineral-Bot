@@ -3,6 +3,7 @@ package net.minecraft.client.gui.achievement;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
@@ -104,11 +105,15 @@ public class GuiAchievement extends Gui {
             GL11.glDisable(GL11.GL_LIGHTING);
             this.drawTexturedModalRect(var5, var6, 96, 202, 160, 32);
 
-            if (this.field_146262_n) {
-                this.mc.fontRenderer.drawSplitString(this.field_146265_j, var5 + 30, var6 + 7, 120, -1);
-            } else {
-                this.mc.fontRenderer.drawString(this.field_146268_i, var5 + 30, var6 + 7, -256);
-                this.mc.fontRenderer.drawString(this.field_146265_j, var5 + 30, var6 + 18, -1);
+            FontRenderer fontRenderer = this.mc.fontRenderer;
+
+            if (fontRenderer != null) {
+                if (this.field_146262_n) {
+                    fontRenderer.drawSplitString(this.field_146265_j, var5 + 30, var6 + 7, 120, -1);
+                } else {
+                    fontRenderer.drawString(this.field_146268_i, var5 + 30, var6 + 7, -256);
+                    fontRenderer.drawString(this.field_146265_j, var5 + 30, var6 + 18, -1);
+                }
             }
 
             RenderHelper.enableGUIStandardItemLighting();

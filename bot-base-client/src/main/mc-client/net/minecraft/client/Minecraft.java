@@ -217,7 +217,9 @@ public class Minecraft {
     private boolean isGamePaused;
 
     /** The font renderer used for displaying and measuring text. */
+    @Nullable
     public FontRenderer fontRenderer;
+    @Nullable
     public FontRenderer standardGalacticFontRenderer;
 
     /** The GuiScreen that's being displayed at the moment. */
@@ -568,18 +570,24 @@ public class Minecraft {
         if (!BotGlobalConfig.isHeadless() && !BotGlobalConfig.isOptimizedGameLoop())
             this.mcResourceManager.registerReloadListener(this.mcSoundHandler);
         this.mcMusicTicker = new MusicTicker(this);
-        this.fontRenderer = new FontRenderer(this, this.gameSettings, new ResourceLocation("textures/font/ascii.png"),
-                this.renderEngine, false);
 
-        if (this.gameSettings.language != null) {
-            this.fontRenderer.setUnicodeFlag(this.func_152349_b());
-            this.fontRenderer.setBidiFlag(this.mcLanguageManager.isCurrentLanguageBidirectional());
-        }
-
-        this.standardGalacticFontRenderer = new FontRenderer(this, this.gameSettings,
-                new ResourceLocation("textures/font/ascii_sga.png"), this.renderEngine, false);
         if (!BotGlobalConfig.isOptimizedGameLoop()) {
-            this.mcResourceManager.registerReloadListener(this.fontRenderer);
+            this.fontRenderer = new FontRenderer(this, this.gameSettings,
+                    new ResourceLocation("textures/font/ascii.png"),
+                    this.renderEngine, false);
+
+            if (this.gameSettings.language != null) {
+                if (this.fontRenderer != null)
+                    this.fontRenderer.setUnicodeFlag(this.func_152349_b());
+                if (this.fontRenderer != null)
+                    this.fontRenderer.setBidiFlag(this.mcLanguageManager.isCurrentLanguageBidirectional());
+            }
+
+            this.standardGalacticFontRenderer = new FontRenderer(this, this.gameSettings,
+                    new ResourceLocation("textures/font/ascii_sga.png"), this.renderEngine, false);
+
+            if (this.fontRenderer != null)
+                this.mcResourceManager.registerReloadListener(this.fontRenderer);
             this.mcResourceManager.registerReloadListener(this.standardGalacticFontRenderer);
             this.mcResourceManager.registerReloadListener(new GrassColorReloadListener());
             this.mcResourceManager.registerReloadListener(new FoliageColorReloadListener());
@@ -1252,29 +1260,34 @@ public class Minecraft {
             }
 
             var13 = 16777215;
-            this.fontRenderer.drawStringWithShadow(var19, var7 - var6, var8 - var6 / 2 - 16, var13);
-            this.fontRenderer.drawStringWithShadow(var19 = var18.format(var4.field_76330_b) + "%",
-                    var7 + var6 - this.fontRenderer.getStringWidth(var19), var8 - var6 / 2 - 16, var13);
+            FontRenderer fontRenderer = this.fontRenderer;
+            if (fontRenderer != null) {
+                fontRenderer.drawStringWithShadow(var19, var7 - var6, var8 - var6 / 2 - 16, var13);
+                fontRenderer.drawStringWithShadow(var19 = var18.format(var4.field_76330_b) + "%",
+                        var7 + var6 - fontRenderer.getStringWidth(var19), var8 - var6 / 2 - 16, var13);
 
-            for (int var20 = 0; var20 < var3.size(); ++var20) {
-                Profiler.Result var21 = (Profiler.Result) var3.get(var20);
-                String var22 = "";
+                for (int var20 = 0; var20 < var3.size(); ++var20) {
+                    Profiler.Result var21 = (Profiler.Result) var3.get(var20);
+                    String var22 = "";
 
-                if (var21.field_76331_c.equals("unspecified")) {
-                    var22 = var22 + "[?] ";
-                } else {
-                    var22 = var22 + "[" + (var20 + 1) + "] ";
+                    if (var21.field_76331_c.equals("unspecified")) {
+                        var22 = var22 + "[?] ";
+                    } else {
+                        var22 = var22 + "[" + (var20 + 1) + "] ";
+                    }
+
+                    var22 = var22 + var21.field_76331_c;
+
+                    fontRenderer.drawStringWithShadow(var22, var7 - var6, var8 + var6 / 2 + var20 * 8 + 20,
+                            var21.func_76329_a());
+                    fontRenderer.drawStringWithShadow(var22 = var18.format(var21.field_76332_a) + "%",
+                            var7 + var6 - 50 - fontRenderer.getStringWidth(var22),
+                            var8 + var6 / 2 + var20 * 8 + 20,
+                            var21.func_76329_a());
+                    fontRenderer.drawStringWithShadow(var22 = var18.format(var21.field_76330_b) + "%",
+                            var7 + var6 - fontRenderer.getStringWidth(var22), var8 + var6 / 2 + var20 * 8 + 20,
+                            var21.func_76329_a());
                 }
-
-                var22 = var22 + var21.field_76331_c;
-                this.fontRenderer.drawStringWithShadow(var22, var7 - var6, var8 + var6 / 2 + var20 * 8 + 20,
-                        var21.func_76329_a());
-                this.fontRenderer.drawStringWithShadow(var22 = var18.format(var21.field_76332_a) + "%",
-                        var7 + var6 - 50 - this.fontRenderer.getStringWidth(var22), var8 + var6 / 2 + var20 * 8 + 20,
-                        var21.func_76329_a());
-                this.fontRenderer.drawStringWithShadow(var22 = var18.format(var21.field_76330_b) + "%",
-                        var7 + var6 - this.fontRenderer.getStringWidth(var22), var8 + var6 / 2 + var20 * 8 + 20,
-                        var21.func_76329_a());
             }
         }
     }

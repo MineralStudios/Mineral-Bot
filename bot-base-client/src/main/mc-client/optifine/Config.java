@@ -34,12 +34,15 @@ import gg.mineral.bot.base.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GLContext;
+import lombok.Getter;
+
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.glu.GLU;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -70,6 +73,7 @@ public class Config {
     public static String openGlVersion = null;
     public static String openGlRenderer = null;
     public static String openGlVendor = null;
+    @Getter
     private static GameSettings gameSettings = null;
     private static Minecraft minecraft = null;
     private static boolean initialized = false;
@@ -1116,16 +1120,12 @@ public class Config {
         }
     }
 
-    public static GameSettings getGameSettings() {
-        return gameSettings;
-    }
-
     public static String getNewRelease() {
         return newRelease;
     }
 
-    public static void setNewRelease(String newRelease) {
-        newRelease = newRelease;
+    public static void setNewRelease(String newRelease1) {
+        newRelease = newRelease1;
     }
 
     public static int compareRelease(String rel1, String rel2) {
@@ -1197,37 +1197,33 @@ public class Config {
     }
 
     public static WorldServer getWorldServer() {
-        if (minecraft == null) {
+        if (minecraft == null)
             return null;
-        } else {
-            WorldClient world = minecraft.theWorld;
 
-            if (world == null) {
-                return null;
-            } else if (!minecraft.isIntegratedServerRunning()) {
-                return null;
-            } else {
-                IntegratedServer is = minecraft.getIntegratedServer();
+        WorldClient world = minecraft.theWorld;
 
-                if (is == null) {
-                    return null;
-                } else {
-                    WorldProvider wp = world.provider;
+        if (world == null)
+            return null;
+        if (!minecraft.isIntegratedServerRunning())
+            return null;
 
-                    if (wp == null) {
-                        return null;
-                    } else {
-                        int wd = wp.dimensionId;
+        IntegratedServer is = minecraft.getIntegratedServer();
 
-                        try {
-                            WorldServer e = is.worldServerForDimension(wd);
-                            return e;
-                        } catch (NullPointerException var5) {
-                            return null;
-                        }
-                    }
-                }
-            }
+        if (is == null)
+            return null;
+
+        WorldProvider wp = world.provider;
+
+        if (wp == null)
+            return null;
+
+        int wd = wp.dimensionId;
+
+        try {
+            WorldServer e = is.worldServerForDimension(wd);
+            return e;
+        } catch (NullPointerException var5) {
+            return null;
         }
     }
 
@@ -1252,12 +1248,11 @@ public class Config {
     }
 
     public static int getChunkViewDistance() {
-        if (gameSettings == null) {
+        if (gameSettings == null)
             return 10;
-        } else {
-            int chunkDistance = gameSettings.renderDistanceChunks;
-            return chunkDistance;
-        }
+
+        int chunkDistance = gameSettings.renderDistanceChunks;
+        return chunkDistance;
     }
 
     public static boolean equals(Object o1, Object o2) {
@@ -1337,40 +1332,34 @@ public class Config {
     public static void checkDisplayMode() {
         try {
             if (minecraft.isFullScreen()) {
-                if (fullscreenModeChecked) {
+                if (fullscreenModeChecked)
                     return;
-                }
 
                 fullscreenModeChecked = true;
                 desktopModeChecked = false;
                 DisplayMode e = Display.getDisplayMode();
                 Dimension dim = getFullscreenDimension();
 
-                if (dim == null) {
+                if (dim == null)
                     return;
-                }
 
-                if (e.getWidth() == dim.width && e.getHeight() == dim.height) {
+                if (e.getWidth() == dim.width && e.getHeight() == dim.height)
                     return;
-                }
 
                 DisplayMode newMode = getDisplayMode(dim);
 
-                if (newMode == null) {
+                if (newMode == null)
                     return;
-                }
 
                 Display.setDisplayMode(newMode);
                 minecraft.displayWidth = Display.getDisplayMode().getWidth();
                 minecraft.displayHeight = Display.getDisplayMode().getHeight();
 
-                if (minecraft.displayWidth <= 0) {
+                if (minecraft.displayWidth <= 0)
                     minecraft.displayWidth = 1;
-                }
 
-                if (minecraft.displayHeight <= 0) {
+                if (minecraft.displayHeight <= 0)
                     minecraft.displayHeight = 1;
-                }
 
                 if (minecraft.currentScreen != null) {
                     ScaledResolution sr = new ScaledResolution(minecraft, minecraft.displayWidth,
@@ -1386,9 +1375,8 @@ public class Config {
                 minecraft.gameSettings.updateVSync();
                 GL11.glEnable(GL11.GL_TEXTURE_2D);
             } else {
-                if (desktopModeChecked) {
+                if (desktopModeChecked)
                     return;
-                }
 
                 desktopModeChecked = true;
                 fullscreenModeChecked = false;
@@ -1454,9 +1442,8 @@ public class Config {
         String debugStr = minecraft.debug;
         int pos = debugStr.indexOf(32);
 
-        if (pos < 0) {
+        if (pos < 0)
             pos = 0;
-        }
 
         String fps = debugStr.substring(0, pos);
         String updates = getUpdates(minecraft.debug);
@@ -1465,19 +1452,21 @@ public class Config {
         int tileEntities = minecraft.renderGlobal.getCountTileEntitiesRendered();
         String fpsStr = fps + " fps, C: " + renderersActive + ", E: " + entities + "+" + tileEntities + ", U: "
                 + updates;
-        minecraft.fontRenderer.drawString(fpsStr, 2, 2, -2039584);
+        FontRenderer fontRenderer = minecraft.fontRenderer;
+
+        if (fontRenderer == null)
+            return;
+        fontRenderer.drawString(fpsStr, 2, 2, -2039584);
     }
 
     private static String getUpdates(String str) {
         int pos1 = str.indexOf(", ");
 
-        if (pos1 < 0) {
+        if (pos1 < 0)
             return "";
-        } else {
-            pos1 += 2;
-            int pos2 = str.indexOf(32, pos1);
-            return pos2 < 0 ? "" : str.substring(pos1, pos2);
-        }
+        pos1 += 2;
+        int pos2 = str.indexOf(32, pos1);
+        return pos2 < 0 ? "" : str.substring(pos1, pos2);
     }
 
     public static int getBitsOs() {
@@ -1492,9 +1481,8 @@ public class Config {
             String propName = propNames[i];
             String propVal = System.getProperty(propName);
 
-            if (propVal != null && propVal.contains("64")) {
+            if (propVal != null && propVal.contains("64"))
                 return 64;
-            }
         }
 
         return 32;
@@ -1513,39 +1501,32 @@ public class Config {
     }
 
     public static String fillLeft(String s, int len, char fillChar) {
-        if (s == null) {
+        if (s == null)
             s = "";
-        }
 
-        if (s.length() >= len) {
+        if (s.length() >= len)
             return s;
-        } else {
-            StringBuffer buf = new StringBuffer(s);
+        StringBuffer buf = new StringBuffer(s);
 
-            while (buf.length() < len - s.length()) {
-                buf.append(fillChar);
-            }
+        while (buf.length() < len - s.length())
+            buf.append(fillChar);
 
-            return buf.toString() + s;
-        }
+        return buf.toString() + s;
     }
 
     public static String fillRight(String s, int len, char fillChar) {
-        if (s == null) {
+        if (s == null)
             s = "";
-        }
 
-        if (s.length() >= len) {
+        if (s.length() >= len)
             return s;
-        } else {
-            StringBuffer buf = new StringBuffer(s);
 
-            while (buf.length() < len) {
-                buf.append(fillChar);
-            }
+        StringBuffer buf = new StringBuffer(s);
 
-            return buf.toString();
-        }
+        while (buf.length() < len)
+            buf.append(fillChar);
+
+        return buf.toString();
     }
 
     public static int[] addIntToArray(int[] intArray, int intValue) {
@@ -1559,9 +1540,8 @@ public class Config {
             int[] newArray = new int[newLen];
             System.arraycopy(intArray, 0, newArray, 0, arrLen);
 
-            for (int index = 0; index < copyFrom.length; ++index) {
+            for (int index = 0; index < copyFrom.length; ++index)
                 newArray[index + arrLen] = copyFrom[index];
-            }
 
             return newArray;
         } else {
@@ -1574,12 +1554,12 @@ public class Config {
             ResourceLocation e = new ResourceLocation("textures/gui/title/mojang.png");
             InputStream in = getResourceStream(e);
 
-            if (in == null) {
+            if (in == null)
                 return texDefault;
-            } else {
-                DynamicTexture dt = new DynamicTexture(mc, mc.textureUtil.dataBuffer, ImageIO.read(in));
-                return dt;
-            }
+
+            DynamicTexture dt = new DynamicTexture(mc, mc.textureUtil.dataBuffer, ImageIO.read(in));
+            return dt;
+
         } catch (Exception var4) {
             warn(var4.getClass().getName() + ": " + var4.getMessage());
             return texDefault;

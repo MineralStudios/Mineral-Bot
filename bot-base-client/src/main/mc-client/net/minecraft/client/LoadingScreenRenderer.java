@@ -1,5 +1,6 @@
 package net.minecraft.client;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -170,12 +171,16 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 
                 GL11.glEnable(GL11.GL_BLEND);
                 OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-                this.mc.fontRenderer.drawStringWithShadow(this.currentlyDisplayedText,
-                        (var6 - this.mc.fontRenderer.getStringWidth(this.currentlyDisplayedText)) / 2,
-                        var7 / 2 - 4 - 16, 16777215);
-                this.mc.fontRenderer.drawStringWithShadow(this.field_73727_a,
-                        (var6 - this.mc.fontRenderer.getStringWidth(this.field_73727_a)) / 2, var7 / 2 - 4 + 8,
-                        16777215);
+                FontRenderer fontRenderer = this.mc.fontRenderer;
+
+                if (fontRenderer != null) {
+                    fontRenderer.drawStringWithShadow(this.currentlyDisplayedText,
+                            (var6 - fontRenderer.getStringWidth(this.currentlyDisplayedText)) / 2,
+                            var7 / 2 - 4 - 16, 16777215);
+                    fontRenderer.drawStringWithShadow(this.field_73727_a,
+                            (var6 - fontRenderer.getStringWidth(this.field_73727_a)) / 2, var7 / 2 - 4 + 8,
+                            16777215);
+                }
                 this.field_146588_g.unbindFramebuffer();
 
                 if (OpenGlHelper.isFramebufferEnabled(this.mc)) {

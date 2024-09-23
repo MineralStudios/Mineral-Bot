@@ -12,10 +12,14 @@ public class ServerListEntryLanScan implements GuiListExtended.IGuiListEntry {
 
     public void func_148279_a(int p_148279_1_, int p_148279_2_, int p_148279_3_, int p_148279_4_, int p_148279_5_,
             Tessellator p_148279_6_, int p_148279_7_, int p_148279_8_, boolean p_148279_9_) {
-        int var10 = p_148279_3_ + p_148279_5_ / 2 - this.mc.fontRenderer.FONT_HEIGHT / 2;
-        this.mc.fontRenderer.drawString(I18n.format("lanServer.scanning", new Object[0]),
+        FontRenderer fontRenderer = this.mc.fontRenderer;
+
+        if (fontRenderer == null)
+            return;
+        int var10 = p_148279_3_ + p_148279_5_ / 2 - fontRenderer.FONT_HEIGHT / 2;
+        fontRenderer.drawString(I18n.format("lanServer.scanning", new Object[0]),
                 this.mc.currentScreen.width / 2
-                        - this.mc.fontRenderer.getStringWidth(I18n.format("lanServer.scanning", new Object[0])) / 2,
+                        - fontRenderer.getStringWidth(I18n.format("lanServer.scanning", new Object[0])) / 2,
                 var10, 16777215);
         String var11;
 
@@ -34,9 +38,9 @@ public class ServerListEntryLanScan implements GuiListExtended.IGuiListEntry {
                 var11 = "o o O";
         }
 
-        this.mc.fontRenderer.drawString(var11,
-                this.mc.currentScreen.width / 2 - this.mc.fontRenderer.getStringWidth(var11) / 2,
-                var10 + this.mc.fontRenderer.FONT_HEIGHT, 8421504);
+        fontRenderer.drawString(var11,
+                this.mc.currentScreen.width / 2 - fontRenderer.getStringWidth(var11) / 2,
+                var10 + fontRenderer.FONT_HEIGHT, 8421504);
     }
 
     public boolean func_148278_a(int p_148278_1_, int p_148278_2_, int p_148278_3_, int p_148278_4_, int p_148278_5_,

@@ -157,16 +157,19 @@ public class GuiEnchantment extends GuiContainer {
                 this.drawTexturedModalRect(var4 + 60, var5 + 14 + 19 * var12, 0, 185, 108, 19);
             } else {
                 String var15 = "" + var14;
-                FontRenderer var16 = this.mc.standardGalacticFontRenderer;
+                FontRenderer fontRenderer = this.mc.standardGalacticFontRenderer;
                 int var17 = 6839882;
 
                 if (this.mc.thePlayer.experienceLevel < var14 && !this.mc.thePlayer.capabilities.isCreativeMode) {
                     this.drawTexturedModalRect(var4 + 60, var5 + 14 + 19 * var12, 0, 185, 108, 19);
-                    var16.drawSplitString(var13, var4 + 62, var5 + 16 + 19 * var12, 104, (var17 & 16711422) >> 1);
-                    var16 = this.mc.fontRenderer;
+                    if (fontRenderer != null)
+                        fontRenderer.drawSplitString(var13, var4 + 62, var5 + 16 + 19 * var12, 104,
+                                (var17 & 16711422) >> 1);
+                    fontRenderer = this.mc.fontRenderer;
                     var17 = 4226832;
-                    var16.drawStringWithShadow(var15, var4 + 62 + 104 - var16.getStringWidth(var15),
-                            var5 + 16 + 19 * var12 + 7, var17);
+                    if (fontRenderer != null)
+                        fontRenderer.drawStringWithShadow(var15, var4 + 62 + 104 - fontRenderer.getStringWidth(var15),
+                                var5 + 16 + 19 * var12 + 7, var17);
                 } else {
                     int var18 = p_146976_2_ - (var4 + 60);
                     int var19 = p_146976_3_ - (var5 + 14 + 19 * var12);
@@ -178,11 +181,14 @@ public class GuiEnchantment extends GuiContainer {
                         this.drawTexturedModalRect(var4 + 60, var5 + 14 + 19 * var12, 0, 166, 108, 19);
                     }
 
-                    var16.drawSplitString(var13, var4 + 62, var5 + 16 + 19 * var12, 104, var17);
-                    var16 = this.mc.fontRenderer;
+                    if (fontRenderer != null)
+                        fontRenderer.drawSplitString(var13, var4 + 62, var5 + 16 + 19 * var12, 104, var17);
+                    fontRenderer = this.mc.fontRenderer;
                     var17 = 8453920;
-                    var16.drawStringWithShadow(var15, var4 + 62 + 104 - var16.getStringWidth(var15),
-                            var5 + 16 + 19 * var12 + 7, var17);
+
+                    if (fontRenderer != null)
+                        fontRenderer.drawStringWithShadow(var15, var4 + 62 + 104 - fontRenderer.getStringWidth(var15),
+                                var5 + 16 + 19 * var12 + 7, var17);
                 }
             }
         }

@@ -11,19 +11,23 @@ public abstract class GuiResourcePackList extends GuiListExtended {
     protected final List field_148204_l;
     private static final String __OBFID = "CL_00000825";
 
-    public GuiResourcePackList(Minecraft p_i45055_1_, int p_i45055_2_, int p_i45055_3_, List p_i45055_4_) {
-        super(p_i45055_1_, p_i45055_2_, p_i45055_3_, 32, p_i45055_3_ - 55 + 4, 36);
-        this.field_148205_k = p_i45055_1_;
+    public GuiResourcePackList(Minecraft mc, int p_i45055_2_, int p_i45055_3_, List p_i45055_4_) {
+        super(mc, p_i45055_2_, p_i45055_3_, 32, p_i45055_3_ - 55 + 4, 36);
+        this.field_148205_k = mc;
         this.field_148204_l = p_i45055_4_;
         this.field_148163_i = false;
-        this.func_148133_a(true, (int) ((float) p_i45055_1_.fontRenderer.FONT_HEIGHT * 1.5F));
+        FontRenderer fontRenderer = mc.fontRenderer;
+        this.func_148133_a(true, (int) ((float) (fontRenderer != null ? fontRenderer.FONT_HEIGHT : 9) * 1.5F));
     }
 
     protected void func_148129_a(int p_148129_1_, int p_148129_2_, Tessellator p_148129_3_) {
         String var4 = EnumChatFormatting.UNDERLINE + "" + EnumChatFormatting.BOLD + this.func_148202_k();
-        this.field_148205_k.fontRenderer.drawString(var4,
-                p_148129_1_ + this.field_148155_a / 2 - this.field_148205_k.fontRenderer.getStringWidth(var4) / 2,
-                Math.min(this.field_148153_b + 3, p_148129_2_), 16777215);
+        FontRenderer fontRenderer = this.field_148205_k.fontRenderer;
+
+        if (fontRenderer != null)
+            fontRenderer.drawString(var4,
+                    p_148129_1_ + this.field_148155_a / 2 - fontRenderer.getStringWidth(var4) / 2,
+                    Math.min(this.field_148153_b + 3, p_148129_2_), 16777215);
     }
 
     protected abstract String func_148202_k();

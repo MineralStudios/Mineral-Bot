@@ -74,20 +74,26 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
         boolean var10 = this.field_148301_e.field_82821_f > 5;
         boolean var11 = this.field_148301_e.field_82821_f < 5;
         boolean var12 = var10 || var11;
-        this.mc.fontRenderer.drawString(this.field_148301_e.serverName, p_148279_2_ + 32 + 3, p_148279_3_ + 1,
-                16777215);
-        List var13 = this.mc.fontRenderer.listFormattedStringToWidth(this.field_148301_e.serverMOTD,
-                p_148279_4_ - 32 - 2);
 
-        for (int var14 = 0; var14 < Math.min(var13.size(), 2); ++var14) {
-            this.mc.fontRenderer.drawString((String) var13.get(var14), p_148279_2_ + 32 + 3,
-                    p_148279_3_ + 12 + this.mc.fontRenderer.FONT_HEIGHT * var14, 8421504);
+        FontRenderer fontRenderer = this.mc.fontRenderer;
+
+        int var15 = 0;
+        if (fontRenderer != null) {
+            fontRenderer.drawString(this.field_148301_e.serverName, p_148279_2_ + 32 + 3, p_148279_3_ + 1,
+                    16777215);
+            List var13 = fontRenderer.listFormattedStringToWidth(this.field_148301_e.serverMOTD,
+                    p_148279_4_ - 32 - 2);
+
+            for (int var14 = 0; var14 < Math.min(var13.size(), 2); ++var14)
+                fontRenderer.drawString((String) var13.get(var14), p_148279_2_ + 32 + 3,
+                        p_148279_3_ + 12 + fontRenderer.FONT_HEIGHT * var14, 8421504);
+
+            String var22 = var12 ? EnumChatFormatting.DARK_RED + this.field_148301_e.gameVersion
+                    : this.field_148301_e.populationInfo;
+            var15 = fontRenderer.getStringWidth(var22);
+            fontRenderer.drawString(var22, p_148279_2_ + p_148279_4_ - var15 - 15 - 2, p_148279_3_ + 1,
+                    8421504);
         }
-
-        String var22 = var12 ? EnumChatFormatting.DARK_RED + this.field_148301_e.gameVersion
-                : this.field_148301_e.populationInfo;
-        int var15 = this.mc.fontRenderer.getStringWidth(var22);
-        this.mc.fontRenderer.drawString(var22, p_148279_2_ + p_148279_4_ - var15 - 15 - 2, p_148279_3_ + 1, 8421504);
         byte var16 = 0;
         String var18 = null;
         int var17;

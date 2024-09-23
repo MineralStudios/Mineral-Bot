@@ -87,16 +87,21 @@ public class GuiNewChat extends Gui {
                                 int var16 = -var9 * 9;
                                 drawRect(this.mc, var15, var16 - 9, var15 + var8 + 4, var16, var14 / 2 << 24);
                                 String var17 = var10.func_151461_a().getFormattedText();
-                                this.mc.fontRenderer.drawStringWithShadow(var17, var15, var16 - 8,
-                                        16777215 + (var14 << 24));
+                                FontRenderer fontRenderer = this.mc.fontRenderer;
+
+                                if (fontRenderer != null)
+                                    fontRenderer.drawStringWithShadow(var17, var15, var16 - 8,
+                                            16777215 + (var14 << 24));
                                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                             }
                         }
                     }
                 }
 
-                if (var3) {
-                    var9 = this.mc.fontRenderer.FONT_HEIGHT;
+                FontRenderer fontRenderer = this.mc.fontRenderer;
+
+                if (fontRenderer != null && var3) {
+                    var9 = fontRenderer.FONT_HEIGHT;
                     GL11.glTranslatef(-3.0F, 0.0F, 0.0F);
                     int var18 = var5 * var9 + var5;
                     var11 = var4 * var9 + var4;
@@ -152,32 +157,36 @@ public class GuiNewChat extends Gui {
             IChatComponent var11 = (IChatComponent) var9.get(var10);
             String var12 = this
                     .func_146235_b(var11.getChatStyle().getFormattingCode() + var11.getUnformattedTextForChat());
-            int var13 = this.mc.fontRenderer.getStringWidth(var12);
+            FontRenderer fontRenderer = this.mc.fontRenderer;
+
+            int var13 = fontRenderer != null ? fontRenderer.getStringWidth(var12) : 0;
             ChatComponentText var14 = new ChatComponentText(var12);
             var14.setChatStyle(var11.getChatStyle().createShallowCopy());
             boolean var15 = false;
 
-            if (var6 + var13 > var5) {
-                String var16 = this.mc.fontRenderer.trimStringToWidth(var12, var5 - var6, false);
-                String var17 = var16.length() < var12.length() ? var12.substring(var16.length()) : null;
+            if (fontRenderer != null) {
+                if (var6 + var13 > var5) {
+                    String var16 = fontRenderer.trimStringToWidth(var12, var5 - var6, false);
+                    String var17 = var16.length() < var12.length() ? var12.substring(var16.length()) : null;
 
-                if (var17 != null && var17.length() > 0) {
-                    int var18 = var16.lastIndexOf(" ");
+                    if (var17 != null && var17.length() > 0) {
+                        int var18 = var16.lastIndexOf(" ");
 
-                    if (var18 >= 0 && this.mc.fontRenderer.getStringWidth(var12.substring(0, var18)) > 0) {
-                        var16 = var12.substring(0, var18);
-                        var17 = var12.substring(var18);
+                        if (var18 >= 0 && fontRenderer.getStringWidth(var12.substring(0, var18)) > 0) {
+                            var16 = var12.substring(0, var18);
+                            var17 = var12.substring(var18);
+                        }
+
+                        ChatComponentText var19 = new ChatComponentText(var17);
+                        var19.setChatStyle(var11.getChatStyle().createShallowCopy());
+                        var9.add(var10 + 1, var19);
                     }
 
-                    ChatComponentText var19 = new ChatComponentText(var17);
-                    var19.setChatStyle(var11.getChatStyle().createShallowCopy());
-                    var9.add(var10 + 1, var19);
+                    var13 = fontRenderer.getStringWidth(var16);
+                    var14 = new ChatComponentText(var16);
+                    var14.setChatStyle(var11.getChatStyle().createShallowCopy());
+                    var15 = true;
                 }
-
-                var13 = this.mc.fontRenderer.getStringWidth(var16);
-                var14 = new ChatComponentText(var16);
-                var14.setChatStyle(var11.getChatStyle().createShallowCopy());
-                var15 = true;
             }
 
             if (var6 + var13 <= var5) {
@@ -276,9 +285,13 @@ public class GuiNewChat extends Gui {
             if (var6 >= 0 && var7 >= 0) {
                 int var8 = Math.min(this.func_146232_i(), this.field_146253_i.size());
 
+                FontRenderer fontRenderer = this.mc.fontRenderer;
+
+                if (fontRenderer == null)
+                    return null;
                 if (var6 <= MathHelper.floor_float((float) this.func_146228_f() / this.func_146244_h())
-                        && var7 < this.mc.fontRenderer.FONT_HEIGHT * var8 + var8) {
-                    int var9 = var7 / this.mc.fontRenderer.FONT_HEIGHT + this.field_146250_j;
+                        && var7 < fontRenderer.FONT_HEIGHT * var8 + var8) {
+                    int var9 = var7 / fontRenderer.FONT_HEIGHT + this.field_146250_j;
 
                     if (var9 >= 0 && var9 < this.field_146253_i.size()) {
                         ChatLine var10 = (ChatLine) this.field_146253_i.get(var9);
@@ -289,7 +302,7 @@ public class GuiNewChat extends Gui {
                             IChatComponent var13 = (IChatComponent) var12.next();
 
                             if (var13 instanceof ChatComponentText) {
-                                var11 += this.mc.fontRenderer.getStringWidth(this
+                                var11 += fontRenderer.getStringWidth(this
                                         .func_146235_b(((ChatComponentText) var13).getChatComponentText_TextValue()));
 
                                 if (var11 > var6) {

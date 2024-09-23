@@ -2,6 +2,7 @@ package net.minecraft.client.resources;
 
 import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiScreenResourcePacks;
@@ -68,18 +69,22 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
         }
 
         String var14 = this.func_148312_b();
-        var11 = this.mc.fontRenderer.getStringWidth(var14);
+        FontRenderer fontRenderer = this.mc.fontRenderer;
+
+        if (fontRenderer == null)
+            return;
+        var11 = fontRenderer.getStringWidth(var14);
 
         if (var11 > 157) {
-            var14 = this.mc.fontRenderer.trimStringToWidth(var14,
-                    157 - this.mc.fontRenderer.getStringWidth("...")) + "...";
+            var14 = fontRenderer.trimStringToWidth(var14,
+                    157 - fontRenderer.getStringWidth("...")) + "...";
         }
 
-        this.mc.fontRenderer.drawStringWithShadow(var14, p_148279_2_ + 32 + 2, p_148279_3_ + 1, 16777215);
-        List var12 = this.mc.fontRenderer.listFormattedStringToWidth(this.func_148311_a(), 157);
+        fontRenderer.drawStringWithShadow(var14, p_148279_2_ + 32 + 2, p_148279_3_ + 1, 16777215);
+        List var12 = fontRenderer.listFormattedStringToWidth(this.func_148311_a(), 157);
 
         for (int var13 = 0; var13 < 2 && var13 < var12.size(); ++var13) {
-            this.mc.fontRenderer.drawStringWithShadow((String) var12.get(var13), p_148279_2_ + 32 + 2,
+            fontRenderer.drawStringWithShadow((String) var12.get(var13), p_148279_2_ + 32 + 2,
                     p_148279_3_ + 12 + 10 * var13, 8421504);
         }
     }
