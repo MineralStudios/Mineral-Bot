@@ -1,8 +1,5 @@
 package net.minecraft.client.resources;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.awt.image.BufferedImage;
 import java.io.Closeable;
 import java.io.File;
@@ -14,17 +11,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreenWorking;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.data.IMetadataSerializer;
 import net.minecraft.client.resources.data.PackMetadataSection;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.HttpUtil;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.io.IOUtils;
 
 public class ResourcePackRepository {
     protected static final FileFilter resourcePackFilter = new FileFilter() {
@@ -214,19 +218,21 @@ public class ResourcePackRepository {
         }
 
         public void bindTexturePackIcon(TextureManager p_110518_1_) {
-            if (this.locationTexturePackIcon == null) {
+            TextureUtil textureUtil = ResourcePackRepository.this.mc.textureUtil;
+
+            if (textureUtil == null)
+                return;
+            if (this.locationTexturePackIcon == null)
                 this.locationTexturePackIcon = p_110518_1_.getDynamicTextureLocation("texturepackicon",
-                        new DynamicTexture(ResourcePackRepository.this.mc, mc.textureUtil.dataBuffer,
+                        new DynamicTexture(ResourcePackRepository.this.mc, textureUtil.dataBuffer,
                                 this.texturePackIcon));
-            }
 
             p_110518_1_.bindTexture(this.locationTexturePackIcon);
         }
 
         public void closeResourcePack() {
-            if (this.reResourcePack instanceof Closeable) {
-                IOUtils.closeQuietly((Closeable) this.reResourcePack);
-            }
+            if (this.reResourcePack instanceof Closeable closeable)
+                IOUtils.closeQuietly(closeable);
         }
 
         public IResourcePack getResourcePack() {

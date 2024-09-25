@@ -128,7 +128,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
                     : this.field_146803_h.func_148180_b(this.field_146803_h.func_148193_k());
 
             if (p_146284_1_.id == 2 && var2 instanceof ServerListEntryNormal) {
-                String var9 = ((ServerListEntryNormal) var2).func_148296_a().serverName;
+                String var9 = ((ServerListEntryNormal) var2).getServerData().serverName;
 
                 if (var9 != null) {
                     this.field_146807_u = true;
@@ -154,7 +154,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
                                 "")));
             } else if (p_146284_1_.id == 7 && var2 instanceof ServerListEntryNormal) {
                 this.field_146805_w = true;
-                ServerData var3 = ((ServerListEntryNormal) var2).func_148296_a();
+                ServerData var3 = ((ServerListEntryNormal) var2).getServerData();
                 this.field_146811_z = new ServerData(var3.serverName, var3.serverIP);
                 this.field_146811_z.func_152583_a(var3);
                 this.mc.displayGuiScreen(new GuiScreenAddServer(this.mc, this, this.field_146811_z));
@@ -208,7 +208,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
             this.field_146805_w = false;
 
             if (p_73878_1_ && var3 instanceof ServerListEntryNormal) {
-                ServerData var4 = ((ServerListEntryNormal) var3).func_148296_a();
+                ServerData var4 = ((ServerListEntryNormal) var3).getServerData();
                 var4.serverName = this.field_146811_z.serverName;
                 var4.serverIP = this.field_146811_z.serverIP;
                 var4.func_152583_a(this.field_146811_z);
@@ -313,7 +313,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
                 : this.field_146803_h.func_148180_b(this.field_146803_h.func_148193_k());
 
         if (var1 instanceof ServerListEntryNormal) {
-            this.func_146791_a(((ServerListEntryNormal) var1).func_148296_a());
+            this.func_146791_a(((ServerListEntryNormal) var1).getServerData());
         } else if (var1 instanceof ServerListEntryLanDetected) {
             LanServerDetector.LanServer var2 = ((ServerListEntryLanDetected) var1).func_148289_a();
             this.func_146791_a(new ServerData(var2.getServerMotd(), var2.getServerIpPort(), true));

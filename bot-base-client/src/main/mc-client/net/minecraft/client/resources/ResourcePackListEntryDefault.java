@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
 
 import com.google.gson.JsonParseException;
 
@@ -14,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreenResourcePacks;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.data.PackMetadataSection;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -28,18 +28,25 @@ public class ResourcePackListEntryDefault extends ResourcePackListEntry {
     public ResourcePackListEntryDefault(Minecraft mc, GuiScreenResourcePacks p_i45052_1_) {
         super(mc, p_i45052_1_);
         this.field_148320_d = this.mc.getResourcePackRepository().rprDefaultResourcePack;
-        DynamicTexture var2;
+        @Nullable
+        DynamicTexture var2 = null;
 
-        try {
-            var2 = new DynamicTexture(mc, mc.textureUtil.dataBuffer, this.field_148320_d.getPackImage());
-        } catch (IOException var4) {
-            var2 = mc.textureUtil.missingTexture;
+        TextureUtil textureUtil = mc.textureUtil;
+
+        if (textureUtil != null) {
+            try {
+                var2 = new DynamicTexture(mc, textureUtil.dataBuffer, this.field_148320_d.getPackImage());
+            } catch (IOException var4) {
+                var2 = textureUtil.missingTexture;
+            }
         }
 
         TextureManager textureManager = this.mc.getTextureManager();
 
-        this.field_148321_e = textureManager != null ? textureManager.getDynamicTextureLocation("texturepackicon",
-                var2) : null;
+        this.field_148321_e = textureManager != null && var2 != null
+                ? textureManager.getDynamicTextureLocation("texturepackicon",
+                        var2)
+                : null;
     }
 
     protected String func_148311_a() {

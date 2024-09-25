@@ -479,7 +479,8 @@ public class Minecraft {
      */
     private void startGame() throws LWJGLException {
         this.gameSettings = new GameSettings(this, this.mcDataDir);
-        this.textureUtil = new TextureUtil(this);
+        if (!BotGlobalConfig.isOptimizedGameLoop())
+            this.textureUtil = new TextureUtil(this);
 
         if (this.gameSettings.overrideHeight > 0 && this.gameSettings.overrideWidth > 0) {
             this.displayWidth = this.gameSettings.overrideWidth;

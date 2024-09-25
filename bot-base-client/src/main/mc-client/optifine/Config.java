@@ -29,16 +29,15 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 
 import org.lwjgl.LWJGLException;
-import gg.mineral.bot.base.lwjgl.Sys;
-import gg.mineral.bot.base.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GLContext;
-import lombok.Getter;
-
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.glu.GLU;
 
+import gg.mineral.bot.base.lwjgl.Sys;
+import gg.mineral.bot.base.lwjgl.opengl.Display;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.base.lwjgl.opengl.GLContext;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
@@ -48,6 +47,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourcePack;
@@ -1549,6 +1549,7 @@ public class Config {
         }
     }
 
+    @Nullable
     public static DynamicTexture getMojangLogoTexture(Minecraft mc, DynamicTexture texDefault) {
         try {
             ResourceLocation e = new ResourceLocation("textures/gui/title/mojang.png");
@@ -1557,7 +1558,9 @@ public class Config {
             if (in == null)
                 return texDefault;
 
-            DynamicTexture dt = new DynamicTexture(mc, mc.textureUtil.dataBuffer, ImageIO.read(in));
+            TextureUtil textureUtil = mc.textureUtil;
+            DynamicTexture dt = textureUtil != null ? new DynamicTexture(mc, textureUtil.dataBuffer, ImageIO.read(in))
+                    : null;
             return dt;
 
         } catch (Exception var4) {

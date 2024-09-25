@@ -113,11 +113,16 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
             this.missingImage.setIconWidth(32);
             this.missingImage.setIconHeight(32);
             var1 = new int[1024];
-            System.arraycopy(this.mc.textureUtil.missingTextureData, 0, var1, 0,
-                    this.mc.textureUtil.missingTextureData.length);
+            TextureUtil textureUtil = this.mc.textureUtil;
+
+            if (textureUtil != null)
+                System.arraycopy(textureUtil.missingTextureData, 0, var1, 0,
+                        textureUtil.missingTextureData.length);
             TextureUtil.func_147948_a(var1, 16, 16, 8);
         } else {
-            var1 = this.mc.textureUtil.missingTextureData;
+            TextureUtil textureUtil = this.mc.textureUtil;
+            if (textureUtil != null)
+                var1 = textureUtil.missingTextureData;
             this.missingImage.setIconWidth(16);
             this.missingImage.setIconHeight(16);
         }
@@ -312,9 +317,12 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
             this.mapUploadedSprites.put(var301, var8);
 
             try {
-                TextureUtil.func_147955_a(this.mc, mc.textureUtil.dataBuffer, var8.func_147965_a(0),
-                        var8.getIconWidth(), var8.getIconHeight(),
-                        var8.getOriginX(), var8.getOriginY(), false, false);
+                TextureUtil textureUtil = this.mc.textureUtil;
+
+                if (textureUtil != null)
+                    TextureUtil.func_147955_a(this.mc, textureUtil.dataBuffer, var8.func_147965_a(0),
+                            var8.getIconWidth(), var8.getIconHeight(),
+                            var8.getOriginX(), var8.getOriginY(), false, false);
 
                 if (debugImage2 != null) {
                     this.addDebugSprite(var8, debugImage2);

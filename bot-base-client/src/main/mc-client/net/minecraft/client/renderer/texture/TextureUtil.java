@@ -194,7 +194,10 @@ public class TextureUtil {
             boolean par4,
             boolean par5) {
         bindTexture(par0);
-        uploadTextureImageSubImpl(mc, mc.textureUtil.dataBuffer, par1BufferedImage, par2, par3, par4, par5);
+        TextureUtil textureUtil = mc.textureUtil;
+
+        if (textureUtil != null)
+            uploadTextureImageSubImpl(mc, textureUtil.dataBuffer, par1BufferedImage, par2, par3, par4, par5);
         return par0;
     }
 
@@ -215,8 +218,11 @@ public class TextureUtil {
             int var12 = var5 * var11;
             par0BufferedImage.getRGB(0, var10, var5, var11, var8, 0, var5);
             copyToBuffer(mc, dataBuffer, var8, var12);
-            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, par1, par2 + var10, var5, var11, GL12.GL_BGRA,
-                    GL12.GL_UNSIGNED_INT_8_8_8_8_REV, mc.textureUtil.dataBuffer);
+            TextureUtil textureUtil = mc.textureUtil;
+
+            if (textureUtil != null)
+                GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, par1, par2 + var10, var5, var11, GL12.GL_BGRA,
+                        GL12.GL_UNSIGNED_INT_8_8_8_8_REV, textureUtil.dataBuffer);
         }
     }
 

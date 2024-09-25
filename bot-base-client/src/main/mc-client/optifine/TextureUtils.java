@@ -6,14 +6,13 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GLAllocation;
+
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.ITickableTextureObject;
 import net.minecraft.client.renderer.texture.SimpleTexture;
@@ -99,7 +98,6 @@ public class TextureUtils {
     public static IIcon iconGlassPaneTop;
     public static IIcon iconCompass;
     public static IIcon iconClock;
-    private static IntBuffer staticBuffer = GLAllocation.createDirectIntBuffer(256);
 
     public static void update() {
         TextureMap mapBlocks = TextureMap.textureMapBlocks;

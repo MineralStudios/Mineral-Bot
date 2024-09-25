@@ -4,6 +4,8 @@ import java.nio.IntBuffer;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Maps;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
@@ -13,6 +15,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.MapData;
 
@@ -61,8 +64,10 @@ public class MapItemRenderer {
 
     class Instance {
         private final MapData field_148242_b;
+        @Nullable
         private final DynamicTexture field_148243_c;
         private final ResourceLocation field_148240_d;
+        @Nullable
         private final int[] field_148241_e;
         private static final String __OBFID = "CL_00000665";
         private final Minecraft mc;
@@ -70,14 +75,18 @@ public class MapItemRenderer {
         private Instance(Minecraft mc, MapData p_i45007_2_) {
             this.mc = mc;
             this.field_148242_b = p_i45007_2_;
-            this.field_148243_c = new DynamicTexture(mc, mc.textureUtil.dataBuffer, 128, 128);
-            this.field_148241_e = this.field_148243_c.getTextureData();
+            TextureUtil textureUtil = mc.textureUtil;
+
+            this.field_148243_c = textureUtil != null ? new DynamicTexture(mc, textureUtil.dataBuffer, 128, 128) : null;
+            this.field_148241_e = this.field_148243_c != null ? this.field_148243_c.getTextureData() : null;
             this.field_148240_d = MapItemRenderer.this.field_148251_b
                     .getDynamicTextureLocation("map/" + p_i45007_2_.mapName, this.field_148243_c);
 
-            for (int var3 = 0; var3 < this.field_148241_e.length; ++var3) {
-                this.field_148241_e[var3] = 0;
-            }
+            int[] intArr = this.field_148241_e;
+            if (intArr != null)
+                for (int var3 = 0; var3 < intArr.length; ++var3)
+                    intArr[var3] = 0;
+
         }
 
         private void func_148236_a() {

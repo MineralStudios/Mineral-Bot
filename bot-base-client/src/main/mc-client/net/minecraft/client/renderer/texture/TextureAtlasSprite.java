@@ -184,9 +184,12 @@ public class TextureAtlasSprite implements IIcon {
             int var3 = this.animationMetadata.getFrameIndex(this.frameCounter);
 
             if (var1 != var3 && var3 >= 0 && var3 < this.framesTextureData.size()) {
-                TextureUtil.func_147955_a(this.mc, mc.textureUtil.dataBuffer,
-                        (int[][]) ((int[][]) this.framesTextureData.get(var3)), this.width,
-                        this.height, this.originX, this.originY, false, false);
+                TextureUtil textureUtil = this.mc.textureUtil;
+
+                if (textureUtil != null)
+                    TextureUtil.func_147955_a(this.mc, textureUtil.dataBuffer,
+                            (int[][]) ((int[][]) this.framesTextureData.get(var3)), this.width,
+                            this.height, this.originX, this.originY, false, false);
                 this.uploadedFrameIndex = var3;
             }
         }

@@ -82,9 +82,12 @@ public class TextureCompass extends TextureAtlasSprite {
 
             if (var18 != this.frameCounter) {
                 this.frameCounter = var18;
-                TextureUtil.func_147955_a(this.mc, mc.textureUtil.dataBuffer,
-                        (int[][]) this.framesTextureData.get(this.frameCounter), this.width,
-                        this.height, this.originX, this.originY, false, false);
+                TextureUtil textureUtil = mc.textureUtil;
+
+                if (textureUtil != null)
+                    TextureUtil.func_147955_a(this.mc, textureUtil.dataBuffer,
+                            (int[][]) this.framesTextureData.get(this.frameCounter), this.width,
+                            this.height, this.originX, this.originY, false, false);
             }
         }
     }

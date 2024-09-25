@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.Validate;
@@ -26,6 +27,7 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
@@ -38,6 +40,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
     private final ServerData field_148301_e;
     private long field_148298_f;
     private String field_148299_g;
+    @Nullable
     private DynamicTexture field_148305_h;
     private ResourceLocation field_148306_i;
     private static final String __OBFID = "CL_00000817";
@@ -208,17 +211,25 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
             }
 
             if (this.field_148305_h == null) {
-                this.field_148305_h = new DynamicTexture(this.mc, mc.textureUtil.dataBuffer, var1.getWidth(),
-                        var1.getHeight());
+                TextureUtil textureUtil = mc.textureUtil;
+
+                if (textureUtil != null)
+                    this.field_148305_h = new DynamicTexture(this.mc, textureUtil.dataBuffer, var1.getWidth(),
+                            var1.getHeight());
+
                 TextureManager textureManager = this.mc.getTextureManager();
 
                 if (textureManager != null)
                     textureManager.loadTexture(this.field_148306_i, this.field_148305_h);
             }
 
-            var1.getRGB(0, 0, var1.getWidth(), var1.getHeight(), this.field_148305_h.getTextureData(), 0,
-                    var1.getWidth());
-            this.field_148305_h.updateDynamicTexture();
+            DynamicTexture texture = this.field_148305_h;
+
+            if (texture != null) {
+                var1.getRGB(0, 0, var1.getWidth(), var1.getHeight(), texture.getTextureData(), 0,
+                        var1.getWidth());
+                texture.updateDynamicTexture();
+            }
         }
     }
 
@@ -238,7 +249,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
             int p_148277_6_) {
     }
 
-    public ServerData func_148296_a() {
+    public ServerData getServerData() {
         return this.field_148301_e;
     }
 }

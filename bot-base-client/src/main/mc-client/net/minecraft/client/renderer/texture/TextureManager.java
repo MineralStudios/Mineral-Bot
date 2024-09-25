@@ -84,7 +84,11 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
             par2TextureObject.loadTexture(this.theResourceManager);
         } catch (IOException var8) {
             logger.warn("Failed to load texture: " + par1ResourceLocation, var8);
-            par2TextureObject2 = this.mc.textureUtil.missingTexture;
+            TextureUtil textureUtil = this.mc.textureUtil;
+
+            if (textureUtil != null)
+                par2TextureObject2 = textureUtil.missingTexture;
+
             this.mapTextureObjects.put(par1ResourceLocation, par2TextureObject2);
             var3 = false;
         } catch (Throwable var9) {
@@ -128,7 +132,8 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
 
         this.mapTextureCounters.put(par1Str, var3);
         ResourceLocation var4 = new ResourceLocation(String.format("dynamic/%s_%d", new Object[] { par1Str, var3 }));
-        this.loadTexture(var4, par2DynamicTexture);
+        if (par2DynamicTexture != null)
+            this.loadTexture(var4, par2DynamicTexture);
         return var4;
     }
 

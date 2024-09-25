@@ -39,6 +39,7 @@ import net.minecraft.client.renderer.culling.Frustrum;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -140,11 +141,13 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     /**
      * The texture id of the blocklight/skylight texture used for lighting effects
      */
+    @Nullable
     private final DynamicTexture lightmapTexture;
 
     /**
      * Colors computed in updateLightmap() and loaded into the lightmap emptyTexture
      */
+    @Nullable
     private final int[] lightmapColors;
     @Nullable
     private final ResourceLocation locationLightMap;
@@ -271,12 +274,16 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         this.resourceManager = p_i45076_2_;
         this.theMapItemRenderer = new MapItemRenderer(mc, mc.getTextureManager());
         this.itemRenderer = new ItemRenderer(mc);
-        this.lightmapTexture = new DynamicTexture(mc, mc.textureUtil.dataBuffer, 16, 16);
+        TextureUtil textureUtil = mc.textureUtil;
+
+        this.lightmapTexture = textureUtil != null ? new DynamicTexture(mc, textureUtil.dataBuffer, 16, 16) : null;
         TextureManager textureManager = mc.getTextureManager();
 
-        this.locationLightMap = textureManager != null ? textureManager.getDynamicTextureLocation("lightMap",
-                this.lightmapTexture) : null;
-        this.lightmapColors = this.lightmapTexture.getTextureData();
+        this.locationLightMap = textureManager != null && this.lightmapTexture != null
+                ? textureManager.getDynamicTextureLocation("lightMap",
+                        this.lightmapTexture)
+                : null;
+        this.lightmapColors = this.lightmapTexture != null ? this.lightmapTexture.getTextureData() : null;
         this.theShaderGroup = null;
     }
 

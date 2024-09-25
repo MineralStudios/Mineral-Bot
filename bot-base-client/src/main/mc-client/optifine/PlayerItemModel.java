@@ -3,16 +3,14 @@ package optifine;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
-
-import net.minecraft.client.Minecraft;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public class PlayerItemModel {
     private Dimension textureSize = null;
@@ -43,12 +41,16 @@ public class PlayerItemModel {
             textureManager.bindTexture(player.getLocationSkin());
         } else if (this.textureLocation != null) {
             if (this.texture == null && this.textureImage != null) {
-                this.texture = new DynamicTexture(player.getMc(), player.getMc().textureUtil.dataBuffer,
-                        this.textureImage);
-                TextureManager textureManager1 = player.getMc().getTextureManager();
+                TextureUtil textureUtil = player.getMc().textureUtil;
 
-                if (textureManager1 != null)
-                    textureManager1.loadTexture(this.textureLocation, this.texture);
+                if (textureUtil != null) {
+                    this.texture = new DynamicTexture(player.getMc(), textureUtil.dataBuffer,
+                            this.textureImage);
+                    TextureManager textureManager1 = player.getMc().getTextureManager();
+
+                    if (textureManager1 != null)
+                        textureManager1.loadTexture(this.textureLocation, this.texture);
+                }
             }
 
             textureManager.bindTexture(this.textureLocation);
