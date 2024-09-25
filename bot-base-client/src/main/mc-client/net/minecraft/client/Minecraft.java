@@ -679,6 +679,8 @@ public class Minecraft {
     }
 
     public void refreshResources() {
+        if (BotGlobalConfig.isOptimizedGameLoop())
+            return;
         ArrayList var1 = Lists.newArrayList(this.defaultResourcePacks);
         Iterator var2 = this.mcResourcePackRepository.getRepositoryEntries().iterator();
 
