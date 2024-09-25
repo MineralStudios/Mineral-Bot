@@ -1,6 +1,9 @@
 package net.minecraft.block;
 
 import java.util.Random;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -13,6 +16,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public abstract class BlockLiquid extends Block {
+    @Nullable
     private IIcon[] field_149806_a;
     private static final String __OBFID = "CL_00000265";
 
@@ -71,7 +75,10 @@ public abstract class BlockLiquid extends Block {
      * Gets the block's texture. Args: side, meta
      */
     public IIcon getIcon(int p_149691_1_, int p_149691_2_) {
-        return p_149691_1_ != 0 && p_149691_1_ != 1 ? this.field_149806_a[1] : this.field_149806_a[0];
+        IIcon[] iconArr = this.field_149806_a;
+        if (iconArr == null)
+            return null;
+        return p_149691_1_ != 0 && p_149691_1_ != 1 ? iconArr[1] : iconArr[0];
     }
 
     protected int func_149804_e(World p_149804_1_, int p_149804_2_, int p_149804_3_, int p_149804_4_) {

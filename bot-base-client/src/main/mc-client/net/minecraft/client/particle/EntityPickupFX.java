@@ -3,7 +3,7 @@ package net.minecraft.client.particle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;

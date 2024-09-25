@@ -197,6 +197,7 @@ public class Minecraft {
     public RenderGlobal renderGlobal;
     @Nullable
     public EntityClientPlayerMP thePlayer;
+    @Nullable
     public final RenderManager renderManager;
     @Nullable
     public TextureUtil textureUtil;
@@ -378,7 +379,7 @@ public class Minecraft {
             Multimap p_i1103_11_, String p_i1103_12_) {
         this.mcDataDir = p_i1103_6_;
         this.fileAssets = p_i1103_7_;
-        this.renderManager = new RenderManager(this);
+        this.renderManager = !BotGlobalConfig.isOptimizedGameLoop() ? new RenderManager(this) : null;
         this.tileEntityRendererDispatcher = new TileEntityRendererDispatcher(this);
         this.tileEntityRendererChestHelper = new TileEntityRendererChestHelper(this);
         this.fileResourcepacks = p_i1103_8_;
