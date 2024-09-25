@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -104,7 +106,8 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
     }
 
     private void initMissingImage() {
-        int[] var1;
+        @Nullable
+        int[] var1 = null;
 
         if ((float) this.field_147637_k > 1.0F) {
             boolean var5 = true;
