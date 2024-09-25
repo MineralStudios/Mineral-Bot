@@ -24,6 +24,9 @@ public class CapeUtils {
             String mptHash = FilenameUtils.getBaseName(ofCapeUrl);
             final ResourceLocation rl = new ResourceLocation("capeof/" + mptHash);
             TextureManager textureManager = mc.getTextureManager();
+
+            if (textureManager == null)
+                return;
             ITextureObject tex = textureManager.getTexture(rl);
 
             if (tex != null && tex instanceof ThreadDownloadImageData) {
