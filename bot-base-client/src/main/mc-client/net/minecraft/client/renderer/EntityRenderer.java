@@ -36,6 +36,7 @@ import net.minecraft.client.particle.EntityRainFX;
 import net.minecraft.client.particle.EntitySmokeFX;
 import net.minecraft.client.renderer.culling.ClippingHelperImpl;
 import net.minecraft.client.renderer.culling.Frustrum;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -1096,7 +1097,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             RenderPlayerOF.register(this.mc);
             ItemRendererOF world = new ItemRendererOF(this.mc);
             this.itemRenderer = world;
-            this.mc.renderManager.itemRenderer = world;
+            RenderManager renderManager = this.mc.renderManager;
+
+            if (renderManager != null)
+                renderManager.itemRenderer = world;
 
             if (Config.getBitsOs() == 64 && Config.getBitsJre() == 32) {
                 Config.setNotify64BitJava(true);

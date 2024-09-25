@@ -1,7 +1,7 @@
 package net.minecraft.client.renderer.tileentity;
 
 import net.minecraft.client.Minecraft;
-
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
@@ -40,7 +40,10 @@ public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
             GL11.glTranslatef(0.0F, -0.4F, 0.0F);
             GL11.glScalef(var9, var9, var9);
             var8.setLocationAndAngles(p_147517_1_, p_147517_3_, p_147517_5_, 0.0F, 0.0F);
-            mc.renderManager.func_147940_a(var8, 0.0D, 0.0D, 0.0D, 0.0F, p_147517_7_);
+            RenderManager renderManager = mc.renderManager;
+
+            if (renderManager != null)
+                renderManager.func_147940_a(var8, 0.0D, 0.0D, 0.0D, 0.0F, p_147517_7_);
         }
     }
 

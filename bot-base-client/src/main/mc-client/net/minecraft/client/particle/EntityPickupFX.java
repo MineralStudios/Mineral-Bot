@@ -3,7 +3,7 @@ package net.minecraft.client.particle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
@@ -54,8 +54,11 @@ public class EntityPickupFX extends EntityFX {
         var21 -= interpPosX;
         var23 -= interpPosY;
         var25 -= interpPosZ;
-        this.mc.renderManager.func_147940_a(this.entityToPickUp, (double) ((float) var21), (double) ((float) var23),
-                (double) ((float) var25), this.entityToPickUp.rotationYaw, p_70539_2_);
+        RenderManager renderManager = this.mc.renderManager;
+
+        if (renderManager != null)
+            renderManager.func_147940_a(this.entityToPickUp, (double) ((float) var21), (double) ((float) var23),
+                    (double) ((float) var25), this.entityToPickUp.rotationYaw, p_70539_2_);
     }
 
     /**

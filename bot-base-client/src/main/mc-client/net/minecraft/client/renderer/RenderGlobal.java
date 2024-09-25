@@ -412,7 +412,11 @@ public class RenderGlobal implements IWorldAccess {
         this.prevChunkSortX = -9999;
         this.prevChunkSortY = -9999;
         this.prevChunkSortZ = -9999;
-        this.mc.renderManager.set(par1WorldClient);
+        RenderManager renderManager = this.mc.renderManager;
+
+        if (renderManager != null)
+            renderManager.set(par1WorldClient);
+
         this.theWorld = par1WorldClient;
         this.renderBlocksRg = new RenderBlocks(this.mc, par1WorldClient);
 
@@ -561,8 +565,11 @@ public class RenderGlobal implements IWorldAccess {
             this.theWorld.theProfiler.startSection("prepare");
             this.mc.tileEntityRendererDispatcher.func_147542_a(this.theWorld, this.mc.getTextureManager(),
                     this.mc.fontRenderer, this.mc.renderViewEntity, p_147589_3_);
-            this.mc.renderManager.func_147938_a(this.theWorld, this.mc.getTextureManager(), this.mc.fontRenderer,
-                    this.mc.renderViewEntity, this.mc.pointedEntity, this.mc.gameSettings, p_147589_3_);
+            RenderManager renderManager = this.mc.renderManager;
+
+            if (renderManager != null)
+                renderManager.func_147938_a(this.theWorld, this.mc.getTextureManager(), this.mc.fontRenderer,
+                        this.mc.renderViewEntity, this.mc.pointedEntity, this.mc.gameSettings, p_147589_3_);
 
             if (pass == 0) {
                 this.countEntitiesTotal = 0;
@@ -617,9 +624,10 @@ public class RenderGlobal implements IWorldAccess {
                         Reflector.ForgeEntity_shouldRenderInPass, new Object[] { Integer.valueOf(pass) })) {
                     ++this.countEntitiesRendered;
 
-                    if (var19.isInRangeToRender3d(var4, var6, var8)) {
-                        this.mc.renderManager.func_147937_a(var19, p_147589_3_);
-                    }
+                    if (var19.isInRangeToRender3d(var4, var6, var8))
+                        if (renderManager != null)
+                            renderManager.func_147937_a(var19, p_147589_3_);
+
                 }
             }
 
@@ -656,7 +664,10 @@ public class RenderGlobal implements IWorldAccess {
                         }
 
                         this.renderedEntity = var19;
-                        this.mc.renderManager.func_147937_a(var19, p_147589_3_);
+
+                        if (renderManager != null)
+                            renderManager.func_147937_a(var19, p_147589_3_);
+
                         this.renderedEntity = null;
                     }
                 }
@@ -741,10 +752,13 @@ public class RenderGlobal implements IWorldAccess {
         for (int var2 = 0; var2 < var1.size(); ++var2) {
             Entity var3 = (Entity) var1.get(var2);
 
-            if (this.mc.renderManager.getEntityRenderObject(var3).func_147905_a()) {
-                this.displayListEntitiesDirty = this.displayListEntitiesDirty
-                        || !this.mc.renderManager.func_147936_a(var3, 0.0F, true);
-            }
+            RenderManager renderManager = this.mc.renderManager;
+
+            if (renderManager != null)
+                if (renderManager.getEntityRenderObject(var3).func_147905_a())
+                    this.displayListEntitiesDirty = this.displayListEntitiesDirty
+                            || !renderManager.func_147936_a(var3, 0.0F, true);
+
         }
 
         GL11.glEndList();

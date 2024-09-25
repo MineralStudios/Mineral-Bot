@@ -20,6 +20,7 @@ import net.minecraft.client.audio.MovingSoundMinecart;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.particle.EntityFireworkStarterFX;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
@@ -216,9 +217,12 @@ public class WorldClient extends World implements ClientWorld {
             }
         }
 
-        if (this.mc.renderManager.getEntityRenderObject(p_72847_1_).func_147905_a() && !var2) {
-            this.mc.renderGlobal.onStaticEntitiesChanged();
-        }
+        RenderManager renderManager = this.mc.renderManager;
+
+        if (renderManager != null)
+            if (renderManager.getEntityRenderObject(p_72847_1_).func_147905_a() && !var2) {
+                this.mc.renderGlobal.onStaticEntitiesChanged();
+            }
     }
 
     /**
@@ -240,9 +244,12 @@ public class WorldClient extends World implements ClientWorld {
 
         this.entityHashSet.put(p_73027_1_, p_73027_2_);
 
-        if (this.mc.renderManager.getEntityRenderObject(p_73027_2_).func_147905_a()) {
-            this.mc.renderGlobal.onStaticEntitiesChanged();
-        }
+        RenderManager renderManager = this.mc.renderManager;
+
+        if (renderManager != null)
+            if (renderManager.getEntityRenderObject(p_73027_2_).func_147905_a()) {
+                this.mc.renderGlobal.onStaticEntitiesChanged();
+            }
     }
 
     /**

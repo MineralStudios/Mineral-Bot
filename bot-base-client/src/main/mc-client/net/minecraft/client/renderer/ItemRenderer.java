@@ -23,6 +23,9 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.MapData;
+
+import javax.annotation.Nullable;
+
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
 
@@ -284,6 +287,7 @@ public class ItemRenderer {
         float var17;
         float var18;
         float var22;
+        @Nullable
         Render var26;
         RenderPlayer var29;
 
@@ -297,13 +301,11 @@ public class ItemRenderer {
                     MathHelper.sin(MathHelper.sqrt_float(var13) * (float) Math.PI * 2.0F) * 0.2F, -var14 * 0.2F);
             var13 = 1.0F - var4 / 45.0F + 0.1F;
 
-            if (var13 < 0.0F) {
+            if (var13 < 0.0F)
                 var13 = 0.0F;
-            }
 
-            if (var13 > 1.0F) {
+            if (var13 > 1.0F)
                 var13 = 1.0F;
-            }
 
             var13 = -MathHelper.cos(var13 * (float) Math.PI) * 0.5F + 0.5F;
             GL11.glTranslatef(0.0F, 0.0F * var22 - (1.0F - var2) * 1.2F - var13 * 0.5F + 0.04F, -0.9F * var22);
@@ -323,11 +325,13 @@ public class ItemRenderer {
                 GL11.glRotatef(-90.0F, 0.0F, 0.0F, 1.0F);
                 GL11.glRotatef(59.0F, 0.0F, 0.0F, 1.0F);
                 GL11.glRotatef((float) (-65 * var25), 0.0F, 1.0F, 0.0F);
-                var26 = this.mc.renderManager.getEntityRenderObject(this.mc.thePlayer);
+                RenderManager renderManager = this.mc.renderManager;
+                var26 = renderManager != null ? renderManager.getEntityRenderObject(this.mc.thePlayer) : null;
                 var29 = (RenderPlayer) var26;
                 var18 = 1.0F;
                 GL11.glScalef(var18, var18, var18);
-                var29.renderFirstPersonArm(this.mc.thePlayer);
+                if (var29 != null)
+                    var29.renderFirstPersonArm(this.mc.thePlayer);
                 GL11.glPopMatrix();
             }
 
@@ -491,11 +495,14 @@ public class ItemRenderer {
             GL11.glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
             GL11.glScalef(1.0F, 1.0F, 1.0F);
             GL11.glTranslatef(5.6F, 0.0F, 0.0F);
-            var26 = this.mc.renderManager.getEntityRenderObject(this.mc.thePlayer);
+            RenderManager renderManager = this.mc.renderManager;
+
+            var26 = renderManager != null ? renderManager.getEntityRenderObject(this.mc.thePlayer) : null;
             var29 = (RenderPlayer) var26;
             var18 = 1.0F;
             GL11.glScalef(var18, var18, var18);
-            var29.renderFirstPersonArm(this.mc.thePlayer);
+            if (var29 != null)
+                var29.renderFirstPersonArm(this.mc.thePlayer);
             GL11.glPopMatrix();
         }
 

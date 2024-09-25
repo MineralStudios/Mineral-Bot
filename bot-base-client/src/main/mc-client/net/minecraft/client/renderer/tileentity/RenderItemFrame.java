@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderItem;
-
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureCompass;
@@ -256,7 +256,11 @@ public class RenderItemFrame extends Render {
                 }
 
                 RenderItem.renderInFrame = true;
-                this.mc.renderManager.func_147940_a(var3, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+                RenderManager renderManager = this.mc.renderManager;
+
+                if (renderManager != null)
+                    renderManager.func_147940_a(var3, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+
                 RenderItem.renderInFrame = false;
 
                 TextureManager textureManager = this.mc.getTextureManager();

@@ -599,7 +599,10 @@ public class Minecraft {
             this.mcResourceManager.registerReloadListener(new GrassColorReloadListener());
             this.mcResourceManager.registerReloadListener(new FoliageColorReloadListener());
         }
-        this.renderManager.itemRenderer = new ItemRenderer(this);
+        RenderManager renderManager = this.renderManager;
+
+        if (renderManager != null)
+            renderManager.itemRenderer = new ItemRenderer(this);
         this.entityRenderer = new EntityRenderer(this, this.mcResourceManager);
         if (!BotGlobalConfig.isOptimizedGameLoop())
             this.mcResourceManager.registerReloadListener(this.entityRenderer);
