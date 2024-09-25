@@ -312,6 +312,7 @@ public class Minecraft {
     private ResourcePackRepository mcResourcePackRepository;
     private LanguageManager mcLanguageManager;
     private Framebuffer mcFramebuffer;
+    @Nullable
     private TextureMap textureMapBlocks;
     protected SoundHandler mcSoundHandler;
     private MusicTicker mcMusicTicker;
@@ -629,10 +630,15 @@ public class Minecraft {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         this.checkGLError("Startup");
         this.renderGlobal = new RenderGlobal(this);
-        this.textureMapBlocks = new TextureMap(this, 0, "textures/blocks");
-        this.textureMapBlocks.func_147632_b(this.gameSettings.anisotropicFiltering);
-        this.textureMapBlocks.func_147633_a(this.gameSettings.mipmapLevels);
         if (!BotGlobalConfig.isOptimizedGameLoop()) {
+
+            this.textureMapBlocks = new TextureMap(this, 0, "textures/blocks");
+
+            if (this.textureMapBlocks != null)
+                this.textureMapBlocks.func_147632_b(this.gameSettings.anisotropicFiltering);
+            if (this.textureMapBlocks != null)
+                this.textureMapBlocks.func_147633_a(this.gameSettings.mipmapLevels);
+
             TextureManager renderEngine = this.renderEngine;
             if (renderEngine != null) {
                 renderEngine.loadTextureMap(TextureMap.locationBlocksTexture, this.textureMapBlocks);
@@ -2406,6 +2412,7 @@ public class Minecraft {
         return this.mcLanguageManager;
     }
 
+    @Nullable
     public TextureMap getTextureMapBlocks() {
         return this.textureMapBlocks;
     }

@@ -16,17 +16,17 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gg.mineral.bot.api.controls.Key;
-import gg.mineral.bot.base.lwjgl.opengl.Display;
-
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
+import gg.mineral.bot.api.controls.Key;
+import gg.mineral.bot.base.lwjgl.opengl.Display;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.C15PacketClientSettings;
@@ -537,7 +537,11 @@ public class GameSettings {
             this.anisotropicFiltering = (int) par2;
 
             if ((float) var3 != par2) {
-                this.mc.getTextureMapBlocks().func_147632_b(this.anisotropicFiltering);
+                TextureMap textureMap = this.mc.getTextureMapBlocks();
+
+                if (textureMap != null)
+                    textureMap.func_147632_b(this.anisotropicFiltering);
+
                 this.mc.scheduleResourcesRefresh();
             }
         }
@@ -547,14 +551,18 @@ public class GameSettings {
             this.mipmapLevels = (int) par2;
 
             if ((float) var3 != par2) {
-                this.mc.getTextureMapBlocks().func_147633_a(this.mipmapLevels);
+                TextureMap textureMap = this.mc.getTextureMapBlocks();
+
+                if (textureMap != null)
+                    textureMap.func_147633_a(this.mipmapLevels);
+
                 this.mc.scheduleResourcesRefresh();
             }
         }
 
-        if (par1EnumOptions == GameSettings.Options.RENDER_DISTANCE) {
+        if (par1EnumOptions == GameSettings.Options.RENDER_DISTANCE)
             this.renderDistanceChunks = (int) par2;
-        }
+
     }
 
     /**
@@ -567,9 +575,8 @@ public class GameSettings {
                 case 1:
                     this.ofFogType = 2;
 
-                    if (!Config.isFancyFogAvailable()) {
+                    if (!Config.isFancyFogAvailable())
                         this.ofFogType = 3;
-                    }
 
                     break;
 
@@ -589,17 +596,16 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.FOG_START) {
             this.ofFogStart += 0.2F;
 
-            if (this.ofFogStart > 0.81F) {
+            if (this.ofFogStart > 0.81F)
                 this.ofFogStart = 0.2F;
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.MIPMAP_TYPE) {
             ++this.ofMipmapType;
 
-            if (this.ofMipmapType > 3) {
+            if (this.ofMipmapType > 3)
                 this.ofMipmapType = 0;
-            }
 
             TextureUtils.refreshBlockTextures();
         }
@@ -612,9 +618,8 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.PRELOADED_CHUNKS) {
             this.ofPreloadedChunks += 2;
 
-            if (this.ofPreloadedChunks > 8) {
+            if (this.ofPreloadedChunks > 8)
                 this.ofPreloadedChunks = 0;
-            }
 
             this.mc.renderGlobal.loadRenderers();
         }
@@ -627,9 +632,8 @@ public class GameSettings {
             this.ofSmoothWorld = !this.ofSmoothWorld;
             Config.updateAvailableProcessors();
 
-            if (!Config.isSingleProcessor()) {
+            if (!Config.isSingleProcessor())
                 this.ofSmoothWorld = false;
-            }
 
             Config.updateThreadPriorities();
         }
@@ -637,17 +641,16 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.CLOUDS) {
             ++this.ofClouds;
 
-            if (this.ofClouds > 3) {
+            if (this.ofClouds > 3)
                 this.ofClouds = 0;
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.TREES) {
             ++this.ofTrees;
 
-            if (this.ofTrees > 2) {
+            if (this.ofTrees > 2)
                 this.ofTrees = 0;
-            }
 
             this.mc.renderGlobal.loadRenderers();
         }
@@ -655,9 +658,8 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.GRASS) {
             ++this.ofGrass;
 
-            if (this.ofGrass > 2) {
+            if (this.ofGrass > 2)
                 this.ofGrass = 0;
-            }
 
             RenderBlocks.fancyGrass = Config.isGrassFancy();
             this.mc.renderGlobal.loadRenderers();
@@ -666,125 +668,107 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.DROPPED_ITEMS) {
             ++this.ofDroppedItems;
 
-            if (this.ofDroppedItems > 2) {
+            if (this.ofDroppedItems > 2)
                 this.ofDroppedItems = 0;
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.RAIN) {
             ++this.ofRain;
 
-            if (this.ofRain > 3) {
+            if (this.ofRain > 3)
                 this.ofRain = 0;
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.WATER) {
             ++this.ofWater;
 
-            if (this.ofWater > 2) {
+            if (this.ofWater > 2)
                 this.ofWater = 0;
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.ANIMATED_WATER) {
             ++this.ofAnimatedWater;
 
-            if (this.ofAnimatedWater > 2) {
+            if (this.ofAnimatedWater > 2)
                 this.ofAnimatedWater = 0;
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.ANIMATED_LAVA) {
             ++this.ofAnimatedLava;
 
-            if (this.ofAnimatedLava > 2) {
+            if (this.ofAnimatedLava > 2)
                 this.ofAnimatedLava = 0;
-            }
+
         }
 
-        if (par1EnumOptions == GameSettings.Options.ANIMATED_FIRE) {
+        if (par1EnumOptions == GameSettings.Options.ANIMATED_FIRE)
             this.ofAnimatedFire = !this.ofAnimatedFire;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.ANIMATED_PORTAL) {
+        if (par1EnumOptions == GameSettings.Options.ANIMATED_PORTAL)
             this.ofAnimatedPortal = !this.ofAnimatedPortal;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.ANIMATED_REDSTONE) {
+        if (par1EnumOptions == GameSettings.Options.ANIMATED_REDSTONE)
             this.ofAnimatedRedstone = !this.ofAnimatedRedstone;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.ANIMATED_EXPLOSION) {
+        if (par1EnumOptions == GameSettings.Options.ANIMATED_EXPLOSION)
             this.ofAnimatedExplosion = !this.ofAnimatedExplosion;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.ANIMATED_FLAME) {
+        if (par1EnumOptions == GameSettings.Options.ANIMATED_FLAME)
             this.ofAnimatedFlame = !this.ofAnimatedFlame;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.ANIMATED_SMOKE) {
+        if (par1EnumOptions == GameSettings.Options.ANIMATED_SMOKE)
             this.ofAnimatedSmoke = !this.ofAnimatedSmoke;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.VOID_PARTICLES) {
+        if (par1EnumOptions == GameSettings.Options.VOID_PARTICLES)
             this.ofVoidParticles = !this.ofVoidParticles;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.WATER_PARTICLES) {
+        if (par1EnumOptions == GameSettings.Options.WATER_PARTICLES)
             this.ofWaterParticles = !this.ofWaterParticles;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.PORTAL_PARTICLES) {
+        if (par1EnumOptions == GameSettings.Options.PORTAL_PARTICLES)
             this.ofPortalParticles = !this.ofPortalParticles;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.POTION_PARTICLES) {
+        if (par1EnumOptions == GameSettings.Options.POTION_PARTICLES)
             this.ofPotionParticles = !this.ofPotionParticles;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.DRIPPING_WATER_LAVA) {
+        if (par1EnumOptions == GameSettings.Options.DRIPPING_WATER_LAVA)
             this.ofDrippingWaterLava = !this.ofDrippingWaterLava;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.ANIMATED_TERRAIN) {
+        if (par1EnumOptions == GameSettings.Options.ANIMATED_TERRAIN)
             this.ofAnimatedTerrain = !this.ofAnimatedTerrain;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.ANIMATED_TEXTURES) {
+        if (par1EnumOptions == GameSettings.Options.ANIMATED_TEXTURES)
             this.ofAnimatedTextures = !this.ofAnimatedTextures;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.ANIMATED_ITEMS) {
+        if (par1EnumOptions == GameSettings.Options.ANIMATED_ITEMS)
             this.ofAnimatedItems = !this.ofAnimatedItems;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.RAIN_SPLASH) {
+        if (par1EnumOptions == GameSettings.Options.RAIN_SPLASH)
             this.ofRainSplash = !this.ofRainSplash;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.LAGOMETER) {
+        if (par1EnumOptions == GameSettings.Options.LAGOMETER)
             this.ofLagometer = !this.ofLagometer;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.SHOW_FPS) {
+        if (par1EnumOptions == GameSettings.Options.SHOW_FPS)
             this.ofShowFps = !this.ofShowFps;
-        }
 
         if (par1EnumOptions == GameSettings.Options.AUTOSAVE_TICKS) {
             this.ofAutoSaveTicks *= 10;
 
-            if (this.ofAutoSaveTicks > 40000) {
+            if (this.ofAutoSaveTicks > 40000)
                 this.ofAutoSaveTicks = 40;
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.BETTER_GRASS) {
             ++this.ofBetterGrass;
 
-            if (this.ofBetterGrass > 3) {
+            if (this.ofBetterGrass > 3)
                 this.ofBetterGrass = 1;
-            }
 
             this.mc.renderGlobal.loadRenderers();
         }
@@ -792,51 +776,45 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.CONNECTED_TEXTURES) {
             ++this.ofConnectedTextures;
 
-            if (this.ofConnectedTextures > 3) {
+            if (this.ofConnectedTextures > 3)
                 this.ofConnectedTextures = 1;
-            }
 
             this.mc.renderGlobal.loadRenderers();
         }
 
-        if (par1EnumOptions == GameSettings.Options.WEATHER) {
+        if (par1EnumOptions == GameSettings.Options.WEATHER)
             this.ofWeather = !this.ofWeather;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.SKY) {
+        if (par1EnumOptions == GameSettings.Options.SKY)
             this.ofSky = !this.ofSky;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.STARS) {
+        if (par1EnumOptions == GameSettings.Options.STARS)
             this.ofStars = !this.ofStars;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.SUN_MOON) {
+        if (par1EnumOptions == GameSettings.Options.SUN_MOON)
             this.ofSunMoon = !this.ofSunMoon;
-        }
 
         if (par1EnumOptions == GameSettings.Options.VIGNETTE) {
             ++this.ofVignette;
 
-            if (this.ofVignette > 2) {
+            if (this.ofVignette > 2)
                 this.ofVignette = 0;
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.CHUNK_UPDATES) {
             ++this.ofChunkUpdates;
 
-            if (this.ofChunkUpdates > 5) {
+            if (this.ofChunkUpdates > 5)
                 this.ofChunkUpdates = 1;
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.CHUNK_LOADING) {
             ++this.ofChunkLoading;
 
-            if (this.ofChunkLoading > 2) {
+            if (this.ofChunkLoading > 2)
                 this.ofChunkLoading = 0;
-            }
 
             this.updateChunkLoading();
         }
@@ -848,9 +826,9 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.TIME) {
             ++this.ofTime;
 
-            if (this.ofTime > 3) {
+            if (this.ofTime > 3)
                 this.ofTime = 0;
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.CLEAR_WATER) {
@@ -858,17 +836,14 @@ public class GameSettings {
             this.updateWaterOpacity();
         }
 
-        if (par1EnumOptions == GameSettings.Options.DEPTH_FOG) {
+        if (par1EnumOptions == GameSettings.Options.DEPTH_FOG)
             this.ofDepthFog = !this.ofDepthFog;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.AA_LEVEL) {
+        if (par1EnumOptions == GameSettings.Options.AA_LEVEL)
             this.ofAaLevel = 0;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.PROFILER) {
+        if (par1EnumOptions == GameSettings.Options.PROFILER)
             this.ofProfiler = !this.ofProfiler;
-        }
 
         if (par1EnumOptions == GameSettings.Options.BETTER_SNOW) {
             this.ofBetterSnow = !this.ofBetterSnow;
@@ -933,20 +908,18 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.FAST_RENDER) {
             this.ofFastRender = !this.ofFastRender;
 
-            if (this.ofFastRender) {
+            if (this.ofFastRender)
                 this.mc.entityRenderer.stopUseShader();
-            }
 
             Config.updateFramebufferSize();
             this.mc.renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.TRANSLUCENT_BLOCKS) {
-            if (this.ofTranslucentBlocks == 1) {
+            if (this.ofTranslucentBlocks == 1)
                 this.ofTranslucentBlocks = 2;
-            } else {
+            else
                 this.ofTranslucentBlocks = 1;
-            }
 
             this.mc.renderGlobal.loadRenderers();
         }
@@ -955,9 +928,8 @@ public class GameSettings {
             this.ofLazyChunkLoading = !this.ofLazyChunkLoading;
             Config.updateAvailableProcessors();
 
-            if (!Config.isSingleProcessor()) {
+            if (!Config.isSingleProcessor())
                 this.ofLazyChunkLoading = false;
-            }
 
             this.mc.renderGlobal.loadRenderers();
         }
@@ -975,38 +947,32 @@ public class GameSettings {
                 } else {
                     ++index;
 
-                    if (index >= modeList.size()) {
+                    if (index >= modeList.size())
                         this.ofFullscreenMode = "Default";
-                    } else {
+                    else
                         this.ofFullscreenMode = (String) modeList.get(index);
-                    }
+
                 }
             }
         }
 
-        if (par1EnumOptions == GameSettings.Options.HELD_ITEM_TOOLTIPS) {
+        if (par1EnumOptions == GameSettings.Options.HELD_ITEM_TOOLTIPS)
             this.heldItemTooltips = !this.heldItemTooltips;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.INVERT_MOUSE) {
+        if (par1EnumOptions == GameSettings.Options.INVERT_MOUSE)
             this.invertMouse = !this.invertMouse;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.GUI_SCALE) {
+        if (par1EnumOptions == GameSettings.Options.GUI_SCALE)
             this.guiScale = this.guiScale + par2 & 3;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.PARTICLES) {
+        if (par1EnumOptions == GameSettings.Options.PARTICLES)
             this.particleSetting = (this.particleSetting + par2) % 3;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.VIEW_BOBBING) {
+        if (par1EnumOptions == GameSettings.Options.VIEW_BOBBING)
             this.viewBobbing = !this.viewBobbing;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.RENDER_CLOUDS) {
+        if (par1EnumOptions == GameSettings.Options.RENDER_CLOUDS)
             this.clouds = !this.clouds;
-        }
 
         if (par1EnumOptions == GameSettings.Options.FORCE_UNICODE_FONT) {
             this.forceUnicodeFont = !this.forceUnicodeFont;
@@ -1034,18 +1000,16 @@ public class GameSettings {
             this.mc.renderGlobal.setAllRenderersVisible();
         }
 
-        if (par1EnumOptions == GameSettings.Options.FBO_ENABLE) {
+        if (par1EnumOptions == GameSettings.Options.FBO_ENABLE)
             this.fboEnable = !this.fboEnable;
-        }
 
         if (par1EnumOptions == GameSettings.Options.ANAGLYPH) {
             this.anaglyph = !this.anaglyph;
             this.mc.refreshResources();
         }
 
-        if (par1EnumOptions == GameSettings.Options.DIFFICULTY) {
+        if (par1EnumOptions == GameSettings.Options.DIFFICULTY)
             this.difficulty = EnumDifficulty.getDifficultyEnum(this.difficulty.getDifficultyId() + par2 & 3);
-        }
 
         if (par1EnumOptions == GameSettings.Options.GRAPHICS) {
             this.fancyGraphics = !this.fancyGraphics;
@@ -1057,41 +1021,34 @@ public class GameSettings {
             this.mc.renderGlobal.loadRenderers();
         }
 
-        if (par1EnumOptions == GameSettings.Options.CHAT_VISIBILITY) {
+        if (par1EnumOptions == GameSettings.Options.CHAT_VISIBILITY)
             this.chatVisibility = EntityPlayer.EnumChatVisibility
                     .getEnumChatVisibility((this.chatVisibility.getChatVisibility() + par2) % 3);
-        }
 
-        if (par1EnumOptions == GameSettings.Options.CHAT_COLOR) {
+        if (par1EnumOptions == GameSettings.Options.CHAT_COLOR)
             this.chatColours = !this.chatColours;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.CHAT_LINKS) {
+        if (par1EnumOptions == GameSettings.Options.CHAT_LINKS)
             this.chatLinks = !this.chatLinks;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.CHAT_LINKS_PROMPT) {
+        if (par1EnumOptions == GameSettings.Options.CHAT_LINKS_PROMPT)
             this.chatLinksPrompt = !this.chatLinksPrompt;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.SNOOPER_ENABLED) {
+        if (par1EnumOptions == GameSettings.Options.SNOOPER_ENABLED)
             this.snooperEnabled = !this.snooperEnabled;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.SHOW_CAPE) {
+        if (par1EnumOptions == GameSettings.Options.SHOW_CAPE)
             this.showCape = !this.showCape;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.TOUCHSCREEN) {
+        if (par1EnumOptions == GameSettings.Options.TOUCHSCREEN)
             this.touchscreen = !this.touchscreen;
-        }
 
         if (par1EnumOptions == GameSettings.Options.USE_FULLSCREEN) {
             this.fullScreen = !this.fullScreen;
 
-            if (this.mc.isFullScreen() != this.fullScreen) {
+            if (this.mc.isFullScreen() != this.fullScreen)
                 this.mc.toggleFullscreen();
-            }
+
         }
 
         if (par1EnumOptions == GameSettings.Options.ENABLE_VSYNC) {
