@@ -310,7 +310,10 @@ public class ItemRenderer {
             GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
             GL11.glRotatef(var13 * -85.0F, 0.0F, 0.0F, 1.0F);
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-            this.mc.getTextureManager().bindTexture(var3.getLocationSkin());
+            TextureManager textureManager = this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(var3.getLocationSkin());
 
             for (int var24 = 0; var24 < 2; ++var24) {
                 int var25 = var24 * 2 - 1;
@@ -341,7 +344,10 @@ public class ItemRenderer {
             GL11.glTranslatef(-1.0F, -1.0F, 0.0F);
             var18 = 0.015625F;
             GL11.glScalef(var18, var18, var18);
-            this.mc.getTextureManager().bindTexture(RES_MAP_BACKGROUND);
+
+            if (textureManager != null)
+                textureManager.bindTexture(RES_MAP_BACKGROUND);
+
             Tessellator var30 = this.mc.getTessellator();
             GL11.glNormal3f(0.0F, 0.0F, -1.0F);
             var30.startDrawingQuads();
@@ -473,7 +479,12 @@ public class ItemRenderer {
             var15 = MathHelper.sin(MathHelper.sqrt_float(var13) * (float) Math.PI);
             GL11.glRotatef(var15 * 70.0F, 0.0F, 1.0F, 0.0F);
             GL11.glRotatef(-var14 * 20.0F, 0.0F, 0.0F, 1.0F);
-            this.mc.getTextureManager().bindTexture(var3.getLocationSkin());
+
+            TextureManager textureManager = this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(var3.getLocationSkin());
+
             GL11.glTranslatef(-1.0F, 3.6F, 3.5F);
             GL11.glRotatef(120.0F, 0.0F, 0.0F, 1.0F);
             GL11.glRotatef(200.0F, 1.0F, 0.0F, 0.0F);
@@ -546,7 +557,11 @@ public class ItemRenderer {
      * partialTickTime, blockTextureIndex
      */
     private void renderInsideOfBlock(float p_78446_1_, IIcon p_78446_2_) {
-        this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(TextureMap.locationBlocksTexture);
+
         Tessellator var3 = this.mc.getTessellator();
         float var4 = 0.1F;
         GL11.glColor4f(var4, var4, var4, 0.5F);
@@ -576,7 +591,11 @@ public class ItemRenderer {
      * before being called. Used for the water overlay. Args: parialTickTime
      */
     private void renderWarpedTextureOverlay(float p_78448_1_) {
-        this.mc.getTextureManager().bindTexture(RES_UNDERWATER_OVERLAY);
+
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(RES_UNDERWATER_OVERLAY);
         Tessellator var2 = this.mc.getTessellator();
         float var3 = this.mc.thePlayer.getBrightness(p_78448_1_);
         GL11.glColor4f(var3, var3, var3, 0.5F);
@@ -619,7 +638,11 @@ public class ItemRenderer {
         for (int var4 = 0; var4 < 2; ++var4) {
             GL11.glPushMatrix();
             IIcon var5 = Blocks.fire.func_149840_c(1);
-            this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+            TextureManager textureManager = this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(TextureMap.locationBlocksTexture);
+
             float var6 = var5.getMinU();
             float var7 = var5.getMaxU();
             float var8 = var5.getMinV();

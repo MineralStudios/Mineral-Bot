@@ -259,8 +259,9 @@ public class RenderItemFrame extends Render {
                 this.mc.renderManager.func_147940_a(var3, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
                 RenderItem.renderInFrame = false;
 
-                if (var4 == Items.compass) {
-                    TextureAtlasSprite var13 = ((TextureMap) this.mc.getTextureManager()
+                TextureManager textureManager = this.mc.getTextureManager();
+                if (var4 == Items.compass && textureManager != null) {
+                    TextureAtlasSprite var13 = ((TextureMap) textureManager
                             .getTexture(TextureMap.locationItemsTexture))
                                     .getAtlasSprite(Items.compass.getIconIndex(var3.getEntityItem()).getIconName());
 

@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -230,7 +231,11 @@ public class GuiFlatPresets extends GuiScreen {
 
         private void func_148171_c(int p_148171_1_, int p_148171_2_, int p_148171_3_, int p_148171_4_) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GuiFlatPresets.this.mc.getTextureManager().bindTexture(Gui.statIcons);
+            TextureManager textureManager = GuiFlatPresets.this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(Gui.statIcons);
+
             float var5 = 0.0078125F;
             float var6 = 0.0078125F;
             boolean var7 = true;

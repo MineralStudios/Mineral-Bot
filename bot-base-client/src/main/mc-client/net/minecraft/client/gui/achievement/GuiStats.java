@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiButton;
@@ -14,6 +17,7 @@ import net.minecraft.client.gui.IProgressMeter;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityList;
 import net.minecraft.item.Item;
@@ -161,7 +165,9 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
 
     private void func_146527_c(int p_146527_1_, int p_146527_2_, int p_146527_3_, int p_146527_4_) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(statIcons);
+        TextureManager textureManager = this.mc.getTextureManager();
+        if (textureManager != null)
+            textureManager.bindTexture(statIcons);
         float var5 = 0.0078125F;
         float var6 = 0.0078125F;
         boolean var7 = true;

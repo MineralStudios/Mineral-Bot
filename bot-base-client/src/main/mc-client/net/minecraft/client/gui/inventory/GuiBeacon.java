@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
@@ -18,6 +19,8 @@ import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
+
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public class GuiBeacon extends GuiContainer {
@@ -175,7 +178,11 @@ public class GuiBeacon extends GuiContainer {
 
     protected void func_146976_a(float p_146976_1_, int p_146976_2_, int p_146976_3_) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(field_147025_v);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(field_147025_v);
+
         int var4 = (this.width - this.field_146999_f) / 2;
         int var5 = (this.height - this.field_147000_g) / 2;
         this.drawTexturedModalRect(var4, var5, 0, 0, this.field_146999_f, this.field_147000_g);
@@ -209,7 +216,10 @@ public class GuiBeacon extends GuiContainer {
 
         public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_) {
             if (this.field_146125_m) {
-                p_146112_1_.getTextureManager().bindTexture(GuiBeacon.field_147025_v);
+                TextureManager textureManager = p_146112_1_.getTextureManager();
+
+                if (textureManager != null)
+                    textureManager.bindTexture(GuiBeacon.field_147025_v);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 this.field_146123_n = p_146112_2_ >= this.field_146128_h && p_146112_3_ >= this.field_146129_i
                         && p_146112_2_ < this.field_146128_h + this.field_146120_f
@@ -229,7 +239,8 @@ public class GuiBeacon extends GuiContainer {
                         this.field_146121_g);
 
                 if (!GuiBeacon.field_147025_v.equals(this.field_146145_o)) {
-                    p_146112_1_.getTextureManager().bindTexture(this.field_146145_o);
+                    if (textureManager != null)
+                        textureManager.bindTexture(this.field_146145_o);
                 }
 
                 this.drawTexturedModalRect(this.field_146128_h + 2, this.field_146129_i + 2, this.field_146144_p,

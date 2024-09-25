@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -13,6 +15,7 @@ import net.minecraft.client.gui.achievement.GuiStats;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.creativetab.CreativeTabs;
@@ -596,15 +599,23 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
         for (var7 = 0; var7 < var6; ++var7) {
             CreativeTabs var8 = var5[var7];
-            this.mc.getTextureManager().bindTexture(field_147061_u);
+
+            TextureManager textureManager = this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(field_147061_u);
 
             if (var8.getTabIndex() != field_147058_w) {
                 this.func_147051_a(var8);
             }
         }
 
-        this.mc.getTextureManager().bindTexture(
-                new ResourceLocation("textures/gui/container/creative_inventory/tab_" + var4.getBackgroundImageName()));
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(
+                    new ResourceLocation(
+                            "textures/gui/container/creative_inventory/tab_" + var4.getBackgroundImageName()));
         this.drawTexturedModalRect(this.xShift, this.yShift, 0, 0, this.field_146999_f,
                 this.field_147000_g);
         this.field_147062_A.drawTextBox();
@@ -612,20 +623,21 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
         int var9 = this.xShift + 175;
         var6 = this.yShift + 18;
         var7 = var6 + 112;
-        this.mc.getTextureManager().bindTexture(field_147061_u);
 
-        if (var4.shouldHidePlayerInventory()) {
+        if (textureManager != null)
+            textureManager.bindTexture(field_147061_u);
+
+        if (var4.shouldHidePlayerInventory())
             this.drawTexturedModalRect(var9, var6 + (int) ((float) (var7 - var6 - 17) * this.field_147067_x),
                     232 + (this.func_147055_p() ? 0 : 12), 0, 12, 15);
-        }
 
         this.func_147051_a(var4);
 
-        if (var4 == CreativeTabs.tabInventory) {
+        if (var4 == CreativeTabs.tabInventory)
             GuiInventory.func_147046_a(this.mc.renderManager, this.xShift + 43, this.yShift + 45, 20,
                     (float) (this.xShift + 43 - p_146976_2_),
                     (float) (this.yShift + 45 - 30 - p_146976_3_), this.mc.thePlayer);
-        }
+
     }
 
     protected boolean func_147049_a(CreativeTabs p_147049_1_, int p_147049_2_, int p_147049_3_) {

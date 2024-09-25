@@ -180,6 +180,7 @@ public class Minecraft {
     private ServerData currentServerData;
 
     /** The RenderEngine instance used by Minecraft */
+    @Nullable
     private TextureManager renderEngine;
 
     public PlayerControllerMP playerController;
@@ -316,7 +317,9 @@ public class Minecraft {
     private MusicTicker mcMusicTicker;
     private ResourceLocation minecraftLogoTexture;
     private final MinecraftSessionService field_152355_az;
-    private SkinManager field_152350_aA;
+    @Getter
+    @Nullable
+    private SkinManager skinManager;
     private final Queue field_152351_aB = Queues.newArrayDeque();
     private final Thread mainThread = Thread.currentThread();
 
@@ -560,11 +563,12 @@ public class Minecraft {
         if (!BotGlobalConfig.isOptimizedGameLoop())
             this.mcResourceManager.registerReloadListener(this.mcLanguageManager);
         this.refreshResources();
-        this.renderEngine = new TextureManager(this, this.mcResourceManager);
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.isOptimizedGameLoop()) {
+            this.renderEngine = new TextureManager(this, this.mcResourceManager);
             this.mcResourceManager.registerReloadListener(this.renderEngine);
-        this.field_152350_aA = new SkinManager(this, this.renderEngine, new File(this.fileAssets, "skins"),
-                this.field_152355_az);
+            this.skinManager = new SkinManager(this, this.renderEngine, new File(this.fileAssets, "skins"),
+                    this.field_152355_az);
+        }
         this.loadScreen();
         this.mcSoundHandler = new SoundHandler(this, this.mcResourceManager, this.gameSettings);
         if (!BotGlobalConfig.isHeadless() && !BotGlobalConfig.isOptimizedGameLoop())
@@ -628,9 +632,12 @@ public class Minecraft {
         this.textureMapBlocks.func_147632_b(this.gameSettings.anisotropicFiltering);
         this.textureMapBlocks.func_147633_a(this.gameSettings.mipmapLevels);
         if (!BotGlobalConfig.isOptimizedGameLoop()) {
-            this.renderEngine.loadTextureMap(TextureMap.locationBlocksTexture, this.textureMapBlocks);
-            this.renderEngine.loadTextureMap(TextureMap.locationItemsTexture,
-                    new TextureMap(this, 1, "textures/items"));
+            TextureManager renderEngine = this.renderEngine;
+            if (renderEngine != null) {
+                renderEngine.loadTextureMap(TextureMap.locationBlocksTexture, this.textureMapBlocks);
+                renderEngine.loadTextureMap(TextureMap.locationItemsTexture,
+                        new TextureMap(this, 1, "textures/items"));
+            }
         }
         GL11.glViewport(0, 0, this.displayWidth, this.displayHeight);
         this.effectRenderer = new EffectRenderer(this, this.theWorld, this.renderEngine);
@@ -642,7 +649,8 @@ public class Minecraft {
         else
             this.displayGuiScreen(new GuiMainMenu(this));
 
-        this.renderEngine.func_147645_c(this.minecraftLogoTexture);
+        if (this.renderEngine != null)
+            this.renderEngine.func_147645_c(this.minecraftLogoTexture);
         this.minecraftLogoTexture = null;
         this.loadingScreen = new LoadingScreenRenderer(this);
 
@@ -778,12 +786,15 @@ public class Minecraft {
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-        if (!BotGlobalConfig.isOptimizedGameLoop()) {
+        TextureManager renderEngine = this.renderEngine;
+        TextureUtil textureUtil = this.textureUtil;
+
+        if (!BotGlobalConfig.isOptimizedGameLoop() && renderEngine != null && textureUtil != null) {
             try {
-                this.minecraftLogoTexture = this.renderEngine.getDynamicTextureLocation("logo",
+                this.minecraftLogoTexture = renderEngine.getDynamicTextureLocation("logo",
                         new DynamicTexture(this, textureUtil.dataBuffer,
                                 ImageIO.read(this.mcDefaultResourcePack.getInputStream(locationMojangPng))));
-                this.renderEngine.bindTexture(this.minecraftLogoTexture);
+                renderEngine.bindTexture(this.minecraftLogoTexture);
             } catch (IOException var7) {
                 logger.error("Unable to load logo: " + locationMojangPng, var7);
             }
@@ -1534,36 +1545,31 @@ public class Minecraft {
         Queue var1 = this.field_152351_aB;
 
         synchronized (this.field_152351_aB) {
-            while (!this.field_152351_aB.isEmpty()) {
+            while (!this.field_152351_aB.isEmpty())
                 ((FutureTask) this.field_152351_aB.poll()).run();
-            }
         }
 
         this.mcProfiler.endSection();
 
-        if (this.rightClickDelayTimer > 0) {
+        if (this.rightClickDelayTimer > 0)
             --this.rightClickDelayTimer;
-        }
 
         this.mcProfiler.startSection("gui");
 
-        if (!this.isGamePaused) {
+        if (!this.isGamePaused)
             this.ingameGUI.updateTick();
-        }
 
         this.mcProfiler.endStartSection("pick");
         this.entityRenderer.getMouseOver(1.0F);
         this.mcProfiler.endStartSection("gameMode");
 
-        if (!this.isGamePaused && this.theWorld != null) {
+        if (!this.isGamePaused && this.theWorld != null)
             this.playerController.updateController();
-        }
 
         this.mcProfiler.endStartSection("textures");
 
-        if (!this.isGamePaused) {
+        if (!this.isGamePaused && this.renderEngine != null)
             this.renderEngine.tick();
-        }
 
         if (this.currentScreen == null && this.thePlayer != null) {
             if (this.thePlayer.getHealth() <= 0.0F) {
@@ -1576,9 +1582,8 @@ public class Minecraft {
             this.displayGuiScreen((GuiScreen) null);
         }
 
-        if (this.currentScreen != null) {
+        if (this.currentScreen != null)
             this.leftClickCounter = 10000;
-        }
 
         CrashReport var2;
         CrashReportCategory var3;
@@ -1625,9 +1630,8 @@ public class Minecraft {
                 var9 = this.getMouse().getEventButton();
                 KeyBinding.setKeyBindState(this, var9 - 100, this.getMouse().getEventButtonState());
 
-                if (this.getMouse().getEventButtonState()) {
+                if (this.getMouse().getEventButtonState())
                     KeyBinding.onTick(this, var9 - 100);
-                }
 
                 long var11 = getSystemTime() - this.systemTime;
 
@@ -1638,31 +1642,27 @@ public class Minecraft {
                         this.thePlayer.inventory.changeCurrentItem(var4);
 
                         if (this.gameSettings.noclip) {
-                            if (var4 > 0) {
+                            if (var4 > 0)
                                 var4 = 1;
-                            }
 
-                            if (var4 < 0) {
+                            if (var4 < 0)
                                 var4 = -1;
-                            }
 
                             this.gameSettings.noclipRate += (float) var4 * 0.25F;
                         }
                     }
 
                     if (this.currentScreen == null) {
-                        if (!this.inGameHasFocus && this.getMouse().getEventButtonState()) {
+                        if (!this.inGameHasFocus && this.getMouse().getEventButtonState())
                             this.setIngameFocus();
-                        }
                     } else if (this.currentScreen != null) {
                         this.currentScreen.handleMouseInput();
                     }
                 }
             }
 
-            if (this.leftClickCounter > 0) {
+            if (this.leftClickCounter > 0)
                 --this.leftClickCounter;
-            }
 
             this.mcProfiler.endStartSection("keyboard");
             boolean var10;
@@ -1670,70 +1670,60 @@ public class Minecraft {
             while (this.keyboard.next()) {
                 KeyBinding.setKeyBindState(this, this.keyboard.getEventKey(), this.keyboard.getEventKeyState());
 
-                if (this.keyboard.getEventKeyState()) {
+                if (this.keyboard.getEventKeyState())
                     KeyBinding.onTick(this, this.keyboard.getEventKey());
-                }
 
                 if (this.field_83002_am > 0L) {
-                    if (getSystemTime() - this.field_83002_am >= 6000L) {
+                    if (getSystemTime() - this.field_83002_am >= 6000L)
                         throw new ReportedException(new CrashReport("Manually triggered debug crash", new Throwable()));
-                    }
 
-                    if (!this.keyboard.isKeyDown(46) || !this.keyboard.isKeyDown(61)) {
+                    if (!this.keyboard.isKeyDown(46) || !this.keyboard.isKeyDown(61))
                         this.field_83002_am = -1L;
-                    }
-                } else if (this.keyboard.isKeyDown(46) && this.keyboard.isKeyDown(61)) {
+
+                } else if (this.keyboard.isKeyDown(46) && this.keyboard.isKeyDown(61))
                     this.field_83002_am = getSystemTime();
-                }
 
                 this.func_152348_aa();
 
                 if (this.keyboard.getEventKeyState()) {
-                    if (this.keyboard.getEventKey() == 62 && this.entityRenderer != null) {
+                    if (this.keyboard.getEventKey() == 62 && this.entityRenderer != null)
                         this.entityRenderer.deactivateShader();
-                    }
 
                     if (this.currentScreen != null) {
                         this.currentScreen.handleKeyboardInput();
                     } else {
-                        if (this.keyboard.getEventKey() == 1) {
+                        if (this.keyboard.getEventKey() == 1)
                             this.displayInGameMenu();
-                        }
 
-                        if (this.keyboard.getEventKey() == 31 && this.keyboard.isKeyDown(61)) {
+                        if (this.keyboard.getEventKey() == 31 && this.keyboard.isKeyDown(61))
                             this.refreshResources();
-                        }
 
-                        if (this.keyboard.getEventKey() == 20 && this.keyboard.isKeyDown(61)) {
+                        if (this.keyboard.getEventKey() == 20 && this.keyboard.isKeyDown(61))
                             this.refreshResources();
-                        }
 
                         if (this.keyboard.getEventKey() == 33 && this.keyboard.isKeyDown(61)) {
                             var10 = this.keyboard.isKeyDown(42) | this.keyboard.isKeyDown(54);
                             this.gameSettings.setOptionValue(GameSettings.Options.RENDER_DISTANCE, var10 ? -1 : 1);
                         }
 
-                        if (this.keyboard.getEventKey() == 30 && this.keyboard.isKeyDown(61)) {
+                        if (this.keyboard.getEventKey() == 30 && this.keyboard.isKeyDown(61))
                             this.renderGlobal.loadRenderers();
-                        }
 
                         if (this.keyboard.getEventKey() == 35 && this.keyboard.isKeyDown(61)) {
                             this.gameSettings.advancedItemTooltips = !this.gameSettings.advancedItemTooltips;
                             this.gameSettings.saveOptions();
                         }
 
-                        if (this.keyboard.getEventKey() == 48 && this.keyboard.isKeyDown(61)) {
+                        if (this.keyboard.getEventKey() == 48 && this.keyboard.isKeyDown(61))
                             RenderManager.field_85095_o = !RenderManager.field_85095_o;
-                        }
 
                         if (this.keyboard.getEventKey() == 25 && this.keyboard.isKeyDown(61)) {
                             this.gameSettings.pauseOnLostFocus = !this.gameSettings.pauseOnLostFocus;
                             this.gameSettings.saveOptions();
                         }
 
-                        if (this.keyboard.getEventKey() == 59) {
+                        if (this.keyboard.getEventKey() == 59)
                             this.gameSettings.hideGUI = !this.gameSettings.hideGUI;
-                        }
 
                         if (this.keyboard.getEventKey() == 61) {
                             this.gameSettings.showDebugInfo = !this.gameSettings.showDebugInfo;
@@ -1743,35 +1733,28 @@ public class Minecraft {
                         if (this.gameSettings.keyBindTogglePerspective.isPressed()) {
                             ++this.gameSettings.thirdPersonView;
 
-                            if (this.gameSettings.thirdPersonView > 2) {
+                            if (this.gameSettings.thirdPersonView > 2)
                                 this.gameSettings.thirdPersonView = 0;
-                            }
                         }
 
-                        if (this.gameSettings.keyBindSmoothCamera.isPressed()) {
+                        if (this.gameSettings.keyBindSmoothCamera.isPressed())
                             this.gameSettings.smoothCamera = !this.gameSettings.smoothCamera;
-                        }
                     }
 
                     if (this.gameSettings.showDebugInfo && this.gameSettings.showDebugProfilerChart) {
-                        if (this.keyboard.getEventKey() == 11) {
+                        if (this.keyboard.getEventKey() == 11)
                             this.updateDebugProfilerName(0);
-                        }
 
-                        for (var9 = 0; var9 < 9; ++var9) {
-                            if (this.keyboard.getEventKey() == 2 + var9) {
+                        for (var9 = 0; var9 < 9; ++var9)
+                            if (this.keyboard.getEventKey() == 2 + var9)
                                 this.updateDebugProfilerName(var9 + 1);
-                            }
-                        }
                     }
                 }
             }
 
-            for (var9 = 0; var9 < 9; ++var9) {
-                if (this.gameSettings.keyBindsHotbar[var9].isPressed()) {
+            for (var9 = 0; var9 < 9; ++var9)
+                if (this.gameSettings.keyBindsHotbar[var9].isPressed())
                     this.thePlayer.inventory.currentItem = var9;
-                }
-            }
 
             var10 = this.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN;
 
@@ -1785,22 +1768,18 @@ public class Minecraft {
                 }
             }
 
-            while (this.gameSettings.keyBindDrop.isPressed()) {
+            while (this.gameSettings.keyBindDrop.isPressed())
                 this.thePlayer.dropOneItem(GuiScreen.isCtrlKeyDown(this));
-            }
 
-            while (this.gameSettings.keyBindChat.isPressed() && var10) {
+            while (this.gameSettings.keyBindChat.isPressed() && var10)
                 this.displayGuiScreen(new GuiChat(this));
-            }
 
-            if (this.currentScreen == null && this.gameSettings.keyBindCommand.isPressed() && var10) {
+            if (this.currentScreen == null && this.gameSettings.keyBindCommand.isPressed() && var10)
                 this.displayGuiScreen(new GuiChat(this, "/"));
-            }
 
             if (this.thePlayer.isUsingItem()) {
-                if (!this.gameSettings.keyBindUseItem.getIsKeyPressed()) {
+                if (!this.gameSettings.keyBindUseItem.getIsKeyPressed())
                     this.playerController.onStoppedUsingItem(this.thePlayer);
-                }
 
                 label391:
 
@@ -1811,32 +1790,28 @@ public class Minecraft {
                         }
 
                         while (true) {
-                            if (this.gameSettings.keyBindPickBlock.isPressed()) {
+                            if (this.gameSettings.keyBindPickBlock.isPressed())
                                 continue;
-                            }
 
                             break label391;
                         }
                     }
                 }
             } else {
-                while (this.gameSettings.keyBindAttack.isPressed()) {
+                while (this.gameSettings.keyBindAttack.isPressed())
                     this.func_147116_af();
-                }
 
-                while (this.gameSettings.keyBindUseItem.isPressed()) {
+                while (this.gameSettings.keyBindUseItem.isPressed())
                     this.func_147121_ag();
-                }
 
-                while (this.gameSettings.keyBindPickBlock.isPressed()) {
+                while (this.gameSettings.keyBindPickBlock.isPressed())
                     this.func_147112_ai();
-                }
+
             }
 
             if (this.gameSettings.keyBindUseItem.getIsKeyPressed() && this.rightClickDelayTimer == 0
-                    && !this.thePlayer.isUsingItem()) {
+                    && !this.thePlayer.isUsingItem())
                 this.func_147121_ag();
-            }
 
             this.func_147115_a(this.currentScreen == null && this.gameSettings.keyBindAttack.getIsKeyPressed()
                     && this.inGameHasFocus);
@@ -1854,22 +1829,19 @@ public class Minecraft {
 
             this.mcProfiler.endStartSection("gameRenderer");
 
-            if (!this.isGamePaused) {
+            if (!this.isGamePaused)
                 this.entityRenderer.updateRenderer();
-            }
 
             this.mcProfiler.endStartSection("levelRenderer");
 
-            if (!this.isGamePaused) {
+            if (!this.isGamePaused)
                 this.renderGlobal.updateClouds();
-            }
 
             this.mcProfiler.endStartSection("level");
 
             if (!this.isGamePaused) {
-                if (this.theWorld.lastLightningBolt > 0) {
+                if (this.theWorld.lastLightningBolt > 0)
                     --this.theWorld.lastLightningBolt;
-                }
 
                 this.theWorld.updateEntities();
             }
@@ -1902,16 +1874,15 @@ public class Minecraft {
 
             this.mcProfiler.endStartSection("animateTick");
 
-            if (!BotGlobalConfig.isOptimizedGameLoop() && !this.isGamePaused && this.theWorld != null) {
+            if (!BotGlobalConfig.isOptimizedGameLoop() && !this.isGamePaused && this.theWorld != null)
                 this.theWorld.doVoidFogParticles(MathHelper.floor_double(this.thePlayer.posX),
                         MathHelper.floor_double(this.thePlayer.posY), MathHelper.floor_double(this.thePlayer.posZ));
-            }
 
             this.mcProfiler.endStartSection("particles");
 
-            if (!this.isGamePaused) {
+            if (!this.isGamePaused)
                 this.effectRenderer.updateEffects();
-            }
+
         } else if (this.myNetworkManager != null) {
             this.mcProfiler.endStartSection("pendingConnection");
             this.myNetworkManager.processReceivedPackets();
@@ -1935,9 +1906,8 @@ public class Minecraft {
             var4.saveWorldInfo(var5);
         }
 
-        if (p_71371_3_ == null) {
+        if (p_71371_3_ == null)
             p_71371_3_ = new WorldSettings(var5);
-        }
 
         try {
             this.theIntegratedServer = new IntegratedServer(this, p_71371_1_, p_71371_2_, p_71371_3_);
@@ -1956,11 +1926,10 @@ public class Minecraft {
         while (!this.theIntegratedServer.serverIsInRunLoop()) {
             String var6 = this.theIntegratedServer.getUserMessage();
 
-            if (var6 != null) {
+            if (var6 != null)
                 this.loadingScreen.resetProgresAndWorkingMessage(I18n.format(var6, new Object[0]));
-            } else {
+            else
                 this.loadingScreen.resetProgresAndWorkingMessage("");
-            }
 
             try {
                 Thread.sleep(200L);
@@ -2419,6 +2388,7 @@ public class Minecraft {
         return this.field_152356_J;
     }
 
+    @Nullable
     public TextureManager getTextureManager() {
         return this.renderEngine;
     }
@@ -2514,10 +2484,6 @@ public class Minecraft {
 
     public MinecraftSessionService func_152347_ac() {
         return this.field_152355_az;
-    }
-
-    public SkinManager func_152342_ad() {
-        return this.field_152350_aA;
     }
 
     static final class SwitchMovingObjectType {

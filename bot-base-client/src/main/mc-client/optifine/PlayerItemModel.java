@@ -2,6 +2,9 @@ package optifine;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
@@ -42,7 +45,10 @@ public class PlayerItemModel {
             if (this.texture == null && this.textureImage != null) {
                 this.texture = new DynamicTexture(player.getMc(), player.getMc().textureUtil.dataBuffer,
                         this.textureImage);
-                player.getMc().getTextureManager().loadTexture(this.textureLocation, this.texture);
+                TextureManager textureManager1 = player.getMc().getTextureManager();
+
+                if (textureManager1 != null)
+                    textureManager1.loadTexture(this.textureLocation, this.texture);
             }
 
             textureManager.bindTexture(this.textureLocation);

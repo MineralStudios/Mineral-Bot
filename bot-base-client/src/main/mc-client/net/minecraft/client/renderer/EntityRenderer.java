@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.util.glu.GLU;
@@ -35,6 +37,7 @@ import net.minecraft.client.particle.EntitySmokeFX;
 import net.minecraft.client.renderer.culling.ClippingHelperImpl;
 import net.minecraft.client.renderer.culling.Frustrum;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IResourceManager;
@@ -143,6 +146,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
      * Colors computed in updateLightmap() and loaded into the lightmap emptyTexture
      */
     private final int[] lightmapColors;
+    @Nullable
     private final ResourceLocation locationLightMap;
 
     /** FOV modifier hand */
@@ -268,8 +272,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         this.theMapItemRenderer = new MapItemRenderer(mc, mc.getTextureManager());
         this.itemRenderer = new ItemRenderer(mc);
         this.lightmapTexture = new DynamicTexture(mc, mc.textureUtil.dataBuffer, 16, 16);
-        this.locationLightMap = mc.getTextureManager().getDynamicTextureLocation("lightMap",
-                this.lightmapTexture);
+        TextureManager textureManager = mc.getTextureManager();
+
+        this.locationLightMap = textureManager != null ? textureManager.getDynamicTextureLocation("lightMap",
+                this.lightmapTexture) : null;
         this.lightmapColors = this.lightmapTexture.getTextureData();
         this.theShaderGroup = null;
     }
@@ -909,7 +915,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         GL11.glScalef(var3, var3, var3);
         GL11.glTranslatef(8.0F, 8.0F, 8.0F);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        this.mc.getTextureManager().bindTexture(this.locationLightMap);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(this.locationLightMap);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
@@ -1407,7 +1416,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.mcProfiler.endStartSection("prepareterrain");
             this.setupFog(0, par1);
             GL11.glEnable(GL11.GL_FOG);
-            this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+            TextureManager textureManager = this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(TextureMap.locationBlocksTexture);
+
             RenderHelper.disableStandardItemLighting();
             this.mc.mcProfiler.endStartSection("terrain");
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -1504,7 +1517,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.setupFog(0, par1);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glDepthMask(false);
-            this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+
+            if (textureManager != null)
+                textureManager.bindTexture(TextureMap.locationBlocksTexture);
+
             WrUpdates.resumeBackgroundUpdates();
 
             if (Config.isWaterFancy()) {
@@ -1784,7 +1800,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                                     }
 
                                     var18 = 0;
-                                    this.mc.getTextureManager().bindTexture(locationRainPng);
+
+                                    TextureManager textureManager = this.mc.getTextureManager();
+                                    if (textureManager != null)
+                                        textureManager.bindTexture(locationRainPng);
                                     var8.startDrawingQuads();
                                 }
 
@@ -1819,7 +1838,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                                     }
 
                                     var18 = 1;
-                                    this.mc.getTextureManager().bindTexture(locationSnowPng);
+                                    TextureManager textureManager = this.mc.getTextureManager();
+
+                                    if (textureManager != null)
+                                        textureManager.bindTexture(locationSnowPng);
+
                                     var8.startDrawingQuads();
                                 }
 

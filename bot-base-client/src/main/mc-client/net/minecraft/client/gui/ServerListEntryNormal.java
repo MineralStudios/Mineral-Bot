@@ -1,27 +1,33 @@
 package net.minecraft.client.gui;
 
-import com.google.common.base.Charsets;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.base64.Base64;
 import java.awt.image.BufferedImage;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
+
 import javax.imageio.ImageIO;
+
+import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
+
+import com.google.common.base.Charsets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.base64.Base64;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
     private static final Logger logger = LogManager.getLogger(ServerListEntryNormal.class);
@@ -41,7 +47,10 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
         this.field_148301_e = p_i45048_2_;
         this.mc = mc;
         this.field_148306_i = new ResourceLocation("servers/" + p_i45048_2_.serverIP + "/icon");
-        this.field_148305_h = (DynamicTexture) this.mc.getTextureManager().getTexture(this.field_148306_i);
+        TextureManager textureManager = mc.getTextureManager();
+
+        if (textureManager != null)
+            this.field_148305_h = (DynamicTexture) textureManager.getTexture(this.field_148306_i);
     }
 
     public void func_148279_a(int p_148279_1_, int p_148279_2_, int p_148279_3_, int p_148279_4_, int p_148279_5_,
@@ -136,7 +145,11 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
         }
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(Gui.icons);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(Gui.icons);
+
         Gui.func_146110_a(this.mc, p_148279_2_ + p_148279_4_ - 15, p_148279_3_, (float) (var16 * 10),
                 (float) (176 + var17 * 8),
                 10, 8, 256.0F, 256.0F);
@@ -149,7 +162,9 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
         }
 
         if (this.field_148305_h != null) {
-            this.mc.getTextureManager().bindTexture(this.field_148306_i);
+            if (textureManager != null)
+                textureManager.bindTexture(this.field_148306_i);
+
             Gui.func_146110_a(this.mc, p_148279_2_, p_148279_3_, 0.0F, 0.0F, 32, 32, 32.0F, 32.0F);
         }
 
@@ -165,7 +180,10 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
 
     private void func_148297_b() {
         if (this.field_148301_e.func_147409_e() == null) {
-            this.mc.getTextureManager().func_147645_c(this.field_148306_i);
+            TextureManager textureManager = this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.func_147645_c(this.field_148306_i);
             this.field_148305_h = null;
         } else {
             ByteBuf var2 = Unpooled.copiedBuffer(this.field_148301_e.func_147409_e(), Charsets.UTF_8);
@@ -192,7 +210,10 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
             if (this.field_148305_h == null) {
                 this.field_148305_h = new DynamicTexture(this.mc, mc.textureUtil.dataBuffer, var1.getWidth(),
                         var1.getHeight());
-                this.mc.getTextureManager().loadTexture(this.field_148306_i, this.field_148305_h);
+                TextureManager textureManager = this.mc.getTextureManager();
+
+                if (textureManager != null)
+                    textureManager.loadTexture(this.field_148306_i, this.field_148305_h);
             }
 
             var1.getRGB(0, 0, var1.getWidth(), var1.getHeight(), this.field_148305_h.getTextureData(), 0,

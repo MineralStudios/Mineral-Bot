@@ -2,9 +2,13 @@ package net.minecraft.client.renderer.entity;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.texture.LayeredTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityHorse;
@@ -94,8 +98,11 @@ public class RenderHorse extends RenderLiving {
 
         if (var3 == null) {
             var3 = new ResourceLocation(var2);
-            this.mc.getTextureManager().loadTexture(var3,
-                    new LayeredTexture(this.mc, p_110848_1_.getVariantTexturePaths()));
+            TextureManager textureManager = this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.loadTexture(var3,
+                        new LayeredTexture(this.mc, p_110848_1_.getVariantTexturePaths()));
             field_110852_a.put(var2, var3);
         }
 

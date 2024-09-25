@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -146,7 +147,11 @@ public class GuiCreateFlatWorld extends GuiScreen {
 
         private void func_148224_c(int p_148224_1_, int p_148224_2_, int p_148224_3_, int p_148224_4_) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GuiCreateFlatWorld.this.mc.getTextureManager().bindTexture(Gui.statIcons);
+            TextureManager textureManager = GuiCreateFlatWorld.this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(Gui.statIcons);
+
             float var5 = 0.0078125F;
             float var6 = 0.0078125F;
             boolean var7 = true;

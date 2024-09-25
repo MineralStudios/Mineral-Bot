@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.model.ModelBook;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -83,7 +84,9 @@ public class GuiEnchantment extends GuiContainer {
 
     protected void func_146976_a(float p_146976_1_, int p_146976_2_, int p_146976_3_) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(field_147078_C);
+        TextureManager textureManager = this.mc.getTextureManager();
+        if (textureManager != null)
+            textureManager.bindTexture(field_147078_C);
         int var4 = (this.width - this.field_146999_f) / 2;
         int var5 = (this.height - this.field_147000_g) / 2;
         this.drawTexturedModalRect(var4, var5, 0, 0, this.field_146999_f, this.field_147000_g);
@@ -106,7 +109,8 @@ public class GuiEnchantment extends GuiContainer {
         float var8 = 5.0F;
         GL11.glScalef(var8, var8, var8);
         GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(field_147070_D);
+        if (textureManager != null)
+            textureManager.bindTexture(field_147070_D);
         GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
         float var9 = this.field_147076_A + (this.field_147080_z - this.field_147076_A) * p_146976_1_;
         GL11.glTranslatef((1.0F - var9) * 0.2F, (1.0F - var9) * 0.1F, (1.0F - var9) * 0.25F);
@@ -117,21 +121,17 @@ public class GuiEnchantment extends GuiContainer {
         var10 = (var10 - (float) MathHelper.truncateDoubleToInt((double) var10)) * 1.6F - 0.3F;
         var11 = (var11 - (float) MathHelper.truncateDoubleToInt((double) var11)) * 1.6F - 0.3F;
 
-        if (var10 < 0.0F) {
+        if (var10 < 0.0F)
             var10 = 0.0F;
-        }
 
-        if (var11 < 0.0F) {
+        if (var11 < 0.0F)
             var11 = 0.0F;
-        }
 
-        if (var10 > 1.0F) {
+        if (var10 > 1.0F)
             var10 = 1.0F;
-        }
 
-        if (var11 > 1.0F) {
+        if (var11 > 1.0F)
             var11 = 1.0F;
-        }
 
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         field_147072_E.render((Entity) null, 0.0F, var10, var11, var9, 0.0F, 0.0625F);
@@ -149,7 +149,8 @@ public class GuiEnchantment extends GuiContainer {
         for (int var12 = 0; var12 < 3; ++var12) {
             String var13 = EnchantmentNameParts.instance.generateNewRandomName();
             this.zLevel = 0.0F;
-            this.mc.getTextureManager().bindTexture(field_147078_C);
+            if (textureManager != null)
+                textureManager.bindTexture(field_147078_C);
             int var14 = this.field_147075_G.enchantLevels[var12];
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 

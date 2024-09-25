@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GLContext;
@@ -22,6 +23,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
@@ -155,7 +157,11 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
     public void initGui() {
         this.viewportTexture = this.mc.textureUtil == null ? null
                 : new DynamicTexture(this.mc, this.mc.textureUtil.dataBuffer, 256, 256);
-        this.field_110351_G = this.mc.getTextureManager().getDynamicTextureLocation("background", this.viewportTexture);
+
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            this.field_110351_G = textureManager.getDynamicTextureLocation("background", this.viewportTexture);
         Calendar var1 = Calendar.getInstance();
         var1.setTime(new Date());
 
@@ -322,27 +328,26 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
             for (int var10 = 0; var10 < 6; ++var10) {
                 GL11.glPushMatrix();
 
-                if (var10 == 1) {
+                if (var10 == 1)
                     GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
-                }
 
-                if (var10 == 2) {
+                if (var10 == 2)
                     GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
-                }
 
-                if (var10 == 3) {
+                if (var10 == 3)
                     GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-                }
 
-                if (var10 == 4) {
+                if (var10 == 4)
                     GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
-                }
 
-                if (var10 == 5) {
+                if (var10 == 5)
                     GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-                }
 
-                this.mc.getTextureManager().bindTexture(titlePanoramaPaths[var10]);
+                TextureManager textureManager = this.mc.getTextureManager();
+
+                if (textureManager != null)
+                    textureManager.bindTexture(titlePanoramaPaths[var10]);
+
                 var4.startDrawingQuads();
                 var4.setColorRGBA_I(16777215, 255 / (var6 + 1));
                 float var11 = 0.0F;
@@ -373,7 +378,11 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
      * Rotate and blurs the skybox view in the main menu
      */
     private void rotateAndBlurSkybox(float p_73968_1_) {
-        this.mc.getTextureManager().bindTexture(this.field_110351_G);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(this.field_110351_G);
+
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
         GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, 256, 256);
@@ -446,7 +455,12 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         byte var7 = 30;
         this.drawGradientRect(0, 0, this.width, this.height, -2130706433, 16777215);
         this.drawGradientRect(0, 0, this.width, this.height, 0, Integer.MIN_VALUE);
-        this.mc.getTextureManager().bindTexture(minecraftTitleTextures);
+
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(minecraftTitleTextures);
+
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         if ((double) this.updateCounter < 1.0E-4D) {
@@ -472,9 +486,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         GL11.glPopMatrix();
         String var9 = "Minecraft 1.7.10";
 
-        if (this.mc.isDemo()) {
+        if (this.mc.isDemo())
             var9 = var9 + " Demo";
-        }
 
         this.drawString(this.fontRendererObj, var9, 2, this.height - 10, -1);
         String var10 = "Copyright Mojang AB. Do not distribute!";

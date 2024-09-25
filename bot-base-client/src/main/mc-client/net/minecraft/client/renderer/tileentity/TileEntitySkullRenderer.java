@@ -10,6 +10,7 @@ import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelSkeletonHead;
+import net.minecraft.client.resources.SkinManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySkull;
@@ -70,11 +71,12 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer {
             case 3:
                 ResourceLocation var9 = AbstractClientPlayer.locationStevePng;
 
-                if (p_152674_7_ != null) {
-                    Map var11 = mc.func_152342_ad().func_152788_a(p_152674_7_);
+                SkinManager skinManager = mc.getSkinManager();
+                if (p_152674_7_ != null && skinManager != null) {
+                    Map var11 = skinManager.func_152788_a(p_152674_7_);
 
                     if (var11.containsKey(Type.SKIN)) {
-                        var9 = mc.func_152342_ad().func_152792_a((MinecraftProfileTexture) var11.get(Type.SKIN),
+                        var9 = skinManager.func_152792_a((MinecraftProfileTexture) var11.get(Type.SKIN),
                                 Type.SKIN);
                     }
                 }

@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.IProgressMeter;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
@@ -293,14 +294,20 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
                     var26 = Blocks.bedrock.getIcon(0, 0);
                 }
 
-                this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+                TextureManager textureManager = this.mc.getTextureManager();
+
+                if (textureManager != null)
+                    textureManager.bindTexture(TextureMap.locationBlocksTexture);
                 this.drawTexturedModelRectFromIcon(var24 * 16 - var12, var22 * 16 - var13, var26, 16, 16);
             }
         }
 
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
-        this.mc.getTextureManager().bindTexture(field_146561_C);
+        TextureManager textureManager = this.mc.getTextureManager();
+        if (textureManager != null)
+            textureManager.bindTexture(field_146561_C);
+
         int var30;
         int var31;
         int var39;
@@ -384,7 +391,8 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
                     GL11.glColor4f(var45, var45, var45, 1.0F);
                 }
 
-                this.mc.getTextureManager().bindTexture(field_146561_C);
+                if (textureManager != null)
+                    textureManager.bindTexture(field_146561_C);
 
                 if (var41.getSpecial()) {
                     this.drawTexturedModalRect(var43 - 2, var44 - 2, 26, 202, 26, 26);
@@ -422,7 +430,8 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glPopMatrix();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(field_146561_C);
+        if (textureManager != null)
+            textureManager.bindTexture(field_146561_C);
         this.drawTexturedModalRect(var6, var7, 0, 0, this.field_146555_f, this.field_146557_g);
         this.zLevel = 0.0F;
         GL11.glDepthFunc(GL11.GL_LEQUAL);

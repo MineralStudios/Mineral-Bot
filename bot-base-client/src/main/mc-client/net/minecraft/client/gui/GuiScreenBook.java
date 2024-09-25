@@ -3,6 +3,7 @@ package net.minecraft.client.gui;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -324,7 +325,11 @@ public class GuiScreenBook extends GuiScreen {
      */
     public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(field_146466_f);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(field_146466_f);
+
         int var4 = (this.width - this.field_146478_u) / 2;
         byte var5 = 2;
         this.drawTexturedModalRect(var4, var5, 0, 0, this.field_146478_u, this.field_146477_v);
@@ -397,17 +402,19 @@ public class GuiScreenBook extends GuiScreen {
                         && p_146112_2_ < this.field_146128_h + this.field_146120_f
                         && p_146112_3_ < this.field_146129_i + this.field_146121_g;
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                p_146112_1_.getTextureManager().bindTexture(GuiScreenBook.field_146466_f);
+                TextureManager textureManager = p_146112_1_.getTextureManager();
+
+                if (textureManager != null)
+                    textureManager.bindTexture(GuiScreenBook.field_146466_f);
+
                 int var5 = 0;
                 int var6 = 192;
 
-                if (var4) {
+                if (var4)
                     var5 += 23;
-                }
 
-                if (!this.field_146151_o) {
+                if (!this.field_146151_o)
                     var6 += 13;
-                }
 
                 this.drawTexturedModalRect(this.field_146128_h, this.field_146129_i, var5, var6, 23, 13);
             }

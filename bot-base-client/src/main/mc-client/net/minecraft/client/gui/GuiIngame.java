@@ -8,6 +8,8 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -15,6 +17,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
@@ -116,12 +119,18 @@ public class GuiIngame extends Gui {
 
         if (!this.mc.playerController.enableEverythingIsScrewedUpMode()) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            this.mc.getTextureManager().bindTexture(widgetsTexPath);
+            TextureManager textureManager = this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(widgetsTexPath);
+
             InventoryPlayer var31 = this.mc.thePlayer.inventory;
             this.zLevel = -90.0F;
             this.drawTexturedModalRect(var6 / 2 - 91, var7 - 22, 0, 0, 182, 22);
             this.drawTexturedModalRect(var6 / 2 - 91 - 1 + var31.currentItem * 20, var7 - 22 - 1, 0, 22, 24, 22);
-            this.mc.getTextureManager().bindTexture(icons);
+
+            if (textureManager != null)
+                textureManager.bindTexture(icons);
             GL11.glEnable(GL11.GL_BLEND);
             OpenGlHelper.glBlendFunc(775, 769, 1, 0);
             this.drawTexturedModalRect(var6 / 2 - 7, var7 / 2 - 7, 0, 0, 16, 16);
@@ -182,7 +191,11 @@ public class GuiIngame extends Gui {
 
         if (this.mc.thePlayer.isRidingHorse()) {
             this.mc.mcProfiler.startSection("jumpBar");
-            this.mc.getTextureManager().bindTexture(Gui.icons);
+            TextureManager textureManager = this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(Gui.icons);
+
             var34 = this.mc.thePlayer.getHorseJumpPower();
             var38 = 182;
             var14 = (int) (var34 * (float) (var38 + 1));
@@ -196,7 +209,10 @@ public class GuiIngame extends Gui {
             this.mc.mcProfiler.endSection();
         } else if (this.mc.playerController.gameIsSurvivalOrAdventure()) {
             this.mc.mcProfiler.startSection("expBar");
-            this.mc.getTextureManager().bindTexture(Gui.icons);
+            TextureManager textureManager = this.mc.getTextureManager();
+            if (textureManager != null)
+                textureManager.bindTexture(Gui.icons);
+
             var12 = this.mc.thePlayer.xpBarCap();
 
             if (var12 > 0) {
@@ -444,7 +460,11 @@ public class GuiIngame extends Gui {
                     }
 
                     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                    this.mc.getTextureManager().bindTexture(icons);
+                    TextureManager textureManager = this.mc.getTextureManager();
+
+                    if (textureManager != null)
+                        textureManager.bindTexture(icons);
+
                     byte var51 = 0;
                     boolean var52 = false;
                     byte var53;
@@ -773,7 +793,9 @@ public class GuiIngame extends Gui {
             String var8 = BossStatus.bossName;
             var1.drawStringWithShadow(var8, var3 / 2 - var1.getStringWidth(var8) / 2, var7 - 10, 16777215);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            this.mc.getTextureManager().bindTexture(icons);
+            TextureManager textureManager = this.mc.getTextureManager();
+            if (textureManager != null)
+                textureManager.bindTexture(icons);
         }
     }
 
@@ -783,7 +805,11 @@ public class GuiIngame extends Gui {
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glDisable(GL11.GL_ALPHA_TEST);
-        this.mc.getTextureManager().bindTexture(pumpkinBlurTexPath);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(pumpkinBlurTexPath);
+
         Tessellator var3 = this.mc.getTessellator();
         var3.startDrawingQuads();
         var3.addVertexWithUV(0.0D, (double) p_73836_2_, -90.0D, 0.0D, 1.0D);
@@ -803,13 +829,11 @@ public class GuiIngame extends Gui {
     private void renderVignette(float p_73829_1_, int p_73829_2_, int p_73829_3_) {
         p_73829_1_ = 1.0F - p_73829_1_;
 
-        if (p_73829_1_ < 0.0F) {
+        if (p_73829_1_ < 0.0F)
             p_73829_1_ = 0.0F;
-        }
 
-        if (p_73829_1_ > 1.0F) {
+        if (p_73829_1_ > 1.0F)
             p_73829_1_ = 1.0F;
-        }
 
         this.prevVignetteBrightness = (float) ((double) this.prevVignetteBrightness
                 + (double) (p_73829_1_ - this.prevVignetteBrightness) * 0.01D);
@@ -817,7 +841,11 @@ public class GuiIngame extends Gui {
         GL11.glDepthMask(false);
         OpenGlHelper.glBlendFunc(0, 769, 1, 0);
         GL11.glColor4f(this.prevVignetteBrightness, this.prevVignetteBrightness, this.prevVignetteBrightness, 1.0F);
-        this.mc.getTextureManager().bindTexture(vignetteTexPath);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(vignetteTexPath);
+
         Tessellator var4 = this.mc.getTessellator();
         var4.startDrawingQuads();
         var4.addVertexWithUV(0.0D, (double) p_73829_3_, -90.0D, 0.0D, 1.0D);
@@ -844,7 +872,11 @@ public class GuiIngame extends Gui {
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, p_130015_1_);
         IIcon var4 = Blocks.portal.getBlockTextureFromSide(1);
-        this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(TextureMap.locationBlocksTexture);
+
         float var5 = var4.getMinU();
         float var6 = var4.getMinV();
         float var7 = var4.getMaxU();

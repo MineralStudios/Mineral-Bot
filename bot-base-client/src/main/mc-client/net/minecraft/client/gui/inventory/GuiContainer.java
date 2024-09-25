@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
+
 import gg.mineral.bot.api.screen.type.ContainerScreen;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
@@ -13,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -221,7 +224,11 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
 
             if (var9 != null) {
                 GL11.glDisable(GL11.GL_LIGHTING);
-                this.mc.getTextureManager().bindTexture(TextureMap.locationItemsTexture);
+                TextureManager textureManager = this.mc.getTextureManager();
+
+                if (textureManager != null)
+                    textureManager.bindTexture(TextureMap.locationItemsTexture);
+
                 this.drawTexturedModelRectFromIcon(var2, var3, var9, 16, 16);
                 GL11.glEnable(GL11.GL_LIGHTING);
                 var6 = true;

@@ -36,8 +36,9 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
         String var3 = this.getCommandSenderName();
 
         if (!var3.isEmpty()) {
-            SkinManager var4 = mc.func_152342_ad();
-            var4.func_152790_a(p_i45074_2_, this, true);
+            SkinManager var4 = mc.getSkinManager();
+            if (var4 != null)
+                var4.func_152790_a(p_i45074_2_, this, true);
         }
 
         this.nameClear = p_i45074_2_.getName();

@@ -33,6 +33,7 @@ import net.minecraft.block.BlockTripWire;
 import net.minecraft.block.BlockWall;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererChestHelper;
 import net.minecraft.init.Blocks;
@@ -53,6 +54,8 @@ import optifine.NaturalProperties;
 import optifine.NaturalTextures;
 import optifine.Reflector;
 import optifine.TextureUtils;
+
+import javax.annotation.Nullable;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
@@ -792,8 +795,12 @@ public class RenderBlocks {
                 (double) ((float) p_147752_4_ - 0.5F + var11), var7);
         this.renderFaceZNeg(p_147752_1_, (double) p_147752_2_, (double) p_147752_3_,
                 (double) ((float) p_147752_4_ + 0.5F - var11), var7);
-        this.renderFaceYPos(p_147752_1_, (double) p_147752_2_, (double) ((float) p_147752_3_ - 0.5F + var11 + 0.1875F),
-                (double) p_147752_4_, this.getBlockIcon(Blocks.dirt));
+        IIcon dirtIcon = this.getBlockIcon(Blocks.dirt);
+
+        if (dirtIcon != null)
+            this.renderFaceYPos(p_147752_1_, (double) p_147752_2_,
+                    (double) ((float) p_147752_3_ - 0.5F + var11 + 0.1875F),
+                    (double) p_147752_4_, dirtIcon);
         TileEntity var211 = this.blockAccess.getTileEntity(p_147752_2_, p_147752_3_, p_147752_4_);
 
         if (var211 != null && var211 instanceof TileEntityFlowerPot) {
@@ -9429,26 +9436,34 @@ public class RenderBlocks {
         }
     }
 
+    @Nullable
     public IIcon getBlockIcon(Block p_147793_1_, IBlockAccess p_147793_2_, int p_147793_3_, int p_147793_4_,
             int p_147793_5_, int p_147793_6_) {
         return this.getIconSafe(p_147793_1_.getIcon(p_147793_2_, p_147793_3_, p_147793_4_, p_147793_5_, p_147793_6_));
     }
 
+    @Nullable
     public IIcon getBlockIconFromSideAndMetadata(Block p_147787_1_, int p_147787_2_, int p_147787_3_) {
         return this.getIconSafe(p_147787_1_.getIcon(p_147787_2_, p_147787_3_));
     }
 
+    @Nullable
     public IIcon getBlockIconFromSide(Block p_147777_1_, int p_147777_2_) {
         return this.getIconSafe(p_147777_1_.getBlockTextureFromSide(p_147777_2_));
     }
 
+    @Nullable
     public IIcon getBlockIcon(Block p_147745_1_) {
         return this.getIconSafe(p_147745_1_.getBlockTextureFromSide(1));
     }
 
+    @Nullable
     public IIcon getIconSafe(IIcon p_147758_1_) {
-        if (p_147758_1_ == null) {
-            p_147758_1_ = ((TextureMap) this.mc.getTextureManager()
+
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (p_147758_1_ == null && textureManager != null) {
+            p_147758_1_ = ((TextureMap) textureManager
                     .getTexture(TextureMap.locationBlocksTexture)).getAtlasSprite("missingno");
         }
 

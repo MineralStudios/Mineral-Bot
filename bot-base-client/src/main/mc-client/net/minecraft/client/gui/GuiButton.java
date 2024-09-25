@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
@@ -59,7 +60,10 @@ public class GuiButton extends Gui {
     public void drawButton(Minecraft mc, int p_146112_2_, int p_146112_3_) {
         if (this.field_146125_m) {
             FontRenderer fontRenderer = mc.fontRenderer;
-            mc.getTextureManager().bindTexture(field_146122_a);
+            TextureManager textureManager = mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(field_146122_a);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             this.field_146123_n = p_146112_2_ >= this.field_146128_h && p_146112_3_ >= this.field_146129_i
                     && p_146112_2_ < this.field_146128_h + this.field_146120_f

@@ -1,15 +1,15 @@
 package net.minecraft.client;
 
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.util.MinecraftError;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import net.minecraft.client.Minecraft;
 
 public class LoadingScreenRenderer implements IProgressUpdate {
     private String field_73727_a = "";
@@ -137,7 +137,11 @@ public class LoadingScreenRenderer implements IProgressUpdate {
                 }
 
                 Tessellator var8 = this.mc.getTessellator();
-                this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
+                TextureManager textureManager = this.mc.getTextureManager();
+
+                if (textureManager != null)
+                    textureManager.bindTexture(Gui.optionsBackground);
+
                 float var9 = 32.0F;
                 var8.startDrawingQuads();
                 var8.setColorOpaque_I(4210752);

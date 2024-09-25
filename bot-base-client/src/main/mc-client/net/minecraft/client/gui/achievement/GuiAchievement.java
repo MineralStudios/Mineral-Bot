@@ -8,6 +8,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.stats.Achievement;
 import net.minecraft.util.ResourceLocation;
@@ -101,7 +102,9 @@ public class GuiAchievement extends Gui {
             int var6 = 0 - (int) (var3 * 36.0D);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
-            this.mc.getTextureManager().bindTexture(field_146261_a);
+            TextureManager textureManager = this.mc.getTextureManager();
+            if (textureManager != null)
+                textureManager.bindTexture(field_146261_a);
             GL11.glDisable(GL11.GL_LIGHTING);
             this.drawTexturedModalRect(var5, var6, 96, 202, 160, 32);
 

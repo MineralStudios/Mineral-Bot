@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.Container;
 import net.minecraft.potion.Potion;
@@ -62,7 +63,11 @@ public abstract class InventoryEffectRenderer extends GuiContainer implements In
                 PotionEffect var7 = (PotionEffect) var6.next();
                 Potion var8 = Potion.potionTypes[var7.getPotionID()];
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.mc.getTextureManager().bindTexture(field_147001_a);
+                TextureManager textureManager = this.mc.getTextureManager();
+
+                if (textureManager != null)
+                    textureManager.bindTexture(field_147001_a);
+
                 this.drawTexturedModalRect(var1, var2, 0, 166, 140, 32);
 
                 if (var8.hasStatusIcon()) {

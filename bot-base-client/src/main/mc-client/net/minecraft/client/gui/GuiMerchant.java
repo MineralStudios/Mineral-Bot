@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -104,7 +105,10 @@ public class GuiMerchant extends GuiContainer {
 
     protected void func_146976_a(float p_146976_1_, int p_146976_2_, int p_146976_3_) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(field_147038_v);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(field_147038_v);
         int var4 = (this.width - this.field_146999_f) / 2;
         int var5 = (this.height - this.field_147000_g) / 2;
         this.drawTexturedModalRect(var4, var5, 0, 0, this.field_146999_f, this.field_147000_g);
@@ -115,7 +119,8 @@ public class GuiMerchant extends GuiContainer {
             MerchantRecipe var8 = (MerchantRecipe) var6.get(var7);
 
             if (var8.isRecipeDisabled()) {
-                this.mc.getTextureManager().bindTexture(field_147038_v);
+                if (textureManager != null)
+                    textureManager.bindTexture(field_147038_v);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 GL11.glDisable(GL11.GL_LIGHTING);
                 this.drawTexturedModalRect(this.xShift + 83, this.yShift + 21, 212, 0, 28, 21);
@@ -195,7 +200,9 @@ public class GuiMerchant extends GuiContainer {
 
         public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_) {
             if (this.field_146125_m) {
-                p_146112_1_.getTextureManager().bindTexture(GuiMerchant.field_147038_v);
+                TextureManager textureManager = p_146112_1_.getTextureManager();
+                if (textureManager != null)
+                    textureManager.bindTexture(GuiMerchant.field_147038_v);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 boolean var4 = p_146112_2_ >= this.field_146128_h && p_146112_3_ >= this.field_146129_i
                         && p_146112_2_ < this.field_146128_h + this.field_146120_f

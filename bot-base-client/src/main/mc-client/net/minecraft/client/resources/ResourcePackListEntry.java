@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiScreenResourcePacks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
@@ -29,7 +30,10 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
         int var11;
 
         if ((this.mc.gameSettings.touchscreen || p_148279_9_) && this.func_148310_d()) {
-            this.mc.getTextureManager().bindTexture(field_148316_c);
+            TextureManager textureManager = this.mc.getTextureManager();
+
+            if (textureManager != null)
+                textureManager.bindTexture(field_148316_c);
             Gui.drawRect(mc, p_148279_2_, p_148279_3_, p_148279_2_ + 32, p_148279_3_ + 32, -1601138544);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             int var10 = p_148279_7_ - p_148279_2_;

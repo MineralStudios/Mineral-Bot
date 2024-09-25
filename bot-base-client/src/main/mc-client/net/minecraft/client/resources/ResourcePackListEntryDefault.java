@@ -2,14 +2,18 @@ package net.minecraft.client.resources;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
 
 import com.google.gson.JsonParseException;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreenResourcePacks;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.data.PackMetadataSection;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -17,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 public class ResourcePackListEntryDefault extends ResourcePackListEntry {
     private static final Logger logger = LogManager.getLogger();
     private final IResourcePack field_148320_d;
+    @Nullable
     private final ResourceLocation field_148321_e;
     private static final String __OBFID = "CL_00000822";
 
@@ -31,8 +36,10 @@ public class ResourcePackListEntryDefault extends ResourcePackListEntry {
             var2 = mc.textureUtil.missingTexture;
         }
 
-        this.field_148321_e = this.mc.getTextureManager().getDynamicTextureLocation("texturepackicon",
-                var2);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        this.field_148321_e = textureManager != null ? textureManager.getDynamicTextureLocation("texturepackicon",
+                var2) : null;
     }
 
     protected String func_148311_a() {
@@ -73,7 +80,11 @@ public class ResourcePackListEntryDefault extends ResourcePackListEntry {
     }
 
     protected void func_148313_c() {
-        this.mc.getTextureManager().bindTexture(this.field_148321_e);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(this.field_148321_e);
+
     }
 
     protected boolean func_148310_d() {

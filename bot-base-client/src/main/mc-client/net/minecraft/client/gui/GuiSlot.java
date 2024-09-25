@@ -3,7 +3,7 @@ package net.minecraft.client.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-
+import net.minecraft.client.renderer.texture.TextureManager;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public abstract class GuiSlot {
@@ -251,7 +251,12 @@ public abstract class GuiSlot {
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_FOG);
         Tessellator var16 = this.mc.getTessellator();
-        this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
+
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(Gui.optionsBackground);
+
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float var17 = 32.0F;
         var16.startDrawingQuads();
@@ -405,7 +410,11 @@ public abstract class GuiSlot {
 
     private void func_148136_c(int p_148136_1_, int p_148136_2_, int p_148136_3_, int p_148136_4_) {
         Tessellator var5 = this.mc.getTessellator();
-        this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(Gui.optionsBackground);
+
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float var6 = 32.0F;
         var5.startDrawingQuads();

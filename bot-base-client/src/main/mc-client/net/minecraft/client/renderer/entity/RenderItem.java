@@ -2,6 +2,9 @@ package net.minecraft.client.renderer.entity;
 
 import java.util.Random;
 import java.util.concurrent.Callable;
+
+import org.checkerframework.checker.units.qual.t;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -435,9 +438,15 @@ public class RenderItem extends Render {
             p_77015_2_.bindTexture(var15);
 
             if (var7 == null) {
-                var7 = ((TextureMap) this.mc.getTextureManager().getTexture(var15))
-                        .getAtlasSprite("missingno");
+                TextureManager textureManager = this.mc.getTextureManager();
+
+                if (textureManager != null)
+                    var7 = ((TextureMap) textureManager.getTexture(var15))
+                            .getAtlasSprite("missingno");
             }
+
+            if (var7 == null)
+                return;
 
             var9 = p_77015_3_.getItem().getColorFromItemStack(p_77015_3_, 0);
             var17 = (float) (var9 >> 16 & 255) / 255.0F;

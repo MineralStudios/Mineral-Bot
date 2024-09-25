@@ -8,12 +8,15 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.play.client.C16PacketClientStatus;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
+
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public class GuiWinGame extends GuiScreen {
@@ -128,7 +131,12 @@ public class GuiWinGame extends GuiScreen {
 
     private void func_146575_b(int p_146575_1_, int p_146575_2_, float p_146575_3_) {
         Tessellator var4 = this.mc.getTessellator();
-        this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
+
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(Gui.optionsBackground);
+
         var4.startDrawingQuads();
         var4.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F);
         int var5 = this.width;
@@ -171,7 +179,12 @@ public class GuiWinGame extends GuiScreen {
         float var8 = -((float) this.field_146581_h + p_73863_3_) * this.field_146578_s;
         GL11.glPushMatrix();
         GL11.glTranslatef(0.0F, var8, 0.0F);
-        this.mc.getTextureManager().bindTexture(field_146576_f);
+
+        TextureManager textureManager = this.mc.getTextureManager();
+
+        if (textureManager != null)
+            textureManager.bindTexture(field_146576_f);
+
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.drawTexturedModalRect(var6, var7, 0, 0, 155, 44);
         this.drawTexturedModalRect(var6 + 155, var7, 0, 45, 155, 44);
@@ -206,7 +219,9 @@ public class GuiWinGame extends GuiScreen {
         }
 
         GL11.glPopMatrix();
-        this.mc.getTextureManager().bindTexture(field_146577_g);
+
+        if (textureManager != null)
+            textureManager.bindTexture(field_146577_g);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_ONE_MINUS_SRC_COLOR);
         var4.startDrawingQuads();
