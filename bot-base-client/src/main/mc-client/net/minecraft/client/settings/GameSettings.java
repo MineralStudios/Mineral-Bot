@@ -26,6 +26,7 @@ import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -478,20 +479,21 @@ public class GameSettings {
 
         if (par1EnumOptions == GameSettings.Options.AO_LEVEL) {
             this.ofAoLevel = par2;
-            this.mc.renderGlobal.loadRenderers();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
-        if (par1EnumOptions == GameSettings.Options.SENSITIVITY) {
+        if (par1EnumOptions == GameSettings.Options.SENSITIVITY)
             this.mouseSensitivity = par2;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.FOV) {
+        if (par1EnumOptions == GameSettings.Options.FOV)
             this.fovSetting = par2;
-        }
 
-        if (par1EnumOptions == GameSettings.Options.GAMMA) {
+        if (par1EnumOptions == GameSettings.Options.GAMMA)
             this.gammaSetting = par2;
-        }
 
         if (par1EnumOptions == GameSettings.Options.FRAMERATE_LIMIT) {
             this.limitFramerate = (int) par2;
@@ -612,7 +614,11 @@ public class GameSettings {
 
         if (par1EnumOptions == GameSettings.Options.LOAD_FAR) {
             this.ofLoadFar = !this.ofLoadFar;
-            this.mc.renderGlobal.loadRenderers();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.PRELOADED_CHUNKS) {
@@ -621,7 +627,10 @@ public class GameSettings {
             if (this.ofPreloadedChunks > 8)
                 this.ofPreloadedChunks = 0;
 
-            this.mc.renderGlobal.loadRenderers();
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.SMOOTH_FPS) {
@@ -652,7 +661,10 @@ public class GameSettings {
             if (this.ofTrees > 2)
                 this.ofTrees = 0;
 
-            this.mc.renderGlobal.loadRenderers();
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.GRASS) {
@@ -662,7 +674,10 @@ public class GameSettings {
                 this.ofGrass = 0;
 
             RenderBlocks.fancyGrass = Config.isGrassFancy();
-            this.mc.renderGlobal.loadRenderers();
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.DROPPED_ITEMS) {
@@ -770,7 +785,10 @@ public class GameSettings {
             if (this.ofBetterGrass > 3)
                 this.ofBetterGrass = 1;
 
-            this.mc.renderGlobal.loadRenderers();
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.CONNECTED_TEXTURES) {
@@ -779,7 +797,10 @@ public class GameSettings {
             if (this.ofConnectedTextures > 3)
                 this.ofConnectedTextures = 1;
 
-            this.mc.renderGlobal.loadRenderers();
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.WEATHER)
@@ -847,13 +868,21 @@ public class GameSettings {
 
         if (par1EnumOptions == GameSettings.Options.BETTER_SNOW) {
             this.ofBetterSnow = !this.ofBetterSnow;
-            this.mc.renderGlobal.loadRenderers();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.SWAMP_COLORS) {
             this.ofSwampColors = !this.ofSwampColors;
             CustomColorizer.updateUseDefaultColorMultiplier();
-            this.mc.renderGlobal.loadRenderers();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.RANDOM_MOBS) {
@@ -864,7 +893,11 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.SMOOTH_BIOMES) {
             this.ofSmoothBiomes = !this.ofSmoothBiomes;
             CustomColorizer.updateUseDefaultColorMultiplier();
-            this.mc.renderGlobal.loadRenderers();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.CUSTOM_FONTS) {
@@ -881,7 +914,11 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.CUSTOM_COLORS) {
             this.ofCustomColors = !this.ofCustomColors;
             CustomColorizer.update();
-            this.mc.renderGlobal.loadRenderers();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.CUSTOM_SKY) {
@@ -891,13 +928,21 @@ public class GameSettings {
 
         if (par1EnumOptions == GameSettings.Options.SHOW_CAPES) {
             this.ofShowCapes = !this.ofShowCapes;
-            this.mc.renderGlobal.updateCapes();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.updateCapes();
         }
 
         if (par1EnumOptions == GameSettings.Options.NATURAL_TEXTURES) {
             this.ofNaturalTextures = !this.ofNaturalTextures;
             NaturalTextures.update();
-            this.mc.renderGlobal.loadRenderers();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.FAST_MATH) {
@@ -912,7 +957,11 @@ public class GameSettings {
                 this.mc.entityRenderer.stopUseShader();
 
             Config.updateFramebufferSize();
-            this.mc.renderGlobal.loadRenderers();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.TRANSLUCENT_BLOCKS) {
@@ -921,7 +970,10 @@ public class GameSettings {
             else
                 this.ofTranslucentBlocks = 1;
 
-            this.mc.renderGlobal.loadRenderers();
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.LAZY_CHUNK_LOADING) {
@@ -931,7 +983,10 @@ public class GameSettings {
             if (!Config.isSingleProcessor())
                 this.ofLazyChunkLoading = false;
 
-            this.mc.renderGlobal.loadRenderers();
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.FULLSCREEN_MODE) {
@@ -997,7 +1052,10 @@ public class GameSettings {
                 this.advancedOpengl = false;
             }
 
-            this.mc.renderGlobal.setAllRenderersVisible();
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.setAllRenderersVisible();
         }
 
         if (par1EnumOptions == GameSettings.Options.FBO_ENABLE)
@@ -1013,12 +1071,20 @@ public class GameSettings {
 
         if (par1EnumOptions == GameSettings.Options.GRAPHICS) {
             this.fancyGraphics = !this.fancyGraphics;
-            this.mc.renderGlobal.loadRenderers();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.AMBIENT_OCCLUSION) {
             this.ambientOcclusion = (this.ambientOcclusion + par2) % 3;
-            this.mc.renderGlobal.loadRenderers();
+
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.loadRenderers();
         }
 
         if (par1EnumOptions == GameSettings.Options.CHAT_VISIBILITY)
@@ -2484,9 +2550,14 @@ public class GameSettings {
         this.ofAnimatedTerrain = true;
         this.ofAnimatedItems = true;
         this.ofAnimatedTextures = true;
-        this.mc.renderGlobal.updateCapes();
+
+        RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+        if (renderGlobal != null)
+            renderGlobal.updateCapes();
         this.updateWaterOpacity();
-        this.mc.renderGlobal.setAllRenderersVisible();
+        if (renderGlobal != null)
+            renderGlobal.setAllRenderersVisible();
         this.mc.refreshResources();
         this.saveOptions();
     }

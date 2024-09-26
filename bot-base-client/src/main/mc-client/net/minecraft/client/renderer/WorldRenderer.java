@@ -446,7 +446,10 @@ public class WorldRenderer {
 
     protected void updateFinished() {
         if (!this.skipAllRenderPasses && !this.inSortedWorldRenderers) {
-            this.mc.renderGlobal.addToSortedWorldRenderers(this);
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.addToSortedWorldRenderers(this);
         }
     }
 

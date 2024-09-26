@@ -1447,9 +1447,13 @@ public class Config {
 
         String fps = debugStr.substring(0, pos);
         String updates = getUpdates(minecraft.debug);
-        int renderersActive = minecraft.renderGlobal.getCountActiveRenderers();
-        int entities = minecraft.renderGlobal.getCountEntitiesRendered();
-        int tileEntities = minecraft.renderGlobal.getCountTileEntitiesRendered();
+        RenderGlobal renderGlobal = minecraft.renderGlobal;
+
+        if (renderGlobal == null)
+            return;
+        int renderersActive = renderGlobal.getCountActiveRenderers();
+        int entities = renderGlobal.getCountEntitiesRendered();
+        int tileEntities = renderGlobal.getCountTileEntitiesRendered();
         String fpsStr = fps + " fps, C: " + renderersActive + ", E: " + entities + "+" + tileEntities + ", U: "
                 + updates;
         FontRenderer fontRenderer = minecraft.fontRenderer;

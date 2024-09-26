@@ -194,6 +194,7 @@ public class Minecraft {
 
     @Nullable
     public WorldClient theWorld;
+    @Nullable
     public RenderGlobal renderGlobal;
     @Nullable
     public EntityClientPlayerMP thePlayer;
@@ -633,8 +634,8 @@ public class Minecraft {
         GL11.glLoadIdentity();
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         this.checkGLError("Startup");
-        this.renderGlobal = new RenderGlobal(this);
         if (!BotGlobalConfig.isOptimizedGameLoop()) {
+            this.renderGlobal = new RenderGlobal(this);
 
             this.textureMapBlocks = new TextureMap(this, 0, "textures/blocks");
 
@@ -1147,7 +1148,11 @@ public class Minecraft {
     public void freeMemory() {
         try {
             memoryReserve = new byte[0];
-            this.renderGlobal.deleteAllDisplayLists();
+            RenderGlobal renderGlobal = this.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.deleteAllDisplayLists();
+
         } catch (Throwable var4) {
             ;
         }
@@ -1719,8 +1724,12 @@ public class Minecraft {
                             this.gameSettings.setOptionValue(GameSettings.Options.RENDER_DISTANCE, var10 ? -1 : 1);
                         }
 
-                        if (this.keyboard.getEventKey() == 30 && this.keyboard.isKeyDown(61))
-                            this.renderGlobal.loadRenderers();
+                        if (this.keyboard.getEventKey() == 30 && this.keyboard.isKeyDown(61)) {
+                            RenderGlobal renderGlobal = this.renderGlobal;
+
+                            if (renderGlobal != null)
+                                renderGlobal.loadRenderers();
+                        }
 
                         if (this.keyboard.getEventKey() == 35 && this.keyboard.isKeyDown(61)) {
                             this.gameSettings.advancedItemTooltips = !this.gameSettings.advancedItemTooltips;
@@ -1847,8 +1856,12 @@ public class Minecraft {
 
             this.mcProfiler.endStartSection("levelRenderer");
 
-            if (!this.isGamePaused)
-                this.renderGlobal.updateClouds();
+            if (!this.isGamePaused) {
+                RenderGlobal renderGlobal = this.renderGlobal;
+
+                if (renderGlobal != null)
+                    renderGlobal.updateClouds();
+            }
 
             this.mcProfiler.endStartSection("level");
 
@@ -2041,7 +2054,11 @@ public class Minecraft {
      * A String of renderGlobal.getDebugInfoRenders
      */
     public String debugInfoRenders() {
-        return this.renderGlobal.getDebugInfoRenders();
+        RenderGlobal renderGlobal = this.renderGlobal;
+
+        if (renderGlobal != null)
+            return renderGlobal.getDebugInfoRenders();
+        return "N/A";
     }
 
     /**
@@ -2049,7 +2066,11 @@ public class Minecraft {
      * infront/around you
      */
     public String getEntityDebug() {
-        return this.renderGlobal.getDebugInfoEntities();
+        RenderGlobal renderGlobal = this.renderGlobal;
+
+        if (renderGlobal != null)
+            return renderGlobal.getDebugInfoEntities();
+        return "N/A";
     }
 
     /**

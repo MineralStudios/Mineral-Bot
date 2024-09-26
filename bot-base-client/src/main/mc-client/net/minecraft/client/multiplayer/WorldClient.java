@@ -20,6 +20,7 @@ import net.minecraft.client.audio.MovingSoundMinecart;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.particle.EntityFireworkStarterFX;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -221,7 +222,10 @@ public class WorldClient extends World implements ClientWorld {
 
         if (renderManager != null)
             if (renderManager.getEntityRenderObject(p_72847_1_).func_147905_a() && !var2) {
-                this.mc.renderGlobal.onStaticEntitiesChanged();
+                RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+                if (renderGlobal != null)
+                    renderGlobal.onStaticEntitiesChanged();
             }
     }
 
@@ -248,7 +252,10 @@ public class WorldClient extends World implements ClientWorld {
 
         if (renderManager != null)
             if (renderManager.getEntityRenderObject(p_73027_2_).func_147905_a()) {
-                this.mc.renderGlobal.onStaticEntitiesChanged();
+                RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+                if (renderGlobal != null)
+                    renderGlobal.onStaticEntitiesChanged();
             }
     }
 

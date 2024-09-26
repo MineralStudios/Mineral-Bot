@@ -737,7 +737,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         var4 = var2.prevPosX + (var2.posX - var2.prevPosX) * (double) par1;
         var6 = var2.prevPosY + (var2.posY - var2.prevPosY) * (double) par1 - (double) var3;
         var8 = var2.prevPosZ + (var2.posZ - var2.prevPosZ) * (double) par1;
-        this.cloudFog = this.mc.renderGlobal.hasCloudFog(var4, var6, var8, par1);
+        RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+        if (renderGlobal != null)
+            this.cloudFog = renderGlobal.hasCloudFog(var4, var6, var8, par1);
     }
 
     /**
@@ -1406,16 +1409,21 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.mcProfiler.endStartSection("culling");
             Frustrum var14 = new Frustrum();
             var14.setPosition(var7, var9, var11);
-            this.mc.renderGlobal.clipRenderersByFrustum(var14, par1);
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.clipRenderersByFrustum(var14, par1);
 
             if (var13 == 0) {
                 this.mc.mcProfiler.endStartSection("updatechunks");
 
-                while (!this.mc.renderGlobal.updateRenderers(var4, false) && par2 != 0L) {
-                    long var17 = par2 - System.nanoTime();
+                if (renderGlobal != null) {
+                    while (!renderGlobal.updateRenderers(var4, false) && par2 != 0L) {
+                        long var17 = par2 - System.nanoTime();
 
-                    if (var17 < 0L || var17 > 1000000000L) {
-                        break;
+                        if (var17 < 0L || var17 > 1000000000L) {
+                            break;
+                        }
                     }
                 }
             }
@@ -1569,7 +1577,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 RenderHelper.enableStandardItemLighting();
                 this.mc.mcProfiler.endStartSection("entities");
                 Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, new Object[] { Integer.valueOf(1) });
-                this.mc.renderGlobal.renderEntities(var4, var14, par1);
+
+                if (renderGlobal != null)
+                    renderGlobal.renderEntities(var4, var14, par1);
                 Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, new Object[] { Integer.valueOf(-1) });
                 RenderHelper.disableStandardItemLighting();
             }

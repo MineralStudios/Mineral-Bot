@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.StitcherException;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.IResource;
@@ -389,7 +390,10 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
                 }
             }
 
-            this.mc.renderGlobal.registerDestroyBlockIcons(this);
+            RenderGlobal renderGlobal = this.mc.renderGlobal;
+
+            if (renderGlobal != null)
+                renderGlobal.registerDestroyBlockIcons(this);
             RenderManager renderManager = this.mc.renderManager;
 
             if (renderManager != null)
