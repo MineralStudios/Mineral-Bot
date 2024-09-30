@@ -1,5 +1,7 @@
 package net.minecraft.client.entity;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiCommandBlock;
@@ -50,6 +52,7 @@ import net.minecraft.util.Session;
 import net.minecraft.world.World;
 
 public class EntityPlayerSP extends AbstractClientPlayer {
+    @Nullable
     public MovementInput movementInput;
     protected Minecraft mc;
 
@@ -79,7 +82,6 @@ public class EntityPlayerSP extends AbstractClientPlayer {
 
     /** The amount of time an entity has been in a Portal the previous tick */
     public float prevTimeInPortal;
-    private static final String __OBFID = "CL_00000938";
 
     public EntityPlayerSP(Minecraft mc, World p_i1238_2_, Session p_i1238_3_, int p_i1238_4_) {
         super(mc, p_i1238_2_, p_i1238_3_.getGameProfile());
@@ -89,9 +91,13 @@ public class EntityPlayerSP extends AbstractClientPlayer {
 
     public void updateEntityActionState() {
         super.updateEntityActionState();
-        this.moveStrafing = this.movementInput.moveStrafe;
-        this.moveForward = this.movementInput.moveForward;
-        this.isJumping = this.movementInput.jump;
+        MovementInput movementInput = this.movementInput;
+
+        if (movementInput != null) {
+            this.moveStrafing = movementInput.moveStrafe;
+            this.moveForward = movementInput.moveForward;
+            this.isJumping = movementInput.jump;
+        }
         this.prevRenderArmYaw = this.renderArmYaw;
         this.prevRenderArmPitch = this.renderArmPitch;
         this.renderArmPitch = (float) ((double) this.renderArmPitch
@@ -166,20 +172,23 @@ public class EntityPlayerSP extends AbstractClientPlayer {
                 --this.timeUntilPortal;
             }
 
-            boolean var1 = this.movementInput.jump;
-            float var2 = 0.8F;
-            boolean var3 = this.movementInput.moveForward >= var2;
-            this.movementInput.updatePlayerMoveState();
+            MovementInput movementInput = this.movementInput;
 
-            if (this.isUsingItem() && !this.isRiding()) {
-                this.movementInput.moveStrafe *= 0.2F;
-                this.movementInput.moveForward *= 0.2F;
+            boolean isJump = movementInput != null ? movementInput.jump : null;
+            float var2 = 0.8F;
+            boolean var3 = movementInput != null ? movementInput.moveForward >= var2 : null;
+
+            if (movementInput != null)
+                movementInput.updatePlayerMoveState();
+
+            if (movementInput != null && this.isUsingItem() && !this.isRiding()) {
+                movementInput.moveStrafe *= 0.2F;
+                movementInput.moveForward *= 0.2F;
                 this.sprintToggleTimer = 0;
             }
 
-            if (this.movementInput.sneak && this.ySize < 0.2F) {
+            if (this.movementInput != null && this.movementInput.sneak && this.ySize < 0.2F)
                 this.ySize = 0.2F;
-            }
 
             this.func_145771_j(this.posX - (double) this.width * 0.35D, this.boundingBox.minY + 0.5D,
                     this.posZ + (double) this.width * 0.35D);
@@ -191,7 +200,8 @@ public class EntityPlayerSP extends AbstractClientPlayer {
                     this.posZ + (double) this.width * 0.35D);
             boolean var4 = (float) this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
 
-            if (this.onGround && !var3 && this.movementInput.moveForward >= var2 && !this.isSprinting() && var4
+            if (movementInput != null && this.onGround && !var3 && movementInput.moveForward >= var2
+                    && !this.isSprinting() && var4
                     && !this.isUsingItem() && !this.isPotionActive(Potion.blindness)) {
                 if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.getIsKeyPressed()) {
                     this.sprintToggleTimer = 7;
@@ -200,16 +210,16 @@ public class EntityPlayerSP extends AbstractClientPlayer {
                 }
             }
 
-            if (!this.isSprinting() && this.movementInput.moveForward >= var2 && var4 && !this.isUsingItem()
-                    && !this.isPotionActive(Potion.blindness) && this.mc.gameSettings.keyBindSprint.getIsKeyPressed()) {
+            if (movementInput != null && !this.isSprinting() && movementInput.moveForward >= var2 && var4
+                    && !this.isUsingItem()
+                    && !this.isPotionActive(Potion.blindness) && this.mc.gameSettings.keyBindSprint.getIsKeyPressed())
                 this.setSprinting(true);
-            }
 
-            if (this.isSprinting() && (this.movementInput.moveForward < var2 || this.isCollidedHorizontally || !var4)) {
+            if (movementInput != null && this.isSprinting()
+                    && (movementInput.moveForward < var2 || this.isCollidedHorizontally || !var4))
                 this.setSprinting(false);
-            }
 
-            if (this.capabilities.allowFlying && !var1 && this.movementInput.jump) {
+            if (movementInput != null && this.capabilities.allowFlying && !isJump && movementInput.jump) {
                 if (this.flyToggleTimer == 0) {
                     this.flyToggleTimer = 7;
                 } else {
@@ -219,43 +229,38 @@ public class EntityPlayerSP extends AbstractClientPlayer {
                 }
             }
 
-            if (this.capabilities.isFlying) {
-                if (this.movementInput.sneak) {
+            if (movementInput != null && this.capabilities.isFlying) {
+                if (movementInput.sneak)
                     this.motionY -= 0.15D;
-                }
 
-                if (this.movementInput.jump) {
+                if (movementInput.jump)
                     this.motionY += 0.15D;
-                }
             }
 
             if (this.isRidingHorse()) {
                 if (this.horseJumpPowerCounter < 0) {
                     ++this.horseJumpPowerCounter;
 
-                    if (this.horseJumpPowerCounter == 0) {
+                    if (this.horseJumpPowerCounter == 0)
                         this.horseJumpPower = 0.0F;
-                    }
                 }
 
-                if (var1 && !this.movementInput.jump) {
+                if (movementInput != null && isJump && !movementInput.jump) {
                     this.horseJumpPowerCounter = -10;
                     this.func_110318_g();
-                } else if (!var1 && this.movementInput.jump) {
+                } else if (movementInput != null && !isJump && movementInput.jump) {
                     this.horseJumpPowerCounter = 0;
                     this.horseJumpPower = 0.0F;
-                } else if (var1) {
+                } else if (isJump) {
                     ++this.horseJumpPowerCounter;
 
-                    if (this.horseJumpPowerCounter < 10) {
+                    if (this.horseJumpPowerCounter < 10)
                         this.horseJumpPower = (float) this.horseJumpPowerCounter * 0.1F;
-                    } else {
+                    else
                         this.horseJumpPower = 0.8F + 2.0F / (float) (this.horseJumpPowerCounter - 9) * 0.1F;
-                    }
                 }
-            } else {
+            } else
                 this.horseJumpPower = 0.0F;
-            }
 
             super.onLivingUpdate();
 
@@ -420,7 +425,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
      * Returns if this entity is sneaking.
      */
     public boolean isSneaking() {
-        return this.movementInput.sneak && !this.sleeping;
+        return this.movementInput != null && this.movementInput.sneak && !this.sleeping;
     }
 
     /**
@@ -432,9 +437,9 @@ public class EntityPlayerSP extends AbstractClientPlayer {
         if (var2 <= 0.0F) {
             this.setHealth(p_71150_1_);
 
-            if (var2 < 0.0F) {
+            if (var2 < 0.0F)
                 this.hurtResistantTime = this.maxHurtResistantTime / 2;
-            }
+
         } else {
             this.lastDamage = var2;
             this.setHealth(this.getHealth());

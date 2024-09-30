@@ -14,7 +14,6 @@ public class ModelChicken extends ModelBase {
     public final ModelRenderer leftWing;
     public final ModelRenderer bill;
     public final ModelRenderer chin;
-    private static final String __OBFID = "CL_00000835";
 
     public ModelChicken(Minecraft mc) {
         byte var1 = 16;

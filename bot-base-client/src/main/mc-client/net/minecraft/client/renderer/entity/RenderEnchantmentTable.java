@@ -14,7 +14,6 @@ public class RenderEnchantmentTable extends TileEntitySpecialRenderer {
     private static final ResourceLocation field_147540_b = new ResourceLocation(
             "textures/entity/enchanting_table_book.png");
     private final ModelBook field_147541_c;
-    private static final String __OBFID = "CL_00000966";
     private final Minecraft mc;
 
     public RenderEnchantmentTable(Minecraft mc) {

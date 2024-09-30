@@ -12,7 +12,6 @@ public class GuiDisconnected extends GuiScreen {
     private IChatComponent field_146304_f;
     private List field_146305_g;
     private final GuiScreen field_146307_h;
-    private static final String __OBFID = "CL_00000693";
 
     public GuiDisconnected(Minecraft mc, GuiScreen p_i45020_1_, String p_i45020_2_, IChatComponent p_i45020_3_) {
         super(mc);

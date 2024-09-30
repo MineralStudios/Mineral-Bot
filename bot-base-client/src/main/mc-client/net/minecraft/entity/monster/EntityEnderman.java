@@ -39,7 +39,6 @@ public class EntityEnderman extends EntityMob {
     private int stareTimer;
     private Entity lastEntityToAttack;
     private boolean isAggressive;
-    private static final String __OBFID = "CL_00001685";
 
     public EntityEnderman(World p_i1734_1_) {
         super(p_i1734_1_);

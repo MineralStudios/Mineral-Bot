@@ -16,7 +16,6 @@ import gg.mineral.bot.base.lwjgl.opengl.GL11;
 public class GLAllocation {
     private static final Map mapDisplayLists = new HashMap();
     private static final List listDummy = new ArrayList();
-    private static final String __OBFID = "CL_00000630";
 
     /**
      * Generates the specified number of display lists and returns the first index.

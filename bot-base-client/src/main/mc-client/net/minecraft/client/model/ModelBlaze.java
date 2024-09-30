@@ -8,7 +8,6 @@ public class ModelBlaze extends ModelBase {
     /** The sticks that fly around the Blaze. */
     private ModelRenderer[] blazeSticks = new ModelRenderer[12];
     private ModelRenderer blazeHead;
-    private static final String __OBFID = "CL_00000831";
 
     public ModelBlaze(Minecraft mc) {
         for (int var1 = 0; var1 < this.blazeSticks.length; ++var1) {

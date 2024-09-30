@@ -93,20 +93,21 @@ public class ConnectedTextures {
             int iconId = ts.getIndexInMap();
             int metadata = -1;
 
-            if (tileProperties != null && mc.getTessellator().defaultTexture && iconId >= 0
+            Tessellator tessellator = mc.getTessellator();
+
+            if (tileProperties != null && tessellator != null && tessellator.defaultTexture && iconId >= 0
                     && iconId < tileProperties.length) {
                 ConnectedProperties[] blockId = tileProperties[iconId];
 
                 if (blockId != null) {
-                    if (metadata < 0) {
+                    if (metadata < 0)
                         metadata = blockAccess.getBlockMetadata(x, y, z);
-                    }
 
                     IIcon cps = getConnectedTexture(blockId, blockAccess, block, x, y, z, side, ts, metadata);
 
-                    if (cps != null) {
+                    if (cps != null)
                         return cps;
-                    }
+
                 }
             }
 
@@ -117,15 +118,14 @@ public class ConnectedTextures {
                     ConnectedProperties[] cps1 = blockProperties[blockId1];
 
                     if (cps1 != null) {
-                        if (metadata < 0) {
+                        if (metadata < 0)
                             metadata = blockAccess.getBlockMetadata(x, y, z);
-                        }
 
                         IIcon newIcon = getConnectedTexture(cps1, blockAccess, block, x, y, z, side, ts, metadata);
 
-                        if (newIcon != null) {
+                        if (newIcon != null)
                             return newIcon;
-                        }
+
                     }
                 }
             }
@@ -146,21 +146,22 @@ public class ConnectedTextures {
             int iconId = ts.getIndexInMap();
             int metadata = -1;
 
-            if (tileProperties != null && mc.getTessellator().defaultTexture && iconId >= 0
+            Tessellator tessellator = mc.getTessellator();
+
+            if (tileProperties != null && tessellator != null && tessellator.defaultTexture && iconId >= 0
                     && iconId < tileProperties.length) {
                 ConnectedProperties[] blockId = tileProperties[iconId];
 
                 if (blockId != null) {
-                    if (metadata < 0) {
+                    if (metadata < 0)
                         metadata = blockAccess.getBlockMetadata(x, y, z);
-                    }
 
                     ConnectedProperties cps = getConnectedProperties(blockId, blockAccess, block, x, y, z, side, ts,
                             metadata);
 
-                    if (cps != null) {
+                    if (cps != null)
                         return cps;
-                    }
+
                 }
             }
 

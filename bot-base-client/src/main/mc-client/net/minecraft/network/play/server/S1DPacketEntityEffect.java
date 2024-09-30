@@ -16,7 +16,6 @@ public class S1DPacketEntityEffect extends Packet {
     private byte field_149432_b;
     private byte field_149433_c;
     private short field_149431_d;
-    private static final String __OBFID = "CL_00001343";
 
     public S1DPacketEntityEffect() {
     }

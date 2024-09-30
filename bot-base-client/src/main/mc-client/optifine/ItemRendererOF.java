@@ -65,12 +65,14 @@ public class ItemRendererOF extends ItemRenderer {
         }
 
         if (customRenderer != null) {
-            var4.bindTexture(var4.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
+            if (var4 != null)
+                var4.bindTexture(var4.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
             Reflector.callVoid(Reflector.ForgeHooksClient_renderEquippedItem,
                     new Object[] { type, customRenderer, this.renderBlocksIr, par1EntityLivingBase, par2ItemStack });
         } else if (par2ItemStack.getItemSpriteNumber() == 0 && var5 instanceof ItemBlock
-                && RenderBlocks.renderItemIn3d(var6.getRenderType())) {
-            var4.bindTexture(var4.getResourceLocation(0));
+                && var6 != null && RenderBlocks.renderItemIn3d(var6.getRenderType())) {
+            if (var4 != null)
+                var4.bindTexture(var4.getResourceLocation(0));
 
             if (par2ItemStack != null && var6 != null && var6.getRenderBlockPass() != 0) {
                 GL11.glDepthMask(false);
@@ -87,7 +89,8 @@ public class ItemRendererOF extends ItemRenderer {
                 return;
             }
 
-            var4.bindTexture(var4.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
+            if (var4 != null)
+                var4.bindTexture(var4.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
             TextureUtil.func_152777_a(false, false, 1.0F);
             Tessellator var8 = this.mc.getTessellator();
             float var9 = var7.getMinU();
@@ -116,7 +119,8 @@ public class ItemRendererOF extends ItemRenderer {
             if (renderEffect) {
                 GL11.glDepthFunc(GL11.GL_EQUAL);
                 GL11.glDisable(GL11.GL_LIGHTING);
-                var4.bindTexture(RES_ITEM_GLINT);
+                if (var4 != null)
+                    var4.bindTexture(RES_ITEM_GLINT);
                 GL11.glEnable(GL11.GL_BLEND);
                 OpenGlHelper.glBlendFunc(768, 1, 1, 0);
                 float var16 = 0.76F;
@@ -144,7 +148,8 @@ public class ItemRendererOF extends ItemRenderer {
             }
 
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-            var4.bindTexture(var4.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
+            if (var4 != null)
+                var4.bindTexture(var4.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
             TextureUtil.func_147945_b();
         }
 

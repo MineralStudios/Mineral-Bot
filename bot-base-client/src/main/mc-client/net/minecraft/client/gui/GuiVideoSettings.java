@@ -21,7 +21,6 @@ public class GuiVideoSettings extends GuiScreen {
             GameSettings.Options.GUI_SCALE, GameSettings.Options.ADVANCED_OPENGL, GameSettings.Options.GAMMA,
             GameSettings.Options.CHUNK_LOADING, GameSettings.Options.FOG_FANCY, GameSettings.Options.FOG_START,
             GameSettings.Options.ANAGLYPH };
-    private static final String __OBFID = "CL_00000718";
     private int lastMouseX = 0;
     private int lastMouseY = 0;
     private long mouseStillTime = 0L;

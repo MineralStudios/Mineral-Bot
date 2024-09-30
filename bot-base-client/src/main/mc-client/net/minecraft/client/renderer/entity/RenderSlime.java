@@ -11,7 +11,6 @@ import gg.mineral.bot.base.lwjgl.opengl.GL11;
 public class RenderSlime extends RenderLiving {
     private static final ResourceLocation slimeTextures = new ResourceLocation("textures/entity/slime/slime.png");
     private ModelBase scaleAmount;
-    private static final String __OBFID = "CL_00001024";
 
     public RenderSlime(Minecraft mc, ModelBase p_i1267_1_, ModelBase p_i1267_2_, float p_i1267_3_) {
         super(mc, p_i1267_1_, p_i1267_3_);

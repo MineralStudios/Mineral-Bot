@@ -121,7 +121,6 @@ public class Chunk {
      * relight check location as well.
      */
     private int queuedLightChecks;
-    private static final String __OBFID = "CL_00000373";
 
     public Chunk(World p_i1995_1_, int p_i1995_2_, int p_i1995_3_) {
         this.storageArrays = new ExtendedBlockStorage[16];
@@ -528,13 +527,8 @@ public class Chunk {
                 } catch (Throwable var9) {
                     CrashReport var7 = CrashReport.makeCrashReport(var9, "Getting block");
                     CrashReportCategory var8 = var7.makeCategory("Block being got");
-                    var8.addCrashSectionCallable("Location", new Callable() {
-                        private static final String __OBFID = "CL_00000374";
-
-                        public String call() {
-                            return CrashReportCategory.getLocationInfo(p_150810_1_, p_150810_2_, p_150810_3_);
-                        }
-                    });
+                    var8.addCrashSectionCallable("Location",
+                            () -> CrashReportCategory.getLocationInfo(p_150810_1_, p_150810_2_, p_150810_3_));
                     throw new ReportedException(var7);
                 }
             }

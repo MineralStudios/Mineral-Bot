@@ -12,7 +12,6 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 public class S3FPacketCustomPayload extends Packet {
     private String field_149172_a;
     private byte[] field_149171_b;
-    private static final String __OBFID = "CL_00001297";
 
     public S3FPacketCustomPayload() {
     }

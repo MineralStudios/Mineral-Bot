@@ -5,13 +5,12 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
-
 import gg.mineral.bot.api.screen.type.ContainerScreen;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -63,7 +62,11 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
      */
     public void initGui() {
         super.initGui();
-        this.mc.thePlayer.openContainer = this.container;
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+        if (thePlayer != null)
+            thePlayer.openContainer = this.container;
+
         this.xShift = (this.width - this.field_146999_f) / 2;
         this.yShift = (this.height - this.field_147000_g) / 2;
     }
@@ -112,8 +115,11 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
         }
 
         this.func_146979_b(p_73863_1_, p_73863_2_);
-        InventoryPlayer var15 = this.mc.thePlayer.inventory;
-        ItemStack var16 = this.field_147012_x == null ? var15.getItemStack() : this.field_147012_x;
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+        @Nullable
+        InventoryPlayer var15 = thePlayer != null ? thePlayer.inventory : null;
+        @Nullable
+        ItemStack var16 = this.field_147012_x == null && var15 != null ? var15.getItemStack() : this.field_147012_x;
 
         if (var16 != null) {
             byte var17 = 8;
@@ -122,14 +128,17 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
 
             if (this.field_147012_x != null && this.field_147004_w) {
                 var16 = var16.copy();
-                var16.stackSize = MathHelper.ceiling_float_int((float) var16.stackSize / 2.0F);
+
+                if (var16 != null)
+                    var16.stackSize = MathHelper.ceiling_float_int((float) var16.stackSize / 2.0F);
             } else if (this.field_147007_t && this.field_147008_s.size() > 1) {
                 var16 = var16.copy();
-                var16.stackSize = this.field_146996_I;
+                if (var16 != null)
+                    var16.stackSize = this.field_146996_I;
 
-                if (var16.stackSize == 0) {
+                if (var16 != null && var16.stackSize == 0)
                     var12 = "" + EnumChatFormatting.YELLOW + "0";
-                }
+
             }
 
             this.func_146982_a(var16, p_73863_1_ - var4 - var17, p_73863_2_ - var5 - var11, var12);
@@ -152,7 +161,8 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
 
         GL11.glPopMatrix();
 
-        if (var15.getItemStack() == null && this.field_147006_u != null && this.field_147006_u.getHasStack()) {
+        if (var15 != null && var15.getItemStack() == null && this.field_147006_u != null
+                && this.field_147006_u.getHasStack()) {
             ItemStack var19 = this.field_147006_u.getStack();
             this.func_146285_a(var19, p_73863_1_, p_73863_2_);
         }
@@ -185,7 +195,9 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
         ItemStack var4 = slot.getStack();
         boolean var5 = false;
         boolean var6 = slot == this.field_147005_v && this.field_147012_x != null && !this.field_147004_w;
-        ItemStack var7 = this.mc.thePlayer.inventory.getItemStack();
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+        @Nullable
+        ItemStack var7 = thePlayer != null ? thePlayer.inventory.getItemStack() : null;
         String var8 = null;
 
         if (slot == this.field_147005_v && this.field_147012_x != null && this.field_147004_w && var4 != null) {
@@ -250,7 +262,9 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
     }
 
     private void func_146980_g() {
-        ItemStack var1 = this.mc.thePlayer.inventory.getItemStack();
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+        @Nullable
+        ItemStack var1 = thePlayer != null ? thePlayer.inventory.getItemStack() : null;
 
         if (var1 != null && this.field_147007_t) {
             this.field_146996_I = var1.stackSize;
@@ -311,7 +325,10 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
             if (var10)
                 hoveringSlotIndex = -999;
 
-            if (this.mc.gameSettings.touchscreen && var10 && this.mc.thePlayer.inventory.getItemStack() == null) {
+            EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+            if (thePlayer != null && this.mc.gameSettings.touchscreen && var10
+                    && thePlayer.inventory.getItemStack() == null) {
                 this.mc.displayGuiScreen((GuiScreen) null);
                 return;
             }
@@ -326,7 +343,7 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
                         this.field_147005_v = null;
                     }
                 } else if (!this.field_147007_t) {
-                    if (this.mc.thePlayer.inventory.getItemStack() == null) {
+                    if (thePlayer == null || thePlayer.inventory.getItemStack() == null) {
                         if (p_73864_3_ == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100) {
                             this.func_146984_a(hoveringSlot, hoveringSlotIndex, p_73864_3_, 3);
                         } else {
@@ -369,7 +386,9 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
 
     protected void mouseClickMove(int p_146273_1_, int p_146273_2_, int p_146273_3_, long p_146273_4_) {
         Slot var6 = this.getHoveringSlot(p_146273_1_, p_146273_2_);
-        ItemStack var7 = this.mc.thePlayer.inventory.getItemStack();
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+        ItemStack var7 = thePlayer != null ? thePlayer.inventory.getItemStack() : null;
 
         if (this.field_147005_v != null && this.mc.gameSettings.touchscreen) {
             if (p_146273_3_ == 0 || p_146273_3_ == 1) {
@@ -404,6 +423,8 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
     }
 
     protected void mouseMovedOrUp(int p_146286_1_, int p_146286_2_, int p_146286_3_) {
+
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
         Slot var4 = this.getHoveringSlot(p_146286_1_, p_146286_2_);
         int var5 = this.xShift;
         int var6 = this.yShift;
@@ -468,7 +489,7 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
                         this.func_146984_a(this.field_147005_v, this.field_147005_v.slotNumber, p_146286_3_, 0);
                         this.func_146984_a(var4, var8, 0, 0);
 
-                        if (this.mc.thePlayer.inventory.getItemStack() != null) {
+                        if (thePlayer != null && thePlayer.inventory.getItemStack() != null) {
                             this.func_146984_a(this.field_147005_v, this.field_147005_v.slotNumber, p_146286_3_, 0);
                             this.field_147011_y = p_146286_1_ - var5;
                             this.field_147010_z = p_146286_2_ - var6;
@@ -499,7 +520,7 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
                 }
 
                 this.func_146984_a((Slot) null, -999, Container.func_94534_d(2, this.field_146987_F), 5);
-            } else if (this.mc.thePlayer.inventory.getItemStack() != null) {
+            } else if (thePlayer != null && thePlayer.inventory.getItemStack() != null) {
                 if (p_146286_3_ == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100) {
                     this.func_146984_a(var4, var8, p_146286_3_, 3);
                 } else {
@@ -513,7 +534,7 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
             }
         }
 
-        if (this.mc.thePlayer.inventory.getItemStack() == null)
+        if (thePlayer != null && thePlayer.inventory.getItemStack() == null)
             this.field_146997_J = 0L;
 
         this.field_147007_t = false;
@@ -563,8 +584,10 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
      * KeyListener.keyTyped(KeyEvent e).
      */
     protected void keyTyped(char p_73869_1_, int p_73869_2_) {
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
         if (p_73869_2_ == 1 || p_73869_2_ == this.mc.gameSettings.keyBindInventory.getKeyCode())
-            this.mc.thePlayer.closeScreen();
+            if (thePlayer != null)
+                thePlayer.closeScreen();
 
         this.func_146983_a(p_73869_2_);
 
@@ -579,7 +602,9 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
     }
 
     protected boolean func_146983_a(int p_146983_1_) {
-        if (this.mc.thePlayer.inventory.getItemStack() == null && this.field_147006_u != null) {
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+        if (thePlayer != null && thePlayer.inventory.getItemStack() == null && this.field_147006_u != null) {
             for (int var2 = 0; var2 < 9; ++var2) {
                 if (p_146983_1_ == this.mc.gameSettings.keyBindsHotbar[var2].getKeyCode()) {
                     this.func_146984_a(this.field_147006_u, this.field_147006_u.slotNumber, var2, 2);
@@ -613,7 +638,12 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
     public void updateScreen() {
         super.updateScreen();
 
-        if (!this.mc.thePlayer.isEntityAlive() || this.mc.thePlayer.isDead)
-            this.mc.thePlayer.closeScreen();
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+        if (thePlayer == null)
+            return;
+
+        if (!thePlayer.isEntityAlive() || thePlayer.isDead)
+            thePlayer.closeScreen();
     }
 }

@@ -26,7 +26,6 @@ public class LoadingScreenRenderer implements IProgressUpdate {
     private boolean field_73724_e;
     private ScaledResolution field_146587_f;
     private Framebuffer field_146588_g;
-    private static final String __OBFID = "CL_00000655";
 
     public LoadingScreenRenderer(Minecraft mc) {
         this.mc = mc;
@@ -132,9 +131,8 @@ public class LoadingScreenRenderer implements IProgressUpdate {
                 GL11.glLoadIdentity();
                 GL11.glTranslatef(0.0F, 0.0F, -200.0F);
 
-                if (!OpenGlHelper.isFramebufferEnabled(this.mc)) {
+                if (!OpenGlHelper.isFramebufferEnabled(this.mc))
                     GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-                }
 
                 Tessellator var8 = this.mc.getTessellator();
                 TextureManager textureManager = this.mc.getTextureManager();
@@ -143,34 +141,36 @@ public class LoadingScreenRenderer implements IProgressUpdate {
                     textureManager.bindTexture(Gui.optionsBackground);
 
                 float var9 = 32.0F;
-                var8.startDrawingQuads();
-                var8.setColorOpaque_I(4210752);
-                var8.addVertexWithUV(0.0D, (double) var7, 0.0D, 0.0D, (double) ((float) var7 / var9));
-                var8.addVertexWithUV((double) var6, (double) var7, 0.0D, (double) ((float) var6 / var9),
-                        (double) ((float) var7 / var9));
-                var8.addVertexWithUV((double) var6, 0.0D, 0.0D, (double) ((float) var6 / var9), 0.0D);
-                var8.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-                var8.draw();
-
-                if (p_73718_1_ >= 0) {
-                    byte var10 = 100;
-                    byte var11 = 2;
-                    int var12 = var6 / 2 - var10 / 2;
-                    int var13 = var7 / 2 + 16;
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
+                if (var8 != null) {
                     var8.startDrawingQuads();
-                    var8.setColorOpaque_I(8421504);
-                    var8.addVertex((double) var12, (double) var13, 0.0D);
-                    var8.addVertex((double) var12, (double) (var13 + var11), 0.0D);
-                    var8.addVertex((double) (var12 + var10), (double) (var13 + var11), 0.0D);
-                    var8.addVertex((double) (var12 + var10), (double) var13, 0.0D);
-                    var8.setColorOpaque_I(8454016);
-                    var8.addVertex((double) var12, (double) var13, 0.0D);
-                    var8.addVertex((double) var12, (double) (var13 + var11), 0.0D);
-                    var8.addVertex((double) (var12 + p_73718_1_), (double) (var13 + var11), 0.0D);
-                    var8.addVertex((double) (var12 + p_73718_1_), (double) var13, 0.0D);
+                    var8.setColorOpaque_I(4210752);
+                    var8.addVertexWithUV(0.0D, (double) var7, 0.0D, 0.0D, (double) ((float) var7 / var9));
+                    var8.addVertexWithUV((double) var6, (double) var7, 0.0D, (double) ((float) var6 / var9),
+                            (double) ((float) var7 / var9));
+                    var8.addVertexWithUV((double) var6, 0.0D, 0.0D, (double) ((float) var6 / var9), 0.0D);
+                    var8.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
                     var8.draw();
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+                    if (p_73718_1_ >= 0) {
+                        byte var10 = 100;
+                        byte var11 = 2;
+                        int var12 = var6 / 2 - var10 / 2;
+                        int var13 = var7 / 2 + 16;
+                        GL11.glDisable(GL11.GL_TEXTURE_2D);
+                        var8.startDrawingQuads();
+                        var8.setColorOpaque_I(8421504);
+                        var8.addVertex((double) var12, (double) var13, 0.0D);
+                        var8.addVertex((double) var12, (double) (var13 + var11), 0.0D);
+                        var8.addVertex((double) (var12 + var10), (double) (var13 + var11), 0.0D);
+                        var8.addVertex((double) (var12 + var10), (double) var13, 0.0D);
+                        var8.setColorOpaque_I(8454016);
+                        var8.addVertex((double) var12, (double) var13, 0.0D);
+                        var8.addVertex((double) var12, (double) (var13 + var11), 0.0D);
+                        var8.addVertex((double) (var12 + p_73718_1_), (double) (var13 + var11), 0.0D);
+                        var8.addVertex((double) (var12 + p_73718_1_), (double) var13, 0.0D);
+                        var8.draw();
+                        GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    }
                 }
 
                 GL11.glEnable(GL11.GL_BLEND);

@@ -17,7 +17,6 @@ import net.minecraft.util.ResourceLocation;
 public class RenderSnowball extends Render {
     private Item field_94151_a;
     private int field_94150_f;
-    private static final String __OBFID = "CL_00001008";
 
     public RenderSnowball(Minecraft mc, Item p_i1259_1_, int p_i1259_2_) {
         super(mc);

@@ -169,7 +169,6 @@ public class EntityPlayerMP extends EntityPlayer implements ICrafting {
      * and XP
      */
     public boolean playerConqueredTheEnd;
-    private static final String __OBFID = "CL_00001440";
 
     private final Minecraft mc;
 

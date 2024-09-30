@@ -38,7 +38,6 @@ public class ThreadDownloadImageData extends SimpleTexture {
     private boolean textureUploaded;
     public Boolean imageFound = null;
     public boolean pipeline = false;
-    private static final String __OBFID = "CL_00001049";
 
     public ThreadDownloadImageData(Minecraft mc, File par1GuiCreateFlatWorld, String p_i1049_2_,
             ResourceLocation p_i1049_3_, IImageBuffer p_i1049_4_) {

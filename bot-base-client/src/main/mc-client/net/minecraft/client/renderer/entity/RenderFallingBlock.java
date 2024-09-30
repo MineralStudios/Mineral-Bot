@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 
 public class RenderFallingBlock extends Render {
     private final RenderBlocks field_147920_a;
-    private static final String __OBFID = "CL_00000994";
 
     public RenderFallingBlock(Minecraft mc) {
         super(mc);
@@ -52,22 +51,27 @@ public class RenderFallingBlock extends Render {
             if (var11 instanceof BlockAnvil) {
                 this.field_147920_a.blockAccess = var10;
                 var15 = this.mc.getTessellator();
-                var15.startDrawingQuads();
-                var15.setTranslation((double) ((float) (-var12) - 0.5F), (double) ((float) (-var13) - 0.5F),
-                        (double) ((float) (-var14) - 0.5F));
-                this.field_147920_a.renderBlockAnvilMetadata((BlockAnvil) var11, var12, var13, var14,
-                        p_76986_1_.field_145814_a);
-                var15.setTranslation(0.0D, 0.0D, 0.0D);
-                var15.draw();
+
+                if (var15 != null) {
+                    var15.startDrawingQuads();
+                    var15.setTranslation((double) ((float) (-var12) - 0.5F), (double) ((float) (-var13) - 0.5F),
+                            (double) ((float) (-var14) - 0.5F));
+                    this.field_147920_a.renderBlockAnvilMetadata((BlockAnvil) var11, var12, var13, var14,
+                            p_76986_1_.field_145814_a);
+                    var15.setTranslation(0.0D, 0.0D, 0.0D);
+                    var15.draw();
+                }
             } else if (var11 instanceof BlockDragonEgg) {
                 this.field_147920_a.blockAccess = var10;
                 var15 = this.mc.getTessellator();
-                var15.startDrawingQuads();
-                var15.setTranslation((double) ((float) (-var12) - 0.5F), (double) ((float) (-var13) - 0.5F),
-                        (double) ((float) (-var14) - 0.5F));
-                this.field_147920_a.renderBlockDragonEgg((BlockDragonEgg) var11, var12, var13, var14);
-                var15.setTranslation(0.0D, 0.0D, 0.0D);
-                var15.draw();
+                if (var15 != null) {
+                    var15.startDrawingQuads();
+                    var15.setTranslation((double) ((float) (-var12) - 0.5F), (double) ((float) (-var13) - 0.5F),
+                            (double) ((float) (-var14) - 0.5F));
+                    this.field_147920_a.renderBlockDragonEgg((BlockDragonEgg) var11, var12, var13, var14);
+                    var15.setTranslation(0.0D, 0.0D, 0.0D);
+                    var15.draw();
+                }
             } else {
                 this.field_147920_a.setRenderBoundsFromBlock(var11);
                 this.field_147920_a.renderBlockSandFalling(var11, var10, var12, var13, var14,

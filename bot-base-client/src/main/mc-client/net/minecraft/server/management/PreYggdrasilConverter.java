@@ -1,20 +1,25 @@
 package net.minecraft.server.management;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.UUID;
+
+import javax.annotation.Nonnull;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.UUID;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class PreYggdrasilConverter {
     private static final Logger field_152732_e = LogManager.getLogger();
@@ -22,18 +27,16 @@ public class PreYggdrasilConverter {
     public static final File field_152729_b = new File("banned-players.txt");
     public static final File field_152730_c = new File("ops.txt");
     public static final File field_152731_d = new File("white-list.txt");
-    private static final String __OBFID = "CL_00001882";
 
     private static void func_152717_a(MinecraftServer p_152717_0_, Collection p_152717_1_,
             ProfileLookupCallback p_152717_2_) {
         String[] var3 = (String[]) Iterators.toArray(Iterators.filter(p_152717_1_.iterator(), new Predicate() {
-            private static final String __OBFID = "CL_00001881";
 
             public boolean func_152733_a(String p_152733_1_) {
                 return !StringUtils.isNullOrEmpty(p_152733_1_);
             }
 
-            public boolean apply(Object p_apply_1_) {
+            public boolean apply(@Nonnull Object p_apply_1_) {
                 return this.func_152733_a((String) p_apply_1_);
             }
         }), String.class);
@@ -63,7 +66,6 @@ public class PreYggdrasilConverter {
             } else if (!var1.isSinglePlayer() && var1.isServerInOnlineMode()) {
                 final ArrayList var3 = Lists.newArrayList();
                 ProfileLookupCallback var4 = new ProfileLookupCallback() {
-                    private static final String __OBFID = "CL_00001880";
 
                     public void onProfileLookupSucceeded(GameProfile p_onProfileLookupSucceeded_1_) {
                         var1.func_152358_ax().func_152649_a(p_onProfileLookupSucceeded_1_);

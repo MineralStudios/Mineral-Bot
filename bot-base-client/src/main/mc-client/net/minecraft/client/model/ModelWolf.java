@@ -31,7 +31,6 @@ public class ModelWolf extends ModelBase {
 
     /** The wolf's mane */
     ModelRenderer wolfMane;
-    private static final String __OBFID = "CL_00000868";
 
     public ModelWolf(Minecraft mc) {
         float var1 = 0.0F;

@@ -13,7 +13,6 @@ public class ServerSelectionList extends GuiListExtended {
     private final List field_148199_m = Lists.newArrayList();
     private final GuiListExtended.IGuiListEntry field_148196_n;
     private int field_148197_o = -1;
-    private static final String __OBFID = "CL_00000819";
 
     public ServerSelectionList(GuiMultiplayer p_i45049_1_, Minecraft mc, int p_i45049_3_, int p_i45049_4_,
             int p_i45049_5_, int p_i45049_6_, int p_i45049_7_) {

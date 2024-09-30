@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.play.client.C16PacketClientStatus;
@@ -15,7 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
@@ -31,7 +31,6 @@ public class GuiWinGame extends GuiScreen {
     private List field_146582_i;
     private int field_146579_r;
     private float field_146578_s = 0.5F;
-    private static final String __OBFID = "CL_00000719";
 
     /**
      * Called from the main game loop to update the screen.
@@ -50,14 +49,16 @@ public class GuiWinGame extends GuiScreen {
      * KeyListener.keyTyped(KeyEvent e).
      */
     protected void keyTyped(char p_73869_1_, int p_73869_2_) {
-        if (p_73869_2_ == 1) {
+        if (p_73869_2_ == 1)
             this.func_146574_g();
-        }
     }
 
     private void func_146574_g() {
-        this.mc.thePlayer.sendQueue
-                .addToSendQueue(new C16PacketClientStatus(C16PacketClientStatus.EnumState.PERFORM_RESPAWN));
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+        if (thePlayer != null)
+            thePlayer.sendQueue
+                    .addToSendQueue(new C16PacketClientStatus(C16PacketClientStatus.EnumState.PERFORM_RESPAWN));
         this.mc.displayGuiScreen((GuiScreen) null);
     }
 
@@ -137,6 +138,9 @@ public class GuiWinGame extends GuiScreen {
         if (textureManager != null)
             textureManager.bindTexture(Gui.optionsBackground);
 
+        if (var4 == null)
+            return;
+
         var4.startDrawingQuads();
         var4.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F);
         int var5 = this.width;
@@ -147,13 +151,11 @@ public class GuiWinGame extends GuiScreen {
         float var10 = (float) (this.field_146579_r + this.height + this.height + 24) / this.field_146578_s;
         float var11 = (var10 - 20.0F - ((float) this.field_146581_h + p_146575_3_)) * 0.005F;
 
-        if (var11 < var9) {
+        if (var11 < var9)
             var9 = var11;
-        }
 
-        if (var9 > 1.0F) {
+        if (var9 > 1.0F)
             var9 = 1.0F;
-        }
 
         var9 *= var9;
         var9 = var9 * 96.0F / 255.0F;
@@ -188,7 +190,8 @@ public class GuiWinGame extends GuiScreen {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.drawTexturedModalRect(var6, var7, 0, 0, 155, 44);
         this.drawTexturedModalRect(var6 + 155, var7, 0, 45, 155, 44);
-        var4.setColorOpaque_I(16777215);
+        if (var4 != null)
+            var4.setColorOpaque_I(16777215);
         int var9 = var7 + 200;
         int var10;
 
@@ -224,15 +227,17 @@ public class GuiWinGame extends GuiScreen {
             textureManager.bindTexture(field_146577_g);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_ONE_MINUS_SRC_COLOR);
-        var4.startDrawingQuads();
-        var4.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F);
-        var10 = this.width;
-        int var13 = this.height;
-        var4.addVertexWithUV(0.0D, (double) var13, (double) this.zLevel, 0.0D, 1.0D);
-        var4.addVertexWithUV((double) var10, (double) var13, (double) this.zLevel, 1.0D, 1.0D);
-        var4.addVertexWithUV((double) var10, 0.0D, (double) this.zLevel, 1.0D, 0.0D);
-        var4.addVertexWithUV(0.0D, 0.0D, (double) this.zLevel, 0.0D, 0.0D);
-        var4.draw();
+        if (var4 != null) {
+            var4.startDrawingQuads();
+            var4.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F);
+            var10 = this.width;
+            int var13 = this.height;
+            var4.addVertexWithUV(0.0D, (double) var13, (double) this.zLevel, 0.0D, 1.0D);
+            var4.addVertexWithUV((double) var10, (double) var13, (double) this.zLevel, 1.0D, 1.0D);
+            var4.addVertexWithUV((double) var10, 0.0D, (double) this.zLevel, 1.0D, 0.0D);
+            var4.addVertexWithUV(0.0D, 0.0D, (double) this.zLevel, 0.0D, 0.0D);
+            var4.draw();
+        }
         GL11.glDisable(GL11.GL_BLEND);
         super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
     }

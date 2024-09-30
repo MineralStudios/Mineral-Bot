@@ -171,7 +171,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
     private long field_147142_T = 0L;
     private final GameProfileRepository field_152365_W;
     private final PlayerProfileCache field_152366_X;
-    private static final String __OBFID = "CL_00001462";
     @Getter
     private final Minecraft mc;
 
@@ -200,7 +199,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
             this.setUserMessage("menu.convertingLevel");
             this.getActiveAnvilConverter().convertMapFormat(p_71237_1_, new IProgressUpdate() {
                 private long field_96245_b = System.currentTimeMillis();
-                private static final String __OBFID = "CL_00001417";
 
                 public void displayProgressMessage(String p_73720_1_) {
                 }
@@ -646,7 +644,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
 
     public void startServerThread() {
         (new Thread("Server thread") {
-            private static final String __OBFID = "CL_00001418";
 
             public void run() {
                 MinecraftServer.this.run();
@@ -716,44 +713,29 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
      * Adds the server info, including from theWorldServer, to the crash report.
      */
     public CrashReport addServerInfoToCrashReport(CrashReport p_71230_1_) {
-        p_71230_1_.getCategory().addCrashSectionCallable("Profiler Position", new Callable() {
-            private static final String __OBFID = "CL_00001419";
-
-            public String call() {
-                return MinecraftServer.this.theProfiler.profilingEnabled
+        p_71230_1_.getCategory().addCrashSectionCallable("Profiler Position",
+                () -> MinecraftServer.this.theProfiler.profilingEnabled
                         ? MinecraftServer.this.theProfiler.getNameOfLastSection()
-                        : "N/A (disabled)";
-            }
-        });
+                        : "N/A (disabled)");
 
         if (this.worldServers != null && this.worldServers.length > 0 && this.worldServers[0] != null) {
-            p_71230_1_.getCategory().addCrashSectionCallable("Vec3 Pool Size", new Callable() {
-                private static final String __OBFID = "CL_00001420";
-
-                public String call() {
-                    byte var1 = 0;
-                    int var2 = 56 * var1;
-                    int var3 = var2 / 1024 / 1024;
-                    byte var4 = 0;
-                    int var5 = 56 * var4;
-                    int var6 = var5 / 1024 / 1024;
-                    return var1 + " (" + var2 + " bytes; " + var3 + " MB) allocated, " + var4 + " (" + var5 + " bytes; "
-                            + var6 + " MB) used";
-                }
+            p_71230_1_.getCategory().addCrashSectionCallable("Vec3 Pool Size", () -> {
+                byte var1 = 0;
+                int var2 = 56 * var1;
+                int var3 = var2 / 1024 / 1024;
+                byte var4 = 0;
+                int var5 = 56 * var4;
+                int var6 = var5 / 1024 / 1024;
+                return var1 + " (" + var2 + " bytes; " + var3 + " MB) allocated, " + var4 + " (" + var5 + " bytes; "
+                        + var6 + " MB) used";
             });
         }
 
-        if (this.serverConfigManager != null) {
-            p_71230_1_.getCategory().addCrashSectionCallable("Player Count", new Callable() {
-                private static final String __OBFID = "CL_00001780";
-
-                public String call() {
-                    return MinecraftServer.this.serverConfigManager.getCurrentPlayerCount() + " / "
+        if (this.serverConfigManager != null)
+            p_71230_1_.getCategory().addCrashSectionCallable("Player Count",
+                    () -> MinecraftServer.this.serverConfigManager.getCurrentPlayerCount() + " / "
                             + MinecraftServer.this.serverConfigManager.getMaxPlayers() + "; "
-                            + MinecraftServer.this.serverConfigManager.playerEntityList;
-                }
-            });
-        }
+                            + MinecraftServer.this.serverConfigManager.playerEntityList);
 
         return p_71230_1_;
     }
@@ -776,11 +758,10 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
                 while (var12.hasNext()) {
                     String var13 = (String) var12.next();
 
-                    if (var10) {
+                    if (var10)
                         var3.add("/" + var13);
-                    } else {
+                    else
                         var3.add(var13);
-                    }
                 }
             }
 
@@ -794,9 +775,8 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
             for (int var8 = 0; var8 < var7; ++var8) {
                 String var9 = var6[var8];
 
-                if (CommandBase.doesStringStartWith(var5, var9)) {
+                if (CommandBase.doesStringStartWith(var5, var9))
                     var3.add(var9);
-                }
             }
 
             return var3;

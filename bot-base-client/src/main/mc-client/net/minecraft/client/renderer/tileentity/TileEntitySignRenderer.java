@@ -13,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 public class TileEntitySignRenderer extends TileEntitySpecialRenderer {
     private static final ResourceLocation field_147513_b = new ResourceLocation("textures/entity/sign.png");
     private final ModelSign field_147514_c;
-    private static final String __OBFID = "CL_00000970";
 
     public TileEntitySignRenderer(Minecraft mc) {
         this.field_147514_c = new ModelSign(mc);

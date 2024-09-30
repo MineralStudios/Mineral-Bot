@@ -8,7 +8,6 @@ public class GuiConfirmOpenLink extends GuiYesNo {
     private final String field_146362_s;
     private final String field_146361_t;
     private boolean field_146360_u = true;
-    private static final String __OBFID = "CL_00000683";
 
     public GuiConfirmOpenLink(Minecraft mc, GuiYesNoCallback p_i1084_1_, String p_i1084_2_, int p_i1084_3_,
             boolean p_i1084_4_) {

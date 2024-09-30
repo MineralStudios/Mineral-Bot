@@ -17,7 +17,6 @@ public class ScreenChatOptions extends GuiScreen {
     private String field_146401_i;
     private String field_146398_r;
     private int field_146397_s;
-    private static final String __OBFID = "CL_00000681";
 
     public ScreenChatOptions(Minecraft mc, GuiScreen p_i1023_1_, GameSettings p_i1023_2_) {
         super(mc);

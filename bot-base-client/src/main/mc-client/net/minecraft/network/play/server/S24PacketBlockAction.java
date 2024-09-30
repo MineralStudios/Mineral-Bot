@@ -20,7 +20,6 @@ public class S24PacketBlockAction extends Packet {
     private int field_148872_d;
     private int field_148873_e;
     private Block field_148871_f;
-    private static final String __OBFID = "CL_00001286";
 
     public S24PacketBlockAction(int p_i45176_1_, int p_i45176_2_, int p_i45176_3_, Block p_i45176_4_, int p_i45176_5_,
             int p_i45176_6_) {

@@ -7,7 +7,6 @@ import net.minecraft.entity.passive.EntitySheep;
 
 public class ModelSheep2 extends ModelQuadruped {
     private float field_78153_i;
-    private static final String __OBFID = "CL_00000853";
 
     public ModelSheep2(Minecraft mc) {
         super(mc, 12, 0.0F);

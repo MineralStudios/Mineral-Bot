@@ -14,7 +14,6 @@ public class GuiHopper extends GuiContainer {
     private static final ResourceLocation field_147085_u = new ResourceLocation("textures/gui/container/hopper.png");
     private IInventory field_147084_v;
     private IInventory field_147083_w;
-    private static final String __OBFID = "CL_00000759";
 
     public GuiHopper(Minecraft mc, InventoryPlayer p_i1092_1_, IInventory p_i1092_2_) {
         super(mc, new ContainerHopper(p_i1092_1_, p_i1092_2_));

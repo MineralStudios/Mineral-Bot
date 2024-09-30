@@ -8,8 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
 
-public class ShaderUniform
-{
+public class ShaderUniform {
     private static final Logger logger = LogManager.getLogger();
     private int field_148102_b;
     private final int field_148103_c;
@@ -19,22 +18,17 @@ public class ShaderUniform
     private final String field_148099_g;
     private boolean field_148105_h;
     private final ShaderManager field_148106_i;
-    private static final String __OBFID = "CL_00001046";
 
-    public ShaderUniform(String p_i45092_1_, int p_i45092_2_, int p_i45092_3_, ShaderManager p_i45092_4_)
-    {
+    public ShaderUniform(String p_i45092_1_, int p_i45092_2_, int p_i45092_3_, ShaderManager p_i45092_4_) {
         this.field_148099_g = p_i45092_1_;
         this.field_148103_c = p_i45092_3_;
         this.field_148100_d = p_i45092_2_;
         this.field_148106_i = p_i45092_4_;
 
-        if (p_i45092_2_ <= 3)
-        {
+        if (p_i45092_2_ <= 3) {
             this.field_148101_e = BufferUtils.createIntBuffer(p_i45092_3_);
             this.field_148098_f = null;
-        }
-        else
-        {
+        } else {
             this.field_148101_e = null;
             this.field_148098_f = BufferUtils.createFloatBuffer(p_i45092_3_);
         }
@@ -43,40 +37,27 @@ public class ShaderUniform
         this.func_148096_h();
     }
 
-    private void func_148096_h()
-    {
+    private void func_148096_h() {
         this.field_148105_h = true;
 
-        if (this.field_148106_i != null)
-        {
+        if (this.field_148106_i != null) {
             this.field_148106_i.func_147985_d();
         }
     }
 
-    public static int func_148085_a(String p_148085_0_)
-    {
+    public static int func_148085_a(String p_148085_0_) {
         byte var1 = -1;
 
-        if (p_148085_0_.equals("int"))
-        {
+        if (p_148085_0_.equals("int")) {
             var1 = 0;
-        }
-        else if (p_148085_0_.equals("float"))
-        {
+        } else if (p_148085_0_.equals("float")) {
             var1 = 4;
-        }
-        else if (p_148085_0_.startsWith("matrix"))
-        {
-            if (p_148085_0_.endsWith("2x2"))
-            {
+        } else if (p_148085_0_.startsWith("matrix")) {
+            if (p_148085_0_.endsWith("2x2")) {
                 var1 = 8;
-            }
-            else if (p_148085_0_.endsWith("3x3"))
-            {
+            } else if (p_148085_0_.endsWith("3x3")) {
                 var1 = 9;
-            }
-            else if (p_148085_0_.endsWith("4x4"))
-            {
+            } else if (p_148085_0_.endsWith("4x4")) {
                 var1 = 10;
             }
         }
@@ -84,33 +65,28 @@ public class ShaderUniform
         return var1;
     }
 
-    public void func_148084_b(int p_148084_1_)
-    {
+    public void func_148084_b(int p_148084_1_) {
         this.field_148102_b = p_148084_1_;
     }
 
-    public String func_148086_a()
-    {
+    public String func_148086_a() {
         return this.field_148099_g;
     }
 
-    public void func_148090_a(float p_148090_1_)
-    {
+    public void func_148090_a(float p_148090_1_) {
         this.field_148098_f.position(0);
         this.field_148098_f.put(0, p_148090_1_);
         this.func_148096_h();
     }
 
-    public void func_148087_a(float p_148087_1_, float p_148087_2_)
-    {
+    public void func_148087_a(float p_148087_1_, float p_148087_2_) {
         this.field_148098_f.position(0);
         this.field_148098_f.put(0, p_148087_1_);
         this.field_148098_f.put(1, p_148087_2_);
         this.func_148096_h();
     }
 
-    public void func_148095_a(float p_148095_1_, float p_148095_2_, float p_148095_3_)
-    {
+    public void func_148095_a(float p_148095_1_, float p_148095_2_, float p_148095_3_) {
         this.field_148098_f.position(0);
         this.field_148098_f.put(0, p_148095_1_);
         this.field_148098_f.put(1, p_148095_2_);
@@ -118,8 +94,7 @@ public class ShaderUniform
         this.func_148096_h();
     }
 
-    public void func_148081_a(float p_148081_1_, float p_148081_2_, float p_148081_3_, float p_148081_4_)
-    {
+    public void func_148081_a(float p_148081_1_, float p_148081_2_, float p_148081_3_, float p_148081_4_) {
         this.field_148098_f.position(0);
         this.field_148098_f.put(p_148081_1_);
         this.field_148098_f.put(p_148081_2_);
@@ -129,68 +104,55 @@ public class ShaderUniform
         this.func_148096_h();
     }
 
-    public void func_148092_b(float p_148092_1_, float p_148092_2_, float p_148092_3_, float p_148092_4_)
-    {
+    public void func_148092_b(float p_148092_1_, float p_148092_2_, float p_148092_3_, float p_148092_4_) {
         this.field_148098_f.position(0);
 
-        if (this.field_148100_d >= 4)
-        {
+        if (this.field_148100_d >= 4) {
             this.field_148098_f.put(0, p_148092_1_);
         }
 
-        if (this.field_148100_d >= 5)
-        {
+        if (this.field_148100_d >= 5) {
             this.field_148098_f.put(1, p_148092_2_);
         }
 
-        if (this.field_148100_d >= 6)
-        {
+        if (this.field_148100_d >= 6) {
             this.field_148098_f.put(2, p_148092_3_);
         }
 
-        if (this.field_148100_d >= 7)
-        {
+        if (this.field_148100_d >= 7) {
             this.field_148098_f.put(3, p_148092_4_);
         }
 
         this.func_148096_h();
     }
 
-    public void func_148083_a(int p_148083_1_, int p_148083_2_, int p_148083_3_, int p_148083_4_)
-    {
+    public void func_148083_a(int p_148083_1_, int p_148083_2_, int p_148083_3_, int p_148083_4_) {
         this.field_148101_e.position(0);
 
-        if (this.field_148100_d >= 0)
-        {
+        if (this.field_148100_d >= 0) {
             this.field_148101_e.put(0, p_148083_1_);
         }
 
-        if (this.field_148100_d >= 1)
-        {
+        if (this.field_148100_d >= 1) {
             this.field_148101_e.put(1, p_148083_2_);
         }
 
-        if (this.field_148100_d >= 2)
-        {
+        if (this.field_148100_d >= 2) {
             this.field_148101_e.put(2, p_148083_3_);
         }
 
-        if (this.field_148100_d >= 3)
-        {
+        if (this.field_148100_d >= 3) {
             this.field_148101_e.put(3, p_148083_4_);
         }
 
         this.func_148096_h();
     }
 
-    public void func_148097_a(float[] p_148097_1_)
-    {
-        if (p_148097_1_.length < this.field_148103_c)
-        {
-            logger.warn("Uniform.set called with a too-small value array (expected " + this.field_148103_c + ", got " + p_148097_1_.length + "). Ignoring.");
-        }
-        else
-        {
+    public void func_148097_a(float[] p_148097_1_) {
+        if (p_148097_1_.length < this.field_148103_c) {
+            logger.warn("Uniform.set called with a too-small value array (expected " + this.field_148103_c + ", got "
+                    + p_148097_1_.length + "). Ignoring.");
+        } else {
             this.field_148098_f.position(0);
             this.field_148098_f.put(p_148097_1_);
             this.field_148098_f.position(0);
@@ -198,8 +160,10 @@ public class ShaderUniform
         }
     }
 
-    public void func_148094_a(float p_148094_1_, float p_148094_2_, float p_148094_3_, float p_148094_4_, float p_148094_5_, float p_148094_6_, float p_148094_7_, float p_148094_8_, float p_148094_9_, float p_148094_10_, float p_148094_11_, float p_148094_12_, float p_148094_13_, float p_148094_14_, float p_148094_15_, float p_148094_16_)
-    {
+    public void func_148094_a(float p_148094_1_, float p_148094_2_, float p_148094_3_, float p_148094_4_,
+            float p_148094_5_, float p_148094_6_, float p_148094_7_, float p_148094_8_, float p_148094_9_,
+            float p_148094_10_, float p_148094_11_, float p_148094_12_, float p_148094_13_, float p_148094_14_,
+            float p_148094_15_, float p_148094_16_) {
         this.field_148098_f.position(0);
         this.field_148098_f.put(0, p_148094_1_);
         this.field_148098_f.put(1, p_148094_2_);
@@ -220,33 +184,27 @@ public class ShaderUniform
         this.func_148096_h();
     }
 
-    public void func_148088_a(Matrix4f p_148088_1_)
-    {
-        this.func_148094_a(p_148088_1_.m00, p_148088_1_.m01, p_148088_1_.m02, p_148088_1_.m03, p_148088_1_.m10, p_148088_1_.m11, p_148088_1_.m12, p_148088_1_.m13, p_148088_1_.m20, p_148088_1_.m21, p_148088_1_.m22, p_148088_1_.m23, p_148088_1_.m30, p_148088_1_.m31, p_148088_1_.m32, p_148088_1_.m33);
+    public void func_148088_a(Matrix4f p_148088_1_) {
+        this.func_148094_a(p_148088_1_.m00, p_148088_1_.m01, p_148088_1_.m02, p_148088_1_.m03, p_148088_1_.m10,
+                p_148088_1_.m11, p_148088_1_.m12, p_148088_1_.m13, p_148088_1_.m20, p_148088_1_.m21, p_148088_1_.m22,
+                p_148088_1_.m23, p_148088_1_.m30, p_148088_1_.m31, p_148088_1_.m32, p_148088_1_.m33);
     }
 
-    public void func_148093_b()
-    {
-        if (!this.field_148105_h)
-        {
+    public void func_148093_b() {
+        if (!this.field_148105_h) {
             ;
         }
 
         this.field_148105_h = false;
 
-        if (this.field_148100_d <= 3)
-        {
+        if (this.field_148100_d <= 3) {
             this.func_148091_i();
-        }
-        else if (this.field_148100_d <= 7)
-        {
+        } else if (this.field_148100_d <= 7) {
             this.func_148089_j();
-        }
-        else
-        {
-            if (this.field_148100_d > 10)
-            {
-                logger.warn("Uniform.upload called, but type value (" + this.field_148100_d + ") is not " + "a valid type. Ignoring.");
+        } else {
+            if (this.field_148100_d > 10) {
+                logger.warn("Uniform.upload called, but type value (" + this.field_148100_d + ") is not "
+                        + "a valid type. Ignoring.");
                 return;
             }
 
@@ -254,10 +212,8 @@ public class ShaderUniform
         }
     }
 
-    private void func_148091_i()
-    {
-        switch (this.field_148100_d)
-        {
+    private void func_148091_i() {
+        switch (this.field_148100_d) {
             case 0:
                 OpenGlHelper.func_153181_a(this.field_148102_b, this.field_148101_e);
                 break;
@@ -275,14 +231,13 @@ public class ShaderUniform
                 break;
 
             default:
-                logger.warn("Uniform.upload called, but count value (" + this.field_148103_c + ") is " + " not in the range of 1 to 4. Ignoring.");
+                logger.warn("Uniform.upload called, but count value (" + this.field_148103_c + ") is "
+                        + " not in the range of 1 to 4. Ignoring.");
         }
     }
 
-    private void func_148089_j()
-    {
-        switch (this.field_148100_d)
-        {
+    private void func_148089_j() {
+        switch (this.field_148100_d) {
             case 4:
                 OpenGlHelper.func_153168_a(this.field_148102_b, this.field_148098_f);
                 break;
@@ -300,14 +255,13 @@ public class ShaderUniform
                 break;
 
             default:
-                logger.warn("Uniform.upload called, but count value (" + this.field_148103_c + ") is " + "not in the range of 1 to 4. Ignoring.");
+                logger.warn("Uniform.upload called, but count value (" + this.field_148103_c + ") is "
+                        + "not in the range of 1 to 4. Ignoring.");
         }
     }
 
-    private void func_148082_k()
-    {
-        switch (this.field_148100_d)
-        {
+    private void func_148082_k() {
+        switch (this.field_148100_d) {
             case 8:
                 OpenGlHelper.func_153173_a(this.field_148102_b, true, this.field_148098_f);
                 break;

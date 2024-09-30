@@ -19,7 +19,6 @@ public class S2CPacketSpawnGlobalEntity extends Packet {
     private int field_149058_c;
     private int field_149055_d;
     private int field_149056_e;
-    private static final String __OBFID = "CL_00001278";
 
     public S2CPacketSpawnGlobalEntity() {
     }

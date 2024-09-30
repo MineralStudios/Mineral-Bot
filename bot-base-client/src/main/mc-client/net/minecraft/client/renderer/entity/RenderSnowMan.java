@@ -18,7 +18,6 @@ public class RenderSnowMan extends RenderLiving {
 
     /** A reference to the Snowman model in RenderSnowMan. */
     private ModelSnowMan snowmanModel;
-    private static final String __OBFID = "CL_00001025";
 
     public RenderSnowMan(Minecraft mc) {
         super(mc, new ModelSnowMan(mc), 0.5F);

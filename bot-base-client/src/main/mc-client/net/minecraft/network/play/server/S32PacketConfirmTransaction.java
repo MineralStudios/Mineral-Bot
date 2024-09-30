@@ -12,7 +12,6 @@ public class S32PacketConfirmTransaction extends Packet {
     private int field_148894_a;
     private short field_148892_b;
     private boolean field_148893_c;
-    private static final String __OBFID = "CL_00001291";
 
     public S32PacketConfirmTransaction() {
     }

@@ -6,6 +6,9 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import lombok.Getter;
 
 import java.io.File;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ImageBufferDownload;
 import net.minecraft.client.renderer.ThreadDownloadImageData;
@@ -24,7 +27,6 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
     public static final ResourceLocation locationStevePng = new ResourceLocation("textures/entity/steve.png");
     private ResourceLocation locationSkin;
     private ResourceLocation locationCape;
-    private static final String __OBFID = "CL_00000935";
     private ResourceLocation locationOfCape = null;
     private String nameClear = null;
     @Getter
@@ -67,9 +69,14 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
         return !Config.isShowCapes() ? null : (this.locationOfCape != null ? this.locationOfCape : this.locationCape);
     }
 
+    @Nullable
     public static ThreadDownloadImageData getDownloadImageSkin(Minecraft mc, ResourceLocation par0ResourceLocation,
             String par1Str) {
         TextureManager var2 = mc.getTextureManager();
+
+        if (var2 == null)
+            return null;
+
         Object var3 = var2.getTexture(par0ResourceLocation);
 
         if (var3 == null) {
@@ -112,7 +119,6 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
 
     static final class SwitchType {
         static final int[] field_152630_a = new int[Type.values().length];
-        private static final String __OBFID = "CL_00001832";
 
         static {
             try {

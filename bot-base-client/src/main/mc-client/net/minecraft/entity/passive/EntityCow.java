@@ -17,12 +17,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class EntityCow extends EntityAnimal
-{
-    private static final String __OBFID = "CL_00001640";
+public class EntityCow extends EntityAnimal {
 
-    public EntityCow(World p_i1683_1_)
-    {
+    public EntityCow(World p_i1683_1_) {
         super(p_i1683_1_);
         this.setSize(0.9F, 1.3F);
         this.getNavigator().setAvoidsWater(true);
@@ -39,13 +36,11 @@ public class EntityCow extends EntityAnimal
     /**
      * Returns true if the newer Entity AI code should be run
      */
-    public boolean isAIEnabled()
-    {
+    public boolean isAIEnabled() {
         return true;
     }
 
-    protected void applyEntityAttributes()
-    {
+    protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10.0D);
         this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.20000000298023224D);
@@ -54,101 +49,83 @@ public class EntityCow extends EntityAnimal
     /**
      * Returns the sound this mob makes while it's alive.
      */
-    protected String getLivingSound()
-    {
+    protected String getLivingSound() {
         return "mob.cow.say";
     }
 
     /**
      * Returns the sound this mob makes when it is hurt.
      */
-    protected String getHurtSound()
-    {
+    protected String getHurtSound() {
         return "mob.cow.hurt";
     }
 
     /**
      * Returns the sound this mob makes on death.
      */
-    protected String getDeathSound()
-    {
+    protected String getDeathSound() {
         return "mob.cow.hurt";
     }
 
-    protected void func_145780_a(int p_145780_1_, int p_145780_2_, int p_145780_3_, Block p_145780_4_)
-    {
+    protected void func_145780_a(int p_145780_1_, int p_145780_2_, int p_145780_3_, Block p_145780_4_) {
         this.playSound("mob.cow.step", 0.15F, 1.0F);
     }
 
     /**
      * Returns the volume for the sounds this mob makes.
      */
-    protected float getSoundVolume()
-    {
+    protected float getSoundVolume() {
         return 0.4F;
     }
 
-    protected Item func_146068_u()
-    {
+    protected Item func_146068_u() {
         return Items.leather;
     }
 
     /**
      * Drop 0-2 items of this living's type
      */
-    protected void dropFewItems(boolean p_70628_1_, int p_70628_2_)
-    {
+    protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
         int var3 = this.rand.nextInt(3) + this.rand.nextInt(1 + p_70628_2_);
         int var4;
 
-        for (var4 = 0; var4 < var3; ++var4)
-        {
+        for (var4 = 0; var4 < var3; ++var4) {
             this.func_145779_a(Items.leather, 1);
         }
 
         var3 = this.rand.nextInt(3) + 1 + this.rand.nextInt(1 + p_70628_2_);
 
-        for (var4 = 0; var4 < var3; ++var4)
-        {
-            if (this.isBurning())
-            {
+        for (var4 = 0; var4 < var3; ++var4) {
+            if (this.isBurning()) {
                 this.func_145779_a(Items.cooked_beef, 1);
-            }
-            else
-            {
+            } else {
                 this.func_145779_a(Items.beef, 1);
             }
         }
     }
 
     /**
-     * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
+     * Called when a player interacts with a mob. e.g. gets milk from a cow, gets
+     * into the saddle on a pig.
      */
-    public boolean interact(EntityPlayer p_70085_1_)
-    {
+    public boolean interact(EntityPlayer p_70085_1_) {
         ItemStack var2 = p_70085_1_.inventory.getCurrentItem();
 
-        if (var2 != null && var2.getItem() == Items.bucket && !p_70085_1_.capabilities.isCreativeMode)
-        {
-            if (var2.stackSize-- == 1)
-            {
-                p_70085_1_.inventory.setInventorySlotContents(p_70085_1_.inventory.currentItem, new ItemStack(Items.milk_bucket));
-            }
-            else if (!p_70085_1_.inventory.addItemStackToInventory(new ItemStack(Items.milk_bucket)))
-            {
+        if (var2 != null && var2.getItem() == Items.bucket && !p_70085_1_.capabilities.isCreativeMode) {
+            if (var2.stackSize-- == 1) {
+                p_70085_1_.inventory.setInventorySlotContents(p_70085_1_.inventory.currentItem,
+                        new ItemStack(Items.milk_bucket));
+            } else if (!p_70085_1_.inventory.addItemStackToInventory(new ItemStack(Items.milk_bucket))) {
                 p_70085_1_.dropPlayerItemWithRandomChoice(new ItemStack(Items.milk_bucket, 1, 0), false);
             }
 
             return true;
-        }
-        else
-        {
+        } else {
             return super.interact(p_70085_1_);
         }
     }
 
-    public EntityCow createChild(EntityAgeable p_90011_1_)
-    {
+    public EntityCow createChild(EntityAgeable p_90011_1_) {
         return new EntityCow(this.worldObj);
     }
 }

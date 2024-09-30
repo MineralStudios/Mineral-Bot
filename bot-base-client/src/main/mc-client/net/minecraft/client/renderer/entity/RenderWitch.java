@@ -17,7 +17,6 @@ import gg.mineral.bot.base.lwjgl.opengl.GL11;
 public class RenderWitch extends RenderLiving {
     private static final ResourceLocation witchTextures = new ResourceLocation("textures/entity/witch.png");
     private final ModelWitch witchModel;
-    private static final String __OBFID = "CL_00001033";
 
     public RenderWitch(Minecraft mc) {
         super(mc, new ModelWitch(mc, 0.0F), 0.5F);

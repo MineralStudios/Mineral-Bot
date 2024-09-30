@@ -26,7 +26,6 @@ public class TileEntityChestRenderer extends TileEntitySpecialRenderer {
     private ModelChest field_147510_h;
     private ModelChest field_147511_i;
     private boolean field_147509_j;
-    private static final String __OBFID = "CL_00000965";
 
     public TileEntityChestRenderer(Minecraft mc) {
         this.field_147510_h = new ModelChest(mc);

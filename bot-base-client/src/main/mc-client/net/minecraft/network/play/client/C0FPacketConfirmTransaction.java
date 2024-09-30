@@ -18,7 +18,6 @@ public class C0FPacketConfirmTransaction extends Packet {
     private int windowId;
     private short actionNumber;
     private boolean accepted;
-    private static final String __OBFID = "CL_00001351";
 
     public void processPacket(INetHandlerPlayServer p_148833_1_) {
         p_148833_1_.processConfirmTransaction(this);

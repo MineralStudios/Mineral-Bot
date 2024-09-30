@@ -33,7 +33,6 @@ public class StringTranslate {
      * The time, in milliseconds since epoch, that this instance was last updated
      */
     private long lastUpdateTimeInMilliseconds;
-    private static final String __OBFID = "CL_00001212";
 
     public StringTranslate() {
         InputStream var1 = StringTranslate.class.getResourceAsStream("/assets/minecraft/lang/en_US.lang");

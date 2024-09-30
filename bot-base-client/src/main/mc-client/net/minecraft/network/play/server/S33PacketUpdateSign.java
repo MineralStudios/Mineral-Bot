@@ -13,7 +13,6 @@ public class S33PacketUpdateSign extends Packet {
     private int field_149350_b;
     private int field_149351_c;
     private String[] field_149349_d;
-    private static final String __OBFID = "CL_00001338";
 
     public S33PacketUpdateSign() {
     }

@@ -30,7 +30,6 @@ public class RenderList {
 
     /** Has glLists been flipped to make it ready for reading yet? */
     private boolean bufferFlipped;
-    private static final String __OBFID = "CL_00000957";
 
     public void setupRenderList(int p_78422_1_, int p_78422_2_, int p_78422_3_, double p_78422_4_, double p_78422_6_,
             double p_78422_8_) {

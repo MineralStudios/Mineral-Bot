@@ -12,7 +12,6 @@ public class RenderSheep extends RenderLiving {
     private static final ResourceLocation sheepTextures = new ResourceLocation("textures/entity/sheep/sheep_fur.png");
     private static final ResourceLocation shearedSheepTextures = new ResourceLocation(
             "textures/entity/sheep/sheep.png");
-    private static final String __OBFID = "CL_00001021";
 
     public RenderSheep(Minecraft mc, ModelBase p_i1266_1_, ModelBase p_i1266_2_, float p_i1266_3_) {
         super(mc, p_i1266_1_, p_i1266_3_);

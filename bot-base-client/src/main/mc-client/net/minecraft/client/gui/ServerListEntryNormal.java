@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -43,7 +42,6 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
     @Nullable
     private DynamicTexture field_148305_h;
     private ResourceLocation field_148306_i;
-    private static final String __OBFID = "CL_00000817";
 
     protected ServerListEntryNormal(Minecraft mc, GuiMultiplayer p_i45048_1_, ServerData p_i45048_2_) {
         this.field_148303_c = p_i45048_1_;
@@ -64,7 +62,6 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
             this.field_148301_e.serverMOTD = "";
             this.field_148301_e.populationInfo = "";
             field_148302_b.submit(new Runnable() {
-                private static final String __OBFID = "CL_00000818";
 
                 public void run() {
                     try {

@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 public class GuiCrafting extends GuiContainer {
     private static final ResourceLocation field_147019_u = new ResourceLocation(
             "textures/gui/container/crafting_table.png");
-    private static final String __OBFID = "CL_00000750";
 
     public GuiCrafting(Minecraft mc, InventoryPlayer p_i46397_1_, World p_i46397_2_, int p_i46397_3_, int p_i46397_4_,
             int p_i46397_5_) {

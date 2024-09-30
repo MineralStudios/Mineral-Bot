@@ -3,8 +3,6 @@ package net.minecraft.client.renderer.entity;
 import com.google.common.collect.Maps;
 import java.util.Map;
 
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.texture.LayeredTexture;
@@ -25,7 +23,6 @@ public class RenderHorse extends RenderLiving {
             "textures/entity/horse/horse_zombie.png");
     private static final ResourceLocation skeletonHorseTextures = new ResourceLocation(
             "textures/entity/horse/horse_skeleton.png");
-    private static final String __OBFID = "CL_00001000";
 
     public RenderHorse(Minecraft mc, ModelBase p_i1256_1_, float p_i1256_2_) {
         super(mc, p_i1256_1_, p_i1256_2_);

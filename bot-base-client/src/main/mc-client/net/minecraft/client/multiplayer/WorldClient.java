@@ -18,6 +18,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecart;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.particle.EntityFireworkStarterFX;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -31,7 +32,6 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
@@ -65,7 +65,6 @@ public class WorldClient extends World implements ClientWorld {
     private Set entitySpawnQueue = new HashSet();
     public final Minecraft mc;
     private final LongSet previousActiveChunkSet = new LongOpenHashSet();
-    private static final String __OBFID = "CL_00000882";
 
     public WorldClient(Minecraft mc, NetHandlerPlayClient p_i45063_1_, WorldSettings p_i45063_2_, int p_i45063_3_,
             EnumDifficulty p_i45063_4_, Profiler p_i45063_5_) {
@@ -263,9 +262,10 @@ public class WorldClient extends World implements ClientWorld {
      * Returns the Entity with the given ID, or null if it doesn't exist in this
      * World.
      */
-    public Entity getEntityByID(int p_73045_1_) {
-        return (p_73045_1_ == this.mc.thePlayer.getEntityId() ? this.mc.thePlayer
-                : (Entity) this.entityHashSet.get(p_73045_1_));
+    public Entity getEntityByID(int id) {
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+        return (thePlayer != null && id == thePlayer.getEntityId() ? thePlayer
+                : (Entity) this.entityHashSet.get(id));
     }
 
     public Entity removeEntityFromWorld(int p_73028_1_) {
@@ -384,36 +384,17 @@ public class WorldClient extends World implements ClientWorld {
      */
     public CrashReportCategory addWorldInfoToCrashReport(CrashReport p_72914_1_) {
         CrashReportCategory var2 = super.addWorldInfoToCrashReport(p_72914_1_);
-        var2.addCrashSectionCallable("Forced entities", new Callable() {
-            private static final String __OBFID = "CL_00000883";
-
-            public String call() {
-                return WorldClient.this.entityList.size() + " total; " + WorldClient.this.entityList.toString();
-            }
+        var2.addCrashSectionCallable("Forced entities",
+                () -> WorldClient.this.entityList.size() + " total; " + WorldClient.this.entityList.toString());
+        var2.addCrashSectionCallable("Retry entities", () -> WorldClient.this.entitySpawnQueue.size() + " total; "
+                + WorldClient.this.entitySpawnQueue.toString());
+        var2.addCrashSectionCallable("Server brand", () -> {
+            EntityClientPlayerMP thePlayer = WorldClient.this.mc.thePlayer;
+            return thePlayer != null ? thePlayer.func_142021_k() : "";
         });
-        var2.addCrashSectionCallable("Retry entities", new Callable() {
-            private static final String __OBFID = "CL_00000884";
-
-            public String call() {
-                return WorldClient.this.entitySpawnQueue.size() + " total; "
-                        + WorldClient.this.entitySpawnQueue.toString();
-            }
-        });
-        var2.addCrashSectionCallable("Server brand", new Callable() {
-            private static final String __OBFID = "CL_00000885";
-
-            public String call() {
-                return WorldClient.this.mc.thePlayer.func_142021_k();
-            }
-        });
-        var2.addCrashSectionCallable("Server type", new Callable() {
-            private static final String __OBFID = "CL_00000886";
-
-            public String call() {
-                return WorldClient.this.mc.getIntegratedServer() == null ? "Non-integrated multiplayer server"
-                        : "Integrated singleplayer server";
-            }
-        });
+        var2.addCrashSectionCallable("Server type",
+                () -> WorldClient.this.mc.getIntegratedServer() == null ? "Non-integrated multiplayer server"
+                        : "Integrated singleplayer server");
         return var2;
     }
 
@@ -429,9 +410,8 @@ public class WorldClient extends World implements ClientWorld {
         if (p_72980_10_ && var11 > 100.0D) {
             double var14 = Math.sqrt(var11) / 40.0D;
             this.mc.getSoundHandler().playDelayedSound(var13, (int) (var14 * 20.0D));
-        } else {
+        } else
             this.mc.getSoundHandler().playSound(var13);
-        }
     }
 
     public void makeFireworks(double p_92088_1_, double p_92088_3_, double p_92088_5_, double p_92088_7_,

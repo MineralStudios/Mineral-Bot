@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 
 public class GuiMemoryErrorScreen extends GuiScreen {
-        private static final String __OBFID = "CL_00000702";
 
         public GuiMemoryErrorScreen(Minecraft mc) {
                 super(mc);

@@ -17,7 +17,6 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer {
     private double otherPlayerMPZ;
     private double otherPlayerMPYaw;
     private double otherPlayerMPPitch;
-    private static final String __OBFID = "CL_00000939";
 
     private final Minecraft mc;
 

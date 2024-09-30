@@ -103,7 +103,6 @@ public abstract class ServerConfigurationManager {
      * hardcoded to max at 200 players
      */
     private int playerPingIndex;
-    private static final String __OBFID = "CL_00001423";
 
     public ServerConfigurationManager(MinecraftServer p_i1500_1_) {
         this.bannedPlayers = new UserListBans(field_152613_a);
@@ -676,13 +675,11 @@ public abstract class ServerConfigurationManager {
             int var17 = p_82449_3_ * p_82449_3_;
             p_82449_4_ = MathHelper.abs_int(p_82449_4_);
 
-            if (var14) {
-                p_82449_9_ = p_82449_9_.substring(1);
-            }
+            if (var14)
+                p_82449_9_ = p_82449_9_ != null ? p_82449_9_.substring(1) : "";
 
-            if (var15) {
-                p_82449_10_ = p_82449_10_.substring(1);
-            }
+            if (var15)
+                p_82449_10_ = p_82449_10_ != null ? p_82449_10_.substring(1) : "";
 
             for (int var18 = 0; var18 < this.playerEntityList.size(); ++var18) {
                 EntityPlayerMP var19 = (EntityPlayerMP) this.playerEntityList.get(var18);
@@ -967,19 +964,22 @@ public abstract class ServerConfigurationManager {
         if (var3 == null) {
             File var4 = new File(this.mcServer.worldServerForDimension(0).getSaveHandler().getWorldDirectory(),
                     "stats");
-            File var5 = new File(var4, var2.toString() + ".json");
 
-            if (!var5.exists()) {
-                File var6 = new File(var4, p_152602_1_.getCommandSenderName() + ".json");
+            if (var2 != null) {
+                File var5 = new File(var4, var2.toString() + ".json");
 
-                if (var6.exists() && var6.isFile()) {
-                    var6.renameTo(var5);
+                if (!var5.exists()) {
+                    File var6 = new File(var4, p_152602_1_.getCommandSenderName() + ".json");
+
+                    if (var6.exists() && var6.isFile()) {
+                        var6.renameTo(var5);
+                    }
                 }
-            }
 
-            var3 = new StatisticsFile(this.mcServer, var5);
-            var3.func_150882_a();
-            this.field_148547_k.put(var2, var3);
+                var3 = new StatisticsFile(this.mcServer, var5);
+                var3.func_150882_a();
+                this.field_148547_k.put(var2, var3);
+            }
         }
 
         return var3;

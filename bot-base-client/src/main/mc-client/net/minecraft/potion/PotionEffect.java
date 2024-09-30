@@ -21,7 +21,6 @@ public class PotionEffect implements gg.mineral.bot.api.entity.effect.PotionEffe
 
     /** True if potion effect duration is at maximum, false otherwise. */
     private boolean isPotionDurationMax;
-    private static final String __OBFID = "CL_00001529";
 
     public PotionEffect(int p_i1574_1_, int p_i1574_2_) {
         this(p_i1574_1_, p_i1574_2_, 0);

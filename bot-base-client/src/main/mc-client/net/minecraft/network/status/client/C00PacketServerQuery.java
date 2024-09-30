@@ -9,7 +9,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.status.INetHandlerStatusServer;
 
 public class C00PacketServerQuery extends Packet {
-    private static final String __OBFID = "CL_00001393";
 
     /**
      * Reads the raw packet data from the data stream.

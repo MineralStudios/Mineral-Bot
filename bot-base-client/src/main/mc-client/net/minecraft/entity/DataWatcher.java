@@ -375,7 +375,6 @@ public class DataWatcher {
         private final int dataValueId;
         private Object watchedObject;
         private boolean watched;
-        private static final String __OBFID = "CL_00001560";
 
         public WatchableObject(int p_i1603_1_, int p_i1603_2_, Object p_i1603_3_) {
             this.dataValueId = p_i1603_2_;

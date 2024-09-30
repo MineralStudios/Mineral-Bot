@@ -10,7 +10,6 @@ public class GuiScreenAddServer extends GuiScreen {
     private GuiTextField field_146308_f;
     private GuiTextField field_146309_g;
     private GuiButton field_152176_i;
-    private static final String __OBFID = "CL_00000695";
 
     public GuiScreenAddServer(Minecraft mc, GuiScreen p_i1033_1_, ServerData p_i1033_2_) {
         super(mc);

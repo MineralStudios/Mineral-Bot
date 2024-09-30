@@ -19,7 +19,6 @@ public class TileEntityBrewingStand extends TileEntity implements ISidedInventor
     private int field_145943_l;
     private Item field_145944_m;
     private String field_145942_n;
-    private static final String __OBFID = "CL_00000345";
 
     /**
      * Returns the name of the inventory

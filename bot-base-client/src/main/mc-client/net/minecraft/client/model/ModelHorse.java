@@ -61,7 +61,6 @@ public class ModelHorse extends ModelBase {
     private ModelRenderer horseRightFaceMetal;
     private ModelRenderer horseLeftRein;
     private ModelRenderer horseRightRein;
-    private static final String __OBFID = "CL_00000846";
 
     public ModelHorse(Minecraft mc) {
         this.textureWidth = 128;

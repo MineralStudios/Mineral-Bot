@@ -24,7 +24,6 @@ public class Shader {
     private final List listAuxHeights = Lists.newArrayList();
     @Setter
     private Matrix4f projectionMatrix;
-    private static final String __OBFID = "CL_00001042";
     private final Minecraft mc;
 
     public Shader(Minecraft mc, IResourceManager p_i45089_1_, String p_i45089_2_, Framebuffer p_i45089_3_,
@@ -87,13 +86,15 @@ public class Shader {
         GL11.glDepthMask(false);
         GL11.glColorMask(true, true, true, false);
         Tessellator var5 = this.mc.getTessellator();
-        var5.startDrawingQuads();
-        var5.setColorOpaque_I(-1);
-        var5.addVertex(0.0D, (double) var3, 500.0D);
-        var5.addVertex((double) var2, (double) var3, 500.0D);
-        var5.addVertex((double) var2, 0.0D, 500.0D);
-        var5.addVertex(0.0D, 0.0D, 500.0D);
-        var5.draw();
+        if (var5 != null) {
+            var5.startDrawingQuads();
+            var5.setColorOpaque_I(-1);
+            var5.addVertex(0.0D, (double) var3, 500.0D);
+            var5.addVertex((double) var2, (double) var3, 500.0D);
+            var5.addVertex((double) var2, 0.0D, 500.0D);
+            var5.addVertex(0.0D, 0.0D, 500.0D);
+            var5.draw();
+        }
         GL11.glDepthMask(true);
         GL11.glColorMask(true, true, true, true);
         this.shaderManager.func_147993_b();

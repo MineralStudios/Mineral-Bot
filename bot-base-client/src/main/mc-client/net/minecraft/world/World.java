@@ -157,7 +157,6 @@ public abstract class World implements IBlockAccess {
      * the original block, plus 32 (i.e. value of 31 would mean a -1 offset
      */
     int[] lightUpdateBlockList;
-    private static final String __OBFID = "CL_00000140";
 
     /**
      * Gets the biome for a given set of x/z coordinates
@@ -171,13 +170,8 @@ public abstract class World implements IBlockAccess {
             } catch (Throwable var7) {
                 CrashReport var5 = CrashReport.makeCrashReport(var7, "Getting biome");
                 CrashReportCategory var6 = var5.makeCategory("Coordinates of biome request");
-                var6.addCrashSectionCallable("Location", new Callable() {
-                    private static final String __OBFID = "CL_00000141";
-
-                    public String call() {
-                        return CrashReportCategory.getLocationInfo(p_72807_1_, 0, p_72807_2_);
-                    }
-                });
+                var6.addCrashSectionCallable("Location",
+                        () -> CrashReportCategory.getLocationInfo(p_72807_1_, 0, p_72807_2_));
                 throw new ReportedException(var5);
             }
         } else {
@@ -630,18 +624,14 @@ public abstract class World implements IBlockAccess {
                     var9 = -1;
                 }
 
-                var8.addCrashSectionCallable("Source block type", new Callable() {
-                    private static final String __OBFID = "CL_00000142";
-
-                    public String call() {
-                        try {
-                            return String.format("ID #%d (%s // %s)",
-                                    new Object[] { Integer.valueOf(Block.getIdFromBlock(p_147460_4_)),
-                                            p_147460_4_.getUnlocalizedName(),
-                                            p_147460_4_.getClass().getCanonicalName() });
-                        } catch (Throwable var2) {
-                            return "ID #" + Block.getIdFromBlock(p_147460_4_);
-                        }
+                var8.addCrashSectionCallable("Source block type", () -> {
+                    try {
+                        return String.format("ID #%d (%s // %s)",
+                                new Object[] { Integer.valueOf(Block.getIdFromBlock(p_147460_4_)),
+                                        p_147460_4_.getUnlocalizedName(),
+                                        p_147460_4_.getClass().getCanonicalName() });
+                    } catch (Throwable var2) {
+                        return "ID #" + Block.getIdFromBlock(p_147460_4_);
                     }
                 });
                 CrashReportCategory.func_147153_a(var8, p_147460_1_, p_147460_2_, p_147460_3_, var5, var9);
@@ -3514,20 +3504,9 @@ public abstract class World implements IBlockAccess {
     public CrashReportCategory addWorldInfoToCrashReport(CrashReport p_72914_1_) {
         CrashReportCategory var2 = p_72914_1_.makeCategoryDepth("Affected level", 1);
         var2.addCrashSection("Level name", this.worldInfo == null ? "????" : this.worldInfo.getWorldName());
-        var2.addCrashSectionCallable("All players", new Callable() {
-            private static final String __OBFID = "CL_00000143";
-
-            public String call() {
-                return World.this.playerEntities.size() + " total; " + World.this.playerEntities.toString();
-            }
-        });
-        var2.addCrashSectionCallable("Chunk stats", new Callable() {
-            private static final String __OBFID = "CL_00000144";
-
-            public String call() {
-                return World.this.chunkProvider.makeString();
-            }
-        });
+        var2.addCrashSectionCallable("All players",
+                () -> World.this.playerEntities.size() + " total; " + World.this.playerEntities.toString());
+        var2.addCrashSectionCallable("Chunk stats", () -> World.this.chunkProvider.makeString());
 
         try {
             this.worldInfo.addToCrashReport(var2);

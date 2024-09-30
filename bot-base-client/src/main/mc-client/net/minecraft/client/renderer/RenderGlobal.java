@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
@@ -275,7 +277,6 @@ public class RenderGlobal implements IWorldAccess {
     private static AxisAlignedBB AABB_INFINITE = AxisAlignedBB.getBoundingBox(Double.NEGATIVE_INFINITY,
             Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
             Double.POSITIVE_INFINITY);
-    private static final String __OBFID = "CL_00000954";
 
     public RenderGlobal(Minecraft par1Minecraft) {
         this.glListClouds = GLAllocation.generateDisplayLists(1);
@@ -317,12 +318,14 @@ public class RenderGlobal implements IWorldAccess {
 
         for (var8 = -var6 * var7; var8 <= var6 * var7; var8 += var6) {
             for (var9 = -var6 * var7; var9 <= var6 * var7; var9 += var6) {
-                var4.startDrawingQuads();
-                var4.addVertex((double) (var8 + 0), (double) var5, (double) (var9 + 0));
-                var4.addVertex((double) (var8 + var6), (double) var5, (double) (var9 + 0));
-                var4.addVertex((double) (var8 + var6), (double) var5, (double) (var9 + var6));
-                var4.addVertex((double) (var8 + 0), (double) var5, (double) (var9 + var6));
-                var4.draw();
+                if (var4 != null) {
+                    var4.startDrawingQuads();
+                    var4.addVertex((double) (var8 + 0), (double) var5, (double) (var9 + 0));
+                    var4.addVertex((double) (var8 + var6), (double) var5, (double) (var9 + 0));
+                    var4.addVertex((double) (var8 + var6), (double) var5, (double) (var9 + var6));
+                    var4.addVertex((double) (var8 + 0), (double) var5, (double) (var9 + var6));
+                    var4.draw();
+                }
             }
         }
 
@@ -330,18 +333,22 @@ public class RenderGlobal implements IWorldAccess {
         this.glSkyList2 = this.starGLCallList + 2;
         GL11.glNewList(this.glSkyList2, GL11.GL_COMPILE);
         var5 = -16.0F;
-        var4.startDrawingQuads();
+        if (var4 != null)
+            var4.startDrawingQuads();
 
         for (var8 = -var6 * var7; var8 <= var6 * var7; var8 += var6) {
             for (var9 = -var6 * var7; var9 <= var6 * var7; var9 += var6) {
-                var4.addVertex((double) (var8 + var6), (double) var5, (double) (var9 + 0));
-                var4.addVertex((double) (var8 + 0), (double) var5, (double) (var9 + 0));
-                var4.addVertex((double) (var8 + 0), (double) var5, (double) (var9 + var6));
-                var4.addVertex((double) (var8 + var6), (double) var5, (double) (var9 + var6));
+                if (var4 != null) {
+                    var4.addVertex((double) (var8 + var6), (double) var5, (double) (var9 + 0));
+                    var4.addVertex((double) (var8 + 0), (double) var5, (double) (var9 + 0));
+                    var4.addVertex((double) (var8 + 0), (double) var5, (double) (var9 + var6));
+                    var4.addVertex((double) (var8 + var6), (double) var5, (double) (var9 + var6));
+                }
             }
         }
 
-        var4.draw();
+        if (var4 != null)
+            var4.draw();
         GL11.glEndList();
     }
 
@@ -350,7 +357,8 @@ public class RenderGlobal implements IWorldAccess {
             return;
         Random var1 = new Random(10842L);
         Tessellator var2 = this.mc.getTessellator();
-        var2.startDrawingQuads();
+        if (var2 != null)
+            var2.startDrawingQuads();
 
         for (int var3 = 0; var3 < 1500; ++var3) {
             double var4 = (double) (var1.nextFloat() * 2.0F - 1.0F);
@@ -387,12 +395,14 @@ public class RenderGlobal implements IWorldAccess {
                     double var55 = var39 * var28 - var47 * var30;
                     double var57 = var55 * var22 - var49 * var24;
                     double var61 = var49 * var22 + var55 * var24;
-                    var2.addVertex(var14 + var57, var16 + var53, var18 + var61);
+                    if (var2 != null)
+                        var2.addVertex(var14 + var57, var16 + var53, var18 + var61);
                 }
             }
         }
 
-        var2.draw();
+        if (var2 != null)
+            var2.draw();
     }
 
     /**
@@ -689,7 +699,8 @@ public class RenderGlobal implements IWorldAccess {
 
                         if (var30 == TileEntitySign.class && !Config.zoomMode) {
                             EntityClientPlayerMP block = this.mc.thePlayer;
-                            double distSq = var27.getDistanceFrom(block.posX, block.posY, block.posZ);
+                            double distSq = block != null ? var27.getDistanceFrom(block.posX, block.posY, block.posZ)
+                                    : Double.MAX_VALUE;
 
                             if (distSq > 256.0D) {
                                 FontRenderer fr = this.mc.tileEntityRendererDispatcher.func_147548_a();
@@ -1361,8 +1372,12 @@ public class RenderGlobal implements IWorldAccess {
      */
     public void renderSky(float par1) {
         if (Reflector.ForgeWorldProvider_getSkyRenderer.exists()) {
-            WorldProvider var2 = this.mc.theWorld.provider;
-            Object var3 = Reflector.call(var2, Reflector.ForgeWorldProvider_getSkyRenderer, new Object[0]);
+            @Nullable
+            WorldProvider var2 = this.mc.theWorld != null ? this.mc.theWorld.provider : null;
+
+            Object var3 = var2 != null
+                    ? Reflector.call(var2, Reflector.ForgeWorldProvider_getSkyRenderer, new Object[0])
+                    : null;
 
             if (var3 != null) {
                 Reflector.callVoid(var3, Reflector.IRenderHandler_render,
@@ -1371,10 +1386,9 @@ public class RenderGlobal implements IWorldAccess {
             }
         }
 
-        if (this.mc.theWorld.provider.dimensionId == 1) {
-            if (!Config.isSkyEnabled()) {
+        if (this.mc.theWorld != null && this.mc.theWorld.provider.dimensionId == 1) {
+            if (!Config.isSkyEnabled())
                 return;
-            }
 
             GL11.glDisable(GL11.GL_FOG);
             GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -1408,20 +1422,22 @@ public class RenderGlobal implements IWorldAccess {
                     GL11.glRotatef(-90.0F, 0.0F, 0.0F, 1.0F);
                 }
 
-                var201.startDrawingQuads();
-                var201.setColorOpaque_I(2631720);
-                var201.addVertexWithUV(-100.0D, -100.0D, -100.0D, 0.0D, 0.0D);
-                var201.addVertexWithUV(-100.0D, -100.0D, 100.0D, 0.0D, 16.0D);
-                var201.addVertexWithUV(100.0D, -100.0D, 100.0D, 16.0D, 16.0D);
-                var201.addVertexWithUV(100.0D, -100.0D, -100.0D, 16.0D, 0.0D);
-                var201.draw();
+                if (var201 != null) {
+                    var201.startDrawingQuads();
+                    var201.setColorOpaque_I(2631720);
+                    var201.addVertexWithUV(-100.0D, -100.0D, -100.0D, 0.0D, 0.0D);
+                    var201.addVertexWithUV(-100.0D, -100.0D, 100.0D, 0.0D, 16.0D);
+                    var201.addVertexWithUV(100.0D, -100.0D, 100.0D, 16.0D, 16.0D);
+                    var201.addVertexWithUV(100.0D, -100.0D, -100.0D, 16.0D, 0.0D);
+                    var201.draw();
+                }
                 GL11.glPopMatrix();
             }
 
             GL11.glDepthMask(true);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glEnable(GL11.GL_ALPHA_TEST);
-        } else if (this.mc.theWorld.provider.isSurfaceWorld()) {
+        } else if (this.mc.theWorld != null && this.mc.theWorld.provider.isSurfaceWorld()) {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             Vec3 var21 = this.theWorld.getSkyColor(this.mc.renderViewEntity, par1);
             var21 = CustomColorizer.getSkyColor(var21, this.mc.theWorld, this.mc.renderViewEntity.posX,
@@ -1487,21 +1503,26 @@ public class RenderGlobal implements IWorldAccess {
                     var10 = var20;
                 }
 
-                var241.startDrawing(6);
-                var241.setColorRGBA_F(var8, var9, var10, var251[3]);
-                var241.addVertex(0.0D, 100.0D, 0.0D);
+                if (var241 != null) {
+                    var241.startDrawing(6);
+                    var241.setColorRGBA_F(var8, var9, var10, var251[3]);
+                    var241.addVertex(0.0D, 100.0D, 0.0D);
+                }
                 byte var25 = 16;
-                var241.setColorRGBA_F(var251[0], var251[1], var251[2], 0.0F);
+                if (var241 != null)
+                    var241.setColorRGBA_F(var251[0], var251[1], var251[2], 0.0F);
 
                 for (var30 = 0; var30 <= var25; ++var30) {
                     var20 = (float) var30 * (float) Math.PI * 2.0F / (float) var25;
                     var16 = MathHelper.sin(var20);
                     var17 = MathHelper.cos(var20);
-                    var241.addVertex((double) (var16 * 120.0F), (double) (var17 * 120.0F),
-                            (double) (-var17 * 40.0F * var251[3]));
+                    if (var241 != null)
+                        var241.addVertex((double) (var16 * 120.0F), (double) (var17 * 120.0F),
+                                (double) (-var17 * 40.0F * var251[3]));
                 }
 
-                var241.draw();
+                if (var241 != null)
+                    var241.draw();
                 GL11.glPopMatrix();
                 GL11.glShadeModel(GL11.GL_FLAT);
             }
@@ -1522,12 +1543,14 @@ public class RenderGlobal implements IWorldAccess {
             if (Config.isSunMoonEnabled()) {
                 var12 = 30.0F;
                 this.renderEngine.bindTexture(locationSunPng);
-                var241.startDrawingQuads();
-                var241.addVertexWithUV((double) (-var12), 100.0D, (double) (-var12), 0.0D, 0.0D);
-                var241.addVertexWithUV((double) var12, 100.0D, (double) (-var12), 1.0D, 0.0D);
-                var241.addVertexWithUV((double) var12, 100.0D, (double) var12, 1.0D, 1.0D);
-                var241.addVertexWithUV((double) (-var12), 100.0D, (double) var12, 0.0D, 1.0D);
-                var241.draw();
+                if (var241 != null) {
+                    var241.startDrawingQuads();
+                    var241.addVertexWithUV((double) (-var12), 100.0D, (double) (-var12), 0.0D, 0.0D);
+                    var241.addVertexWithUV((double) var12, 100.0D, (double) (-var12), 1.0D, 0.0D);
+                    var241.addVertexWithUV((double) var12, 100.0D, (double) var12, 1.0D, 1.0D);
+                    var241.addVertexWithUV((double) (-var12), 100.0D, (double) var12, 0.0D, 1.0D);
+                    var241.draw();
+                }
                 var12 = 20.0F;
                 this.renderEngine.bindTexture(locationMoonPhasesPng);
                 int var26 = this.theWorld.getMoonPhase();
@@ -1537,12 +1560,15 @@ public class RenderGlobal implements IWorldAccess {
                 var17 = (float) (var30 + 0) / 2.0F;
                 float var18 = (float) (var27 + 1) / 4.0F;
                 float var19 = (float) (var30 + 1) / 2.0F;
-                var241.startDrawingQuads();
-                var241.addVertexWithUV((double) (-var12), -100.0D, (double) var12, (double) var18, (double) var19);
-                var241.addVertexWithUV((double) var12, -100.0D, (double) var12, (double) var16, (double) var19);
-                var241.addVertexWithUV((double) var12, -100.0D, (double) (-var12), (double) var16, (double) var17);
-                var241.addVertexWithUV((double) (-var12), -100.0D, (double) (-var12), (double) var18, (double) var17);
-                var241.draw();
+                if (var241 != null) {
+                    var241.startDrawingQuads();
+                    var241.addVertexWithUV((double) (-var12), -100.0D, (double) var12, (double) var18, (double) var19);
+                    var241.addVertexWithUV((double) var12, -100.0D, (double) var12, (double) var16, (double) var19);
+                    var241.addVertexWithUV((double) var12, -100.0D, (double) (-var12), (double) var16, (double) var17);
+                    var241.addVertexWithUV((double) (-var12), -100.0D, (double) (-var12), (double) var18,
+                            (double) var17);
+                    var241.draw();
+                }
             }
 
             GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -1560,7 +1586,9 @@ public class RenderGlobal implements IWorldAccess {
             GL11.glPopMatrix();
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glColor3f(0.0F, 0.0F, 0.0F);
-            double var28 = this.mc.thePlayer.getPosition(par1).yCoord - this.theWorld.getHorizon();
+            double var28 = this.mc.thePlayer != null
+                    ? this.mc.thePlayer.getPosition(par1).yCoord - this.theWorld.getHorizon()
+                    : 0;
 
             if (var28 < 0.0D) {
                 GL11.glPushMatrix();
@@ -1570,29 +1598,31 @@ public class RenderGlobal implements IWorldAccess {
                 var10 = 1.0F;
                 var11 = -((float) (var28 + 65.0D));
                 var12 = -var10;
-                var241.startDrawingQuads();
-                var241.setColorRGBA_I(0, 255);
-                var241.addVertex((double) (-var10), (double) var11, (double) var10);
-                var241.addVertex((double) var10, (double) var11, (double) var10);
-                var241.addVertex((double) var10, (double) var12, (double) var10);
-                var241.addVertex((double) (-var10), (double) var12, (double) var10);
-                var241.addVertex((double) (-var10), (double) var12, (double) (-var10));
-                var241.addVertex((double) var10, (double) var12, (double) (-var10));
-                var241.addVertex((double) var10, (double) var11, (double) (-var10));
-                var241.addVertex((double) (-var10), (double) var11, (double) (-var10));
-                var241.addVertex((double) var10, (double) var12, (double) (-var10));
-                var241.addVertex((double) var10, (double) var12, (double) var10);
-                var241.addVertex((double) var10, (double) var11, (double) var10);
-                var241.addVertex((double) var10, (double) var11, (double) (-var10));
-                var241.addVertex((double) (-var10), (double) var11, (double) (-var10));
-                var241.addVertex((double) (-var10), (double) var11, (double) var10);
-                var241.addVertex((double) (-var10), (double) var12, (double) var10);
-                var241.addVertex((double) (-var10), (double) var12, (double) (-var10));
-                var241.addVertex((double) (-var10), (double) var12, (double) (-var10));
-                var241.addVertex((double) (-var10), (double) var12, (double) var10);
-                var241.addVertex((double) var10, (double) var12, (double) var10);
-                var241.addVertex((double) var10, (double) var12, (double) (-var10));
-                var241.draw();
+                if (var241 != null) {
+                    var241.startDrawingQuads();
+                    var241.setColorRGBA_I(0, 255);
+                    var241.addVertex((double) (-var10), (double) var11, (double) var10);
+                    var241.addVertex((double) var10, (double) var11, (double) var10);
+                    var241.addVertex((double) var10, (double) var12, (double) var10);
+                    var241.addVertex((double) (-var10), (double) var12, (double) var10);
+                    var241.addVertex((double) (-var10), (double) var12, (double) (-var10));
+                    var241.addVertex((double) var10, (double) var12, (double) (-var10));
+                    var241.addVertex((double) var10, (double) var11, (double) (-var10));
+                    var241.addVertex((double) (-var10), (double) var11, (double) (-var10));
+                    var241.addVertex((double) var10, (double) var12, (double) (-var10));
+                    var241.addVertex((double) var10, (double) var12, (double) var10);
+                    var241.addVertex((double) var10, (double) var11, (double) var10);
+                    var241.addVertex((double) var10, (double) var11, (double) (-var10));
+                    var241.addVertex((double) (-var10), (double) var11, (double) (-var10));
+                    var241.addVertex((double) (-var10), (double) var11, (double) var10);
+                    var241.addVertex((double) (-var10), (double) var12, (double) var10);
+                    var241.addVertex((double) (-var10), (double) var12, (double) (-var10));
+                    var241.addVertex((double) (-var10), (double) var12, (double) (-var10));
+                    var241.addVertex((double) (-var10), (double) var12, (double) var10);
+                    var241.addVertex((double) var10, (double) var12, (double) var10);
+                    var241.addVertex((double) var10, (double) var12, (double) (-var10));
+                    var241.draw();
+                }
             }
 
             if (this.theWorld.provider.isSkyColored()) {
@@ -1622,9 +1652,11 @@ public class RenderGlobal implements IWorldAccess {
     public void renderClouds(float par1) {
         if (!Config.isCloudsOff()) {
             if (Reflector.ForgeWorldProvider_getCloudRenderer.exists()) {
-                WorldProvider partialTicks = this.mc.theWorld.provider;
-                Object var2 = Reflector.call(partialTicks, Reflector.ForgeWorldProvider_getCloudRenderer,
-                        new Object[0]);
+                WorldProvider partialTicks = this.mc.theWorld != null ? this.mc.theWorld.provider : null;
+                Object var2 = partialTicks != null
+                        ? Reflector.call(partialTicks, Reflector.ForgeWorldProvider_getCloudRenderer,
+                                new Object[0])
+                        : null;
 
                 if (var2 != null) {
                     Reflector.callVoid(var2, Reflector.IRenderHandler_render,
@@ -1633,7 +1665,7 @@ public class RenderGlobal implements IWorldAccess {
                 }
             }
 
-            if (this.mc.theWorld.provider.isSurfaceWorld()) {
+            if (this.mc.theWorld != null && this.mc.theWorld.provider.isSurfaceWorld()) {
                 if (Config.isCloudsFancy()) {
                     this.renderCloudsFancy(par1);
                 } else {
@@ -1683,27 +1715,30 @@ public class RenderGlobal implements IWorldAccess {
                         var19 += this.mc.gameSettings.ofCloudsHeight * 128.0F;
                         float var20 = (float) (dc * (double) var10);
                         float var211 = (float) (cdx * (double) var10);
-                        var5.startDrawingQuads();
-                        var5.setColorRGBA_F(exactPlayerX, var8, exactPlayerY, 0.8F);
+                        if (var5 != null) {
+                            var5.startDrawingQuads();
+                            var5.setColorRGBA_F(exactPlayerX, var8, exactPlayerY, 0.8F);
 
-                        for (int var22 = -var3 * var4; var22 < var3 * var4; var22 += var3) {
-                            for (int var23 = -var3 * var4; var23 < var3 * var4; var23 += var3) {
-                                var5.addVertexWithUV((double) (var22 + 0), (double) var19, (double) (var23 + var3),
-                                        (double) ((float) (var22 + 0) * var10 + var20),
-                                        (double) ((float) (var23 + var3) * var10 + var211));
-                                var5.addVertexWithUV((double) (var22 + var3), (double) var19, (double) (var23 + var3),
-                                        (double) ((float) (var22 + var3) * var10 + var20),
-                                        (double) ((float) (var23 + var3) * var10 + var211));
-                                var5.addVertexWithUV((double) (var22 + var3), (double) var19, (double) (var23 + 0),
-                                        (double) ((float) (var22 + var3) * var10 + var20),
-                                        (double) ((float) (var23 + 0) * var10 + var211));
-                                var5.addVertexWithUV((double) (var22 + 0), (double) var19, (double) (var23 + 0),
-                                        (double) ((float) (var22 + 0) * var10 + var20),
-                                        (double) ((float) (var23 + 0) * var10 + var211));
+                            for (int var22 = -var3 * var4; var22 < var3 * var4; var22 += var3) {
+                                for (int var23 = -var3 * var4; var23 < var3 * var4; var23 += var3) {
+                                    var5.addVertexWithUV((double) (var22 + 0), (double) var19, (double) (var23 + var3),
+                                            (double) ((float) (var22 + 0) * var10 + var20),
+                                            (double) ((float) (var23 + var3) * var10 + var211));
+                                    var5.addVertexWithUV((double) (var22 + var3), (double) var19,
+                                            (double) (var23 + var3),
+                                            (double) ((float) (var22 + var3) * var10 + var20),
+                                            (double) ((float) (var23 + var3) * var10 + var211));
+                                    var5.addVertexWithUV((double) (var22 + var3), (double) var19, (double) (var23 + 0),
+                                            (double) ((float) (var22 + var3) * var10 + var20),
+                                            (double) ((float) (var23 + 0) * var10 + var211));
+                                    var5.addVertexWithUV((double) (var22 + 0), (double) var19, (double) (var23 + 0),
+                                            (double) ((float) (var22 + 0) * var10 + var20),
+                                            (double) ((float) (var23 + 0) * var10 + var211));
+                                }
                             }
-                        }
 
-                        var5.draw();
+                            var5.draw();
+                        }
                         GL11.glEndList();
                         this.isFancyGlListClouds = false;
                         this.cloudTickCounterGlList = this.cloudTickCounter;
@@ -1817,144 +1852,152 @@ public class RenderGlobal implements IWorldAccess {
 
                 for (int var28 = -cdy + 1; var28 <= cdy; ++var28) {
                     for (int var29 = -cdy + 1; var29 <= cdy; ++var29) {
-                        var3.startDrawingQuads();
-                        float var30 = (float) (var28 * cdx);
-                        float var31 = (float) (var29 * cdx);
-                        float var32 = var30 - dc;
-                        float var33 = var31 - var23;
+                        if (var3 != null) {
+                            var3.startDrawingQuads();
+                            float var30 = (float) (var28 * cdx);
+                            float var31 = (float) (var29 * cdx);
+                            float var32 = var30 - dc;
+                            float var33 = var31 - var23;
 
-                        if (var12 > -var5 - 1.0F) {
-                            var3.setColorRGBA_F(exactPlayerX * 0.7F, var17 * 0.7F, exactPlayerY * 0.7F, 0.8F);
-                            var3.setNormal(0.0F, -1.0F, 0.0F);
-                            var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + 0.0F),
-                                    (double) (var33 + (float) cdx), (double) ((var30 + 0.0F) * var21 + var19),
-                                    (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
-                            var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + 0.0F),
-                                    (double) (var33 + (float) cdx), (double) ((var30 + (float) cdx) * var21 + var19),
-                                    (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
-                            var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + 0.0F),
-                                    (double) (var33 + 0.0F), (double) ((var30 + (float) cdx) * var21 + var19),
-                                    (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
-                            var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + 0.0F),
-                                    (double) (var33 + 0.0F), (double) ((var30 + 0.0F) * var21 + var19),
-                                    (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
-                        }
-
-                        if (var12 <= var5 + 1.0F) {
-                            var3.setColorRGBA_F(exactPlayerX, var17, exactPlayerY, 0.8F);
-                            var3.setNormal(0.0F, 1.0F, 0.0F);
-                            var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + var5 - cdz),
-                                    (double) (var33 + (float) cdx), (double) ((var30 + 0.0F) * var21 + var19),
-                                    (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
-                            var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + var5 - cdz),
-                                    (double) (var33 + (float) cdx), (double) ((var30 + (float) cdx) * var21 + var19),
-                                    (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
-                            var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + var5 - cdz),
-                                    (double) (var33 + 0.0F), (double) ((var30 + (float) cdx) * var21 + var19),
-                                    (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
-                            var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + var5 - cdz),
-                                    (double) (var33 + 0.0F), (double) ((var30 + 0.0F) * var21 + var19),
-                                    (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
-                        }
-
-                        var3.setColorRGBA_F(exactPlayerX * 0.9F, var17 * 0.9F, exactPlayerY * 0.9F, 0.8F);
-                        int var34;
-
-                        if (var28 > -1) {
-                            var3.setNormal(-1.0F, 0.0F, 0.0F);
-
-                            for (var34 = 0; var34 < cdx; ++var34) {
-                                var3.addVertexWithUV((double) (var32 + (float) var34 + 0.0F), (double) (var12 + 0.0F),
-                                        (double) (var33 + (float) cdx),
-                                        (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
-                                        (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
-                                var3.addVertexWithUV((double) (var32 + (float) var34 + 0.0F), (double) (var12 + var5),
-                                        (double) (var33 + (float) cdx),
-                                        (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
-                                        (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
-                                var3.addVertexWithUV((double) (var32 + (float) var34 + 0.0F), (double) (var12 + var5),
-                                        (double) (var33 + 0.0F),
-                                        (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
-                                        (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
-                                var3.addVertexWithUV((double) (var32 + (float) var34 + 0.0F), (double) (var12 + 0.0F),
-                                        (double) (var33 + 0.0F),
-                                        (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
-                                        (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
-                            }
-                        }
-
-                        if (var28 <= 1) {
-                            var3.setNormal(1.0F, 0.0F, 0.0F);
-
-                            for (var34 = 0; var34 < cdx; ++var34) {
-                                var3.addVertexWithUV((double) (var32 + (float) var34 + 1.0F - cdz),
-                                        (double) (var12 + 0.0F), (double) (var33 + (float) cdx),
-                                        (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
-                                        (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
-                                var3.addVertexWithUV((double) (var32 + (float) var34 + 1.0F - cdz),
-                                        (double) (var12 + var5), (double) (var33 + (float) cdx),
-                                        (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
-                                        (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
-                                var3.addVertexWithUV((double) (var32 + (float) var34 + 1.0F - cdz),
-                                        (double) (var12 + var5), (double) (var33 + 0.0F),
-                                        (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
-                                        (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
-                                var3.addVertexWithUV((double) (var32 + (float) var34 + 1.0F - cdz),
-                                        (double) (var12 + 0.0F), (double) (var33 + 0.0F),
-                                        (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
-                                        (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
-                            }
-                        }
-
-                        var3.setColorRGBA_F(exactPlayerX * 0.8F, var17 * 0.8F, exactPlayerY * 0.8F, 0.8F);
-
-                        if (var29 > -1) {
-                            var3.setNormal(0.0F, 0.0F, -1.0F);
-
-                            for (var34 = 0; var34 < cdx; ++var34) {
-                                var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + var5),
-                                        (double) (var33 + (float) var34 + 0.0F),
-                                        (double) ((var30 + 0.0F) * var21 + var19),
-                                        (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
-                                var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + var5),
-                                        (double) (var33 + (float) var34 + 0.0F),
-                                        (double) ((var30 + (float) cdx) * var21 + var19),
-                                        (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
-                                var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + 0.0F),
-                                        (double) (var33 + (float) var34 + 0.0F),
-                                        (double) ((var30 + (float) cdx) * var21 + var19),
-                                        (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                            if (var12 > -var5 - 1.0F) {
+                                var3.setColorRGBA_F(exactPlayerX * 0.7F, var17 * 0.7F, exactPlayerY * 0.7F, 0.8F);
+                                var3.setNormal(0.0F, -1.0F, 0.0F);
                                 var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + 0.0F),
-                                        (double) (var33 + (float) var34 + 0.0F),
-                                        (double) ((var30 + 0.0F) * var21 + var19),
-                                        (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
-                            }
-                        }
-
-                        if (var29 <= 1) {
-                            var3.setNormal(0.0F, 0.0F, 1.0F);
-
-                            for (var34 = 0; var34 < cdx; ++var34) {
-                                var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + var5),
-                                        (double) (var33 + (float) var34 + 1.0F - cdz),
-                                        (double) ((var30 + 0.0F) * var21 + var19),
-                                        (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
-                                var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + var5),
-                                        (double) (var33 + (float) var34 + 1.0F - cdz),
-                                        (double) ((var30 + (float) cdx) * var21 + var19),
-                                        (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                        (double) (var33 + (float) cdx), (double) ((var30 + 0.0F) * var21 + var19),
+                                        (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
                                 var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + 0.0F),
-                                        (double) (var33 + (float) var34 + 1.0F - cdz),
+                                        (double) (var33 + (float) cdx),
                                         (double) ((var30 + (float) cdx) * var21 + var19),
-                                        (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                        (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
+                                var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + 0.0F),
+                                        (double) (var33 + 0.0F), (double) ((var30 + (float) cdx) * var21 + var19),
+                                        (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
                                 var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + 0.0F),
-                                        (double) (var33 + (float) var34 + 1.0F - cdz),
-                                        (double) ((var30 + 0.0F) * var21 + var19),
-                                        (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                        (double) (var33 + 0.0F), (double) ((var30 + 0.0F) * var21 + var19),
+                                        (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
                             }
-                        }
 
-                        var3.draw();
+                            if (var12 <= var5 + 1.0F) {
+                                var3.setColorRGBA_F(exactPlayerX, var17, exactPlayerY, 0.8F);
+                                var3.setNormal(0.0F, 1.0F, 0.0F);
+                                var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + var5 - cdz),
+                                        (double) (var33 + (float) cdx), (double) ((var30 + 0.0F) * var21 + var19),
+                                        (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
+                                var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + var5 - cdz),
+                                        (double) (var33 + (float) cdx),
+                                        (double) ((var30 + (float) cdx) * var21 + var19),
+                                        (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
+                                var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + var5 - cdz),
+                                        (double) (var33 + 0.0F), (double) ((var30 + (float) cdx) * var21 + var19),
+                                        (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
+                                var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + var5 - cdz),
+                                        (double) (var33 + 0.0F), (double) ((var30 + 0.0F) * var21 + var19),
+                                        (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
+                            }
+
+                            var3.setColorRGBA_F(exactPlayerX * 0.9F, var17 * 0.9F, exactPlayerY * 0.9F, 0.8F);
+                            int var34;
+
+                            if (var28 > -1) {
+                                var3.setNormal(-1.0F, 0.0F, 0.0F);
+
+                                for (var34 = 0; var34 < cdx; ++var34) {
+                                    var3.addVertexWithUV((double) (var32 + (float) var34 + 0.0F),
+                                            (double) (var12 + 0.0F),
+                                            (double) (var33 + (float) cdx),
+                                            (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
+                                            (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + (float) var34 + 0.0F),
+                                            (double) (var12 + var5),
+                                            (double) (var33 + (float) cdx),
+                                            (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
+                                            (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + (float) var34 + 0.0F),
+                                            (double) (var12 + var5),
+                                            (double) (var33 + 0.0F),
+                                            (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
+                                            (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + (float) var34 + 0.0F),
+                                            (double) (var12 + 0.0F),
+                                            (double) (var33 + 0.0F),
+                                            (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
+                                            (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
+                                }
+                            }
+
+                            if (var28 <= 1) {
+                                var3.setNormal(1.0F, 0.0F, 0.0F);
+
+                                for (var34 = 0; var34 < cdx; ++var34) {
+                                    var3.addVertexWithUV((double) (var32 + (float) var34 + 1.0F - cdz),
+                                            (double) (var12 + 0.0F), (double) (var33 + (float) cdx),
+                                            (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
+                                            (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + (float) var34 + 1.0F - cdz),
+                                            (double) (var12 + var5), (double) (var33 + (float) cdx),
+                                            (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
+                                            (double) ((var31 + (float) cdx) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + (float) var34 + 1.0F - cdz),
+                                            (double) (var12 + var5), (double) (var33 + 0.0F),
+                                            (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
+                                            (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + (float) var34 + 1.0F - cdz),
+                                            (double) (var12 + 0.0F), (double) (var33 + 0.0F),
+                                            (double) ((var30 + (float) var34 + 0.5F) * var21 + var19),
+                                            (double) ((var31 + 0.0F) * var21 + exactPlayerZ));
+                                }
+                            }
+
+                            var3.setColorRGBA_F(exactPlayerX * 0.8F, var17 * 0.8F, exactPlayerY * 0.8F, 0.8F);
+
+                            if (var29 > -1) {
+                                var3.setNormal(0.0F, 0.0F, -1.0F);
+
+                                for (var34 = 0; var34 < cdx; ++var34) {
+                                    var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + var5),
+                                            (double) (var33 + (float) var34 + 0.0F),
+                                            (double) ((var30 + 0.0F) * var21 + var19),
+                                            (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + var5),
+                                            (double) (var33 + (float) var34 + 0.0F),
+                                            (double) ((var30 + (float) cdx) * var21 + var19),
+                                            (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + 0.0F),
+                                            (double) (var33 + (float) var34 + 0.0F),
+                                            (double) ((var30 + (float) cdx) * var21 + var19),
+                                            (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + 0.0F),
+                                            (double) (var33 + (float) var34 + 0.0F),
+                                            (double) ((var30 + 0.0F) * var21 + var19),
+                                            (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                }
+                            }
+
+                            if (var29 <= 1) {
+                                var3.setNormal(0.0F, 0.0F, 1.0F);
+
+                                for (var34 = 0; var34 < cdx; ++var34) {
+                                    var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + var5),
+                                            (double) (var33 + (float) var34 + 1.0F - cdz),
+                                            (double) ((var30 + 0.0F) * var21 + var19),
+                                            (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + var5),
+                                            (double) (var33 + (float) var34 + 1.0F - cdz),
+                                            (double) ((var30 + (float) cdx) * var21 + var19),
+                                            (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + (float) cdx), (double) (var12 + 0.0F),
+                                            (double) (var33 + (float) var34 + 1.0F - cdz),
+                                            (double) ((var30 + (float) cdx) * var21 + var19),
+                                            (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                    var3.addVertexWithUV((double) (var32 + 0.0F), (double) (var12 + 0.0F),
+                                            (double) (var33 + (float) var34 + 1.0F - cdz),
+                                            (double) ((var30 + 0.0F) * var21 + var19),
+                                            (double) ((var31 + (float) var34 + 0.5F) * var21 + exactPlayerZ));
+                                }
+                            }
+
+                            var3.draw();
+                        }
                     }
                 }
             }
@@ -2186,11 +2229,12 @@ public class RenderGlobal implements IWorldAccess {
      */
     public static void drawOutlinedBoundingBox(Minecraft mc, AxisAlignedBB p_147590_0_, int p_147590_1_) {
         Tessellator var2 = mc.getTessellator();
+        if (var2 == null)
+            return;
         var2.startDrawing(3);
 
-        if (p_147590_1_ != -1) {
+        if (p_147590_1_ != -1)
             var2.setColorOpaque_I(p_147590_1_);
-        }
 
         var2.addVertex(p_147590_0_.minX, p_147590_0_.minY, p_147590_0_.minZ);
         var2.addVertex(p_147590_0_.maxX, p_147590_0_.minY, p_147590_0_.minZ);
@@ -2200,9 +2244,8 @@ public class RenderGlobal implements IWorldAccess {
         var2.draw();
         var2.startDrawing(3);
 
-        if (p_147590_1_ != -1) {
+        if (p_147590_1_ != -1)
             var2.setColorOpaque_I(p_147590_1_);
-        }
 
         var2.addVertex(p_147590_0_.minX, p_147590_0_.maxY, p_147590_0_.minZ);
         var2.addVertex(p_147590_0_.maxX, p_147590_0_.maxY, p_147590_0_.minZ);
@@ -2212,9 +2255,8 @@ public class RenderGlobal implements IWorldAccess {
         var2.draw();
         var2.startDrawing(1);
 
-        if (p_147590_1_ != -1) {
+        if (p_147590_1_ != -1)
             var2.setColorOpaque_I(p_147590_1_);
-        }
 
         var2.addVertex(p_147590_0_.minX, p_147590_0_.minY, p_147590_0_.minZ);
         var2.addVertex(p_147590_0_.minX, p_147590_0_.maxY, p_147590_0_.minZ);
@@ -2384,17 +2426,7 @@ public class RenderGlobal implements IWorldAccess {
             CrashReport var15 = CrashReport.makeCrashReport(var17, "Exception while adding particle");
             CrashReportCategory var16 = var15.makeCategory("Particle being added");
             var16.addCrashSection("Name", par1Str);
-            var16.addCrashSectionCallable("Position", new Callable() {
-                private static final String __OBFID = "CL_00000955";
-
-                public String call1() {
-                    return CrashReportCategory.func_85074_a(par2, par4, par6);
-                }
-
-                public Object call() throws Exception {
-                    return this.call1();
-                }
-            });
+            var16.addCrashSectionCallable("Position", () -> CrashReportCategory.func_85074_a(par2, par4, par6));
             throw new ReportedException(var15);
         }
     }
@@ -2715,8 +2747,8 @@ public class RenderGlobal implements IWorldAccess {
                 break;
 
             case 1005:
-                if (Item.getItemById(par6) instanceof ItemRecord) {
-                    this.theWorld.playRecord("records." + ((ItemRecord) Item.getItemById(par6)).field_150929_a, par3,
+                if (Item.getItemById(par6) instanceof ItemRecord record) {
+                    this.theWorld.playRecord("records." + record.field_150929_a, par3,
                             par4, par5);
                 } else {
                     this.theWorld.playRecord((String) null, par3, par4, par5);

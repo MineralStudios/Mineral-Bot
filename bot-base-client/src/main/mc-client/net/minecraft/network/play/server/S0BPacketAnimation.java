@@ -16,7 +16,6 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 public class S0BPacketAnimation extends Packet {
     private int field_148981_a;
     private int field_148980_b;
-    private static final String __OBFID = "CL_00001282";
 
     public S0BPacketAnimation(Entity p_i45172_1_, int p_i45172_2_) {
         this.field_148981_a = p_i45172_1_.getEntityId();

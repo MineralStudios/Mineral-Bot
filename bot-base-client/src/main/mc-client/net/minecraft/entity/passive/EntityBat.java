@@ -13,7 +13,6 @@ import net.minecraft.world.World;
 public class EntityBat extends EntityAmbientCreature {
     /** Coordinates of where the bat spawned. */
     private ChunkCoordinates spawnPosition;
-    private static final String __OBFID = "CL_00001637";
 
     public EntityBat(World p_i1680_1_) {
         super(p_i1680_1_);

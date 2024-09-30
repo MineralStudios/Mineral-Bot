@@ -1,10 +1,15 @@
 package net.minecraft.client.renderer;
 
+import javax.annotation.Nullable;
+
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.base.lwjgl.opengl.GL12;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
@@ -23,11 +28,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.MapData;
-
-import javax.annotation.Nullable;
-
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
 
 public class ItemRenderer {
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation(
@@ -48,7 +48,6 @@ public class ItemRenderer {
 
     /** The index of the currently held item (0-8, or -1 if not yet updated) */
     private int equippedItemSlot = -1;
-    private static final String __OBFID = "CL_00000953";
 
     public ItemRenderer(Minecraft mc) {
         this.mc = mc;
@@ -71,8 +70,9 @@ public class ItemRenderer {
         }
 
         if (p_78443_2_.getItemSpriteNumber() == 0 && var5 instanceof ItemBlock
-                && RenderBlocks.renderItemIn3d(var6.getRenderType())) {
-            var4.bindTexture(var4.getResourceLocation(0));
+                && var6 != null && RenderBlocks.renderItemIn3d(var6.getRenderType())) {
+            if (var4 != null)
+                var4.bindTexture(var4.getResourceLocation(0));
 
             if (p_78443_2_ != null && var6 != null && var6.getRenderBlockPass() != 0) {
                 GL11.glDepthMask(false);
@@ -89,7 +89,8 @@ public class ItemRenderer {
                 return;
             }
 
-            var4.bindTexture(var4.getResourceLocation(p_78443_2_.getItemSpriteNumber()));
+            if (var4 != null)
+                var4.bindTexture(var4.getResourceLocation(p_78443_2_.getItemSpriteNumber()));
             TextureUtil.func_152777_a(false, false, 1.0F);
             Tessellator var8 = this.mc.getTessellator();
             float var9 = var7.getMinU();
@@ -110,7 +111,8 @@ public class ItemRenderer {
             if (p_78443_2_.hasEffect() && p_78443_3_ == 0) {
                 GL11.glDepthFunc(GL11.GL_EQUAL);
                 GL11.glDisable(GL11.GL_LIGHTING);
-                var4.bindTexture(RES_ITEM_GLINT);
+                if (var4 != null)
+                    var4.bindTexture(RES_ITEM_GLINT);
                 GL11.glEnable(GL11.GL_BLEND);
                 OpenGlHelper.glBlendFunc(768, 1, 1, 0);
                 float var16 = 0.76F;
@@ -138,13 +140,13 @@ public class ItemRenderer {
             }
 
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-            var4.bindTexture(var4.getResourceLocation(p_78443_2_.getItemSpriteNumber()));
+            if (var4 != null)
+                var4.bindTexture(var4.getResourceLocation(p_78443_2_.getItemSpriteNumber()));
             TextureUtil.func_147945_b();
         }
 
-        if (p_78443_2_ != null && var6 != null && var6.getRenderBlockPass() != 0) {
+        if (p_78443_2_ != null && var6 != null && var6.getRenderBlockPass() != 0)
             GL11.glDisable(GL11.GL_BLEND);
-        }
 
         GL11.glPopMatrix();
     }
@@ -245,17 +247,25 @@ public class ItemRenderer {
     public void renderItemInFirstPerson(float p_78440_1_) {
         float var2 = this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * p_78440_1_;
         EntityClientPlayerMP var3 = this.mc.thePlayer;
-        float var4 = var3.prevRotationPitch + (var3.rotationPitch - var3.prevRotationPitch) * p_78440_1_;
+        float var4 = var3 != null ? var3.prevRotationPitch + (var3.rotationPitch - var3.prevRotationPitch) * p_78440_1_
+                : 0.0f;
         GL11.glPushMatrix();
         GL11.glRotatef(var4, 1.0F, 0.0F, 0.0F);
-        GL11.glRotatef(var3.prevRotationYaw + (var3.rotationYaw - var3.prevRotationYaw) * p_78440_1_, 0.0F, 1.0F, 0.0F);
+        if (var3 != null)
+            GL11.glRotatef(var3.prevRotationYaw + (var3.rotationYaw - var3.prevRotationYaw) * p_78440_1_, 0.0F, 1.0F,
+                    0.0F);
         RenderHelper.enableStandardItemLighting();
         GL11.glPopMatrix();
         EntityPlayerSP var5 = (EntityPlayerSP) var3;
-        float var6 = var5.prevRenderArmPitch + (var5.renderArmPitch - var5.prevRenderArmPitch) * p_78440_1_;
-        float var7 = var5.prevRenderArmYaw + (var5.renderArmYaw - var5.prevRenderArmYaw) * p_78440_1_;
-        GL11.glRotatef((var3.rotationPitch - var6) * 0.1F, 1.0F, 0.0F, 0.0F);
-        GL11.glRotatef((var3.rotationYaw - var7) * 0.1F, 0.0F, 1.0F, 0.0F);
+        float var6 = var5 != null
+                ? var5.prevRenderArmPitch + (var5.renderArmPitch - var5.prevRenderArmPitch) * p_78440_1_
+                : 0.0f;
+        float var7 = var5 != null ? var5.prevRenderArmYaw + (var5.renderArmYaw - var5.prevRenderArmYaw) * p_78440_1_
+                : 0.0f;
+        if (var3 != null) {
+            GL11.glRotatef((var3.rotationPitch - var6) * 0.1F, 1.0F, 0.0F, 0.0F);
+            GL11.glRotatef((var3.rotationYaw - var7) * 0.1F, 0.0F, 1.0F, 0.0F);
+        }
         ItemStack var8 = this.itemToRender;
 
         if (var8 != null && var8.getItem() instanceof ItemCloth) {
@@ -263,8 +273,10 @@ public class ItemRenderer {
             OpenGlHelper.glBlendFunc(770, 771, 1, 0);
         }
 
-        int var9 = this.mc.theWorld.getLightBrightnessForSkyBlocks(MathHelper.floor_double(var3.posX),
-                MathHelper.floor_double(var3.posY), MathHelper.floor_double(var3.posZ), 0);
+        int var9 = this.mc.theWorld != null && var3 != null
+                ? this.mc.theWorld.getLightBrightnessForSkyBlocks(MathHelper.floor_double(var3.posX),
+                        MathHelper.floor_double(var3.posY), MathHelper.floor_double(var3.posZ), 0)
+                : 0;
         int var10 = var9 % 65536;
         int var11 = var9 / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) var10 / 1.0F, (float) var11 / 1.0F);
@@ -279,9 +291,8 @@ public class ItemRenderer {
             var14 = (float) (var12 >> 8 & 255) / 255.0F;
             var15 = (float) (var12 & 255) / 255.0F;
             GL11.glColor4f(var13, var14, var15, 1.0F);
-        } else {
+        } else
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        }
 
         float var16;
         float var17;
@@ -294,7 +305,7 @@ public class ItemRenderer {
         if (var8 != null && var8.getItem() == Items.filled_map) {
             GL11.glPushMatrix();
             var22 = 0.8F;
-            var13 = var3.getSwingProgress(p_78440_1_);
+            var13 = var3 != null ? var3.getSwingProgress(p_78440_1_) : 0;
             var14 = MathHelper.sin(var13 * (float) Math.PI);
             var15 = MathHelper.sin(MathHelper.sqrt_float(var13) * (float) Math.PI);
             GL11.glTranslatef(-var15 * 0.4F,
@@ -315,7 +326,8 @@ public class ItemRenderer {
             TextureManager textureManager = this.mc.getTextureManager();
 
             if (textureManager != null)
-                textureManager.bindTexture(var3.getLocationSkin());
+                if (var3 != null)
+                    textureManager.bindTexture(var3.getLocationSkin());
 
             for (int var24 = 0; var24 < 2; ++var24) {
                 int var25 = var24 * 2 - 1;
@@ -335,7 +347,7 @@ public class ItemRenderer {
                 GL11.glPopMatrix();
             }
 
-            var14 = var3.getSwingProgress(p_78440_1_);
+            var14 = var3 != null ? var3.getSwingProgress(p_78440_1_) : 0;
             var15 = MathHelper.sin(var14 * var14 * (float) Math.PI);
             var16 = MathHelper.sin(MathHelper.sqrt_float(var14) * (float) Math.PI);
             GL11.glRotatef(-var15 * 20.0F, 0.0F, 1.0F, 0.0F);
@@ -354,25 +366,27 @@ public class ItemRenderer {
 
             Tessellator var30 = this.mc.getTessellator();
             GL11.glNormal3f(0.0F, 0.0F, -1.0F);
-            var30.startDrawingQuads();
-            byte var31 = 7;
-            var30.addVertexWithUV((double) (0 - var31), (double) (128 + var31), 0.0D, 0.0D, 1.0D);
-            var30.addVertexWithUV((double) (128 + var31), (double) (128 + var31), 0.0D, 1.0D, 1.0D);
-            var30.addVertexWithUV((double) (128 + var31), (double) (0 - var31), 0.0D, 1.0D, 0.0D);
-            var30.addVertexWithUV((double) (0 - var31), (double) (0 - var31), 0.0D, 0.0D, 0.0D);
-            var30.draw();
+
+            if (var30 != null) {
+                var30.startDrawingQuads();
+                byte var31 = 7;
+                var30.addVertexWithUV((double) (0 - var31), (double) (128 + var31), 0.0D, 0.0D, 1.0D);
+                var30.addVertexWithUV((double) (128 + var31), (double) (128 + var31), 0.0D, 1.0D, 1.0D);
+                var30.addVertexWithUV((double) (128 + var31), (double) (0 - var31), 0.0D, 1.0D, 0.0D);
+                var30.addVertexWithUV((double) (0 - var31), (double) (0 - var31), 0.0D, 0.0D, 0.0D);
+                var30.draw();
+            }
             MapData var21 = Items.filled_map.getMapData(var8, this.mc.theWorld);
 
-            if (var21 != null) {
+            if (var21 != null)
                 this.mc.entityRenderer.getMapItemRenderer().func_148250_a(var21, false);
-            }
 
             GL11.glPopMatrix();
         } else if (var8 != null) {
             GL11.glPushMatrix();
             var22 = 0.8F;
 
-            if (var3.getItemInUseCount() > 0) {
+            if (var3 != null && var3.getItemInUseCount() > 0) {
                 EnumAction var23 = var8.getItemUseAction();
 
                 if (var23 == EnumAction.eat || var23 == EnumAction.drink) {
@@ -391,7 +405,7 @@ public class ItemRenderer {
                     GL11.glRotatef(var17 * 30.0F, 0.0F, 0.0F, 1.0F);
                 }
             } else {
-                var13 = var3.getSwingProgress(p_78440_1_);
+                var13 = var3 != null ? var3.getSwingProgress(p_78440_1_) : 0;
                 var14 = MathHelper.sin(var13 * (float) Math.PI);
                 var15 = MathHelper.sin(MathHelper.sqrt_float(var13) * (float) Math.PI);
                 GL11.glTranslatef(-var15 * 0.4F,
@@ -401,7 +415,7 @@ public class ItemRenderer {
             GL11.glTranslatef(0.7F * var22, -0.65F * var22 - (1.0F - var2) * 0.6F, -0.9F * var22);
             GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-            var13 = var3.getSwingProgress(p_78440_1_);
+            var13 = var3 != null ? var3.getSwingProgress(p_78440_1_) : 0;
             var14 = MathHelper.sin(var13 * var13 * (float) Math.PI);
             var15 = MathHelper.sin(MathHelper.sqrt_float(var13) * (float) Math.PI);
             GL11.glRotatef(-var14 * 20.0F, 0.0F, 1.0F, 0.0F);
@@ -412,7 +426,7 @@ public class ItemRenderer {
             float var19;
             float var20;
 
-            if (var3.getItemInUseCount() > 0) {
+            if (var3 != null && var3.getItemInUseCount() > 0) {
                 EnumAction var27 = var8.getItemUseAction();
 
                 if (var27 == EnumAction.block) {
@@ -467,7 +481,7 @@ public class ItemRenderer {
             }
 
             GL11.glPopMatrix();
-        } else if (!var3.isInvisible()) {
+        } else if (var3 != null && !var3.isInvisible()) {
             GL11.glPushMatrix();
             var22 = 0.8F;
             var13 = var3.getSwingProgress(p_78440_1_);
@@ -520,41 +534,43 @@ public class ItemRenderer {
     public void renderOverlays(float p_78447_1_) {
         GL11.glDisable(GL11.GL_ALPHA_TEST);
 
-        if (this.mc.thePlayer.isBurning()) {
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+        WorldClient theWorld = this.mc.theWorld;
+
+        if (thePlayer != null && thePlayer.isBurning())
             this.renderFireInFirstPerson(p_78447_1_);
-        }
 
-        if (this.mc.thePlayer.isEntityInsideOpaqueBlock()) {
-            int var2 = MathHelper.floor_double(this.mc.thePlayer.posX);
-            int var3 = MathHelper.floor_double(this.mc.thePlayer.posY);
-            int var4 = MathHelper.floor_double(this.mc.thePlayer.posZ);
-            Block var5 = this.mc.theWorld.getBlock(var2, var3, var4);
+        if (theWorld != null && thePlayer != null && thePlayer.isEntityInsideOpaqueBlock()) {
+            int var2 = MathHelper.floor_double(thePlayer.posX);
+            int var3 = MathHelper.floor_double(thePlayer.posY);
+            int var4 = MathHelper.floor_double(thePlayer.posZ);
+            Block var5 = theWorld.getBlock(var2, var3, var4);
 
-            if (this.mc.theWorld.getBlock(var2, var3, var4).isNormalCube()) {
+            if (theWorld.getBlock(var2, var3, var4).isNormalCube()) {
                 this.renderInsideOfBlock(p_78447_1_, var5.getBlockTextureFromSide(2));
             } else {
                 for (int var6 = 0; var6 < 8; ++var6) {
-                    float var7 = ((float) ((var6 >> 0) % 2) - 0.5F) * this.mc.thePlayer.width * 0.9F;
-                    float var8 = ((float) ((var6 >> 1) % 2) - 0.5F) * this.mc.thePlayer.height * 0.2F;
-                    float var9 = ((float) ((var6 >> 2) % 2) - 0.5F) * this.mc.thePlayer.width * 0.9F;
+                    float var7 = ((float) ((var6 >> 0) % 2) - 0.5F) * thePlayer.width * 0.9F;
+                    float var8 = ((float) ((var6 >> 1) % 2) - 0.5F) * thePlayer.height * 0.2F;
+                    float var9 = ((float) ((var6 >> 2) % 2) - 0.5F) * thePlayer.width * 0.9F;
                     int var10 = MathHelper.floor_float((float) var2 + var7);
                     int var11 = MathHelper.floor_float((float) var3 + var8);
                     int var12 = MathHelper.floor_float((float) var4 + var9);
 
-                    if (this.mc.theWorld.getBlock(var10, var11, var12).isNormalCube()) {
-                        var5 = this.mc.theWorld.getBlock(var10, var11, var12);
-                    }
+                    if (theWorld.getBlock(var10, var11, var12).isNormalCube())
+                        var5 = theWorld.getBlock(var10, var11, var12);
+
                 }
             }
 
-            if (var5.getMaterial() != Material.air) {
+            if (var5.getMaterial() != Material.air)
                 this.renderInsideOfBlock(p_78447_1_, var5.getBlockTextureFromSide(2));
-            }
+
         }
 
-        if (this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
+        if (thePlayer != null && thePlayer.isInsideOfMaterial(Material.water))
             this.renderWarpedTextureOverlay(p_78447_1_);
-        }
 
         GL11.glEnable(GL11.GL_ALPHA_TEST);
     }
@@ -582,6 +598,8 @@ public class ItemRenderer {
         float var11 = p_78446_2_.getMaxU();
         float var12 = p_78446_2_.getMinV();
         float var13 = p_78446_2_.getMaxV();
+        if (var3 == null)
+            return;
         var3.startDrawingQuads();
         var3.addVertexWithUV((double) var5, (double) var7, (double) var9, (double) var11, (double) var13);
         var3.addVertexWithUV((double) var6, (double) var7, (double) var9, (double) var10, (double) var13);
@@ -604,7 +622,7 @@ public class ItemRenderer {
         if (textureManager != null)
             textureManager.bindTexture(RES_UNDERWATER_OVERLAY);
         Tessellator var2 = this.mc.getTessellator();
-        float var3 = this.mc.thePlayer.getBrightness(p_78448_1_);
+        float var3 = this.mc.thePlayer != null ? this.mc.thePlayer.getBrightness(p_78448_1_) : 0;
         GL11.glColor4f(var3, var3, var3, 0.5F);
         GL11.glEnable(GL11.GL_BLEND);
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -615,8 +633,11 @@ public class ItemRenderer {
         float var7 = -1.0F;
         float var8 = 1.0F;
         float var9 = -0.5F;
-        float var10 = -this.mc.thePlayer.rotationYaw / 64.0F;
-        float var11 = this.mc.thePlayer.rotationPitch / 64.0F;
+        float var10 = this.mc.thePlayer != null ? -this.mc.thePlayer.rotationYaw / 64.0F : 0;
+        float var11 = this.mc.thePlayer != null ? this.mc.thePlayer.rotationPitch / 64.0F : 0;
+
+        if (var2 == null)
+            return;
         var2.startDrawingQuads();
         var2.addVertexWithUV((double) var5, (double) var7, (double) var9, (double) (var4 + var10),
                 (double) (var4 + var11));
@@ -661,6 +682,8 @@ public class ItemRenderer {
             float var14 = -0.5F;
             GL11.glTranslatef((float) (-(var4 * 2 - 1)) * 0.24F, -0.3F, 0.0F);
             GL11.glRotatef((float) (var4 * 2 - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
+            if (var2 == null)
+                return;
             var2.startDrawingQuads();
             var2.addVertexWithUV((double) var10, (double) var12, (double) var14, (double) var7, (double) var9);
             var2.addVertexWithUV((double) var11, (double) var12, (double) var14, (double) var6, (double) var9);
@@ -677,12 +700,12 @@ public class ItemRenderer {
     public void updateEquippedItem() {
         this.prevEquippedProgress = this.equippedProgress;
         EntityClientPlayerMP var1 = this.mc.thePlayer;
-        ItemStack var2 = var1.inventory.getCurrentItem();
-        boolean var3 = this.equippedItemSlot == var1.inventory.currentItem && var2 == this.itemToRender;
+        @Nullable
+        ItemStack var2 = var1 != null ? var1.inventory.getCurrentItem() : null;
+        boolean var3 = var1 != null && this.equippedItemSlot == var1.inventory.currentItem && var2 == this.itemToRender;
 
-        if (this.itemToRender == null && var2 == null) {
+        if (this.itemToRender == null && var2 == null)
             var3 = true;
-        }
 
         if (var2 != null && this.itemToRender != null && var2 != this.itemToRender
                 && var2.getItem() == this.itemToRender.getItem()
@@ -695,19 +718,17 @@ public class ItemRenderer {
         float var5 = var3 ? 1.0F : 0.0F;
         float var6 = var5 - this.equippedProgress;
 
-        if (var6 < -var4) {
+        if (var6 < -var4)
             var6 = -var4;
-        }
 
-        if (var6 > var4) {
+        if (var6 > var4)
             var6 = var4;
-        }
 
         this.equippedProgress += var6;
 
         if (this.equippedProgress < 0.1F) {
             this.itemToRender = var2;
-            this.equippedItemSlot = var1.inventory.currentItem;
+            this.equippedItemSlot = var1 != null ? var1.inventory.currentItem : 0;
         }
     }
 

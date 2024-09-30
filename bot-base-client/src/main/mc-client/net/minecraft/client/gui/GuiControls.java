@@ -15,7 +15,6 @@ public class GuiControls extends GuiScreen {
     public long field_152177_g;
     private GuiKeyBindingList field_146494_r;
     private GuiButton field_146493_s;
-    private static final String __OBFID = "CL_00000736";
 
     public GuiControls(Minecraft mc, GuiScreen p_i1027_1_, GameSettings p_i1027_2_) {
         super(mc);

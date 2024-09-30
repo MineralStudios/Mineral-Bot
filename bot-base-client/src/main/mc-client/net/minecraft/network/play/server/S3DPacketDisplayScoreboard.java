@@ -16,7 +16,6 @@ import net.minecraft.scoreboard.ScoreObjective;
 public class S3DPacketDisplayScoreboard extends Packet {
     private int field_149374_a;
     private String field_149373_b;
-    private static final String __OBFID = "CL_00001325";
 
     public S3DPacketDisplayScoreboard(int p_i45216_1_, ScoreObjective p_i45216_2_) {
         this.field_149374_a = p_i45216_1_;

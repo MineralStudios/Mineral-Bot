@@ -21,7 +21,6 @@ public class EntitySlime extends EntityLiving implements IMob {
 
     /** ticks until this slime jumps again */
     private int slimeJumpDelay;
-    private static final String __OBFID = "CL_00001698";
 
     public EntitySlime(World p_i1742_1_) {
         super(p_i1742_1_);

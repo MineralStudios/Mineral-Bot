@@ -14,7 +14,6 @@ public class GuiChest extends GuiContainer {
     private IInventory field_147016_v;
     private IInventory field_147015_w;
     private int field_147018_x;
-    private static final String __OBFID = "CL_00000749";
 
     public GuiChest(Minecraft mc, IInventory p_i46315_1_, IInventory p_i46315_2_) {
         super(mc, new ContainerChest(p_i46315_1_, p_i46315_2_));

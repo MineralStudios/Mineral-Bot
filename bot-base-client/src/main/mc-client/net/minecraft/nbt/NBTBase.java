@@ -4,13 +4,13 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public abstract class NBTBase
-{
-    public static final String[] NBTTypes = new String[] {"END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]"};
-    private static final String __OBFID = "CL_00001229";
+public abstract class NBTBase {
+    public static final String[] NBTTypes = new String[] { "END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE",
+            "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]" };
 
     /**
-     * Write the actual data contents of the tag, implemented in NBT extension classes
+     * Write the actual data contents of the tag, implemented in NBT extension
+     * classes
      */
     abstract void write(DataOutput p_74734_1_) throws IOException;
 
@@ -23,10 +23,8 @@ public abstract class NBTBase
      */
     public abstract byte getId();
 
-    protected static NBTBase func_150284_a(byte p_150284_0_)
-    {
-        switch (p_150284_0_)
-        {
+    protected static NBTBase func_150284_a(byte p_150284_0_) {
+        switch (p_150284_0_) {
             case 0:
                 return new NBTTagEnd();
 
@@ -73,32 +71,24 @@ public abstract class NBTBase
      */
     public abstract NBTBase copy();
 
-    public boolean equals(Object p_equals_1_)
-    {
-        if (!(p_equals_1_ instanceof NBTBase))
-        {
+    public boolean equals(Object p_equals_1_) {
+        if (!(p_equals_1_ instanceof NBTBase)) {
             return false;
-        }
-        else
-        {
-            NBTBase var2 = (NBTBase)p_equals_1_;
+        } else {
+            NBTBase var2 = (NBTBase) p_equals_1_;
             return this.getId() == var2.getId();
         }
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         return this.getId();
     }
 
-    protected String func_150285_a_()
-    {
+    protected String func_150285_a_() {
         return this.toString();
     }
 
-    public abstract static class NBTPrimitive extends NBTBase
-    {
-        private static final String __OBFID = "CL_00001230";
+    public abstract static class NBTPrimitive extends NBTBase {
 
         public abstract long func_150291_c();
 

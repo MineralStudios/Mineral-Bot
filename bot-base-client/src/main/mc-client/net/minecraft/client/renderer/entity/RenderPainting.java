@@ -17,7 +17,6 @@ public class RenderPainting extends Render {
 
     private static final ResourceLocation field_110807_a = new ResourceLocation(
             "textures/painting/paintings_kristoffer_zetterstrand.png");
-    private static final String __OBFID = "CL_00001018";
 
     /**
      * Actually renders the given argument. This is a synthetic bridge method,
@@ -81,6 +80,9 @@ public class RenderPainting extends Render {
                 float var29 = (float) (p_77010_5_ + p_77010_3_ - var22 * 16) / 256.0F;
                 float var30 = (float) (p_77010_5_ + p_77010_3_ - (var22 + 1) * 16) / 256.0F;
                 Tessellator var31 = this.mc.getTessellator();
+
+                if (var31 == null)
+                    return;
                 var31.startDrawingQuads();
                 var31.setNormal(0.0F, 0.0F, -1.0F);
                 var31.addVertexWithUV((double) var23, (double) var26, (double) (-var8), (double) var28, (double) var29);

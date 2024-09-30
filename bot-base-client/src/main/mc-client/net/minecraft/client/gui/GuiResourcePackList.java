@@ -9,7 +9,6 @@ import net.minecraft.util.EnumChatFormatting;
 public abstract class GuiResourcePackList extends GuiListExtended {
     protected final Minecraft field_148205_k;
     protected final List field_148204_l;
-    private static final String __OBFID = "CL_00000825";
 
     public GuiResourcePackList(Minecraft mc, int p_i45055_2_, int p_i45055_3_, List p_i45055_4_) {
         super(mc, p_i45055_2_, p_i45055_3_, 32, p_i45055_3_ - 55 + 4, 36);

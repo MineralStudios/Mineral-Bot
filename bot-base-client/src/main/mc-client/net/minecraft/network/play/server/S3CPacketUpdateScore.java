@@ -18,7 +18,6 @@ public class S3CPacketUpdateScore extends Packet {
     private String field_149327_b = "";
     private int field_149328_c;
     private int field_149326_d;
-    private static final String __OBFID = "CL_00001335";
 
     public S3CPacketUpdateScore(Score p_i45227_1_, int p_i45227_2_) {
         this.field_149329_a = p_i45227_1_.getPlayerName();

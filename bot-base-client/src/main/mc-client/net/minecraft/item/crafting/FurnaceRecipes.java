@@ -11,25 +11,21 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemFishFood;
 import net.minecraft.item.ItemStack;
 
-public class FurnaceRecipes
-{
+public class FurnaceRecipes {
     private static final FurnaceRecipes smeltingBase = new FurnaceRecipes();
 
     /** The list of smelting results. */
     private Map smeltingList = new HashMap();
     private Map experienceList = new HashMap();
-    private static final String __OBFID = "CL_00000085";
 
     /**
      * Used to call methods addSmelting and getSmeltingResult.
      */
-    public static FurnaceRecipes smelting()
-    {
+    public static FurnaceRecipes smelting() {
         return smeltingBase;
     }
 
-    private FurnaceRecipes()
-    {
+    private FurnaceRecipes() {
         this.func_151393_a(Blocks.iron_ore, new ItemStack(Items.iron_ingot), 0.7F);
         this.func_151393_a(Blocks.gold_ore, new ItemStack(Items.gold_ingot), 1.0F);
         this.func_151393_a(Blocks.diamond_ore, new ItemStack(Items.diamond), 1.0F);
@@ -49,13 +45,12 @@ public class FurnaceRecipes
         ItemFishFood.FishType[] var1 = ItemFishFood.FishType.values();
         int var2 = var1.length;
 
-        for (int var3 = 0; var3 < var2; ++var3)
-        {
+        for (int var3 = 0; var3 < var2; ++var3) {
             ItemFishFood.FishType var4 = var1[var3];
 
-            if (var4.func_150973_i())
-            {
-                this.func_151394_a(new ItemStack(Items.fish, 1, var4.func_150976_a()), new ItemStack(Items.cooked_fished, 1, var4.func_150976_a()), 0.35F);
+            if (var4.func_150973_i()) {
+                this.func_151394_a(new ItemStack(Items.fish, 1, var4.func_150976_a()),
+                        new ItemStack(Items.cooked_fished, 1, var4.func_150976_a()), 0.35F);
             }
         }
 
@@ -65,67 +60,55 @@ public class FurnaceRecipes
         this.func_151393_a(Blocks.quartz_ore, new ItemStack(Items.quartz), 0.2F);
     }
 
-    public void func_151393_a(Block p_151393_1_, ItemStack p_151393_2_, float p_151393_3_)
-    {
+    public void func_151393_a(Block p_151393_1_, ItemStack p_151393_2_, float p_151393_3_) {
         this.func_151396_a(Item.getItemFromBlock(p_151393_1_), p_151393_2_, p_151393_3_);
     }
 
-    public void func_151396_a(Item p_151396_1_, ItemStack p_151396_2_, float p_151396_3_)
-    {
+    public void func_151396_a(Item p_151396_1_, ItemStack p_151396_2_, float p_151396_3_) {
         this.func_151394_a(new ItemStack(p_151396_1_, 1, 32767), p_151396_2_, p_151396_3_);
     }
 
-    public void func_151394_a(ItemStack p_151394_1_, ItemStack p_151394_2_, float p_151394_3_)
-    {
+    public void func_151394_a(ItemStack p_151394_1_, ItemStack p_151394_2_, float p_151394_3_) {
         this.smeltingList.put(p_151394_1_, p_151394_2_);
         this.experienceList.put(p_151394_2_, Float.valueOf(p_151394_3_));
     }
 
-    public ItemStack func_151395_a(ItemStack p_151395_1_)
-    {
+    public ItemStack func_151395_a(ItemStack p_151395_1_) {
         Iterator var2 = this.smeltingList.entrySet().iterator();
         Entry var3;
 
-        do
-        {
-            if (!var2.hasNext())
-            {
+        do {
+            if (!var2.hasNext()) {
                 return null;
             }
 
-            var3 = (Entry)var2.next();
-        }
-        while (!this.func_151397_a(p_151395_1_, (ItemStack)var3.getKey()));
+            var3 = (Entry) var2.next();
+        } while (!this.func_151397_a(p_151395_1_, (ItemStack) var3.getKey()));
 
-        return (ItemStack)var3.getValue();
+        return (ItemStack) var3.getValue();
     }
 
-    private boolean func_151397_a(ItemStack p_151397_1_, ItemStack p_151397_2_)
-    {
-        return p_151397_2_.getItem() == p_151397_1_.getItem() && (p_151397_2_.getItemDamage() == 32767 || p_151397_2_.getItemDamage() == p_151397_1_.getItemDamage());
+    private boolean func_151397_a(ItemStack p_151397_1_, ItemStack p_151397_2_) {
+        return p_151397_2_.getItem() == p_151397_1_.getItem()
+                && (p_151397_2_.getItemDamage() == 32767 || p_151397_2_.getItemDamage() == p_151397_1_.getItemDamage());
     }
 
-    public Map getSmeltingList()
-    {
+    public Map getSmeltingList() {
         return this.smeltingList;
     }
 
-    public float func_151398_b(ItemStack p_151398_1_)
-    {
+    public float func_151398_b(ItemStack p_151398_1_) {
         Iterator var2 = this.experienceList.entrySet().iterator();
         Entry var3;
 
-        do
-        {
-            if (!var2.hasNext())
-            {
+        do {
+            if (!var2.hasNext()) {
                 return 0.0F;
             }
 
-            var3 = (Entry)var2.next();
-        }
-        while (!this.func_151397_a(p_151398_1_, (ItemStack)var3.getKey()));
+            var3 = (Entry) var2.next();
+        } while (!this.func_151397_a(p_151398_1_, (ItemStack) var3.getKey()));
 
-        return ((Float)var3.getValue()).floatValue();
+        return ((Float) var3.getValue()).floatValue();
     }
 }

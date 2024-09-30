@@ -5,7 +5,6 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public class GuiButtonLanguage extends GuiButton {
-    private static final String __OBFID = "CL_00000672";
 
     public GuiButtonLanguage(Minecraft mc, int p_i1041_1_, int p_i1041_2_, int p_i1041_3_) {
         super(mc, p_i1041_1_, p_i1041_2_, p_i1041_3_, 20, 20, "");

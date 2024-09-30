@@ -17,7 +17,6 @@ public class GuiCommandBlock extends GuiScreen {
     private final CommandBlockLogic field_146489_h;
     private GuiButton field_146490_i;
     private GuiButton field_146487_r;
-    private static final String __OBFID = "CL_00000748";
 
     public GuiCommandBlock(Minecraft mc, CommandBlockLogic p_i45032_1_) {
         super(mc);

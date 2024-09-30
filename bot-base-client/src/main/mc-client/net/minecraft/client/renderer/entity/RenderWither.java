@@ -16,7 +16,6 @@ public class RenderWither extends RenderLiving {
             "textures/entity/wither/wither_invulnerable.png");
     private static final ResourceLocation witherTextures = new ResourceLocation("textures/entity/wither/wither.png");
     private int field_82419_a;
-    private static final String __OBFID = "CL_00001034";
 
     public RenderWither(Minecraft mc) {
         super(mc, new ModelWither(mc), 1.0F);

@@ -14,7 +14,6 @@ public class S25PacketBlockBreakAnim extends Packet {
     private int field_148851_c;
     private int field_148848_d;
     private int field_148849_e;
-    private static final String __OBFID = "CL_00001284";
 
     public S25PacketBlockBreakAnim() {
     }

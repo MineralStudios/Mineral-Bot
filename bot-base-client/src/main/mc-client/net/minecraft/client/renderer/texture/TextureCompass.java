@@ -1,6 +1,7 @@
 package net.minecraft.client.renderer.texture;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 
@@ -10,7 +11,6 @@ public class TextureCompass extends TextureAtlasSprite {
 
     /** Speed and direction of compass rotation */
     public double angleDelta;
-    private static final String __OBFID = "CL_00001071";
 
     public TextureCompass(Minecraft mc, String p_i1286_1_) {
         super(mc, p_i1286_1_);
@@ -18,8 +18,10 @@ public class TextureCompass extends TextureAtlasSprite {
 
     public void updateAnimation() {
 
-        if (mc.theWorld != null && mc.thePlayer != null) {
-            this.updateCompass(mc.theWorld, mc.thePlayer.posX, mc.thePlayer.posZ, (double) mc.thePlayer.rotationYaw,
+        EntityClientPlayerMP thePlayer = mc.thePlayer;
+
+        if (mc.theWorld != null && thePlayer != null) {
+            this.updateCompass(mc.theWorld, thePlayer.posX, thePlayer.posZ, (double) thePlayer.rotationYaw,
                     false, false);
         } else {
             this.updateCompass((World) null, 0.0D, 0.0D, 0.0D, true, false);

@@ -16,7 +16,6 @@ public class InventoryCrafting implements IInventory {
      * on_CraftMaxtrixChanged.
      */
     private Container eventHandler;
-    private static final String __OBFID = "CL_00001743";
 
     public InventoryCrafting(Container p_i1807_1_, int p_i1807_2_, int p_i1807_3_) {
         int var4 = p_i1807_2_ * p_i1807_3_;

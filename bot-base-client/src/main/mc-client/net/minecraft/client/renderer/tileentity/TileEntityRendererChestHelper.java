@@ -12,7 +12,6 @@ public class TileEntityRendererChestHelper {
     private TileEntityChest field_147717_b = new TileEntityChest(0);
     private TileEntityChest field_147718_c = new TileEntityChest(1);
     private TileEntityEnderChest field_147716_d = new TileEntityEnderChest();
-    private static final String __OBFID = "CL_00000946";
     private final Minecraft mc;
 
     public void func_147715_a(Block p_147715_1_, int p_147715_2_, float p_147715_3_) {

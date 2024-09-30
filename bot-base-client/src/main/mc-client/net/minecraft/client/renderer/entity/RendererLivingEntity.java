@@ -29,7 +29,6 @@ public abstract class RendererLivingEntity extends Render {
 
     /** The model to be used during the render passes. */
     protected ModelBase renderPassModel;
-    private static final String __OBFID = "CL_00001012";
 
     public RendererLivingEntity(Minecraft mc, ModelBase p_i1261_1_, float p_i1261_2_) {
         super(mc);
@@ -453,14 +452,16 @@ public abstract class RendererLivingEntity extends Render {
                     OpenGlHelper.glBlendFunc(770, 771, 1, 0);
                     Tessellator var15 = this.mc.getTessellator();
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    var15.startDrawingQuads();
-                    int var16 = var14.getStringWidth(var13) / 2;
-                    var15.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
-                    var15.addVertex((double) (-var16 - 1), -1.0D, 0.0D);
-                    var15.addVertex((double) (-var16 - 1), 8.0D, 0.0D);
-                    var15.addVertex((double) (var16 + 1), 8.0D, 0.0D);
-                    var15.addVertex((double) (var16 + 1), -1.0D, 0.0D);
-                    var15.draw();
+                    if (var15 != null) {
+                        var15.startDrawingQuads();
+                        int var16 = var14.getStringWidth(var13) / 2;
+                        var15.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
+                        var15.addVertex((double) (-var16 - 1), -1.0D, 0.0D);
+                        var15.addVertex((double) (-var16 - 1), 8.0D, 0.0D);
+                        var15.addVertex((double) (var16 + 1), 8.0D, 0.0D);
+                        var15.addVertex((double) (var16 + 1), -1.0D, 0.0D);
+                        var15.draw();
+                    }
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
                     GL11.glDepthMask(true);
                     var14.drawString(var13, -var14.getStringWidth(var13) / 2, 0, 553648127);

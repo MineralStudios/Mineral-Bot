@@ -28,7 +28,6 @@ public class TileEntityBeacon extends TileEntity implements IInventory {
     private int field_146010_n;
     private ItemStack field_146011_o;
     private String field_146008_p;
-    private static final String __OBFID = "CL_00000339";
 
     public void updateEntity() {
         if (this.worldObj.getTotalWorldTime() % 80L == 0L) {

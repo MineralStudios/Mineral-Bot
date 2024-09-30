@@ -42,7 +42,6 @@ public class GuiScreenBook extends GuiScreen {
     private GuiButton field_146465_D;
     private GuiButton field_146467_E;
     private GuiButton field_146469_F;
-    private static final String __OBFID = "CL_00000744";
 
     public GuiScreenBook(Minecraft mc, EntityPlayer p_i1080_1_, ItemStack p_i1080_2_, boolean p_i1080_3_) {
         super(mc);
@@ -389,7 +388,6 @@ public class GuiScreenBook extends GuiScreen {
 
     static class NextPageButton extends GuiButton {
         private final boolean field_146151_o;
-        private static final String __OBFID = "CL_00000745";
 
         public NextPageButton(Minecraft mc, int p_i46316_1_, int p_i46316_2_, int p_i46316_3_, boolean p_i46316_4_) {
             super(mc, p_i46316_1_, p_i46316_2_, p_i46316_3_, 23, 13, "");

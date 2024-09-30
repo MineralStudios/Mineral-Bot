@@ -43,14 +43,12 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 
     /** Selector used to determine the entities a wither boss should attack. */
     private static final IEntitySelector attackEntitySelector = new IEntitySelector() {
-        private static final String __OBFID = "CL_00001662";
 
         public boolean isEntityApplicable(Entity p_82704_1_) {
             return p_82704_1_ instanceof EntityLivingBase
                     && ((EntityLivingBase) p_82704_1_).getCreatureAttribute() != EnumCreatureAttribute.UNDEAD;
         }
     };
-    private static final String __OBFID = "CL_00001661";
 
     public EntityWither(World p_i1701_1_) {
         super(p_i1701_1_);

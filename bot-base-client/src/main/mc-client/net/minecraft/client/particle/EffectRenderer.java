@@ -30,7 +30,6 @@ public class EffectRenderer {
 
     /** RNG. */
     private Random rand = new Random();
-    private static final String __OBFID = "CL_00000915";
     private final Minecraft mc;
 
     public EffectRenderer(Minecraft mc, World p_i1220_1_, TextureManager p_i1220_2_) {
@@ -68,29 +67,17 @@ public class EffectRenderer {
                 } catch (Throwable var8) {
                     CrashReport var5 = CrashReport.makeCrashReport(var8, "Ticking Particle");
                     CrashReportCategory var6 = var5.makeCategory("Particle being ticked");
-                    var6.addCrashSectionCallable("Particle", new Callable() {
-                        private static final String __OBFID = "CL_00000916";
-
-                        public String call() {
-                            return var3.toString();
-                        }
-                    });
-                    var6.addCrashSectionCallable("Particle Type", new Callable() {
-                        private static final String __OBFID = "CL_00000917";
-
-                        public String call() {
-                            return var1 == 0 ? "MISC_TEXTURE"
-                                    : (var1 == 1 ? "TERRAIN_TEXTURE"
-                                            : (var1 == 2 ? "ITEM_TEXTURE"
-                                                    : (var1 == 3 ? "ENTITY_PARTICLE_TEXTURE" : "Unknown - " + var1)));
-                        }
-                    });
+                    var6.addCrashSectionCallable("Particle", () -> var3.toString());
+                    var6.addCrashSectionCallable("Particle Type", () -> var1 == 0 ? "MISC_TEXTURE"
+                            : (var1 == 1 ? "TERRAIN_TEXTURE"
+                                    : (var1 == 2 ? "ITEM_TEXTURE"
+                                            : (var1 == 3 ? "ENTITY_PARTICLE_TEXTURE" : "Unknown - " + var1))));
                     throw new ReportedException(var5);
                 }
 
-                if (var3.isDead) {
+                if (var3.isDead)
                     this.fxLayers[var1].remove(var2--);
-                }
+
             }
         }
     }
@@ -135,40 +122,32 @@ public class EffectRenderer {
                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 GL11.glAlphaFunc(GL11.GL_GREATER, 0.003921569F);
                 Tessellator var9 = this.mc.getTessellator();
-                var9.startDrawingQuads();
+
+                if (var9 != null)
+                    var9.startDrawingQuads();
 
                 for (int var10 = 0; var10 < this.fxLayers[var8].size(); ++var10) {
                     final EntityFX var11 = (EntityFX) this.fxLayers[var8].get(var10);
-                    var9.setBrightness(var11.getBrightnessForRender(p_78874_2_));
+                    if (var9 != null)
+                        var9.setBrightness(var11.getBrightnessForRender(p_78874_2_));
 
                     try {
                         var11.renderParticle(var9, p_78874_2_, var3, var7, var4, var5, var6);
                     } catch (Throwable var16) {
                         CrashReport var13 = CrashReport.makeCrashReport(var16, "Rendering Particle");
                         CrashReportCategory var14 = var13.makeCategory("Particle being rendered");
-                        var14.addCrashSectionCallable("Particle", new Callable() {
-                            private static final String __OBFID = "CL_00000918";
-
-                            public String call() {
-                                return var11.toString();
-                            }
-                        });
-                        var14.addCrashSectionCallable("Particle Type", new Callable() {
-                            private static final String __OBFID = "CL_00000919";
-
-                            public String call() {
-                                return var8 == 0 ? "MISC_TEXTURE"
-                                        : (var8 == 1 ? "TERRAIN_TEXTURE"
-                                                : (var8 == 2 ? "ITEM_TEXTURE"
-                                                        : (var8 == 3 ? "ENTITY_PARTICLE_TEXTURE"
-                                                                : "Unknown - " + var8)));
-                            }
-                        });
+                        var14.addCrashSectionCallable("Particle", () -> var11.toString());
+                        var14.addCrashSectionCallable("Particle Type", () -> var8 == 0 ? "MISC_TEXTURE"
+                                : (var8 == 1 ? "TERRAIN_TEXTURE"
+                                        : (var8 == 2 ? "ITEM_TEXTURE"
+                                                : (var8 == 3 ? "ENTITY_PARTICLE_TEXTURE"
+                                                        : "Unknown - " + var8))));
                         throw new ReportedException(var13);
                     }
                 }
 
-                var9.draw();
+                if (var9 != null)
+                    var9.draw();
                 GL11.glDisable(GL11.GL_BLEND);
                 GL11.glDepthMask(true);
                 GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
@@ -189,11 +168,12 @@ public class EffectRenderer {
         if (!var10.isEmpty()) {
             Tessellator var11 = this.mc.getTessellator();
 
-            for (int var12 = 0; var12 < var10.size(); ++var12) {
-                EntityFX var13 = (EntityFX) var10.get(var12);
-                var11.setBrightness(var13.getBrightnessForRender(p_78872_2_));
-                var13.renderParticle(var11, p_78872_2_, var4, var8, var5, var6, var7);
-            }
+            if (var11 != null)
+                for (int var12 = 0; var12 < var10.size(); ++var12) {
+                    EntityFX var13 = (EntityFX) var10.get(var12);
+                    var11.setBrightness(var13.getBrightnessForRender(p_78872_2_));
+                    var13.renderParticle(var11, p_78872_2_, var4, var8, var5, var6, var7);
+                }
         }
     }
 

@@ -12,7 +12,6 @@ public class RenderGhast extends RenderLiving {
     private static final ResourceLocation ghastTextures = new ResourceLocation("textures/entity/ghast/ghast.png");
     private static final ResourceLocation ghastShootingTextures = new ResourceLocation(
             "textures/entity/ghast/ghast_shooting.png");
-    private static final String __OBFID = "CL_00000997";
 
     public RenderGhast(Minecraft mc) {
         super(mc, new ModelGhast(mc), 0.5F);

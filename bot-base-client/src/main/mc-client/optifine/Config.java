@@ -853,21 +853,22 @@ public class Config {
     }
 
     public static Dimension getFullscreenDimension() {
-        if (desktopDisplayMode == null) {
+        DisplayMode desktopDisplayMode = getDesktopDisplayMode();
+        if (desktopDisplayMode == null)
             return null;
-        } else if (gameSettings == null) {
+        if (gameSettings == null && desktopDisplayMode != null)
             return new Dimension(desktopDisplayMode.getWidth(), desktopDisplayMode.getHeight());
-        } else {
-            String dimStr = gameSettings.ofFullscreenMode;
 
-            if (dimStr.equals("Default")) {
-                return new Dimension(desktopDisplayMode.getWidth(), desktopDisplayMode.getHeight());
-            } else {
-                String[] dimStrs = tokenize(dimStr, " x");
-                return dimStrs.length < 2 ? new Dimension(desktopDisplayMode.getWidth(), desktopDisplayMode.getHeight())
-                        : new Dimension(parseInt(dimStrs[0], -1), parseInt(dimStrs[1], -1));
-            }
-        }
+        String dimStr = gameSettings.ofFullscreenMode;
+
+        if (dimStr.equals("Default") && desktopDisplayMode != null)
+            return new Dimension(desktopDisplayMode.getWidth(), desktopDisplayMode.getHeight());
+
+        String[] dimStrs = tokenize(dimStr, " x");
+        return dimStrs.length < 2 && desktopDisplayMode != null
+                ? new Dimension(desktopDisplayMode.getWidth(), desktopDisplayMode.getHeight())
+                : new Dimension(parseInt(dimStrs[0], -1), parseInt(dimStrs[1], -1));
+
     }
 
     public static int parseInt(String str, int defVal) {
@@ -927,6 +928,7 @@ public class Config {
     }
 
     public static DisplayMode[] getFullscreenDisplayModes() {
+
         try {
             DisplayMode[] e = Display.getAvailableDisplayModes();
             ArrayList list = new ArrayList();
@@ -934,10 +936,11 @@ public class Config {
             for (int fsModes = 0; fsModes < e.length; ++fsModes) {
                 DisplayMode comp = e[fsModes];
 
+                DisplayMode desktopDisplayMode = getDesktopDisplayMode();
+
                 if (desktopDisplayMode == null || comp.getBitsPerPixel() == desktopDisplayMode.getBitsPerPixel()
-                        && comp.getFrequency() == desktopDisplayMode.getFrequency()) {
+                        && comp.getFrequency() == desktopDisplayMode.getFrequency())
                     list.add(comp);
-                }
             }
 
             DisplayMode[] var5 = (DisplayMode[]) ((DisplayMode[]) list.toArray(new DisplayMode[list.size()]));
@@ -976,11 +979,13 @@ public class Config {
         for (int i = 0; i < modes.length; ++i) {
             DisplayMode dm = modes[i];
 
+            DisplayMode desktopDisplayMode = getDesktopDisplayMode();
+
             if (dm.getWidth() == dim.width && dm.getHeight() == dim.height
                     && (desktopDisplayMode == null || dm.getBitsPerPixel() == desktopDisplayMode.getBitsPerPixel()
-                            && dm.getFrequency() == desktopDisplayMode.getFrequency())) {
+                            && dm.getFrequency() == desktopDisplayMode.getFrequency()))
                 return dm;
-            }
+
         }
 
         return desktopDisplayMode;
@@ -1366,7 +1371,8 @@ public class Config {
                             minecraft.displayHeight);
                     int sw = sr.getScaledWidth();
                     int sh = sr.getScaledHeight();
-                    minecraft.currentScreen.setWorldAndResolution(minecraft, sw, sh);
+                    if (minecraft.currentScreen != null)
+                        minecraft.currentScreen.setWorldAndResolution(minecraft, sw, sh);
                 }
 
                 minecraft.loadingScreen = new LoadingScreenRenderer(minecraft);

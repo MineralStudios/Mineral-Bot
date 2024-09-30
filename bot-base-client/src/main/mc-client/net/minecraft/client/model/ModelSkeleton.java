@@ -6,7 +6,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySkeleton;
 
 public class ModelSkeleton extends ModelZombie {
-    private static final String __OBFID = "CL_00000857";
 
     public ModelSkeleton(Minecraft mc) {
         this(mc, 0.0F);

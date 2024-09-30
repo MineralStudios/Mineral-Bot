@@ -13,7 +13,6 @@ public class RenderGiantZombie extends RenderLiving {
 
     /** Scale of the model to use */
     private float scale;
-    private static final String __OBFID = "CL_00000998";
 
     public RenderGiantZombie(Minecraft mc, ModelBase p_i1255_1_, float p_i1255_2_, float p_i1255_3_) {
         super(mc, p_i1255_1_, p_i1255_2_ * p_i1255_3_);

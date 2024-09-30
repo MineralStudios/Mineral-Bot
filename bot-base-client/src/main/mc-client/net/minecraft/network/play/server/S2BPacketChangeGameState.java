@@ -12,7 +12,6 @@ public class S2BPacketChangeGameState extends Packet {
     public static final String[] field_149142_a = new String[] { "tile.bed.notValid", null, null, "gameMode.changed" };
     private int field_149140_b;
     private float field_149141_c;
-    private static final String __OBFID = "CL_00001301";
 
     public S2BPacketChangeGameState() {
     }

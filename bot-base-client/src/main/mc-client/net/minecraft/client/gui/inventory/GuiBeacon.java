@@ -19,7 +19,6 @@ import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
@@ -29,7 +28,6 @@ public class GuiBeacon extends GuiContainer {
     private TileEntityBeacon field_147024_w;
     private GuiBeacon.ConfirmButton field_147028_x;
     private boolean field_147027_y;
-    private static final String __OBFID = "CL_00000739";
 
     public GuiBeacon(Minecraft mc, InventoryPlayer p_i1078_1_, TileEntityBeacon p_i1078_2_) {
         super(mc, new ContainerBeacon(p_i1078_1_, p_i1078_2_));
@@ -203,7 +201,6 @@ public class GuiBeacon extends GuiContainer {
         private final int field_146144_p;
         private final int field_146143_q;
         private boolean field_146142_r;
-        private static final String __OBFID = "CL_00000743";
 
         protected Button(Minecraft mc, int p_i1077_1_, int p_i1077_2_, int p_i1077_3_, ResourceLocation p_i1077_4_,
                 int p_i1077_5_,
@@ -258,7 +255,6 @@ public class GuiBeacon extends GuiContainer {
     }
 
     class CancelButton extends GuiBeacon.Button {
-        private static final String __OBFID = "CL_00000740";
 
         public CancelButton(int p_i1074_2_, int p_i1074_3_, int p_i1074_4_) {
             super(GuiBeacon.this.mc, p_i1074_2_, p_i1074_3_, p_i1074_4_, GuiBeacon.field_147025_v, 112, 220);
@@ -270,7 +266,6 @@ public class GuiBeacon extends GuiContainer {
     }
 
     class ConfirmButton extends GuiBeacon.Button {
-        private static final String __OBFID = "CL_00000741";
 
         public ConfirmButton(int p_i1075_2_, int p_i1075_3_, int p_i1075_4_) {
             super(GuiBeacon.this.mc, p_i1075_2_, p_i1075_3_, p_i1075_4_, GuiBeacon.field_147025_v, 90, 220);
@@ -284,7 +279,6 @@ public class GuiBeacon extends GuiContainer {
     class PowerButton extends GuiBeacon.Button {
         private final int field_146149_p;
         private final int field_146148_q;
-        private static final String __OBFID = "CL_00000742";
 
         public PowerButton(int p_i1076_2_, int p_i1076_3_, int p_i1076_4_, int p_i1076_5_, int p_i1076_6_) {
             super(GuiBeacon.this.mc, p_i1076_2_, p_i1076_3_, p_i1076_4_, GuiContainer.field_147001_a,

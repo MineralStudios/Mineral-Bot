@@ -2,8 +2,6 @@ package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
 
-import lombok.RequiredArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +27,6 @@ public class GuiNewChat extends Gui {
     private final List field_146253_i = new ArrayList();
     private int field_146250_j;
     private boolean field_146251_k;
-    private static final String __OBFID = "CL_00000669";
 
     public void func_146230_a(int p_146230_1_) {
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {

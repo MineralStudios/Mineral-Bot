@@ -12,7 +12,6 @@ public class EntityFootStepFX extends EntityFX {
     private int footstepAge;
     private int footstepMaxAge;
     private TextureManager currentFootSteps;
-    private static final String __OBFID = "CL_00000908";
 
     public EntityFootStepFX(TextureManager p_i1210_1_, World p_i1210_2_, double p_i1210_3_, double p_i1210_5_,
             double p_i1210_7_) {

@@ -7,7 +7,6 @@ import net.minecraft.world.storage.DerivedWorldInfo;
 import net.minecraft.world.storage.ISaveHandler;
 
 public class WorldServerMulti extends WorldServer {
-    private static final String __OBFID = "CL_00001430";
 
     public WorldServerMulti(Minecraft mc, MinecraftServer p_i45283_1_, ISaveHandler p_i45283_2_, String p_i45283_3_,
             int p_i45283_4_, WorldSettings p_i45283_5_, WorldServer p_i45283_6_, Profiler p_i45283_7_) {

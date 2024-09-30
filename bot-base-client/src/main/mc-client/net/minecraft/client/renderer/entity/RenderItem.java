@@ -3,8 +3,6 @@ package net.minecraft.client.renderer.entity;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-import org.checkerframework.checker.units.qual.t;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -41,7 +39,6 @@ public class RenderItem extends Render {
     /** Defines the zLevel of rendering of item on GUI. */
     public float zLevel;
     public static boolean renderInFrame;
-    private static final String __OBFID = "CL_00001003";
 
     public RenderItem(Minecraft mc) {
         super(mc);
@@ -221,14 +218,16 @@ public class RenderItem extends Render {
 
         if (p_77020_2_ == null) {
             TextureManager var9 = this.mc.getTextureManager();
-            ResourceLocation var10 = var9.getResourceLocation(p_77020_1_.getEntityItem().getItemSpriteNumber());
-            p_77020_2_ = ((TextureMap) var9.getTexture(var10)).getAtlasSprite("missingno");
+            if (var9 != null) {
+                ResourceLocation var10 = var9.getResourceLocation(p_77020_1_.getEntityItem().getItemSpriteNumber());
+                p_77020_2_ = ((TextureMap) var9.getTexture(var10)).getAtlasSprite("missingno");
+            }
         }
 
-        float var25 = ((IIcon) p_77020_2_).getMinU();
-        float var26 = ((IIcon) p_77020_2_).getMaxU();
-        float var11 = ((IIcon) p_77020_2_).getMinV();
-        float var12 = ((IIcon) p_77020_2_).getMaxV();
+        float var25 = p_77020_2_ != null ? ((IIcon) p_77020_2_).getMinU() : 0.0f;
+        float var26 = p_77020_2_ != null ? ((IIcon) p_77020_2_).getMaxU() : 0.0f;
+        float var11 = p_77020_2_ != null ? ((IIcon) p_77020_2_).getMinV() : 0.0f;
+        float var12 = p_77020_2_ != null ? ((IIcon) p_77020_2_).getMaxV() : 0.0f;
         float var13 = 1.0F;
         float var14 = 0.5F;
         float var15 = 0.25F;
@@ -272,8 +271,9 @@ public class RenderItem extends Render {
                 }
 
                 GL11.glColor4f(p_77020_5_, p_77020_6_, p_77020_7_, 1.0F);
-                ItemRenderer.renderItemIn2D(var8, var26, var11, var25, var12, ((IIcon) p_77020_2_).getIconWidth(),
-                        ((IIcon) p_77020_2_).getIconHeight(), var16);
+                if (p_77020_2_ != null)
+                    ItemRenderer.renderItemIn2D(var8, var26, var11, var25, var12, ((IIcon) p_77020_2_).getIconWidth(),
+                            ((IIcon) p_77020_2_).getIconHeight(), var16);
 
                 if (var18.hasEffect()) {
                     GL11.glDepthFunc(GL11.GL_EQUAL);
@@ -323,17 +323,19 @@ public class RenderItem extends Render {
                 }
 
                 GL11.glColor4f(p_77020_5_, p_77020_6_, p_77020_7_, 1.0F);
-                var8.startDrawingQuads();
-                var8.setNormal(0.0F, 1.0F, 0.0F);
-                var8.addVertexWithUV((double) (0.0F - var14), (double) (0.0F - var15), 0.0D, (double) var25,
-                        (double) var12);
-                var8.addVertexWithUV((double) (var13 - var14), (double) (0.0F - var15), 0.0D, (double) var26,
-                        (double) var12);
-                var8.addVertexWithUV((double) (var13 - var14), (double) (1.0F - var15), 0.0D, (double) var26,
-                        (double) var11);
-                var8.addVertexWithUV((double) (0.0F - var14), (double) (1.0F - var15), 0.0D, (double) var25,
-                        (double) var11);
-                var8.draw();
+                if (var8 != null) {
+                    var8.startDrawingQuads();
+                    var8.setNormal(0.0F, 1.0F, 0.0F);
+                    var8.addVertexWithUV((double) (0.0F - var14), (double) (0.0F - var15), 0.0D, (double) var25,
+                            (double) var12);
+                    var8.addVertexWithUV((double) (var13 - var14), (double) (0.0F - var15), 0.0D, (double) var26,
+                            (double) var12);
+                    var8.addVertexWithUV((double) (var13 - var14), (double) (1.0F - var15), 0.0D, (double) var26,
+                            (double) var11);
+                    var8.addVertexWithUV((double) (0.0F - var14), (double) (1.0F - var15), 0.0D, (double) var25,
+                            (double) var11);
+                    var8.draw();
+                }
                 GL11.glPopMatrix();
             }
         }
@@ -403,13 +405,15 @@ public class RenderItem extends Render {
             GL11.glColorMask(false, false, false, true);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             Tessellator var8 = this.mc.getTessellator();
-            var8.startDrawingQuads();
-            var8.setColorOpaque_I(-1);
-            var8.addVertex((double) (p_77015_4_ - 2), (double) (p_77015_5_ + 18), (double) this.zLevel);
-            var8.addVertex((double) (p_77015_4_ + 18), (double) (p_77015_5_ + 18), (double) this.zLevel);
-            var8.addVertex((double) (p_77015_4_ + 18), (double) (p_77015_5_ - 2), (double) this.zLevel);
-            var8.addVertex((double) (p_77015_4_ - 2), (double) (p_77015_5_ - 2), (double) this.zLevel);
-            var8.draw();
+            if (var8 != null) {
+                var8.startDrawingQuads();
+                var8.setColorOpaque_I(-1);
+                var8.addVertex((double) (p_77015_4_ - 2), (double) (p_77015_5_ + 18), (double) this.zLevel);
+                var8.addVertex((double) (p_77015_4_ + 18), (double) (p_77015_5_ + 18), (double) this.zLevel);
+                var8.addVertex((double) (p_77015_4_ + 18), (double) (p_77015_5_ - 2), (double) this.zLevel);
+                var8.addVertex((double) (p_77015_4_ - 2), (double) (p_77015_5_ - 2), (double) this.zLevel);
+                var8.draw();
+            }
             GL11.glColorMask(true, true, true, true);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -478,34 +482,10 @@ public class RenderItem extends Render {
             } catch (Throwable var9) {
                 CrashReport var7 = CrashReport.makeCrashReport(var9, "Rendering item");
                 CrashReportCategory var8 = var7.makeCategory("Item being rendered");
-                var8.addCrashSectionCallable("Item Type", new Callable() {
-                    private static final String __OBFID = "CL_00001004";
-
-                    public String call() {
-                        return String.valueOf(p_82406_3_.getItem());
-                    }
-                });
-                var8.addCrashSectionCallable("Item Aux", new Callable() {
-                    private static final String __OBFID = "CL_00001005";
-
-                    public String call() {
-                        return String.valueOf(p_82406_3_.getItemDamage());
-                    }
-                });
-                var8.addCrashSectionCallable("Item NBT", new Callable() {
-                    private static final String __OBFID = "CL_00001006";
-
-                    public String call() {
-                        return String.valueOf(p_82406_3_.getTagCompound());
-                    }
-                });
-                var8.addCrashSectionCallable("Item Foil", new Callable() {
-                    private static final String __OBFID = "CL_00001007";
-
-                    public String call() {
-                        return String.valueOf(p_82406_3_.hasEffect());
-                    }
-                });
+                var8.addCrashSectionCallable("Item Type", () -> String.valueOf(p_82406_3_.getItem()));
+                var8.addCrashSectionCallable("Item Aux", () -> String.valueOf(p_82406_3_.getItemDamage()));
+                var8.addCrashSectionCallable("Item NBT", () -> String.valueOf(p_82406_3_.getTagCompound()));
+                var8.addCrashSectionCallable("Item Foil", () -> String.valueOf(p_82406_3_.hasEffect()));
                 throw new ReportedException(var7);
             }
 
@@ -544,6 +524,8 @@ public class RenderItem extends Render {
                 var12 = -1.0F;
             }
 
+            if (var11 == null)
+                return;
             var11.startDrawingQuads();
             var11.addVertexWithUV((double) (p_77018_2_ + 0), (double) (p_77018_3_ + p_77018_5_), (double) this.zLevel,
                     (double) ((var9 + (float) p_77018_5_ * var12) * var7),
@@ -627,6 +609,8 @@ public class RenderItem extends Render {
 
     public void renderIcon(int p_94149_1_, int p_94149_2_, IIcon p_94149_3_, int p_94149_4_, int p_94149_5_) {
         Tessellator var6 = this.mc.getTessellator();
+        if (var6 == null)
+            return;
         var6.startDrawingQuads();
         var6.addVertexWithUV((double) (p_94149_1_ + 0), (double) (p_94149_2_ + p_94149_5_), (double) this.zLevel,
                 (double) p_94149_3_.getMinU(), (double) p_94149_3_.getMaxV());

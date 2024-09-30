@@ -10,7 +10,6 @@ public class ServerListEntryLanDetected implements GuiListExtended.IGuiListEntry
     protected final Minecraft mc;
     protected final LanServerDetector.LanServer field_148291_b;
     private long field_148290_d = 0L;
-    private static final String __OBFID = "CL_00000816";
 
     protected ServerListEntryLanDetected(Minecraft mc, GuiMultiplayer p_i45046_1_,
             LanServerDetector.LanServer p_i45046_2_) {

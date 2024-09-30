@@ -14,7 +14,6 @@ import net.minecraft.util.ResourceLocation;
 public class RenderXPOrb extends Render {
     private static final ResourceLocation experienceOrbTextures = new ResourceLocation(
             "textures/entity/experience_orb.png");
-    private static final String __OBFID = "CL_00000993";
 
     public RenderXPOrb(Minecraft mc) {
         super(mc);
@@ -60,6 +59,8 @@ public class RenderXPOrb extends Render {
         float var24 = 0.3F;
         GL11.glScalef(var24, var24, var24);
         Tessellator var25 = this.mc.getTessellator();
+        if (var25 == null)
+            return;
         var25.startDrawingQuads();
         var25.setColorRGBA_I(var23, 128);
         var25.setNormal(0.0F, 1.0F, 0.0F);

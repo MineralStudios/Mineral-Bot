@@ -41,7 +41,6 @@ public class ChunkProviderClient implements IChunkProvider {
 
     /** Reference to the World object. */
     private World worldObj;
-    private static final String __OBFID = "CL_00000880";
 
     public ChunkProviderClient(World p_i1184_1_) {
         this.blankChunk = new EmptyChunk(p_i1184_1_, 0, 0);

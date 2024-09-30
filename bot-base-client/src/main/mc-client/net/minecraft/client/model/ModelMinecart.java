@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 
 public class ModelMinecart extends ModelBase {
     public ModelRenderer[] sideModels = new ModelRenderer[7];
-    private static final String __OBFID = "CL_00000844";
 
     public ModelMinecart(Minecraft mc) {
         this.sideModels[0] = new ModelRenderer(mc, this, 0, 10);

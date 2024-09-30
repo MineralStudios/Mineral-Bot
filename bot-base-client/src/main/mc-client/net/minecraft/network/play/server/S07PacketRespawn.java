@@ -16,7 +16,6 @@ public class S07PacketRespawn extends Packet {
     private EnumDifficulty field_149086_b;
     private WorldSettings.GameType field_149087_c;
     private WorldType field_149085_d;
-    private static final String __OBFID = "CL_00001322";
 
     public S07PacketRespawn() {
     }

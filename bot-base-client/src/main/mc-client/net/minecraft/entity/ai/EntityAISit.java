@@ -3,16 +3,13 @@ package net.minecraft.entity.ai;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
 
-public class EntityAISit extends EntityAIBase
-{
+public class EntityAISit extends EntityAIBase {
     private EntityTameable theEntity;
 
     /** If the EntityTameable is sitting. */
     private boolean isSitting;
-    private static final String __OBFID = "CL_00001613";
 
-    public EntityAISit(EntityTameable p_i1654_1_)
-    {
+    public EntityAISit(EntityTameable p_i1654_1_) {
         this.theEntity = p_i1654_1_;
         this.setMutexBits(5);
     }
@@ -20,32 +17,25 @@ public class EntityAISit extends EntityAIBase
     /**
      * Returns whether the EntityAIBase should begin execution.
      */
-    public boolean shouldExecute()
-    {
-        if (!this.theEntity.isTamed())
-        {
+    public boolean shouldExecute() {
+        if (!this.theEntity.isTamed()) {
             return false;
-        }
-        else if (this.theEntity.isInWater())
-        {
+        } else if (this.theEntity.isInWater()) {
             return false;
-        }
-        else if (!this.theEntity.onGround)
-        {
+        } else if (!this.theEntity.onGround) {
             return false;
-        }
-        else
-        {
+        } else {
             EntityLivingBase var1 = this.theEntity.getOwner();
-            return var1 == null ? true : (this.theEntity.getDistanceSqToEntity(var1) < 144.0D && var1.getAITarget() != null ? false : this.isSitting);
+            return var1 == null ? true
+                    : (this.theEntity.getDistanceSqToEntity(var1) < 144.0D && var1.getAITarget() != null ? false
+                            : this.isSitting);
         }
     }
 
     /**
      * Execute a one shot task or start executing a continuous task
      */
-    public void startExecuting()
-    {
+    public void startExecuting() {
         this.theEntity.getNavigator().clearPathEntity();
         this.theEntity.setSitting(true);
     }
@@ -53,16 +43,14 @@ public class EntityAISit extends EntityAIBase
     /**
      * Resets the task
      */
-    public void resetTask()
-    {
+    public void resetTask() {
         this.theEntity.setSitting(false);
     }
 
     /**
      * Sets the sitting flag.
      */
-    public void setSitting(boolean p_75270_1_)
-    {
+    public void setSitting(boolean p_75270_1_) {
         this.isSitting = p_75270_1_;
     }
 }

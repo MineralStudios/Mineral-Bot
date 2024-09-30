@@ -18,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 public class LayeredTexture extends AbstractTexture {
     private static final Logger logger = LogManager.getLogger();
     public final List layeredTextureNames;
-    private static final String __OBFID = "CL_00001051";
     private final Minecraft mc;
 
     public LayeredTexture(Minecraft mc, String... p_i1274_1_) {

@@ -17,7 +17,6 @@ public class RenderWolf extends RenderLiving {
             "textures/entity/wolf/wolf_angry.png");
     private static final ResourceLocation wolfCollarTextures = new ResourceLocation(
             "textures/entity/wolf/wolf_collar.png");
-    private static final String __OBFID = "CL_00001036";
 
     public RenderWolf(Minecraft mc, ModelBase p_i1269_1_, ModelBase p_i1269_2_, float p_i1269_3_) {
         super(mc, p_i1269_1_, p_i1269_3_);

@@ -35,7 +35,6 @@ public class EnchantmentDamage extends Enchantment {
      * arthropods
      */
     public final int damageType;
-    private static final String __OBFID = "CL_00000102";
 
     public EnchantmentDamage(int p_i1923_1_, int p_i1923_2_, int damageType) {
         super(p_i1923_1_, p_i1923_2_, EnumEnchantmentType.weapon);

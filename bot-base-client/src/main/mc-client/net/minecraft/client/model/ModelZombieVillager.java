@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 
 public class ModelZombieVillager extends ModelBiped {
-    private static final String __OBFID = "CL_00000865";
 
     public ModelZombieVillager(Minecraft mc) {
         this(mc, 0.0F, 0.0F, false);

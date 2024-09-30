@@ -21,7 +21,6 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 public class S20PacketEntityProperties extends Packet {
     private int field_149445_a;
     private final List<S20PacketEntityProperties.Snapshot> field_149444_b;
-    private static final String __OBFID = "CL_00001341";
 
     public S20PacketEntityProperties() {
         this.field_149444_b = new ArrayList<>();
@@ -108,7 +107,6 @@ public class S20PacketEntityProperties extends Packet {
         private final String field_151412_b;
         private final double field_151413_c;
         private final Collection<AttributeModifier> field_151411_d;
-        private static final String __OBFID = "CL_00001342";
 
         public String func_151409_a() {
             return this.field_151412_b;

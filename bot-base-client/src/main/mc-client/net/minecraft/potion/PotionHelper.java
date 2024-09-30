@@ -28,7 +28,6 @@ public class PotionHelper {
 
     /** An array of possible potion prefix names, as translation IDs. */
     private static final String[] potionPrefixes;
-    private static final String __OBFID = "CL_00000078";
 
     /**
      * Is the bit given set to 1?

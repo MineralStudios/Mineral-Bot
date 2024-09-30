@@ -22,7 +22,6 @@ public class S2APacketParticles extends Packet {
     private float field_149231_g;
     private float field_149237_h;
     private int field_149238_i;
-    private static final String __OBFID = "CL_00001308";
 
     /**
      * Reads the raw packet data from the data stream.

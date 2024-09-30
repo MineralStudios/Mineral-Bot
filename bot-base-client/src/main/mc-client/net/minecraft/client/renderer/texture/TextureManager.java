@@ -25,12 +25,11 @@ import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public class TextureManager implements ITickable, IResourceManagerReloadListener {
     private static final Logger logger = LogManager.getLogger();
-    private final Map mapTextureObjects = Maps.newHashMap();
+    private final Map<ResourceLocation, Object> mapTextureObjects = Maps.newHashMap();
     private final Map mapResourceLocations = Maps.newHashMap();
     private final List listTickables = Lists.newArrayList();
     private final Map mapTextureCounters = Maps.newHashMap();
     private IResourceManager theResourceManager;
-    private static final String __OBFID = "CL_00001064";
     private final Minecraft mc;
 
     public TextureManager(Minecraft mc, IResourceManager par1ResourceManager) {
@@ -95,17 +94,7 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
             CrashReport var5 = CrashReport.makeCrashReport(var9, "Registering texture");
             CrashReportCategory var6 = var5.makeCategory("Resource location being registered");
             var6.addCrashSection("Resource location", par1ResourceLocation);
-            var6.addCrashSectionCallable("Texture object class", new Callable() {
-                private static final String __OBFID = "CL_00001065";
-
-                public String call1() {
-                    return par2TextureObject.getClass().getName();
-                }
-
-                public Object call() throws Exception {
-                    return this.call1();
-                }
-            });
+            var6.addCrashSectionCallable("Texture object class", () -> par2TextureObject.getClass().getName());
             throw new ReportedException(var5);
         }
 

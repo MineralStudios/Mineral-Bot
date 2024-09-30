@@ -12,7 +12,6 @@ import net.minecraft.util.ResourceLocation;
 public class GuiDispenser extends GuiContainer {
     private static final ResourceLocation field_147088_v = new ResourceLocation("textures/gui/container/dispenser.png");
     public TileEntityDispenser field_147089_u;
-    private static final String __OBFID = "CL_00000765";
 
     public GuiDispenser(Minecraft mc, InventoryPlayer p_i46384_1_, TileEntityDispenser p_i46384_2_) {
         super(mc, new ContainerDispenser(p_i46384_1_, p_i46384_2_));

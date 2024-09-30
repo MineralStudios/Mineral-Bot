@@ -9,7 +9,6 @@ public class GuiRenameWorld extends GuiScreen {
     private GuiScreen field_146585_a;
     private GuiTextField field_146583_f;
     private final String field_146584_g;
-    private static final String __OBFID = "CL_00000709";
 
     public GuiRenameWorld(Minecraft mc, GuiScreen p_i46317_1_, String p_i46317_2_) {
         super(mc);

@@ -14,7 +14,6 @@ public class S01PacketEncryptionRequest extends Packet {
     private String field_149612_a;
     private PublicKey field_149610_b;
     private byte[] field_149611_c;
-    private static final String __OBFID = "CL_00001376";
 
     public S01PacketEncryptionRequest() {
     }

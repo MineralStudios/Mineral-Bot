@@ -18,7 +18,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.MapData;
 
 public class ItemMap extends ItemMapBase {
-    private static final String __OBFID = "CL_00000047";
 
     protected ItemMap() {
         this.setHasSubtypes(true);

@@ -15,7 +15,6 @@ public class RenderOcelot extends RenderLiving {
     private static final ResourceLocation redOcelotTextures = new ResourceLocation("textures/entity/cat/red.png");
     private static final ResourceLocation siameseOcelotTextures = new ResourceLocation(
             "textures/entity/cat/siamese.png");
-    private static final String __OBFID = "CL_00001017";
 
     public RenderOcelot(Minecraft mc, ModelBase p_i1264_1_, float p_i1264_2_) {
         super(mc, p_i1264_1_, p_i1264_2_);

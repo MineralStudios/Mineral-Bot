@@ -14,7 +14,6 @@ public class JsonBlendingMode {
     private final int field_148112_f;
     private final boolean field_148113_g;
     private final boolean field_148119_h;
-    private static final String __OBFID = "CL_00001038";
 
     private JsonBlendingMode(boolean p_i45084_1_, boolean p_i45084_2_, int p_i45084_3_, int p_i45084_4_,
             int p_i45084_5_, int p_i45084_6_, int p_i45084_7_) {

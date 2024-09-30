@@ -17,7 +17,6 @@ public class S18PacketEntityTeleport extends Packet {
     private int field_149454_d;
     private byte field_149455_e;
     private byte field_149453_f;
-    private static final String __OBFID = "CL_00001340";
 
     public S18PacketEntityTeleport() {
     }

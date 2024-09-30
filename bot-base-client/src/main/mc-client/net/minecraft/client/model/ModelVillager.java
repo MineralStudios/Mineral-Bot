@@ -20,7 +20,6 @@ public class ModelVillager extends ModelBase {
     /** The left leg of the VillagerModel */
     public ModelRenderer leftVillagerLeg;
     public ModelRenderer villagerNose;
-    private static final String __OBFID = "CL_00000864";
 
     public ModelVillager(Minecraft mc, float p_i1163_1_) {
         this(mc, p_i1163_1_, 0.0F, 64, 64);

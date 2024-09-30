@@ -39,10 +39,10 @@ import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
-import com.google.common.util.concurrent.Runnables;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 
+import gg.mineral.bot.api.world.ClientWorld;
 import gg.mineral.bot.base.client.gui.GuiConnecting;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.lwjgl.Sys;
@@ -235,6 +235,7 @@ public class Minecraft {
     private int leftClickCounter;
     @Getter
     @Setter
+    @Nullable
     private Tessellator tessellator;
 
     /** Display width */
@@ -323,7 +324,7 @@ public class Minecraft {
     @Getter
     @Nullable
     private SkinManager skinManager;
-    private final Queue field_152351_aB = Queues.newArrayDeque();
+    private final Queue<FutureTask> futureTaskQueue = Queues.newArrayDeque();
     private final Thread mainThread = Thread.currentThread();
 
     /**
@@ -344,7 +345,6 @@ public class Minecraft {
 
     /** Profiler currently displayed in the debug screen pie chart */
     private String debugProfilerName = "root";
-    private static final String __OBFID = "CL_00000631";
     public final TileEntityRendererDispatcher tileEntityRendererDispatcher;
     public final TileEntityRendererChestHelper tileEntityRendererChestHelper;
 
@@ -402,7 +402,8 @@ public class Minecraft {
         this.tempDisplayHeight = p_i1103_3_;
         this.fullscreen = p_i1103_4_;
         ImageIO.setUseCache(false);
-        this.tessellator = new Tessellator(524288);
+        if (!BotGlobalConfig.isOptimizedGameLoop())
+            this.tessellator = new Tessellator(524288);
     }
 
     private static boolean isJvm64bit() {
@@ -427,7 +428,6 @@ public class Minecraft {
 
     private static void startTimerHackThread() {
         Thread var1 = new Thread("Timer hack thread") {
-            private static final String __OBFID = "CL_00000632";
 
             public void run() {
                 while (InstanceManager.isRunning()) {
@@ -608,7 +608,6 @@ public class Minecraft {
         if (!BotGlobalConfig.isOptimizedGameLoop())
             this.mcResourceManager.registerReloadListener(this.entityRenderer);
         AchievementList.openInventory.setStatStringFormatter(new IStatStringFormat() {
-            private static final String __OBFID = "CL_00000639";
 
             public String formatString(String p_74535_1_) {
                 try {
@@ -815,15 +814,17 @@ public class Minecraft {
         }
 
         Tessellator var4 = this.getTessellator();
-        var4.startDrawingQuads();
-        var4.setColorOpaque_I(16777215);
-        var4.addVertexWithUV(0.0D, (double) this.displayHeight, 0.0D, 0.0D, 0.0D);
-        var4.addVertexWithUV((double) this.displayWidth, (double) this.displayHeight, 0.0D, 0.0D, 0.0D);
-        var4.addVertexWithUV((double) this.displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
-        var4.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-        var4.draw();
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        var4.setColorOpaque_I(16777215);
+        if (var4 != null) {
+            var4.startDrawingQuads();
+            var4.setColorOpaque_I(16777215);
+            var4.addVertexWithUV(0.0D, (double) this.displayHeight, 0.0D, 0.0D, 0.0D);
+            var4.addVertexWithUV((double) this.displayWidth, (double) this.displayHeight, 0.0D, 0.0D, 0.0D);
+            var4.addVertexWithUV((double) this.displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
+            var4.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+            var4.draw();
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            var4.setColorOpaque_I(16777215);
+        }
         short var5 = 256;
         short var6 = 256;
         this.scaledTessellator((var1.getScaledWidth() - var5) / 2, (var1.getScaledHeight() - var6) / 2, 0, 0, var5,
@@ -847,6 +848,9 @@ public class Minecraft {
         float var7 = 0.00390625F;
         float var8 = 0.00390625F;
         Tessellator var9 = this.getTessellator();
+
+        if (var9 == null)
+            return;
         var9.startDrawingQuads();
         var9.addVertexWithUV((double) (p_71392_1_ + 0), (double) (p_71392_2_ + p_71392_6_), 0.0D,
                 (double) ((float) (p_71392_3_ + 0) * var7), (double) ((float) (p_71392_4_ + p_71392_6_) * var8));
@@ -870,9 +874,11 @@ public class Minecraft {
         if (p_147108_1_ instanceof gg.mineral.bot.base.client.gui.GuiConnecting connecting)
             connecting.initConnectingGui();
 
+        EntityClientPlayerMP thePlayer = this.thePlayer;
+
         if (p_147108_1_ == null && this.theWorld == null)
             p_147108_1_ = new GuiMainMenu(this);
-        else if (p_147108_1_ == null && this.thePlayer.getHealth() <= 0.0F)
+        else if (p_147108_1_ == null && thePlayer != null && thePlayer.getHealth() <= 0.0F)
             p_147108_1_ = new GuiGameOver(this);
 
         if (p_147108_1_ instanceof GuiMainMenu) {
@@ -1225,15 +1231,17 @@ public class Minecraft {
             int var7 = this.displayWidth - var6 - 10;
             int var8 = this.displayHeight - var6 * 2;
             GL11.glEnable(GL11.GL_BLEND);
-            var5.startDrawingQuads();
-            var5.setColorRGBA_I(0, 200);
-            var5.addVertex((double) ((float) var7 - (float) var6 * 1.1F),
-                    (double) ((float) var8 - (float) var6 * 0.6F - 16.0F), 0.0D);
-            var5.addVertex((double) ((float) var7 - (float) var6 * 1.1F), (double) (var8 + var6 * 2), 0.0D);
-            var5.addVertex((double) ((float) var7 + (float) var6 * 1.1F), (double) (var8 + var6 * 2), 0.0D);
-            var5.addVertex((double) ((float) var7 + (float) var6 * 1.1F),
-                    (double) ((float) var8 - (float) var6 * 0.6F - 16.0F), 0.0D);
-            var5.draw();
+            if (var5 != null) {
+                var5.startDrawingQuads();
+                var5.setColorRGBA_I(0, 200);
+                var5.addVertex((double) ((float) var7 - (float) var6 * 1.1F),
+                        (double) ((float) var8 - (float) var6 * 0.6F - 16.0F), 0.0D);
+                var5.addVertex((double) ((float) var7 - (float) var6 * 1.1F), (double) (var8 + var6 * 2), 0.0D);
+                var5.addVertex((double) ((float) var7 + (float) var6 * 1.1F), (double) (var8 + var6 * 2), 0.0D);
+                var5.addVertex((double) ((float) var7 + (float) var6 * 1.1F),
+                        (double) ((float) var8 - (float) var6 * 0.6F - 16.0F), 0.0D);
+                var5.draw();
+            }
             GL11.glDisable(GL11.GL_BLEND);
             double var9 = 0.0D;
             int var13;
@@ -1241,9 +1249,11 @@ public class Minecraft {
             for (int var11 = 0; var11 < var3.size(); ++var11) {
                 Profiler.Result var12 = (Profiler.Result) var3.get(var11);
                 var13 = MathHelper.floor_double(var12.field_76332_a / 4.0D) + 1;
-                var5.startDrawing(6);
-                var5.setColorOpaque_I(var12.func_76329_a());
-                var5.addVertex((double) var7, (double) var8, 0.0D);
+                if (var5 != null) {
+                    var5.startDrawing(6);
+                    var5.setColorOpaque_I(var12.func_76329_a());
+                    var5.addVertex((double) var7, (double) var8, 0.0D);
+                }
                 int var14;
                 float var15;
                 float var16;
@@ -1254,23 +1264,29 @@ public class Minecraft {
                             / 100.0D);
                     var16 = MathHelper.sin(var15) * (float) var6;
                     var17 = MathHelper.cos(var15) * (float) var6 * 0.5F;
-                    var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17), 0.0D);
+                    if (var5 != null)
+                        var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17), 0.0D);
                 }
 
-                var5.draw();
-                var5.startDrawing(5);
-                var5.setColorOpaque_I((var12.func_76329_a() & 16711422) >> 1);
+                if (var5 != null) {
+                    var5.draw();
+                    var5.startDrawing(5);
+                    var5.setColorOpaque_I((var12.func_76329_a() & 16711422) >> 1);
+                }
 
                 for (var14 = var13; var14 >= 0; --var14) {
                     var15 = (float) ((var9 + var12.field_76332_a * (double) var14 / (double) var13) * Math.PI * 2.0D
                             / 100.0D);
                     var16 = MathHelper.sin(var15) * (float) var6;
                     var17 = MathHelper.cos(var15) * (float) var6 * 0.5F;
-                    var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17), 0.0D);
-                    var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17 + 10.0F), 0.0D);
+                    if (var5 != null) {
+                        var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17), 0.0D);
+                        var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17 + 10.0F), 0.0D);
+                    }
                 }
 
-                var5.draw();
+                if (var5 != null)
+                    var5.draw();
                 var9 += var12.field_76332_a;
             }
 
@@ -1278,15 +1294,13 @@ public class Minecraft {
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             String var19 = "";
 
-            if (!var4.field_76331_c.equals("unspecified")) {
+            if (!var4.field_76331_c.equals("unspecified"))
                 var19 = var19 + "[0] ";
-            }
 
-            if (var4.field_76331_c.length() == 0) {
+            if (var4.field_76331_c.length() == 0)
                 var19 = var19 + "ROOT ";
-            } else {
+            else
                 var19 = var19 + var4.field_76331_c + " ";
-            }
 
             var13 = 16777215;
             FontRenderer fontRenderer = this.fontRenderer;
@@ -1299,11 +1313,10 @@ public class Minecraft {
                     Profiler.Result var21 = (Profiler.Result) var3.get(var20);
                     String var22 = "";
 
-                    if (var21.field_76331_c.equals("unspecified")) {
+                    if (var21.field_76331_c.equals("unspecified"))
                         var22 = var22 + "[?] ";
-                    } else {
+                    else
                         var22 = var22 + "[" + (var20 + 1) + "] ";
-                    }
 
                     var22 = var22 + var21.field_76331_c;
 
@@ -1371,9 +1384,8 @@ public class Minecraft {
     }
 
     private void func_147115_a(boolean p_147115_1_) {
-        if (!p_147115_1_) {
+        if (!p_147115_1_)
             this.leftClickCounter = 0;
-        }
 
         if (this.leftClickCounter <= 0) {
             if (p_147115_1_ && this.objectMouseOver != null
@@ -1382,12 +1394,14 @@ public class Minecraft {
                 int var3 = this.objectMouseOver.blockY;
                 int var4 = this.objectMouseOver.blockZ;
 
-                if (this.theWorld.getBlock(var2, var3, var4).getMaterial() != Material.air) {
+                if (this.theWorld != null && this.theWorld.getBlock(var2, var3, var4).getMaterial() != Material.air) {
                     this.playerController.onPlayerDamageBlock(var2, var3, var4, this.objectMouseOver.sideHit);
 
-                    if (this.thePlayer.isCurrentToolAdventureModeExempt(var2, var3, var4)) {
+                    EntityClientPlayerMP thePlayer = this.thePlayer;
+
+                    if (thePlayer != null && thePlayer.isCurrentToolAdventureModeExempt(var2, var3, var4)) {
                         this.effectRenderer.addBlockHitEffects(var2, var3, var4, this.objectMouseOver.sideHit);
-                        this.thePlayer.swingItem();
+                        thePlayer.swingItem();
                     }
                 }
             } else {
@@ -1398,14 +1412,15 @@ public class Minecraft {
 
     private void func_147116_af() {
         if (this.leftClickCounter <= 0) {
-            this.thePlayer.swingItem();
+            if (this.thePlayer != null)
+                this.thePlayer.swingItem();
 
             if (this.objectMouseOver == null) {
                 logger.error("Null returned as \'hitResult\', this shouldn\'t happen!");
 
-                if (this.playerController.isNotCreative()) {
+                if (this.playerController.isNotCreative())
                     this.leftClickCounter = 10;
-                }
+
             } else {
                 switch (Minecraft.SwitchMovingObjectType.field_152390_a[this.objectMouseOver.typeOfHit.ordinal()]) {
                     case 1:
@@ -1417,13 +1432,14 @@ public class Minecraft {
                         int var2 = this.objectMouseOver.blockY;
                         int var3 = this.objectMouseOver.blockZ;
 
-                        if (this.theWorld.getBlock(var1, var2, var3).getMaterial() == Material.air) {
-                            if (this.playerController.isNotCreative()) {
+                        if (this.theWorld != null
+                                && this.theWorld.getBlock(var1, var2, var3).getMaterial() == Material.air) {
+                            if (this.playerController.isNotCreative())
                                 this.leftClickCounter = 10;
-                            }
-                        } else {
+
+                        } else
                             this.playerController.clickBlock(var1, var2, var3, this.objectMouseOver.sideHit);
-                        }
+
                 }
             }
         }
@@ -1432,7 +1448,10 @@ public class Minecraft {
     private void func_147121_ag() {
         this.rightClickDelayTimer = 4;
         boolean var1 = true;
-        ItemStack var2 = this.thePlayer.inventory.getCurrentItem();
+        EntityClientPlayerMP thePlayer = this.thePlayer;
+
+        @Nullable
+        ItemStack var2 = thePlayer != null ? thePlayer.inventory.getCurrentItem() : null;
 
         if (this.objectMouseOver == null) {
             logger.warn("Null returned as \'hitResult\', this shouldn\'t happen!");
@@ -1451,34 +1470,34 @@ public class Minecraft {
                     int var4 = this.objectMouseOver.blockY;
                     int var5 = this.objectMouseOver.blockZ;
 
-                    if (this.theWorld.getBlock(var3, var4, var5).getMaterial() != Material.air) {
+                    if (this.theWorld != null
+                            && this.theWorld.getBlock(var3, var4, var5).getMaterial() != Material.air) {
                         int var6 = var2 != null ? var2.stackSize : 0;
 
                         if (this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, var2, var3, var4,
                                 var5, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec)) {
                             var1 = false;
-                            this.thePlayer.swingItem();
+                            if (this.thePlayer != null)
+                                this.thePlayer.swingItem();
                         }
 
-                        if (var2 == null) {
+                        if (var2 == null)
                             return;
-                        }
 
                         if (var2.stackSize == 0) {
-                            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-                        } else if (var2.stackSize != var6 || this.playerController.isInCreativeMode()) {
+                            if (this.thePlayer != null)
+                                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
+                        } else if (var2.stackSize != var6 || this.playerController.isInCreativeMode())
                             this.entityRenderer.itemRenderer.resetEquippedProgress();
-                        }
                     }
             }
         }
 
         if (var1) {
-            ItemStack var7 = this.thePlayer.inventory.getCurrentItem();
+            ItemStack var7 = thePlayer != null ? thePlayer.inventory.getCurrentItem() : null;
 
-            if (var7 != null && this.playerController.sendUseItem(this.thePlayer, this.theWorld, var7)) {
+            if (var7 != null && this.playerController.sendUseItem(this.thePlayer, this.theWorld, var7))
                 this.entityRenderer.itemRenderer.resetEquippedProgress2();
-            }
         }
     }
 
@@ -1536,11 +1555,13 @@ public class Minecraft {
         this.displayWidth = p_71370_1_ <= 0 ? 1 : p_71370_1_;
         this.displayHeight = p_71370_2_ <= 0 ? 1 : p_71370_2_;
 
-        if (this.currentScreen != null) {
+        GuiScreen currentScreen = this.currentScreen;
+
+        if (currentScreen != null) {
             ScaledResolution var3 = new ScaledResolution(this, p_71370_1_, p_71370_2_);
             int var4 = var3.getScaledWidth();
             int var5 = var3.getScaledHeight();
-            this.currentScreen.setWorldAndResolution(this, var4, var5);
+            currentScreen.setWorldAndResolution(this, var4, var5);
         }
 
         this.loadingScreen = new LoadingScreenRenderer(this);
@@ -1560,11 +1581,9 @@ public class Minecraft {
      */
     public void runTick() {
         this.mcProfiler.startSection("scheduledExecutables");
-        Queue var1 = this.field_152351_aB;
-
-        synchronized (this.field_152351_aB) {
-            while (!this.field_152351_aB.isEmpty())
-                ((FutureTask) this.field_152351_aB.poll()).run();
+        synchronized (this.futureTaskQueue) {
+            while (!this.futureTaskQueue.isEmpty())
+                this.futureTaskQueue.poll().run();
         }
 
         this.mcProfiler.endSection();
@@ -1589,14 +1608,15 @@ public class Minecraft {
         if (!this.isGamePaused && this.renderEngine != null)
             this.renderEngine.tick();
 
-        if (this.currentScreen == null && this.thePlayer != null) {
-            if (this.thePlayer.getHealth() <= 0.0F) {
+        EntityClientPlayerMP thePlayer = this.thePlayer;
+        if (this.currentScreen == null && thePlayer != null) {
+            if (thePlayer.getHealth() <= 0.0F) {
                 this.displayGuiScreen((GuiScreen) null);
-            } else if (this.thePlayer.isPlayerSleeping() && this.theWorld != null) {
+            } else if (thePlayer.isPlayerSleeping() && this.theWorld != null) {
                 this.displayGuiScreen(new GuiSleepMP(this));
             }
         } else if (this.currentScreen != null && this.currentScreen instanceof GuiSleepMP
-                && !this.thePlayer.isPlayerSleeping()) {
+                && thePlayer != null && !thePlayer.isPlayerSleeping()) {
             this.displayGuiScreen((GuiScreen) null);
         }
 
@@ -1612,10 +1632,13 @@ public class Minecraft {
             } catch (Throwable var6) {
                 var2 = CrashReport.makeCrashReport(var6, "Updating screen events");
                 var3 = var2.makeCategory("Affected screen");
-                var3.addCrashSectionCallable("Screen name", new Callable() {
-                    public String call() {
-                        return Minecraft.this.currentScreen.getClass().getCanonicalName();
-                    }
+                var3.addCrashSectionCallable("Screen name", () -> {
+                    GuiScreen currentScreen = Minecraft.this.currentScreen;
+
+                    if (currentScreen == null)
+                        return "null";
+
+                    return currentScreen.getClass().getCanonicalName();
                 });
                 throw new ReportedException(var2);
             }
@@ -1626,20 +1649,21 @@ public class Minecraft {
                 } catch (Throwable var5) {
                     var2 = CrashReport.makeCrashReport(var5, "Ticking screen");
                     var3 = var2.makeCategory("Affected screen");
-                    var3.addCrashSectionCallable("Screen name", new Callable() {
+                    var3.addCrashSectionCallable("Screen name", () -> {
+                        GuiScreen currentScreen = Minecraft.this.currentScreen;
 
-                        private static final String __OBFID = "CL_00000642";
-
-                        public String call() {
-                            return Minecraft.this.currentScreen.getClass().getCanonicalName();
-                        }
+                        if (currentScreen == null)
+                            return "null";
+                        return currentScreen.getClass().getCanonicalName();
                     });
                     throw new ReportedException(var2);
                 }
             }
         }
 
-        if (this.currentScreen == null || this.currentScreen.field_146291_p) {
+        GuiScreen currentScreen = this.currentScreen;
+
+        if (currentScreen == null || currentScreen.field_146291_p) {
             this.mcProfiler.endStartSection("mouse");
 
             int var9;
@@ -1657,7 +1681,8 @@ public class Minecraft {
                     int var4 = this.getMouse().getEventDWheel();
 
                     if (var4 != 0) {
-                        this.thePlayer.inventory.changeCurrentItem(var4);
+                        if (this.thePlayer != null)
+                            this.thePlayer.inventory.changeCurrentItem(var4);
 
                         if (this.gameSettings.noclip) {
                             if (var4 > 0)
@@ -1776,13 +1801,15 @@ public class Minecraft {
 
             for (var9 = 0; var9 < 9; ++var9)
                 if (this.gameSettings.keyBindsHotbar[var9].isPressed())
-                    this.thePlayer.inventory.currentItem = var9;
+                    if (this.thePlayer != null)
+                        this.thePlayer.inventory.currentItem = var9;
 
             var10 = this.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN;
 
             while (this.gameSettings.keyBindInventory.isPressed()) {
                 if (this.playerController.func_110738_j()) {
-                    this.thePlayer.func_110322_i();
+                    if (this.thePlayer != null)
+                        this.thePlayer.func_110322_i();
                 } else {
                     this.getNetHandler().addToSendQueue(
                             new C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT));
@@ -1791,7 +1818,8 @@ public class Minecraft {
             }
 
             while (this.gameSettings.keyBindDrop.isPressed())
-                this.thePlayer.dropOneItem(GuiScreen.isCtrlKeyDown(this));
+                if (this.thePlayer != null)
+                    this.thePlayer.dropOneItem(GuiScreen.isCtrlKeyDown(this));
 
             while (this.gameSettings.keyBindChat.isPressed() && var10)
                 this.displayGuiScreen(new GuiChat(this));
@@ -1799,7 +1827,7 @@ public class Minecraft {
             if (this.currentScreen == null && this.gameSettings.keyBindCommand.isPressed() && var10)
                 this.displayGuiScreen(new GuiChat(this, "/"));
 
-            if (this.thePlayer.isUsingItem()) {
+            if (this.thePlayer != null && this.thePlayer.isUsingItem()) {
                 if (!this.gameSettings.keyBindUseItem.getIsKeyPressed())
                     this.playerController.onStoppedUsingItem(this.thePlayer);
 
@@ -1832,7 +1860,8 @@ public class Minecraft {
             }
 
             if (this.gameSettings.keyBindUseItem.getIsKeyPressed() && this.rightClickDelayTimer == 0
-                    && !this.thePlayer.isUsingItem())
+                    && thePlayer != null
+                    && !thePlayer.isUsingItem())
                 this.func_147121_ag();
 
             this.func_147115_a(this.currentScreen == null && this.gameSettings.keyBindAttack.getIsKeyPressed()
@@ -1845,7 +1874,8 @@ public class Minecraft {
 
                 if (this.joinPlayerCounter == 30) {
                     this.joinPlayerCounter = 0;
-                    this.theWorld.joinEntityInSurroundings(this.thePlayer);
+                    if (this.theWorld != null)
+                        this.theWorld.joinEntityInSurroundings(this.thePlayer);
                 }
             }
 
@@ -1866,10 +1896,14 @@ public class Minecraft {
             this.mcProfiler.endStartSection("level");
 
             if (!this.isGamePaused) {
-                if (this.theWorld.lastLightningBolt > 0)
-                    --this.theWorld.lastLightningBolt;
+                WorldClient theWorld = this.theWorld;
 
-                this.theWorld.updateEntities();
+                if (theWorld != null) {
+                    if (theWorld.lastLightningBolt > 0)
+                        --theWorld.lastLightningBolt;
+
+                    theWorld.updateEntities();
+                }
             }
         }
 
@@ -1878,12 +1912,14 @@ public class Minecraft {
             this.mcSoundHandler.update();
         }
 
-        if (this.theWorld != null) {
+        WorldClient theWorld = this.theWorld;
+
+        if (theWorld != null) {
             if (!this.isGamePaused) {
-                this.theWorld.setAllowedSpawnTypes(this.theWorld.difficultySetting != EnumDifficulty.PEACEFUL, true);
+                theWorld.setAllowedSpawnTypes(theWorld.difficultySetting != EnumDifficulty.PEACEFUL, true);
 
                 try {
-                    this.theWorld.tick();
+                    theWorld.tick();
                 } catch (Throwable var7) {
                     var2 = CrashReport.makeCrashReport(var7, "Exception in world tick");
 
@@ -1891,7 +1927,7 @@ public class Minecraft {
                         var3 = var2.makeCategory("Affected level");
                         var3.addCrashSection("Problem", "Level is null!");
                     } else {
-                        this.theWorld.addWorldInfoToCrashReport(var2);
+                        theWorld.addWorldInfoToCrashReport(var2);
                     }
 
                     throw new ReportedException(var2);
@@ -1900,9 +1936,10 @@ public class Minecraft {
 
             this.mcProfiler.endStartSection("animateTick");
 
-            if (!BotGlobalConfig.isOptimizedGameLoop() && !this.isGamePaused && this.theWorld != null)
-                this.theWorld.doVoidFogParticles(MathHelper.floor_double(this.thePlayer.posX),
-                        MathHelper.floor_double(this.thePlayer.posY), MathHelper.floor_double(this.thePlayer.posZ));
+            if (!BotGlobalConfig.isOptimizedGameLoop() && !this.isGamePaused && this.theWorld != null
+                    && thePlayer != null)
+                this.theWorld.doVoidFogParticles(MathHelper.floor_double(thePlayer.posX),
+                        MathHelper.floor_double(thePlayer.posY), MathHelper.floor_double(thePlayer.posZ));
 
             this.mcProfiler.endStartSection("particles");
 
@@ -1915,7 +1952,10 @@ public class Minecraft {
         }
 
         this.mcProfiler.endSection();
-        this.systemTime = getSystemTime();
+        this.systemTime =
+
+                getSystemTime();
+
     }
 
     /**
@@ -2036,9 +2076,11 @@ public class Minecraft {
                 this.playerController.flipPlayer(this.thePlayer);
             }
 
-            this.thePlayer.preparePlayerToSpawn();
+            if (this.thePlayer != null)
+                this.thePlayer.preparePlayerToSpawn();
             p_71353_1_.spawnEntityInWorld(this.thePlayer);
-            this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
+            if (this.thePlayer != null)
+                this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
             this.playerController.setPlayerCapabilities(this.thePlayer);
             this.renderViewEntity = this.thePlayer;
         } else {
@@ -2077,44 +2119,60 @@ public class Minecraft {
      * Gets the name of the world's current chunk provider
      */
     public String getWorldProviderName() {
-        return this.theWorld.getProviderName();
+        return this.theWorld != null ? this.theWorld.getProviderName() : "Unknown";
     }
 
     /**
      * A String of how many entities are in the world
      */
     public String debugInfoEntities() {
-        return "P: " + this.effectRenderer.getStatistics() + ". T: " + this.theWorld.getDebugLoadedEntities();
+        return "P: " + this.effectRenderer.getStatistics() + ". T: "
+                + (this.theWorld != null ? this.theWorld.getDebugLoadedEntities() : "N/A");
     }
 
     public void setDimensionAndSpawnPlayer(int p_71354_1_) {
-        this.theWorld.setSpawnLocation();
-        this.theWorld.removeAllEntities();
+        WorldClient theWorld = this.theWorld;
+
+        if (theWorld != null) {
+            theWorld.setSpawnLocation();
+            theWorld.removeAllEntities();
+        }
         int var2 = 0;
+        @Nullable
         String var3 = null;
 
-        if (this.thePlayer != null) {
-            var2 = this.thePlayer.getEntityId();
-            this.theWorld.removeEntity(this.thePlayer);
-            var3 = this.thePlayer.func_142021_k();
+        EntityClientPlayerMP thePlayer = this.thePlayer;
+
+        if (thePlayer != null) {
+            var2 = thePlayer.getEntityId();
+            if (theWorld != null)
+                theWorld.removeEntity(this.thePlayer);
+            var3 = thePlayer.func_142021_k();
         }
 
         this.renderViewEntity = null;
         this.thePlayer = this.playerController.func_147493_a(this.theWorld,
                 this.thePlayer == null ? new StatFileWriter() : this.thePlayer.func_146107_m());
-        this.thePlayer.dimension = p_71354_1_;
+        if (this.thePlayer != null)
+            this.thePlayer.dimension = p_71354_1_;
         this.renderViewEntity = this.thePlayer;
-        this.thePlayer.preparePlayerToSpawn();
-        this.thePlayer.func_142020_c(var3);
-        this.theWorld.spawnEntityInWorld(this.thePlayer);
+        thePlayer = this.thePlayer;
+        if (thePlayer != null) {
+            thePlayer.preparePlayerToSpawn();
+            thePlayer.func_142020_c(var3);
+        }
+
+        if (this.theWorld != null)
+            this.theWorld.spawnEntityInWorld(this.thePlayer);
         this.playerController.flipPlayer(this.thePlayer);
-        this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
-        this.thePlayer.setEntityId(var2);
+        if (thePlayer != null) {
+            thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
+            thePlayer.setEntityId(var2);
+        }
         this.playerController.setPlayerCapabilities(this.thePlayer);
 
-        if (this.currentScreen instanceof GuiGameOver) {
-            this.displayGuiScreen((GuiScreen) null);
-        }
+        if (this.currentScreen instanceof GuiGameOver)
+            this.displayGuiScreen(null);
     }
 
     /**
@@ -2145,7 +2203,7 @@ public class Minecraft {
 
     private void func_147112_ai() {
         if (this.objectMouseOver != null) {
-            boolean var1 = this.thePlayer.capabilities.isCreativeMode;
+            boolean var1 = this.thePlayer != null && this.thePlayer.capabilities.isCreativeMode;
             int var3 = 0;
             boolean var4 = false;
             Item var2;
@@ -2155,26 +2213,24 @@ public class Minecraft {
                 var5 = this.objectMouseOver.blockX;
                 int var6 = this.objectMouseOver.blockY;
                 int var7 = this.objectMouseOver.blockZ;
-                Block var8 = this.theWorld.getBlock(var5, var6, var7);
+                @Nullable
+                Block var8 = this.theWorld != null ? this.theWorld.getBlock(var5, var6, var7) : null;
 
-                if (var8.getMaterial() == Material.air) {
+                if (var8 == null || var8.getMaterial() == Material.air)
                     return;
-                }
 
                 var2 = var8.getItem(this.theWorld, var5, var6, var7);
 
-                if (var2 == null) {
+                if (var2 == null)
                     return;
-                }
 
                 var4 = var2.getHasSubtypes();
                 Block var9 = var2 instanceof ItemBlock && !var8.isFlowerPot() ? Block.getBlockFromItem(var2) : var8;
                 var3 = var9.getDamageValue(this.theWorld, var5, var6, var7);
             } else {
                 if (this.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY
-                        || this.objectMouseOver.entityHit == null || !var1) {
+                        || this.objectMouseOver.entityHit == null || !var1)
                     return;
-                }
 
                 if (this.objectMouseOver.entityHit instanceof EntityPainting) {
                     var2 = Items.painting;
@@ -2214,19 +2270,23 @@ public class Minecraft {
                     var3 = EntityList.getEntityID(this.objectMouseOver.entityHit);
                     var4 = true;
 
-                    if (var3 <= 0 || !EntityList.entityEggs.containsKey(Integer.valueOf(var3))) {
+                    if (var3 <= 0 || !EntityList.entityEggs.containsKey(var3))
                         return;
-                    }
+
                 }
             }
 
-            this.thePlayer.inventory.func_146030_a(var2, var3, var4, var1);
+            EntityClientPlayerMP thePlayer = this.thePlayer;
 
-            if (var1) {
-                var5 = this.thePlayer.inventoryContainer.inventorySlots.size() - 9
-                        + this.thePlayer.inventory.currentItem;
-                this.playerController.sendSlotPacket(
-                        this.thePlayer.inventory.getStackInSlot(this.thePlayer.inventory.currentItem), var5);
+            if (thePlayer != null) {
+                thePlayer.inventory.func_146030_a(var2, var3, var4, var1);
+
+                if (var1) {
+                    var5 = thePlayer.inventoryContainer.inventorySlots.size() - 9
+                            + thePlayer.inventory.currentItem;
+                    this.playerController.sendSlotPacket(
+                            thePlayer.inventory.getStackInSlot(thePlayer.inventory.currentItem), var5);
+                }
             }
         }
     }
@@ -2236,104 +2296,43 @@ public class Minecraft {
      * worldInfo to the crash report
      */
     public CrashReport addGraphicsAndWorldToCrashReport(CrashReport p_71396_1_) {
-        p_71396_1_.getCategory().addCrashSectionCallable("Launched Version", new Callable() {
-            private static final String __OBFID = "CL_00000643";
+        p_71396_1_.getCategory().addCrashSectionCallable("Launched Version", () -> Minecraft.this.launchedVersion);
+        p_71396_1_.getCategory().addCrashSectionCallable("LWJGL", () -> Sys.getVersion());
+        p_71396_1_.getCategory().addCrashSectionCallable("OpenGL",
+                () -> GL11.glGetString(GL11.GL_RENDERER) + " GL version " + GL11.glGetString(GL11.GL_VERSION) + ", "
+                        + GL11.glGetString(GL11.GL_VENDOR));
+        p_71396_1_.getCategory().addCrashSectionCallable("GL Caps", () -> OpenGlHelper.getGLGaps());
 
-            public String call() {
-                return Minecraft.this.launchedVersion;
-            }
+        p_71396_1_.getCategory().addCrashSectionCallable("Is Modded", () -> {
+            String var1 = ClientBrandRetriever.getClientModName();
+            return !var1.equals("vanilla") ? "Definitely; Client brand changed to \'" + var1 + "\'"
+                    : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated"
+                            : "Probably not. Jar signature remains and client brand is untouched.");
         });
-        p_71396_1_.getCategory().addCrashSectionCallable("LWJGL", new Callable() {
-            private static final String __OBFID = "CL_00000644";
-
-            public String call() {
-                return Sys.getVersion();
-            }
+        p_71396_1_.getCategory().addCrashSectionCallable("Type", () -> "Client (map_client.txt)");
+        p_71396_1_.getCategory().addCrashSectionCallable("Resource Packs",
+                () -> Minecraft.this.gameSettings.resourcePacks.toString());
+        p_71396_1_.getCategory().addCrashSectionCallable("Current Language",
+                () -> Minecraft.this.mcLanguageManager.getCurrentLanguage().toString());
+        p_71396_1_.getCategory().addCrashSectionCallable("Profiler Position",
+                () -> Minecraft.this.mcProfiler.profilingEnabled ? Minecraft.this.mcProfiler.getNameOfLastSection()
+                        : "N/A (disabled)");
+        p_71396_1_.getCategory().addCrashSectionCallable("Vec3 Pool Size", () -> {
+            byte var1 = 0;
+            int var2 = 56 * var1;
+            int var3 = var2 / 1024 / 1024;
+            byte var4 = 0;
+            int var5 = 56 * var4;
+            int var6 = var5 / 1024 / 1024;
+            return var1 + " (" + var2 + " bytes; " + var3 + " MB) allocated, " + var4 + " (" + var5 + " bytes; "
+                    + var6 + " MB) used";
         });
-        p_71396_1_.getCategory().addCrashSectionCallable("OpenGL", new Callable() {
-            private static final String __OBFID = "CL_00000645";
+        p_71396_1_.getCategory().addCrashSectionCallable("Anisotropic Filtering",
+                () -> Minecraft.this.gameSettings.anisotropicFiltering == 1 ? "Off (1)"
+                        : "On (" + Minecraft.this.gameSettings.anisotropicFiltering + ")");
 
-            public String call() {
-                return GL11.glGetString(GL11.GL_RENDERER) + " GL version " + GL11.glGetString(GL11.GL_VERSION) + ", "
-                        + GL11.glGetString(GL11.GL_VENDOR);
-            }
-        });
-        p_71396_1_.getCategory().addCrashSectionCallable("GL Caps", new Callable() {
-            private static final String __OBFID = "CL_00000646";
-
-            public String call() {
-                return OpenGlHelper.func_153172_c();
-            }
-        });
-        p_71396_1_.getCategory().addCrashSectionCallable("Is Modded", new Callable() {
-            private static final String __OBFID = "CL_00000647";
-
-            public String call() {
-                String var1 = ClientBrandRetriever.getClientModName();
-                return !var1.equals("vanilla") ? "Definitely; Client brand changed to \'" + var1 + "\'"
-                        : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated"
-                                : "Probably not. Jar signature remains and client brand is untouched.");
-            }
-        });
-        p_71396_1_.getCategory().addCrashSectionCallable("Type", new Callable() {
-            private static final String __OBFID = "CL_00000633";
-
-            public String call() {
-                return "Client (map_client.txt)";
-            }
-        });
-        p_71396_1_.getCategory().addCrashSectionCallable("Resource Packs", new Callable() {
-            private static final String __OBFID = "CL_00000634";
-
-            public String call() {
-                return Minecraft.this.gameSettings.resourcePacks.toString();
-            }
-        });
-        p_71396_1_.getCategory().addCrashSectionCallable("Current Language", new Callable() {
-            private static final String __OBFID = "CL_00000635";
-
-            public String call() {
-                return Minecraft.this.mcLanguageManager.getCurrentLanguage().toString();
-            }
-        });
-        p_71396_1_.getCategory().addCrashSectionCallable("Profiler Position", new Callable() {
-            private static final String __OBFID = "CL_00000636";
-
-            public String call() {
-                return Minecraft.this.mcProfiler.profilingEnabled ? Minecraft.this.mcProfiler.getNameOfLastSection()
-                        : "N/A (disabled)";
-            }
-        });
-        p_71396_1_.getCategory().addCrashSectionCallable("Vec3 Pool Size", new Callable() {
-            private static final String __OBFID = "CL_00000637";
-
-            public String call() {
-                byte var1 = 0;
-                int var2 = 56 * var1;
-                int var3 = var2 / 1024 / 1024;
-                byte var4 = 0;
-                int var5 = 56 * var4;
-                int var6 = var5 / 1024 / 1024;
-                return var1 + " (" + var2 + " bytes; " + var3 + " MB) allocated, " + var4 + " (" + var5 + " bytes; "
-                        + var6 + " MB) used";
-            }
-        });
-        p_71396_1_.getCategory().addCrashSectionCallable("Anisotropic Filtering", new Callable() {
-            private static final String __OBFID = "CL_00001853";
-
-            public String func_152388_a() {
-                return Minecraft.this.gameSettings.anisotropicFiltering == 1 ? "Off (1)"
-                        : "On (" + Minecraft.this.gameSettings.anisotropicFiltering + ")";
-            }
-
-            public Object call() {
-                return this.func_152388_a();
-            }
-        });
-
-        if (this.theWorld != null) {
+        if (this.theWorld != null)
             this.theWorld.addWorldInfoToCrashReport(p_71396_1_);
-        }
 
         return p_71396_1_;
     }
@@ -2457,14 +2456,15 @@ public class Minecraft {
     }
 
     public MusicTicker.MusicType func_147109_W() {
+        EntityClientPlayerMP thePlayer = this.thePlayer;
         return this.currentScreen instanceof GuiWinGame ? MusicTicker.MusicType.CREDITS
-                : (this.thePlayer != null ? (this.thePlayer.worldObj.provider instanceof WorldProviderHell
+                : (thePlayer != null ? (thePlayer.worldObj.provider instanceof WorldProviderHell
                         ? MusicTicker.MusicType.NETHER
-                        : (this.thePlayer.worldObj.provider instanceof WorldProviderEnd
+                        : (thePlayer.worldObj.provider instanceof WorldProviderEnd
                                 ? (BossStatus.bossName != null && BossStatus.statusBarTime > 0
                                         ? MusicTicker.MusicType.END_BOSS
                                         : MusicTicker.MusicType.END)
-                                : (this.thePlayer.capabilities.isCreativeMode && this.thePlayer.capabilities.allowFlying
+                                : (thePlayer.capabilities.isCreativeMode && thePlayer.capabilities.allowFlying
                                         ? MusicTicker.MusicType.CREATIVE
                                         : MusicTicker.MusicType.GAME)))
                         : MusicTicker.MusicType.MENU);
@@ -2474,43 +2474,41 @@ public class Minecraft {
         int var1 = this.keyboard.getEventKey();
 
         if (var1 != 0 && !this.keyboard.isRepeatEvent()) {
-            if (!(this.currentScreen instanceof GuiControls)
-                    || ((GuiControls) this.currentScreen).field_152177_g <= getSystemTime() - 20L) {
+            if (!(this.currentScreen instanceof GuiControls controlsScreen)
+                    || controlsScreen.field_152177_g <= getSystemTime() - 20L) {
                 if (this.keyboard.getEventKeyState()) {
-                    if (var1 == this.gameSettings.toggleFullscreen.getKeyCode()) {
+                    if (var1 == this.gameSettings.toggleFullscreen.getKeyCode())
                         this.toggleFullscreen();
-                    } else if (var1 == this.gameSettings.keyBindScreenshot.getKeyCode()) {
+                    else if (var1 == this.gameSettings.keyBindScreenshot.getKeyCode())
                         this.ingameGUI.getChatGUI().func_146227_a(ScreenShotHelper.saveScreenshot(this, this.mcDataDir,
                                 this.displayWidth, this.displayHeight, this.mcFramebuffer));
-                    }
                 }
             }
         }
     }
 
-    public ListenableFuture func_152343_a(Callable p_152343_1_) {
-        Validate.notNull(p_152343_1_);
+    public ListenableFuture<?> scheduleOnMainThread(Callable<?> callable) {
+        Validate.notNull(callable, "Callable is null");
 
         if (!this.isMainThread()) {
-            ListenableFutureTask var2 = ListenableFutureTask.create(p_152343_1_);
-            Queue var3 = this.field_152351_aB;
+            ListenableFutureTask<?> listenFutureTask = ListenableFutureTask.create(callable);
 
-            synchronized (this.field_152351_aB) {
-                this.field_152351_aB.add(var2);
-                return var2;
+            synchronized (this.futureTaskQueue) {
+                this.futureTaskQueue.add(listenFutureTask);
+                return listenFutureTask;
             }
-        } else {
-            try {
-                return Futures.immediateFuture(p_152343_1_.call());
-            } catch (Exception var6) {
-                return Futures.immediateFailedFuture(var6);
-            }
+        }
+
+        try {
+            return Futures.immediateFuture(callable.call());
+        } catch (Exception e) {
+            return Futures.immediateFailedFuture(e);
         }
     }
 
-    public ListenableFuture func_152344_a(Runnable p_152344_1_) {
-        Validate.notNull(p_152344_1_);
-        return this.func_152343_a(Executors.callable(p_152344_1_));
+    public ListenableFuture<?> scheduleOnMainThread(Runnable runnable) {
+        Validate.notNull(runnable, "Runnable is null");
+        return this.scheduleOnMainThread(Executors.callable(runnable));
     }
 
     public boolean isMainThread() {
@@ -2523,7 +2521,6 @@ public class Minecraft {
 
     static final class SwitchMovingObjectType {
         static final int[] field_152390_a = new int[MovingObjectPosition.MovingObjectType.values().length];
-        private static final String __OBFID = "CL_00000638";
 
         static {
             try {

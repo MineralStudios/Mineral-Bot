@@ -22,7 +22,6 @@ public class ModelBat extends ModelBase {
 
     /** The outer left wing box of the bat model. */
     private ModelRenderer batOuterLeftWing;
-    private static final String __OBFID = "CL_00000830";
 
     public ModelBat(Minecraft mc) {
         this.textureWidth = 64;

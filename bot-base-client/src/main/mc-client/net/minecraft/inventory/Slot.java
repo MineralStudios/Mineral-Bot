@@ -22,7 +22,6 @@ public class Slot implements gg.mineral.bot.api.inv.Slot {
     /** display position of the inventory slot on the screen y axis */
     @Getter
     public int yDisplayPosition;
-    private static final String __OBFID = "CL_00001762";
 
     public Slot(IInventory p_i1824_1_, int p_i1824_2_, int p_i1824_3_, int p_i1824_4_) {
         this.inventory = p_i1824_1_;

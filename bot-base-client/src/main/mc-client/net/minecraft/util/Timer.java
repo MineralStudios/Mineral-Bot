@@ -54,7 +54,6 @@ public class Timer {
      * once per second
      */
     private double timeSyncAdjustment = 1.0D;
-    private static final String __OBFID = "CL_00000658";
 
     public Timer(float p_i1018_1_) {
         this.ticksPerSecond = p_i1018_1_;

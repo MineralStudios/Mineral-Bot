@@ -10,7 +10,6 @@ import net.minecraft.util.MathHelper;
 public class ModelGhast extends ModelBase {
     ModelRenderer body;
     ModelRenderer[] tentacles = new ModelRenderer[9];
-    private static final String __OBFID = "CL_00000839";
 
     public ModelGhast(Minecraft mc) {
         byte var1 = -16;

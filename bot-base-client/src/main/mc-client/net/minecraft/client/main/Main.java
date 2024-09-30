@@ -19,26 +19,19 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.NonOptionArgumentSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Session;
 
 public class Main {
     private static final java.lang.reflect.Type field_152370_a = new ParameterizedType() {
-        private static final String __OBFID = "CL_00000828";
 
         public java.lang.reflect.Type[] getActualTypeArguments() {
             return new java.lang.reflect.Type[] { String.class, new ParameterizedType() {
-                private static final String __OBFID = "CL_00001836";
 
                 public java.lang.reflect.Type[] getActualTypeArguments() {
                     return new java.lang.reflect.Type[] { String.class };
@@ -63,7 +56,6 @@ public class Main {
             return null;
         }
     };
-    private static final String __OBFID = "CL_00001461";
 
     public static void main(String[] p_main_0_) {
         System.setProperty("java.net.preferIPv4Stack", "true");
@@ -115,7 +107,6 @@ public class Main {
 
         if (!proxy.equals(Proxy.NO_PROXY) && func_110121_a(var25) && func_110121_a(var26)) {
             Authenticator.setDefault(new Authenticator() {
-                private static final String __OBFID = "CL_00000829";
 
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(var25, var26.toCharArray());

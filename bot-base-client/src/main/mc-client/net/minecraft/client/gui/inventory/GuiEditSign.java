@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C12PacketUpdateSign;
@@ -19,7 +18,6 @@ public class GuiEditSign extends GuiScreen {
     private int field_146849_g;
     private int field_146851_h;
     private GuiButton field_146852_i;
-    private static final String __OBFID = "CL_00000764";
 
     public GuiEditSign(Minecraft mc, TileEntitySign p_i1097_1_) {
         super(mc);

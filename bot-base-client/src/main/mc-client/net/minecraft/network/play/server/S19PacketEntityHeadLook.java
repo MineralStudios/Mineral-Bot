@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 public class S19PacketEntityHeadLook extends Packet {
     private int field_149384_a;
     private byte field_149383_b;
-    private static final String __OBFID = "CL_00001323";
 
     public S19PacketEntityHeadLook(Entity p_i45214_1_, byte p_i45214_2_) {
         this.field_149384_a = p_i45214_1_.getEntityId();

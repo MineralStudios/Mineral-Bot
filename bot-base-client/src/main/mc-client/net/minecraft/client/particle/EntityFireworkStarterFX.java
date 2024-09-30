@@ -12,7 +12,6 @@ public class EntityFireworkStarterFX extends EntityFX {
     private final EffectRenderer theEffectRenderer;
     private NBTTagList fireworkExplosions;
     boolean twinkle;
-    private static final String __OBFID = "CL_00000906";
     private final Minecraft mc;
 
     public EntityFireworkStarterFX(Minecraft mc, World p_i46355_1_, double p_i46355_2_, double p_i46355_4_,

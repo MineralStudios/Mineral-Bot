@@ -13,7 +13,6 @@ public class InventoryLargeChest implements IInventory {
 
     /** Inventory object corresponding to double chest lower part */
     private IInventory lowerChest;
-    private static final String __OBFID = "CL_00001507";
 
     public InventoryLargeChest(String p_i1559_1_, IInventory p_i1559_2_, IInventory p_i1559_3_) {
         this.name = p_i1559_1_;

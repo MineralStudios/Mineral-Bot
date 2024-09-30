@@ -15,7 +15,6 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 public class S30PacketWindowItems extends Packet {
     private int field_148914_a;
     private ItemStack[] field_148913_b;
-    private static final String __OBFID = "CL_00001294";
 
     public S30PacketWindowItems() {
     }

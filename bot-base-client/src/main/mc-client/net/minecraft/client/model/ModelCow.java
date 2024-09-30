@@ -3,7 +3,6 @@ package net.minecraft.client.model;
 import net.minecraft.client.Minecraft;
 
 public class ModelCow extends ModelQuadruped {
-    private static final String __OBFID = "CL_00000836";
 
     public ModelCow(Minecraft mc) {
         super(mc, 12, 0.0F);

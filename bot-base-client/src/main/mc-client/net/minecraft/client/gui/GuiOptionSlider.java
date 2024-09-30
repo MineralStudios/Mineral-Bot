@@ -10,7 +10,6 @@ public class GuiOptionSlider extends GuiButton {
     private GameSettings.Options field_146133_q;
     private final float field_146132_r;
     private final float field_146131_s;
-    private static final String __OBFID = "CL_00000680";
 
     public GuiOptionSlider(Minecraft mc, int p_i45016_1_, int p_i45016_2_, int p_i45016_3_,
             GameSettings.Options p_i45016_4_) {

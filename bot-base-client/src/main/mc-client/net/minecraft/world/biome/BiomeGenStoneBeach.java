@@ -2,12 +2,9 @@ package net.minecraft.world.biome;
 
 import net.minecraft.init.Blocks;
 
-public class BiomeGenStoneBeach extends BiomeGenBase
-{
-    private static final String __OBFID = "CL_00000184";
+public class BiomeGenStoneBeach extends BiomeGenBase {
 
-    public BiomeGenStoneBeach(int p_i45384_1_)
-    {
+    public BiomeGenStoneBeach(int p_i45384_1_) {
         super(p_i45384_1_);
         this.spawnableCreatureList.clear();
         this.topBlock = Blocks.stone;

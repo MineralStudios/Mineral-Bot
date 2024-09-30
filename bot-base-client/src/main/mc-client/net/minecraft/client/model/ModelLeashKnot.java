@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 
 public class ModelLeashKnot extends ModelBase {
     public ModelRenderer field_110723_a;
-    private static final String __OBFID = "CL_00000843";
 
     public ModelLeashKnot(Minecraft mc) {
         this(mc, 0, 0, 32, 32);

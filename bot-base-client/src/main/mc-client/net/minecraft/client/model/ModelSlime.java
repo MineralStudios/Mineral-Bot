@@ -15,7 +15,6 @@ public class ModelSlime extends ModelBase {
 
     /** The slime's mouth */
     ModelRenderer slimeMouth;
-    private static final String __OBFID = "CL_00000858";
 
     public ModelSlime(Minecraft mc, int p_i1157_1_) {
         this.slimeBodies = new ModelRenderer(mc, this, 0, p_i1157_1_);

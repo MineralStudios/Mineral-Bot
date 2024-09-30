@@ -5,7 +5,6 @@ import net.minecraft.client.gui.GuiScreenResourcePacks;
 
 public class ResourcePackListEntryFound extends ResourcePackListEntry {
     private final ResourcePackRepository.Entry field_148319_c;
-    private static final String __OBFID = "CL_00000823";
 
     public ResourcePackListEntryFound(Minecraft mc, GuiScreenResourcePacks p_i45053_1_,
             ResourcePackRepository.Entry p_i45053_2_) {

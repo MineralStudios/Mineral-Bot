@@ -22,7 +22,6 @@ public class S22PacketMultiBlockChange extends Packet {
     private ChunkCoordIntPair field_148925_b;
     private byte[] field_148926_c;
     private int field_148924_d;
-    private static final String __OBFID = "CL_00001290";
 
     public S22PacketMultiBlockChange() {
     }

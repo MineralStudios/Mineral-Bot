@@ -46,7 +46,6 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
     private int field_146554_D;
     private StatFileWriter field_146556_E;
     private boolean field_146558_F = true;
-    private static final String __OBFID = "CL_00000722";
 
     public GuiAchievements(Minecraft mc, GuiScreen p_i45026_1_, StatFileWriter p_i45026_2_) {
         super(mc);

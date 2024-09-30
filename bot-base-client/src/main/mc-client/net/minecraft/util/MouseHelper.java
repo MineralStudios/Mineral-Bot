@@ -11,7 +11,6 @@ public class MouseHelper {
 
     /** Mouse delta Y this frame */
     public int deltaY;
-    private static final String __OBFID = "CL_00000648";
     private final Minecraft mc;
 
     /**

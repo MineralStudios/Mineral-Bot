@@ -31,7 +31,6 @@ public class ModelBiped extends ModelBase {
 
     /** Records whether the model should be rendered aiming a bow. */
     public boolean aimedBow;
-    private static final String __OBFID = "CL_00000840";
 
     public ModelBiped(Minecraft mc) {
         this(mc, 0.0F);

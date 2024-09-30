@@ -48,7 +48,6 @@ public class GuiScreen extends Gui implements Screen {
     private int eventButton;
     private long lastMouseEvent;
     private int field_146298_h;
-    private static final String __OBFID = "CL_00000710";
 
     public GuiScreen(Minecraft mc) {
         super(mc);
@@ -334,6 +333,9 @@ public class GuiScreen extends Gui implements Screen {
             textureManager.bindTexture(optionsBackground);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float var3 = 32.0F;
+
+        if (var2 == null)
+            return;
         var2.startDrawingQuads();
         var2.setColorOpaque_I(4210752);
         var2.addVertexWithUV(0.0D, (double) this.height, 0.0D, 0.0D,

@@ -29,7 +29,6 @@ public abstract class GuiSlot {
     private boolean field_148165_u;
     protected int field_148160_j;
     private boolean field_148164_v = true;
-    private static final String __OBFID = "CL_00000679";
 
     public GuiSlot(Minecraft mc, int p_i1052_2_, int p_i1052_3_, int p_i1052_4_, int p_i1052_5_, int p_i1052_6_) {
         this.mc = mc;
@@ -228,20 +227,22 @@ public abstract class GuiSlot {
                     this.field_148157_o = (float) p_148128_2_;
                 }
             } else {
-                for (; !this.mc.gameSettings.touchscreen && this.mc.getMouse().next(); this.mc.currentScreen
-                        .handleMouseInput()) {
-                    int var7 = this.mc.getMouse().getEventDWheel();
+                GuiScreen currentScreen = this.mc.currentScreen;
 
-                    if (var7 != 0) {
-                        if (var7 > 0) {
-                            var7 = -1;
-                        } else if (var7 < 0) {
-                            var7 = 1;
+                if (currentScreen != null)
+                    for (; !this.mc.gameSettings.touchscreen && this.mc.getMouse().next(); currentScreen
+                            .handleMouseInput()) {
+                        int var7 = this.mc.getMouse().getEventDWheel();
+
+                        if (var7 != 0) {
+                            if (var7 > 0)
+                                var7 = -1;
+                            else if (var7 < 0)
+                                var7 = 1;
+
+                            this.field_148169_q += (float) (var7 * this.field_148149_f / 2);
                         }
-
-                        this.field_148169_q += (float) (var7 * this.field_148149_f / 2);
                     }
-                }
 
                 this.field_148157_o = -1.0F;
             }
@@ -259,27 +260,28 @@ public abstract class GuiSlot {
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float var17 = 32.0F;
-        var16.startDrawingQuads();
-        var16.setColorOpaque_I(2105376);
-        var16.addVertexWithUV((double) this.field_148152_e, (double) this.field_148154_c, 0.0D,
-                (double) ((float) this.field_148152_e / var17),
-                (double) ((float) (this.field_148154_c + (int) this.field_148169_q) / var17));
-        var16.addVertexWithUV((double) this.field_148151_d, (double) this.field_148154_c, 0.0D,
-                (double) ((float) this.field_148151_d / var17),
-                (double) ((float) (this.field_148154_c + (int) this.field_148169_q) / var17));
-        var16.addVertexWithUV((double) this.field_148151_d, (double) this.field_148153_b, 0.0D,
-                (double) ((float) this.field_148151_d / var17),
-                (double) ((float) (this.field_148153_b + (int) this.field_148169_q) / var17));
-        var16.addVertexWithUV((double) this.field_148152_e, (double) this.field_148153_b, 0.0D,
-                (double) ((float) this.field_148152_e / var17),
-                (double) ((float) (this.field_148153_b + (int) this.field_148169_q) / var17));
-        var16.draw();
+        if (var16 != null) {
+            var16.startDrawingQuads();
+            var16.setColorOpaque_I(2105376);
+            var16.addVertexWithUV((double) this.field_148152_e, (double) this.field_148154_c, 0.0D,
+                    (double) ((float) this.field_148152_e / var17),
+                    (double) ((float) (this.field_148154_c + (int) this.field_148169_q) / var17));
+            var16.addVertexWithUV((double) this.field_148151_d, (double) this.field_148154_c, 0.0D,
+                    (double) ((float) this.field_148151_d / var17),
+                    (double) ((float) (this.field_148154_c + (int) this.field_148169_q) / var17));
+            var16.addVertexWithUV((double) this.field_148151_d, (double) this.field_148153_b, 0.0D,
+                    (double) ((float) this.field_148151_d / var17),
+                    (double) ((float) (this.field_148153_b + (int) this.field_148169_q) / var17));
+            var16.addVertexWithUV((double) this.field_148152_e, (double) this.field_148153_b, 0.0D,
+                    (double) ((float) this.field_148152_e / var17),
+                    (double) ((float) (this.field_148153_b + (int) this.field_148169_q) / var17));
+            var16.draw();
+        }
         var9 = this.field_148152_e + this.field_148155_a / 2 - this.func_148139_c() / 2 + 2;
         var10 = this.field_148153_b + 4 - (int) this.field_148169_q;
 
-        if (this.field_148165_u) {
+        if (this.field_148165_u)
             this.func_148129_a(var9, var10, var16);
-        }
 
         this.func_148120_b(var9, var10, p_148128_1_, p_148128_2_);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -291,22 +293,28 @@ public abstract class GuiSlot {
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glShadeModel(GL11.GL_SMOOTH);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        var16.startDrawingQuads();
-        var16.setColorRGBA_I(0, 0);
-        var16.addVertexWithUV((double) this.field_148152_e, (double) (this.field_148153_b + var18), 0.0D, 0.0D, 1.0D);
-        var16.addVertexWithUV((double) this.field_148151_d, (double) (this.field_148153_b + var18), 0.0D, 1.0D, 1.0D);
-        var16.setColorRGBA_I(0, 255);
-        var16.addVertexWithUV((double) this.field_148151_d, (double) this.field_148153_b, 0.0D, 1.0D, 0.0D);
-        var16.addVertexWithUV((double) this.field_148152_e, (double) this.field_148153_b, 0.0D, 0.0D, 0.0D);
-        var16.draw();
-        var16.startDrawingQuads();
-        var16.setColorRGBA_I(0, 255);
-        var16.addVertexWithUV((double) this.field_148152_e, (double) this.field_148154_c, 0.0D, 0.0D, 1.0D);
-        var16.addVertexWithUV((double) this.field_148151_d, (double) this.field_148154_c, 0.0D, 1.0D, 1.0D);
-        var16.setColorRGBA_I(0, 0);
-        var16.addVertexWithUV((double) this.field_148151_d, (double) (this.field_148154_c - var18), 0.0D, 1.0D, 0.0D);
-        var16.addVertexWithUV((double) this.field_148152_e, (double) (this.field_148154_c - var18), 0.0D, 0.0D, 0.0D);
-        var16.draw();
+        if (var16 != null) {
+            var16.startDrawingQuads();
+            var16.setColorRGBA_I(0, 0);
+            var16.addVertexWithUV((double) this.field_148152_e, (double) (this.field_148153_b + var18), 0.0D, 0.0D,
+                    1.0D);
+            var16.addVertexWithUV((double) this.field_148151_d, (double) (this.field_148153_b + var18), 0.0D, 1.0D,
+                    1.0D);
+            var16.setColorRGBA_I(0, 255);
+            var16.addVertexWithUV((double) this.field_148151_d, (double) this.field_148153_b, 0.0D, 1.0D, 0.0D);
+            var16.addVertexWithUV((double) this.field_148152_e, (double) this.field_148153_b, 0.0D, 0.0D, 0.0D);
+            var16.draw();
+            var16.startDrawingQuads();
+            var16.setColorRGBA_I(0, 255);
+            var16.addVertexWithUV((double) this.field_148152_e, (double) this.field_148154_c, 0.0D, 0.0D, 1.0D);
+            var16.addVertexWithUV((double) this.field_148151_d, (double) this.field_148154_c, 0.0D, 1.0D, 1.0D);
+            var16.setColorRGBA_I(0, 0);
+            var16.addVertexWithUV((double) this.field_148151_d, (double) (this.field_148154_c - var18), 0.0D, 1.0D,
+                    0.0D);
+            var16.addVertexWithUV((double) this.field_148152_e, (double) (this.field_148154_c - var18), 0.0D, 0.0D,
+                    0.0D);
+            var16.draw();
+        }
         var19 = this.func_148135_f();
 
         if (var19 > 0) {
@@ -328,27 +336,29 @@ public abstract class GuiSlot {
                 var14 = this.field_148153_b;
             }
 
-            var16.startDrawingQuads();
-            var16.setColorRGBA_I(0, 255);
-            var16.addVertexWithUV((double) var5, (double) this.field_148154_c, 0.0D, 0.0D, 1.0D);
-            var16.addVertexWithUV((double) var6, (double) this.field_148154_c, 0.0D, 1.0D, 1.0D);
-            var16.addVertexWithUV((double) var6, (double) this.field_148153_b, 0.0D, 1.0D, 0.0D);
-            var16.addVertexWithUV((double) var5, (double) this.field_148153_b, 0.0D, 0.0D, 0.0D);
-            var16.draw();
-            var16.startDrawingQuads();
-            var16.setColorRGBA_I(8421504, 255);
-            var16.addVertexWithUV((double) var5, (double) (var14 + var13), 0.0D, 0.0D, 1.0D);
-            var16.addVertexWithUV((double) var6, (double) (var14 + var13), 0.0D, 1.0D, 1.0D);
-            var16.addVertexWithUV((double) var6, (double) var14, 0.0D, 1.0D, 0.0D);
-            var16.addVertexWithUV((double) var5, (double) var14, 0.0D, 0.0D, 0.0D);
-            var16.draw();
-            var16.startDrawingQuads();
-            var16.setColorRGBA_I(12632256, 255);
-            var16.addVertexWithUV((double) var5, (double) (var14 + var13 - 1), 0.0D, 0.0D, 1.0D);
-            var16.addVertexWithUV((double) (var6 - 1), (double) (var14 + var13 - 1), 0.0D, 1.0D, 1.0D);
-            var16.addVertexWithUV((double) (var6 - 1), (double) var14, 0.0D, 1.0D, 0.0D);
-            var16.addVertexWithUV((double) var5, (double) var14, 0.0D, 0.0D, 0.0D);
-            var16.draw();
+            if (var16 != null) {
+                var16.startDrawingQuads();
+                var16.setColorRGBA_I(0, 255);
+                var16.addVertexWithUV((double) var5, (double) this.field_148154_c, 0.0D, 0.0D, 1.0D);
+                var16.addVertexWithUV((double) var6, (double) this.field_148154_c, 0.0D, 1.0D, 1.0D);
+                var16.addVertexWithUV((double) var6, (double) this.field_148153_b, 0.0D, 1.0D, 0.0D);
+                var16.addVertexWithUV((double) var5, (double) this.field_148153_b, 0.0D, 0.0D, 0.0D);
+                var16.draw();
+                var16.startDrawingQuads();
+                var16.setColorRGBA_I(8421504, 255);
+                var16.addVertexWithUV((double) var5, (double) (var14 + var13), 0.0D, 0.0D, 1.0D);
+                var16.addVertexWithUV((double) var6, (double) (var14 + var13), 0.0D, 1.0D, 1.0D);
+                var16.addVertexWithUV((double) var6, (double) var14, 0.0D, 1.0D, 0.0D);
+                var16.addVertexWithUV((double) var5, (double) var14, 0.0D, 0.0D, 0.0D);
+                var16.draw();
+                var16.startDrawingQuads();
+                var16.setColorRGBA_I(12632256, 255);
+                var16.addVertexWithUV((double) var5, (double) (var14 + var13 - 1), 0.0D, 0.0D, 1.0D);
+                var16.addVertexWithUV((double) (var6 - 1), (double) (var14 + var13 - 1), 0.0D, 1.0D, 1.0D);
+                var16.addVertexWithUV((double) (var6 - 1), (double) var14, 0.0D, 1.0D, 0.0D);
+                var16.addVertexWithUV((double) var5, (double) var14, 0.0D, 0.0D, 0.0D);
+                var16.draw();
+            }
         }
 
         this.func_148142_b(p_148128_1_, p_148128_2_);
@@ -384,18 +394,20 @@ public abstract class GuiSlot {
                     int var11 = this.field_148152_e + this.field_148155_a / 2 + this.func_148139_c() / 2;
                     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    var6.startDrawingQuads();
-                    var6.setColorOpaque_I(8421504);
-                    var6.addVertexWithUV((double) var10, (double) (var8 + var9 + 2), 0.0D, 0.0D, 1.0D);
-                    var6.addVertexWithUV((double) var11, (double) (var8 + var9 + 2), 0.0D, 1.0D, 1.0D);
-                    var6.addVertexWithUV((double) var11, (double) (var8 - 2), 0.0D, 1.0D, 0.0D);
-                    var6.addVertexWithUV((double) var10, (double) (var8 - 2), 0.0D, 0.0D, 0.0D);
-                    var6.setColorOpaque_I(0);
-                    var6.addVertexWithUV((double) (var10 + 1), (double) (var8 + var9 + 1), 0.0D, 0.0D, 1.0D);
-                    var6.addVertexWithUV((double) (var11 - 1), (double) (var8 + var9 + 1), 0.0D, 1.0D, 1.0D);
-                    var6.addVertexWithUV((double) (var11 - 1), (double) (var8 - 1), 0.0D, 1.0D, 0.0D);
-                    var6.addVertexWithUV((double) (var10 + 1), (double) (var8 - 1), 0.0D, 0.0D, 0.0D);
-                    var6.draw();
+                    if (var6 != null) {
+                        var6.startDrawingQuads();
+                        var6.setColorOpaque_I(8421504);
+                        var6.addVertexWithUV((double) var10, (double) (var8 + var9 + 2), 0.0D, 0.0D, 1.0D);
+                        var6.addVertexWithUV((double) var11, (double) (var8 + var9 + 2), 0.0D, 1.0D, 1.0D);
+                        var6.addVertexWithUV((double) var11, (double) (var8 - 2), 0.0D, 1.0D, 0.0D);
+                        var6.addVertexWithUV((double) var10, (double) (var8 - 2), 0.0D, 0.0D, 0.0D);
+                        var6.setColorOpaque_I(0);
+                        var6.addVertexWithUV((double) (var10 + 1), (double) (var8 + var9 + 1), 0.0D, 0.0D, 1.0D);
+                        var6.addVertexWithUV((double) (var11 - 1), (double) (var8 + var9 + 1), 0.0D, 1.0D, 1.0D);
+                        var6.addVertexWithUV((double) (var11 - 1), (double) (var8 - 1), 0.0D, 1.0D, 0.0D);
+                        var6.addVertexWithUV((double) (var10 + 1), (double) (var8 - 1), 0.0D, 0.0D, 0.0D);
+                        var6.draw();
+                    }
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
                 }
 
@@ -417,6 +429,8 @@ public abstract class GuiSlot {
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float var6 = 32.0F;
+        if (var5 == null)
+            return;
         var5.startDrawingQuads();
         var5.setColorRGBA_I(4210752, p_148136_4_);
         var5.addVertexWithUV((double) this.field_148152_e, (double) p_148136_2_, 0.0D, 0.0D,

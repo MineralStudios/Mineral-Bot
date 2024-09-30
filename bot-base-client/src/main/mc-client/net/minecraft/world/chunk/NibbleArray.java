@@ -21,7 +21,6 @@ public class NibbleArray {
      * coordinate
      */
     private final int depthBitsPlusFour;
-    private static final String __OBFID = "CL_00000371";
 
     public NibbleArray(int p_i1992_1_, int p_i1992_2_) {
         this.data = new byte[p_i1992_1_ >> 1];

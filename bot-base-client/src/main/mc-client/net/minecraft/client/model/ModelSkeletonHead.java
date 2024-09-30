@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 
 public class ModelSkeletonHead extends ModelBase {
     public ModelRenderer skeletonHead;
-    private static final String __OBFID = "CL_00000856";
 
     public ModelSkeletonHead(Minecraft mc) {
         this(mc, 0, 35, 64, 64);

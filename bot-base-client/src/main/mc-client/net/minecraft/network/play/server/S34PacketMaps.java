@@ -11,7 +11,6 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 public class S34PacketMaps extends Packet {
     private int field_149191_a;
     private byte[] field_149190_b;
-    private static final String __OBFID = "CL_00001311";
 
     public S34PacketMaps() {
     }

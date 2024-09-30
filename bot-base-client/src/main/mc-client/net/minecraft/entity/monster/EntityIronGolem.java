@@ -28,17 +28,14 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.village.Village;
 import net.minecraft.world.World;
 
-public class EntityIronGolem extends EntityGolem
-{
+public class EntityIronGolem extends EntityGolem {
     /** deincrements, and a distance-to-home check is done at 0 */
     private int homeCheckTimer;
     Village villageObj;
     private int attackTimer;
     private int holdRoseTick;
-    private static final String __OBFID = "CL_00001652";
 
-    public EntityIronGolem(World p_i1694_1_)
-    {
+    public EntityIronGolem(World p_i1694_1_) {
         super(p_i1694_1_);
         this.setSize(1.4F, 2.9F);
         this.getNavigator().setAvoidsWater(true);
@@ -52,49 +49,44 @@ public class EntityIronGolem extends EntityGolem
         this.tasks.addTask(8, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIDefendVillage(this));
         this.targetTasks.addTask(2, new EntityAIHurtByTarget(this, false));
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityLiving.class, 0, false, true, IMob.mobSelector));
+        this.targetTasks.addTask(3,
+                new EntityAINearestAttackableTarget(this, EntityLiving.class, 0, false, true, IMob.mobSelector));
     }
 
-    protected void entityInit()
-    {
+    protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(16, Byte.valueOf((byte) 0));
     }
 
     /**
      * Returns true if the newer Entity AI code should be run
      */
-    public boolean isAIEnabled()
-    {
+    public boolean isAIEnabled() {
         return true;
     }
 
     /**
      * main AI tick function, replaces updateEntityActionState
      */
-    protected void updateAITick()
-    {
-        if (--this.homeCheckTimer <= 0)
-        {
+    protected void updateAITick() {
+        if (--this.homeCheckTimer <= 0) {
             this.homeCheckTimer = 70 + this.rand.nextInt(50);
-            this.villageObj = this.worldObj.villageCollectionObj.findNearestVillage(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ), 32);
+            this.villageObj = this.worldObj.villageCollectionObj.findNearestVillage(MathHelper.floor_double(this.posX),
+                    MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ), 32);
 
-            if (this.villageObj == null)
-            {
+            if (this.villageObj == null) {
                 this.detachHome();
-            }
-            else
-            {
+            } else {
                 ChunkCoordinates var1 = this.villageObj.getCenter();
-                this.setHomeArea(var1.posX, var1.posY, var1.posZ, (int)((float)this.villageObj.getVillageRadius() * 0.6F));
+                this.setHomeArea(var1.posX, var1.posY, var1.posZ,
+                        (int) ((float) this.villageObj.getVillageRadius() * 0.6F));
             }
         }
 
         super.updateAITick();
     }
 
-    protected void applyEntityAttributes()
-    {
+    protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(100.0D);
         this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.25D);
@@ -103,49 +95,50 @@ public class EntityIronGolem extends EntityGolem
     /**
      * Decrements the entity's air supply when underwater
      */
-    protected int decreaseAirSupply(int p_70682_1_)
-    {
+    protected int decreaseAirSupply(int p_70682_1_) {
         return p_70682_1_;
     }
 
-    protected void collideWithEntity(Entity p_82167_1_)
-    {
-        if (p_82167_1_ instanceof IMob && this.getRNG().nextInt(20) == 0)
-        {
-            this.setAttackTarget((EntityLivingBase)p_82167_1_);
+    protected void collideWithEntity(Entity p_82167_1_) {
+        if (p_82167_1_ instanceof IMob && this.getRNG().nextInt(20) == 0) {
+            this.setAttackTarget((EntityLivingBase) p_82167_1_);
         }
 
         super.collideWithEntity(p_82167_1_);
     }
 
     /**
-     * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
+     * Called frequently so the entity can update its state every tick as required.
+     * For example, zombies and skeletons
      * use this to react to sunlight and start to burn.
      */
-    public void onLivingUpdate()
-    {
+    public void onLivingUpdate() {
         super.onLivingUpdate();
 
-        if (this.attackTimer > 0)
-        {
+        if (this.attackTimer > 0) {
             --this.attackTimer;
         }
 
-        if (this.holdRoseTick > 0)
-        {
+        if (this.holdRoseTick > 0) {
             --this.holdRoseTick;
         }
 
-        if (this.motionX * this.motionX + this.motionZ * this.motionZ > 2.500000277905201E-7D && this.rand.nextInt(5) == 0)
-        {
+        if (this.motionX * this.motionX + this.motionZ * this.motionZ > 2.500000277905201E-7D
+                && this.rand.nextInt(5) == 0) {
             int var1 = MathHelper.floor_double(this.posX);
-            int var2 = MathHelper.floor_double(this.posY - 0.20000000298023224D - (double)this.yOffset);
+            int var2 = MathHelper.floor_double(this.posY - 0.20000000298023224D - (double) this.yOffset);
             int var3 = MathHelper.floor_double(this.posZ);
             Block var4 = this.worldObj.getBlock(var1, var2, var3);
 
-            if (var4.getMaterial() != Material.air)
-            {
-                this.worldObj.spawnParticle("blockcrack_" + Block.getIdFromBlock(var4) + "_" + this.worldObj.getBlockMetadata(var1, var2, var3), this.posX + ((double)this.rand.nextFloat() - 0.5D) * (double)this.width, this.boundingBox.minY + 0.1D, this.posZ + ((double)this.rand.nextFloat() - 0.5D) * (double)this.width, 4.0D * ((double)this.rand.nextFloat() - 0.5D), 0.5D, ((double)this.rand.nextFloat() - 0.5D) * 4.0D);
+            if (var4.getMaterial() != Material.air) {
+                this.worldObj.spawnParticle(
+                        "blockcrack_" + Block.getIdFromBlock(var4) + "_"
+                                + this.worldObj.getBlockMetadata(var1, var2, var3),
+                        this.posX + ((double) this.rand.nextFloat() - 0.5D) * (double) this.width,
+                        this.boundingBox.minY + 0.1D,
+                        this.posZ + ((double) this.rand.nextFloat() - 0.5D) * (double) this.width,
+                        4.0D * ((double) this.rand.nextFloat() - 0.5D), 0.5D,
+                        ((double) this.rand.nextFloat() - 0.5D) * 4.0D);
             }
         }
     }
@@ -153,16 +146,15 @@ public class EntityIronGolem extends EntityGolem
     /**
      * Returns true if this entity can attack entities of the specified class.
      */
-    public boolean canAttackClass(Class p_70686_1_)
-    {
-        return this.isPlayerCreated() && EntityPlayer.class.isAssignableFrom(p_70686_1_) ? false : super.canAttackClass(p_70686_1_);
+    public boolean canAttackClass(Class p_70686_1_) {
+        return this.isPlayerCreated() && EntityPlayer.class.isAssignableFrom(p_70686_1_) ? false
+                : super.canAttackClass(p_70686_1_);
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound p_70014_1_)
-    {
+    public void writeEntityToNBT(NBTTagCompound p_70014_1_) {
         super.writeEntityToNBT(p_70014_1_);
         p_70014_1_.setBoolean("PlayerCreated", this.isPlayerCreated());
     }
@@ -170,20 +162,18 @@ public class EntityIronGolem extends EntityGolem
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound p_70037_1_)
-    {
+    public void readEntityFromNBT(NBTTagCompound p_70037_1_) {
         super.readEntityFromNBT(p_70037_1_);
         this.setPlayerCreated(p_70037_1_.getBoolean("PlayerCreated"));
     }
 
-    public boolean attackEntityAsMob(Entity p_70652_1_)
-    {
+    public boolean attackEntityAsMob(Entity p_70652_1_) {
         this.attackTimer = 10;
-        this.worldObj.setEntityState(this, (byte)4);
-        boolean var2 = p_70652_1_.attackEntityFrom(DamageSource.causeMobDamage(this), (float)(7 + this.rand.nextInt(15)));
+        this.worldObj.setEntityState(this, (byte) 4);
+        boolean var2 = p_70652_1_.attackEntityFrom(DamageSource.causeMobDamage(this),
+                (float) (7 + this.rand.nextInt(15)));
 
-        if (var2)
-        {
+        if (var2) {
             p_70652_1_.motionY += 0.4000000059604645D;
         }
 
@@ -191,112 +181,89 @@ public class EntityIronGolem extends EntityGolem
         return var2;
     }
 
-    public void handleHealthUpdate(byte p_70103_1_)
-    {
-        if (p_70103_1_ == 4)
-        {
+    public void handleHealthUpdate(byte p_70103_1_) {
+        if (p_70103_1_ == 4) {
             this.attackTimer = 10;
             this.playSound("mob.irongolem.throw", 1.0F, 1.0F);
-        }
-        else if (p_70103_1_ == 11)
-        {
+        } else if (p_70103_1_ == 11) {
             this.holdRoseTick = 400;
-        }
-        else
-        {
+        } else {
             super.handleHealthUpdate(p_70103_1_);
         }
     }
 
-    public Village getVillage()
-    {
+    public Village getVillage() {
         return this.villageObj;
     }
 
-    public int getAttackTimer()
-    {
+    public int getAttackTimer() {
         return this.attackTimer;
     }
 
-    public void setHoldingRose(boolean p_70851_1_)
-    {
+    public void setHoldingRose(boolean p_70851_1_) {
         this.holdRoseTick = p_70851_1_ ? 400 : 0;
-        this.worldObj.setEntityState(this, (byte)11);
+        this.worldObj.setEntityState(this, (byte) 11);
     }
 
     /**
      * Returns the sound this mob makes when it is hurt.
      */
-    protected String getHurtSound()
-    {
+    protected String getHurtSound() {
         return "mob.irongolem.hit";
     }
 
     /**
      * Returns the sound this mob makes on death.
      */
-    protected String getDeathSound()
-    {
+    protected String getDeathSound() {
         return "mob.irongolem.death";
     }
 
-    protected void func_145780_a(int p_145780_1_, int p_145780_2_, int p_145780_3_, Block p_145780_4_)
-    {
+    protected void func_145780_a(int p_145780_1_, int p_145780_2_, int p_145780_3_, Block p_145780_4_) {
         this.playSound("mob.irongolem.walk", 1.0F, 1.0F);
     }
 
     /**
      * Drop 0-2 items of this living's type
      */
-    protected void dropFewItems(boolean p_70628_1_, int p_70628_2_)
-    {
+    protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
         int var3 = this.rand.nextInt(3);
         int var4;
 
-        for (var4 = 0; var4 < var3; ++var4)
-        {
+        for (var4 = 0; var4 < var3; ++var4) {
             this.func_145778_a(Item.getItemFromBlock(Blocks.red_flower), 1, 0.0F);
         }
 
         var4 = 3 + this.rand.nextInt(3);
 
-        for (int var5 = 0; var5 < var4; ++var5)
-        {
+        for (int var5 = 0; var5 < var4; ++var5) {
             this.func_145779_a(Items.iron_ingot, 1);
         }
     }
 
-    public int getHoldRoseTick()
-    {
+    public int getHoldRoseTick() {
         return this.holdRoseTick;
     }
 
-    public boolean isPlayerCreated()
-    {
+    public boolean isPlayerCreated() {
         return (this.dataWatcher.getWatchableObjectByte(16) & 1) != 0;
     }
 
-    public void setPlayerCreated(boolean p_70849_1_)
-    {
+    public void setPlayerCreated(boolean p_70849_1_) {
         byte var2 = this.dataWatcher.getWatchableObjectByte(16);
 
-        if (p_70849_1_)
-        {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(var2 | 1)));
-        }
-        else
-        {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(var2 & -2)));
+        if (p_70849_1_) {
+            this.dataWatcher.updateObject(16, Byte.valueOf((byte) (var2 | 1)));
+        } else {
+            this.dataWatcher.updateObject(16, Byte.valueOf((byte) (var2 & -2)));
         }
     }
 
     /**
      * Called when the mob's health reaches 0.
      */
-    public void onDeath(DamageSource p_70645_1_)
-    {
-        if (!this.isPlayerCreated() && this.attackingPlayer != null && this.villageObj != null)
-        {
+    public void onDeath(DamageSource p_70645_1_) {
+        if (!this.isPlayerCreated() && this.attackingPlayer != null && this.villageObj != null) {
             this.villageObj.setReputationForPlayer(this.attackingPlayer.getCommandSenderName(), -5);
         }
 

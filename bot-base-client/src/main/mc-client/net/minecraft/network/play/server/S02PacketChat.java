@@ -12,7 +12,6 @@ import net.minecraft.util.IChatComponent;
 public class S02PacketChat extends Packet {
     private IChatComponent field_148919_a;
     private boolean field_148918_b;
-    private static final String __OBFID = "CL_00001289";
 
     public S02PacketChat() {
         this.field_148918_b = true;

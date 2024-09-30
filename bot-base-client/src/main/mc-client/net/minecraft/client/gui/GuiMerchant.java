@@ -30,7 +30,6 @@ public class GuiMerchant extends GuiContainer {
     private GuiMerchant.MerchantButton field_147042_y;
     private int field_147041_z;
     private String field_147040_A;
-    private static final String __OBFID = "CL_00000762";
 
     public GuiMerchant(Minecraft mc, InventoryPlayer p_i46380_1_, IMerchant p_i46380_2_, World p_i46380_3_,
             String p_i46380_4_) {
@@ -191,7 +190,6 @@ public class GuiMerchant extends GuiContainer {
 
     static class MerchantButton extends GuiButton {
         private final boolean field_146157_o;
-        private static final String __OBFID = "CL_00000763";
 
         public MerchantButton(Minecraft mc, int p_i1095_1_, int p_i1095_2_, int p_i1095_3_, boolean p_i1095_4_) {
             super(mc, p_i1095_1_, p_i1095_2_, p_i1095_3_, 12, 19, "");

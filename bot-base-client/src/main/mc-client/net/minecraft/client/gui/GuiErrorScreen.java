@@ -6,7 +6,6 @@ import net.minecraft.client.resources.I18n;
 public class GuiErrorScreen extends GuiScreen {
     private String field_146313_a;
     private String field_146312_f;
-    private static final String __OBFID = "CL_00000696";
 
     public GuiErrorScreen(Minecraft mc, String p_i46319_1_, String p_i46319_2_) {
         super(mc);

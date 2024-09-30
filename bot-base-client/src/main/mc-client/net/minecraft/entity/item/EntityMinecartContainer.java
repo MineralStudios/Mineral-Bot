@@ -19,7 +19,6 @@ public abstract class EntityMinecartContainer extends EntityMinecart implements 
      * dimensions) it preserves its contents.
      */
     private boolean dropContentsWhenDead = true;
-    private static final String __OBFID = "CL_00001674";
 
     public EntityMinecartContainer(World p_i1716_1_) {
         super(p_i1716_1_);

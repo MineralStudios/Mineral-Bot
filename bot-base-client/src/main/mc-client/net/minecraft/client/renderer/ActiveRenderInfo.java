@@ -53,7 +53,6 @@ public class ActiveRenderInfo {
      * The Y component (scaled along the X axis) of the entity's pitch rotation
      */
     public static float rotationXY;
-    private static final String __OBFID = "CL_00000626";
 
     /**
      * Updates the current render info and camera location based on entity look

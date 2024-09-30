@@ -130,7 +130,7 @@ public class WorldRendererSmooth extends WorldRenderer {
                 this.tileEntityRenderers.clear();
             }
 
-            if (this.isUpdating || !chunkcache.extendedLevelsInChunkCache()) {
+            if (this.isUpdating || chunkcache != null && !chunkcache.extendedLevelsInChunkCache()) {
                 this.bytesDrawn = 0;
                 this.tessellator = this.mc.getTessellator();
                 boolean var29 = Reflector.ForgeHooksClient.exists();
@@ -186,9 +186,9 @@ public class WorldRendererSmooth extends WorldRenderer {
 
                         for (int z = zMin; z < zMax; ++z) {
                             for (int x = var27; x < xMax; ++x) {
-                                Block block = chunkcache.getBlock(x, y, z);
+                                Block block = chunkcache != null ? chunkcache.getBlock(x, y, z) : null;
 
-                                if (block.getMaterial() != Material.air) {
+                                if (block != null && block.getMaterial() != Material.air) {
                                     if (!hasGlList) {
                                         hasGlList = true;
                                         this.preRenderBlocksSmooth(var31);
@@ -197,14 +197,18 @@ public class WorldRendererSmooth extends WorldRenderer {
                                     boolean hasTileEntity = false;
 
                                     if (var29) {
-                                        hasTileEntity = Reflector.callBoolean(block, Reflector.ForgeBlock_hasTileEntity,
-                                                new Object[] { Integer.valueOf(chunkcache.getBlockMetadata(x, y, z)) });
+                                        hasTileEntity = chunkcache != null
+                                                ? Reflector.callBoolean(block, Reflector.ForgeBlock_hasTileEntity,
+                                                        new Object[] {
+                                                                Integer.valueOf(chunkcache.getBlockMetadata(x, y, z)) })
+                                                : false;
                                     } else {
                                         hasTileEntity = block.hasTileEntity();
                                     }
 
                                     if (var31 == 0 && hasTileEntity) {
-                                        TileEntity blockPass = chunkcache.getTileEntity(x, y, z);
+                                        TileEntity blockPass = chunkcache != null ? chunkcache.getTileEntity(x, y, z)
+                                                : null;
 
                                         if (this.mc.tileEntityRendererDispatcher.hasSpecialRenderer(blockPass)) {
                                             this.tileEntityRenderers.add(blockPass);
@@ -225,10 +229,11 @@ public class WorldRendererSmooth extends WorldRenderer {
                                     }
 
                                     if (canRender) {
-                                        hasRenderedBlocks |= renderblocks.renderBlockByRenderType(block, x, y, z);
+                                        if (renderblocks != null)
+                                            hasRenderedBlocks |= renderblocks.renderBlockByRenderType(block, x, y, z);
 
                                         if (block.getRenderType() == 0 && x == viewEntityPosX && y == viewEntityPosY
-                                                && z == viewEntityPosZ) {
+                                                && z == viewEntityPosZ && renderblocks != null) {
                                             renderblocks.setRenderFromInside(true);
                                             renderblocks.setRenderAllFaces(true);
                                             renderblocks.renderBlockByRenderType(block, x, y, z);
@@ -263,7 +268,8 @@ public class WorldRendererSmooth extends WorldRenderer {
             var30.addAll(this.tileEntityRenderers);
             var30.removeAll(setOldEntityRenders);
             this.tileEntities.addAll(var30);
-            setOldEntityRenders.removeAll(this.tileEntityRenderers);
+            if (setOldEntityRenders != null)
+                setOldEntityRenders.removeAll(this.tileEntityRenderers);
             this.tileEntities.removeAll(setOldEntityRenders);
             this.isChunkLit = Chunk.isLit;
             this.isInitialized = true;

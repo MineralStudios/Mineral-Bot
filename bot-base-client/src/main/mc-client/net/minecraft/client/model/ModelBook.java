@@ -25,7 +25,6 @@ public class ModelBook extends ModelBase {
 
     /** The renderer of spine of the book */
     public final ModelRenderer bookSpine;
-    private static final String __OBFID = "CL_00000833";
 
     public ModelBook(Minecraft mc) {
         this.coverRight = (new ModelRenderer(mc, this)).setTextureOffset(0, 0).addBox(-6.0F, -5.0F, 0.0F, 6, 10, 0);

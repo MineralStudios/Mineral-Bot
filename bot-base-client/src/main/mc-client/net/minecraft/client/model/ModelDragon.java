@@ -43,7 +43,6 @@ public class ModelDragon extends ModelBase {
     /** The wing tip Model renderer of the dragon */
     private ModelRenderer wingTip;
     private float partialTicks;
-    private static final String __OBFID = "CL_00000870";
 
     public ModelDragon(Minecraft mc, float p_i46360_1_) {
         this.textureWidth = 256;

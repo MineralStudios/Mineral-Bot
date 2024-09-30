@@ -2,8 +2,7 @@ package net.minecraft.block.material;
 
 import net.minecraft.block.BlockColored;
 
-public class MapColor
-{
+public class MapColor {
     /**
      * Holds all the 16 colors used on maps, very similar of a pallete system.
      */
@@ -50,26 +49,19 @@ public class MapColor
 
     /** Holds the index of the color used on map. */
     public final int colorIndex;
-    private static final String __OBFID = "CL_00000544";
 
-    private MapColor(int p_i2117_1_, int p_i2117_2_)
-    {
-        if (p_i2117_1_ >= 0 && p_i2117_1_ <= 63)
-        {
+    private MapColor(int p_i2117_1_, int p_i2117_2_) {
+        if (p_i2117_1_ >= 0 && p_i2117_1_ <= 63) {
             this.colorIndex = p_i2117_1_;
             this.colorValue = p_i2117_2_;
             mapColorArray[p_i2117_1_] = this;
-        }
-        else
-        {
+        } else {
             throw new IndexOutOfBoundsException("Map colour ID must be between 0 and 63 (inclusive)");
         }
     }
 
-    public static MapColor func_151644_a(int p_151644_0_)
-    {
-        switch (BlockColored.func_150031_c(p_151644_0_))
-        {
+    public static MapColor func_151644_a(int p_151644_0_) {
+        switch (BlockColored.func_150031_c(p_151644_0_)) {
             case 0:
                 return field_151646_E;
 
@@ -123,27 +115,22 @@ public class MapColor
         }
     }
 
-    public int func_151643_b(int p_151643_1_)
-    {
+    public int func_151643_b(int p_151643_1_) {
         short var2 = 220;
 
-        if (p_151643_1_ == 3)
-        {
+        if (p_151643_1_ == 3) {
             var2 = 135;
         }
 
-        if (p_151643_1_ == 2)
-        {
+        if (p_151643_1_ == 2) {
             var2 = 255;
         }
 
-        if (p_151643_1_ == 1)
-        {
+        if (p_151643_1_ == 1) {
             var2 = 220;
         }
 
-        if (p_151643_1_ == 0)
-        {
+        if (p_151643_1_ == 0) {
             var2 = 180;
         }
 

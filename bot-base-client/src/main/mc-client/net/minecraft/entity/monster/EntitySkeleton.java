@@ -40,7 +40,6 @@ public class EntitySkeleton extends EntityMob implements IRangedAttackMob {
     private EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 60, 15.0F);
     private EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.2D,
             false);
-    private static final String __OBFID = "CL_00001697";
 
     public EntitySkeleton(World p_i1741_1_) {
         super(p_i1741_1_);

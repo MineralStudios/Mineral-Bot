@@ -7,7 +7,6 @@ public class AxisAlignedBB implements gg.mineral.bot.api.math.BoundingBox {
     @Getter
     @Setter
     public double minX, minY, minZ, maxX, maxY, maxZ;
-    private static final String __OBFID = "CL_00000607";
 
     /**
      * Returns a bounding box with the specified bounds. Args: minX, minY, minZ,

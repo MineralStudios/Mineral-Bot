@@ -16,7 +16,6 @@ public class S38PacketPlayerListItem extends Packet {
     private String playerName;
     private boolean online;
     private int ping;
-    private static final String __OBFID = "CL_00001318";
 
     /**
      * Reads the raw packet data from the data stream.

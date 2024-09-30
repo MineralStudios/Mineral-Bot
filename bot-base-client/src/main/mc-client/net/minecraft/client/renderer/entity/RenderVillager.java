@@ -25,7 +25,6 @@ public class RenderVillager extends RenderLiving {
 
     /** Model of the villager. */
     protected ModelVillager villagerModel;
-    private static final String __OBFID = "CL_00001032";
 
     public RenderVillager(Minecraft mc) {
         super(mc, new ModelVillager(mc, 0.0F), 0.5F);

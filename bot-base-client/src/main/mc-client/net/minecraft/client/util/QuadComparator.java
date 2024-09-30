@@ -2,24 +2,20 @@ package net.minecraft.client.util;
 
 import java.util.Comparator;
 
-public class QuadComparator implements Comparator
-{
+public class QuadComparator implements Comparator {
     private float field_147630_a;
     private float field_147628_b;
     private float field_147629_c;
     private int[] field_147627_d;
-    private static final String __OBFID = "CL_00000958";
 
-    public QuadComparator(int[] p_i45077_1_, float p_i45077_2_, float p_i45077_3_, float p_i45077_4_)
-    {
+    public QuadComparator(int[] p_i45077_1_, float p_i45077_2_, float p_i45077_3_, float p_i45077_4_) {
         this.field_147627_d = p_i45077_1_;
         this.field_147630_a = p_i45077_2_;
         this.field_147628_b = p_i45077_3_;
         this.field_147629_c = p_i45077_4_;
     }
 
-    public int compare(Integer p_compare_1_, Integer p_compare_2_)
-    {
+    public int compare(Integer p_compare_1_, Integer p_compare_2_) {
         float var3 = Float.intBitsToFloat(this.field_147627_d[p_compare_1_.intValue()]) - this.field_147630_a;
         float var4 = Float.intBitsToFloat(this.field_147627_d[p_compare_1_.intValue() + 1]) - this.field_147628_b;
         float var5 = Float.intBitsToFloat(this.field_147627_d[p_compare_1_.intValue() + 2]) - this.field_147629_c;
@@ -55,8 +51,7 @@ public class QuadComparator implements Comparator
         return Float.compare(var34, var33);
     }
 
-    public int compare(Object p_compare_1_, Object p_compare_2_)
-    {
-        return this.compare((Integer)p_compare_1_, (Integer)p_compare_2_);
+    public int compare(Object p_compare_1_, Object p_compare_2_) {
+        return this.compare((Integer) p_compare_1_, (Integer) p_compare_2_);
     }
 }

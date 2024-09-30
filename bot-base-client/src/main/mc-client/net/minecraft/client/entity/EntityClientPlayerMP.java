@@ -20,6 +20,7 @@ import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatFileWriter;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovementInput;
 import net.minecraft.util.Session;
 import net.minecraft.world.World;
 
@@ -52,7 +53,6 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
     /** has the client player's health been set? */
     private boolean hasSetHealth;
     private String field_142022_ce;
-    private static final String __OBFID = "CL_00000887";
 
     public EntityClientPlayerMP(Minecraft p_i45064_1_, World p_i45064_2_, Session p_i45064_3_,
             NetHandlerPlayClient p_i45064_4_, StatFileWriter p_i45064_5_) {
@@ -95,8 +95,11 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
             if (this.isRiding()) {
                 this.sendQueue.addToSendQueue(
                         new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
-                this.sendQueue.addToSendQueue(new C0CPacketInput(this.moveStrafing, this.moveForward,
-                        this.movementInput.jump, this.movementInput.sneak));
+                MovementInput movementInput = this.movementInput;
+
+                if (movementInput != null)
+                    this.sendQueue.addToSendQueue(new C0CPacketInput(this.moveStrafing, this.moveForward,
+                            movementInput.jump, movementInput.sneak));
             } else {
                 this.sendMotionUpdates();
             }

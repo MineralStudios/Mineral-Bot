@@ -166,7 +166,6 @@ public class RenderGlobal implements IWorldAccess {
    int field_147600_j = -999;
    int field_147601_k = -999;
    int field_72757_g;
-   private static final String __OBFID = "CL_00000954";
    private IntBuffer glListBuffer = BufferUtils.createIntBuffer(65536);
    double prevReposX;
    double prevReposY;
@@ -187,7 +186,6 @@ public class RenderGlobal implements IWorldAccess {
    private long lastMovedTime = System.currentTimeMillis();
    private long lastActionTime = System.currentTimeMillis();
    private static AxisAlignedBB AABB_INFINITE = AxisAlignedBB.func_72330_a(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-   private static final String __OBFID = "CL_00000954";
 
    public RenderGlobal(Minecraft par1Minecraft) {
       this.glListClouds = GLAllocation.func_74526_a(1);
@@ -1947,8 +1945,6 @@ public class RenderGlobal implements IWorldAccess {
          var16.func_71507_a("Name", par1Str);
          var16.func_71500_a("Position", new Callable() {
 
-            private static final String __OBFID = "CL_00000955";
-            private static final String __OBFID = "CL_00000955";
 
             public String call() {
                return CrashReportCategory.func_85074_a(par2, par4, par6);

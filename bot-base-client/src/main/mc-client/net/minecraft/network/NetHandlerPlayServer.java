@@ -117,7 +117,6 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
     private double lastPosY;
     private double lastPosZ;
     private boolean hasMoved = true;
-    private static final String __OBFID = "CL_00001452";
 
     public NetHandlerPlayServer(MinecraftServer p_i1530_1_, NetworkManager p_i1530_2_, EntityPlayerMP p_i1530_3_) {
         this.serverController = p_i1530_1_;
@@ -170,7 +169,6 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
         final ChatComponentText var2 = new ChatComponentText(p_147360_1_);
         this.netManager.scheduleOutboundPacket(new S40PacketDisconnect(var2),
                 new GenericFutureListener[] { new GenericFutureListener() {
-                    private static final String __OBFID = "CL_00001453";
 
                     public void operationComplete(Future p_operationComplete_1_) {
                         NetHandlerPlayServer.this.netManager.closeChannel(var2);
@@ -613,13 +611,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
         } catch (Throwable var5) {
             CrashReport var6 = CrashReport.makeCrashReport(var5, "Sending packet");
             CrashReportCategory var4 = var6.makeCategory("Packet being sent");
-            var4.addCrashSectionCallable("Packet class", new Callable() {
-                private static final String __OBFID = "CL_00001454";
-
-                public String call() {
-                    return p_147359_1_.getClass().getCanonicalName();
-                }
-            });
+            var4.addCrashSectionCallable("Packet class", () -> p_147359_1_.getClass().getCanonicalName());
             throw new ReportedException(var6);
         }
     }
@@ -1194,7 +1186,6 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
 
     static final class SwitchEnumState {
         static final int[] field_151290_a = new int[C16PacketClientStatus.EnumState.values().length];
-        private static final String __OBFID = "CL_00001455";
 
         static {
             try {

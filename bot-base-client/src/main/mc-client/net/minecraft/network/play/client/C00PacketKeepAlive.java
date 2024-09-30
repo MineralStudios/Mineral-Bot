@@ -16,7 +16,6 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 @Getter
 public class C00PacketKeepAlive extends Packet {
     private int id;
-    private static final String __OBFID = "CL_00001359";
 
     public void processPacket(INetHandlerPlayServer p_148833_1_) {
         p_148833_1_.processKeepAlive(this);

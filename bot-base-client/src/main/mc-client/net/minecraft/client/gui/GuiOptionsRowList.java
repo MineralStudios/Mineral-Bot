@@ -11,7 +11,6 @@ import net.minecraft.client.settings.GameSettings;
 
 public class GuiOptionsRowList extends GuiListExtended {
     private final List field_148184_k = Lists.newArrayList();
-    private static final String __OBFID = "CL_00000677";
 
     public GuiOptionsRowList(Minecraft mc, int p_i45015_2_, int p_i45015_3_, int p_i45015_4_, int p_i45015_5_,
             int p_i45015_6_, GameSettings.Options... p_i45015_7_) {
@@ -61,7 +60,6 @@ public class GuiOptionsRowList extends GuiListExtended {
         private final Minecraft mc;
         private final GuiButton field_148323_b;
         private final GuiButton field_148324_c;
-        private static final String __OBFID = "CL_00000678";
 
         public void func_148279_a(int p_148279_1_, int p_148279_2_, int p_148279_3_, int p_148279_4_, int p_148279_5_,
                 Tessellator p_148279_6_, int p_148279_7_, int p_148279_8_, boolean p_148279_9_) {

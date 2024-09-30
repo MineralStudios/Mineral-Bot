@@ -8,7 +8,6 @@ import net.minecraft.world.World;
 
 public class EntityDiggingFX extends EntityFX {
     private Block field_145784_a;
-    private static final String __OBFID = "CL_00000932";
 
     public EntityDiggingFX(World p_i1234_1_, double p_i1234_2_, double p_i1234_4_, double p_i1234_6_, double p_i1234_8_,
             double p_i1234_10_, double p_i1234_12_, Block p_i1234_14_, int p_i1234_15_) {

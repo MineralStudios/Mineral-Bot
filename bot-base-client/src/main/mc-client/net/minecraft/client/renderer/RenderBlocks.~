@@ -140,12 +140,10 @@ public class RenderBlocks {
    public float field_147841_ay;
    public float field_147839_az;
    public float field_147833_aA;
-   public static final String __OBFID = "CL_00000940";
    public boolean aoLightValuesCalculated;
    public float aoLightValueOpaque = 0.2F;
    public boolean betterSnowEnabled = true;
    private static RenderBlocks instance;
-   private static final String __OBFID = "CL_00000940";
 
    public RenderBlocks(IBlockAccess par1IBlockAccess) {
       this.field_147845_a = par1IBlockAccess;

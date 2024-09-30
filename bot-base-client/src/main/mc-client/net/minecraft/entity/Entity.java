@@ -247,7 +247,6 @@ public abstract class Entity implements ClientEntity {
     private boolean invulnerable;
     protected UUID entityUniqueID;
     public Entity.EnumEntitySize myEntitySize;
-    private static final String __OBFID = "CL_00001533";
 
     public double getX() {
         return this.posX;
@@ -2182,21 +2181,10 @@ public abstract class Entity implements ClientEntity {
     }
 
     public void addEntityCrashInfo(CrashReportCategory p_85029_1_) {
-        p_85029_1_.addCrashSectionCallable("Entity Type", new Callable() {
-            private static final String __OBFID = "CL_00001534";
-
-            public String call() {
-                return EntityList.getEntityString(Entity.this) + " (" + Entity.this.getClass().getCanonicalName() + ")";
-            }
-        });
-        p_85029_1_.addCrashSection("Entity ID", Integer.valueOf(this.entityId));
-        p_85029_1_.addCrashSectionCallable("Entity Name", new Callable() {
-            private static final String __OBFID = "CL_00001535";
-
-            public String call() {
-                return Entity.this.getCommandSenderName();
-            }
-        });
+        p_85029_1_.addCrashSectionCallable("Entity Type",
+                () -> EntityList.getEntityString(Entity.this) + " (" + Entity.this.getClass().getCanonicalName() + ")");
+        p_85029_1_.addCrashSection("Entity ID", this.entityId);
+        p_85029_1_.addCrashSectionCallable("Entity Name", () -> Entity.this.getCommandSenderName());
         p_85029_1_.addCrashSection("Entity\'s Exact location", String.format("%.2f, %.2f, %.2f",
                 new Object[] { Double.valueOf(this.posX), Double.valueOf(this.posY), Double.valueOf(this.posZ) }));
         p_85029_1_.addCrashSection("Entity\'s Block location",
@@ -2234,7 +2222,6 @@ public abstract class Entity implements ClientEntity {
 
         private static final Entity.EnumEntitySize[] $VALUES = new Entity.EnumEntitySize[] { SIZE_1, SIZE_2, SIZE_3,
                 SIZE_4, SIZE_5, SIZE_6 };
-        private static final String __OBFID = "CL_00001537";
 
         private EnumEntitySize(String p_i1581_1_, int p_i1581_2_) {
         }
@@ -2307,7 +2294,6 @@ public abstract class Entity implements ClientEntity {
 
     static final class SwitchEnumEntitySize {
         static final int[] field_96565_a = new int[Entity.EnumEntitySize.values().length];
-        private static final String __OBFID = "CL_00001536";
 
         static {
             try {

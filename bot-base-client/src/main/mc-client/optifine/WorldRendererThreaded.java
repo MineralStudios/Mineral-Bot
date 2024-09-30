@@ -31,7 +31,7 @@ public class WorldRendererThreaded extends WorldRenderer {
     public WorldRendererThreaded(Minecraft mc, World par1World, List par2List, int par3, int par4, int par5, int par6) {
         super(mc, par1World, par2List, par3, par4, par5, par6);
         RenderGlobal renderGlobal = mc.renderGlobal;
-        this.glRenderListWork = renderGlobal.displayListAllocator.allocateDisplayLists(2);
+        this.glRenderListWork = renderGlobal != null ? renderGlobal.displayListAllocator.allocateDisplayLists(2) : 0;
         this.glRenderListBoundingBox = this.glRenderList + 2;
     }
 

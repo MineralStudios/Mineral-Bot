@@ -23,7 +23,6 @@ public class TileEntityHopper extends TileEntity implements IHopper {
     private ItemStack[] field_145900_a = new ItemStack[5];
     private String field_145902_i;
     private int field_145901_j = -1;
-    private static final String __OBFID = "CL_00000359";
 
     public void readFromNBT(NBTTagCompound p_145839_1_) {
         super.readFromNBT(p_145839_1_);

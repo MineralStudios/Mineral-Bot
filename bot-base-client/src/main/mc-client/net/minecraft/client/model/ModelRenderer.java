@@ -46,7 +46,6 @@ public class ModelRenderer {
     public float offsetZ;
     public List spriteList;
     public boolean mirrorV;
-    private static final String __OBFID = "CL_00000874";
     private final Minecraft mc;
 
     public ModelRenderer(Minecraft mc, ModelBase par1ModelBase, String par2Str) {

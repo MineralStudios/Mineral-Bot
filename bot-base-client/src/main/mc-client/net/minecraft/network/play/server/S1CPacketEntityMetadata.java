@@ -17,7 +17,6 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 public class S1CPacketEntityMetadata extends Packet {
     private int field_149379_a;
     private List field_149378_b;
-    private static final String __OBFID = "CL_00001326";
 
     public S1CPacketEntityMetadata(int p_i45217_1_, DataWatcher p_i45217_2_, boolean p_i45217_3_) {
         this.field_149379_a = p_i45217_1_;

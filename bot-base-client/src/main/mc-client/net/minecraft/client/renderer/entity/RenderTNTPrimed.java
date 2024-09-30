@@ -12,7 +12,6 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderTNTPrimed extends Render {
     private RenderBlocks blockRenderer;
-    private static final String __OBFID = "CL_00001030";
 
     public RenderTNTPrimed(Minecraft mc) {
         super(mc);

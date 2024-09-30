@@ -41,7 +41,6 @@ public class TileEntityRendererDispatcher {
     public double field_147560_j;
     public double field_147561_k;
     public double field_147558_l;
-    private static final String __OBFID = "CL_00000963";
 
     public TileEntityRendererDispatcher(Minecraft mc) {
         this.mapSpecialRenderers.put(TileEntitySign.class, new TileEntitySignRenderer(mc));

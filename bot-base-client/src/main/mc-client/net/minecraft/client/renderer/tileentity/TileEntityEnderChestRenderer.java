@@ -11,7 +11,6 @@ import net.minecraft.util.ResourceLocation;
 public class TileEntityEnderChestRenderer extends TileEntitySpecialRenderer {
     private static final ResourceLocation field_147520_b = new ResourceLocation("textures/entity/chest/ender.png");
     private ModelChest field_147521_c;
-    private static final String __OBFID = "CL_00000967";
 
     public TileEntityEnderChestRenderer(Minecraft mc) {
         field_147521_c = new ModelChest(mc);

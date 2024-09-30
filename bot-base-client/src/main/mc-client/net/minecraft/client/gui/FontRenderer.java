@@ -116,7 +116,6 @@ public class FontRenderer implements IResourceManagerReloadListener {
     public ResourceLocation locationFontTextureBase;
     public boolean enabled = true;
     public float scaleFactor = 1.0F;
-    private static final String __OBFID = "CL_00000660";
 
     private final Minecraft mc;
 
@@ -484,33 +483,40 @@ public class FontRenderer implements IResourceManagerReloadListener {
 
                 if (this.strikethroughStyle) {
                     var9 = this.mc.getTessellator();
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    var9.startDrawingQuads();
-                    var9.addVertex((double) this.posX, (double) (this.posY + (float) (this.FONT_HEIGHT / 2)), 0.0D);
-                    var9.addVertex((double) (this.posX + var8), (double) (this.posY + (float) (this.FONT_HEIGHT / 2)),
-                            0.0D);
-                    var9.addVertex((double) (this.posX + var8),
-                            (double) (this.posY + (float) (this.FONT_HEIGHT / 2) - 1.0F), 0.0D);
-                    var9.addVertex((double) this.posX, (double) (this.posY + (float) (this.FONT_HEIGHT / 2) - 1.0F),
-                            0.0D);
-                    var9.draw();
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    if (var9 != null) {
+                        GL11.glDisable(GL11.GL_TEXTURE_2D);
+                        var9.startDrawingQuads();
+                        var9.addVertex((double) this.posX, (double) (this.posY + (float) (this.FONT_HEIGHT / 2)), 0.0D);
+                        var9.addVertex((double) (this.posX + var8),
+                                (double) (this.posY + (float) (this.FONT_HEIGHT / 2)),
+                                0.0D);
+                        var9.addVertex((double) (this.posX + var8),
+                                (double) (this.posY + (float) (this.FONT_HEIGHT / 2) - 1.0F), 0.0D);
+                        var9.addVertex((double) this.posX, (double) (this.posY + (float) (this.FONT_HEIGHT / 2) - 1.0F),
+                                0.0D);
+                        var9.draw();
+                        GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    }
                 }
 
                 if (this.underlineStyle) {
                     var9 = this.mc.getTessellator();
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    var9.startDrawingQuads();
-                    int var10 = this.underlineStyle ? -1 : 0;
-                    var9.addVertex((double) (this.posX + (float) var10),
-                            (double) (this.posY + (float) this.FONT_HEIGHT), 0.0D);
-                    var9.addVertex((double) (this.posX + var8), (double) (this.posY + (float) this.FONT_HEIGHT), 0.0D);
-                    var9.addVertex((double) (this.posX + var8), (double) (this.posY + (float) this.FONT_HEIGHT - 1.0F),
-                            0.0D);
-                    var9.addVertex((double) (this.posX + (float) var10),
-                            (double) (this.posY + (float) this.FONT_HEIGHT - 1.0F), 0.0D);
-                    var9.draw();
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    if (var9 != null) {
+                        GL11.glDisable(GL11.GL_TEXTURE_2D);
+                        var9.startDrawingQuads();
+                        int var10 = this.underlineStyle ? -1 : 0;
+                        var9.addVertex((double) (this.posX + (float) var10),
+                                (double) (this.posY + (float) this.FONT_HEIGHT), 0.0D);
+                        var9.addVertex((double) (this.posX + var8), (double) (this.posY + (float) this.FONT_HEIGHT),
+                                0.0D);
+                        var9.addVertex((double) (this.posX + var8),
+                                (double) (this.posY + (float) this.FONT_HEIGHT - 1.0F),
+                                0.0D);
+                        var9.addVertex((double) (this.posX + (float) var10),
+                                (double) (this.posY + (float) this.FONT_HEIGHT - 1.0F), 0.0D);
+                        var9.draw();
+                        GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    }
                 }
 
                 this.posX += var8;

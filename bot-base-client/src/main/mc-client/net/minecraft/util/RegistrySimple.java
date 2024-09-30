@@ -14,7 +14,6 @@ public class RegistrySimple implements IRegistry {
 
     /** Objects registered on this registry. */
     protected final Map<Object, Object> registryObjects = this.createUnderlyingMap();
-    private static final String __OBFID = "CL_00001210";
 
     /**
      * Creates the Map we will use to map keys to their registered values.

@@ -4,8 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ScorePlayerTeam extends Team
-{
+public class ScorePlayerTeam extends Team {
     private final Scoreboard theScoreboard;
     private final String field_96675_b;
 
@@ -16,10 +15,8 @@ public class ScorePlayerTeam extends Team
     private String colorSuffix = "";
     private boolean allowFriendlyFire = true;
     private boolean canSeeFriendlyInvisibles = true;
-    private static final String __OBFID = "CL_00000616";
 
-    public ScorePlayerTeam(Scoreboard p_i2308_1_, String p_i2308_2_)
-    {
+    public ScorePlayerTeam(Scoreboard p_i2308_1_, String p_i2308_2_) {
         this.theScoreboard = p_i2308_1_;
         this.field_96675_b = p_i2308_2_;
         this.teamNameSPT = p_i2308_2_;
@@ -28,50 +25,38 @@ public class ScorePlayerTeam extends Team
     /**
      * Retrieve the name by which this team is registered in the scoreboard
      */
-    public String getRegisteredName()
-    {
+    public String getRegisteredName() {
         return this.field_96675_b;
     }
 
-    public String func_96669_c()
-    {
+    public String func_96669_c() {
         return this.teamNameSPT;
     }
 
-    public void setTeamName(String p_96664_1_)
-    {
-        if (p_96664_1_ == null)
-        {
+    public void setTeamName(String p_96664_1_) {
+        if (p_96664_1_ == null) {
             throw new IllegalArgumentException("Name cannot be null");
-        }
-        else
-        {
+        } else {
             this.teamNameSPT = p_96664_1_;
             this.theScoreboard.func_96538_b(this);
         }
     }
 
-    public Collection getMembershipCollection()
-    {
+    public Collection getMembershipCollection() {
         return this.membershipSet;
     }
 
     /**
      * Returns the color prefix for the player's team name
      */
-    public String getColorPrefix()
-    {
+    public String getColorPrefix() {
         return this.namePrefixSPT;
     }
 
-    public void setNamePrefix(String p_96666_1_)
-    {
-        if (p_96666_1_ == null)
-        {
+    public void setNamePrefix(String p_96666_1_) {
+        if (p_96666_1_ == null) {
             throw new IllegalArgumentException("Prefix cannot be null");
-        }
-        else
-        {
+        } else {
             this.namePrefixSPT = p_96666_1_;
             this.theScoreboard.func_96538_b(this);
         }
@@ -80,78 +65,63 @@ public class ScorePlayerTeam extends Team
     /**
      * Returns the color suffix for the player's team name
      */
-    public String getColorSuffix()
-    {
+    public String getColorSuffix() {
         return this.colorSuffix;
     }
 
-    public void setNameSuffix(String p_96662_1_)
-    {
-        if (p_96662_1_ == null)
-        {
+    public void setNameSuffix(String p_96662_1_) {
+        if (p_96662_1_ == null) {
             throw new IllegalArgumentException("Suffix cannot be null");
-        }
-        else
-        {
+        } else {
             this.colorSuffix = p_96662_1_;
             this.theScoreboard.func_96538_b(this);
         }
     }
 
-    public String func_142053_d(String p_142053_1_)
-    {
+    public String func_142053_d(String p_142053_1_) {
         return this.getColorPrefix() + p_142053_1_ + this.getColorSuffix();
     }
 
     /**
      * Returns the player name including the color prefixes and suffixes
      */
-    public static String formatPlayerName(Team p_96667_0_, String p_96667_1_)
-    {
+    public static String formatPlayerName(Team p_96667_0_, String p_96667_1_) {
         return p_96667_0_ == null ? p_96667_1_ : p_96667_0_.func_142053_d(p_96667_1_);
     }
 
-    public boolean getAllowFriendlyFire()
-    {
+    public boolean getAllowFriendlyFire() {
         return this.allowFriendlyFire;
     }
 
-    public void setAllowFriendlyFire(boolean p_96660_1_)
-    {
+    public void setAllowFriendlyFire(boolean p_96660_1_) {
         this.allowFriendlyFire = p_96660_1_;
         this.theScoreboard.func_96538_b(this);
     }
 
-    public boolean func_98297_h()
-    {
+    public boolean func_98297_h() {
         return this.canSeeFriendlyInvisibles;
     }
 
-    public void setSeeFriendlyInvisiblesEnabled(boolean p_98300_1_)
-    {
+    public void setSeeFriendlyInvisiblesEnabled(boolean p_98300_1_) {
         this.canSeeFriendlyInvisibles = p_98300_1_;
         this.theScoreboard.func_96538_b(this);
     }
 
-    public int func_98299_i()
-    {
+    public int func_98299_i() {
         int var1 = 0;
 
-        if (this.getAllowFriendlyFire())
-        {
+        if (this.getAllowFriendlyFire()) {
             var1 |= 1;
         }
 
-        if (this.func_98297_h())
-        {
+        if (this.func_98297_h()) {
             var1 |= 2;
         }
 
         return var1;
     }
 
-    public void func_98298_a(int p_98298_1_)
-    {
+    public void func_98298_a(int p_98298_1_) {
         this.setAllowFriendlyFire((p_98298_1_ & 1) > 0);
         this.setSeeFriendlyInvisiblesEnabled((p_98298_1_ & 2) > 0);
     }

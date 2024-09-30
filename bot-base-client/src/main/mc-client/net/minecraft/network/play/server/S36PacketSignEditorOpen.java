@@ -12,7 +12,6 @@ public class S36PacketSignEditorOpen extends Packet {
     private int field_149133_a;
     private int field_149131_b;
     private int field_149132_c;
-    private static final String __OBFID = "CL_00001316";
 
     public S36PacketSignEditorOpen() {
     }

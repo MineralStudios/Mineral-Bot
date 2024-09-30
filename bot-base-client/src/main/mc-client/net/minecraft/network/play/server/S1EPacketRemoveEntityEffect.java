@@ -16,7 +16,6 @@ import net.minecraft.potion.PotionEffect;
 public class S1EPacketRemoveEntityEffect extends Packet {
     private int field_149079_a;
     private int field_149078_b;
-    private static final String __OBFID = "CL_00001321";
 
     public S1EPacketRemoveEntityEffect(int p_i45212_1_, PotionEffect p_i45212_2_) {
         this.field_149079_a = p_i45212_1_;

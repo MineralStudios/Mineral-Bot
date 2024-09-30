@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.inventory;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.client.gui.achievement.GuiStats;
@@ -19,7 +20,6 @@ import gg.mineral.bot.base.lwjgl.opengl.GL12;
 public class GuiInventory extends InventoryEffectRenderer implements InventoryScreen {
     private float field_147048_u;
     private float field_147047_v;
-    private static final String __OBFID = "CL_00000761";
 
     public GuiInventory(Minecraft mc, EntityPlayer p_i1094_1_) {
         super(mc, p_i1094_1_.inventoryContainer);
@@ -114,12 +114,14 @@ public class GuiInventory extends InventoryEffectRenderer implements InventorySc
     }
 
     protected void actionPerformed(GuiButton p_146284_1_) {
-        if (p_146284_1_.id == 0) {
-            this.mc.displayGuiScreen(new GuiAchievements(this.mc, this, this.mc.thePlayer.func_146107_m()));
-        }
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
 
-        if (p_146284_1_.id == 1) {
-            this.mc.displayGuiScreen(new GuiStats(this.mc, this, this.mc.thePlayer.func_146107_m()));
-        }
+        if (thePlayer == null)
+            return;
+        if (p_146284_1_.id == 0)
+            this.mc.displayGuiScreen(new GuiAchievements(this.mc, this, thePlayer.func_146107_m()));
+
+        if (p_146284_1_.id == 1)
+            this.mc.displayGuiScreen(new GuiStats(this.mc, this, thePlayer.func_146107_m()));
     }
 }

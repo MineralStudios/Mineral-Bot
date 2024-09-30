@@ -12,7 +12,6 @@ public class ModelCreeper extends ModelBase {
     public ModelRenderer leg2;
     public ModelRenderer leg3;
     public ModelRenderer leg4;
-    private static final String __OBFID = "CL_00000837";
 
     public ModelCreeper(Minecraft mc) {
         this(mc, 0.0F);

@@ -18,7 +18,6 @@ public class RenderIronGolem extends RenderLiving {
 
     /** Iron Golem's Model. */
     private final ModelIronGolem ironGolemModel;
-    private static final String __OBFID = "CL_00001031";
 
     public RenderIronGolem(Minecraft mc) {
         super(mc, new ModelIronGolem(mc), 0.5F);

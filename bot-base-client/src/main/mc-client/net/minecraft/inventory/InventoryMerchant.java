@@ -13,7 +13,6 @@ public class InventoryMerchant implements IInventory {
     private final EntityPlayer thePlayer;
     private MerchantRecipe currentRecipe;
     private int currentRecipeIndex;
-    private static final String __OBFID = "CL_00001756";
 
     public InventoryMerchant(EntityPlayer p_i1820_1_, IMerchant p_i1820_2_) {
         this.thePlayer = p_i1820_1_;

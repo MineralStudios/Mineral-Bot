@@ -31,7 +31,6 @@ public abstract class Container implements InventoryContainer {
      */
     protected List crafters = new ArrayList();
     private Set playerList = new HashSet();
-    private static final String __OBFID = "CL_00001730";
 
     /**
      * the slot is assumed empty

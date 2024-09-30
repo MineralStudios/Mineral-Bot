@@ -13,7 +13,6 @@ public class S04PacketEntityEquipment extends Packet {
     private int field_149394_a;
     private int field_149392_b;
     private ItemStack field_149393_c;
-    private static final String __OBFID = "CL_00001330";
 
     public S04PacketEntityEquipment() {
     }

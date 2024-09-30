@@ -46,7 +46,6 @@ public class EntityWolf extends EntityTameable {
      */
     private float timeWolfIsShaking;
     private float prevTimeWolfIsShaking;
-    private static final String __OBFID = "CL_00001654";
 
     public EntityWolf(World p_i1696_1_) {
         super(p_i1696_1_);

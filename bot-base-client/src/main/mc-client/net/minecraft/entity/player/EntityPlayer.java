@@ -187,7 +187,6 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
      * the fishing rod is slightly different
      */
     public EntityFishHook fishEntity;
-    private static final String __OBFID = "CL_00001711";
 
     public EntityPlayer(World p_i45324_1_, GameProfile p_i45324_2_) {
         super(p_i45324_1_);
@@ -1058,14 +1057,12 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
 
         if (!p_70998_1_.interactFirst(this)) {
             if (var2 != null && p_70998_1_ instanceof EntityLivingBase) {
-                if (this.capabilities.isCreativeMode) {
+                if (this.capabilities.isCreativeMode)
                     var2 = var3;
-                }
 
-                if (var2.interactWithEntity(this, (EntityLivingBase) p_70998_1_)) {
-                    if (var2.stackSize <= 0 && !this.capabilities.isCreativeMode) {
+                if (var2 != null && var2.interactWithEntity(this, (EntityLivingBase) p_70998_1_)) {
+                    if (var2.stackSize <= 0 && !this.capabilities.isCreativeMode)
                         this.destroyCurrentEquippedItem();
-                    }
 
                     return true;
                 }
@@ -1074,11 +1071,10 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
             return false;
         } else {
             if (var2 != null && var2 == this.getCurrentEquippedItem()) {
-                if (var2.stackSize <= 0 && !this.capabilities.isCreativeMode) {
+                if (var2.stackSize <= 0 && !this.capabilities.isCreativeMode)
                     this.destroyCurrentEquippedItem();
-                } else if (var2.stackSize < var3.stackSize && this.capabilities.isCreativeMode) {
+                else if (var3 != null && var2.stackSize < var3.stackSize && this.capabilities.isCreativeMode)
                     var2.stackSize = var3.stackSize;
-                }
             }
 
             return true;
@@ -2047,7 +2043,6 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
 
         private static final EntityPlayer.EnumChatVisibility[] $VALUES = new EntityPlayer.EnumChatVisibility[] { FULL,
                 SYSTEM, HIDDEN };
-        private static final String __OBFID = "CL_00001714";
 
         private EnumChatVisibility(String p_i45323_1_, int p_i45323_2_, int p_i45323_3_, String p_i45323_4_) {
             this.chatVisibility = p_i45323_3_;
@@ -2083,7 +2078,6 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
 
         private static final EntityPlayer.EnumStatus[] $VALUES = new EntityPlayer.EnumStatus[] { OK, NOT_POSSIBLE_HERE,
                 NOT_POSSIBLE_NOW, TOO_FAR_AWAY, OTHER_PROBLEM, NOT_SAFE };
-        private static final String __OBFID = "CL_00001712";
 
         private EnumStatus(String p_i1751_1_, int p_i1751_2_) {
         }

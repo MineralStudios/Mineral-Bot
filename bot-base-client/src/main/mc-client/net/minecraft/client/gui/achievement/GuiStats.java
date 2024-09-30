@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiButton;
@@ -43,7 +41,6 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
     private StatFileWriter field_146546_t;
     private GuiSlot field_146545_u;
     private boolean field_146543_v = true;
-    private static final String __OBFID = "CL_00000723";
 
     public GuiStats(Minecraft mc, GuiScreen p_i1071_1_, StatFileWriter p_i1071_2_) {
         super(mc);
@@ -168,11 +165,10 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
         TextureManager textureManager = this.mc.getTextureManager();
         if (textureManager != null)
             textureManager.bindTexture(statIcons);
-        float var5 = 0.0078125F;
-        float var6 = 0.0078125F;
-        boolean var7 = true;
-        boolean var8 = true;
+
         Tessellator var9 = this.mc.getTessellator();
+        if (var9 == null)
+            return;
         var9.startDrawingQuads();
         var9.addVertexWithUV((double) (p_146527_1_ + 0), (double) (p_146527_2_ + 18), (double) this.zLevel,
                 (double) ((float) (p_146527_3_ + 0) * 0.0078125F), (double) ((float) (p_146527_4_ + 18) * 0.0078125F));
@@ -191,7 +187,6 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
         protected Comparator field_148216_n;
         protected int field_148217_o = -1;
         protected int field_148215_p;
-        private static final String __OBFID = "CL_00000730";
 
         protected Stats() {
             super(GuiStats.this.mc, GuiStats.this.width, GuiStats.this.height, 32, GuiStats.this.height - 64, 20);
@@ -368,7 +363,6 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
     }
 
     class StatsBlock extends GuiStats.Stats {
-        private static final String __OBFID = "CL_00000724";
 
         public StatsBlock() {
             this.field_148219_m = new ArrayList();
@@ -395,7 +389,6 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
             }
 
             this.field_148216_n = new Comparator() {
-                private static final String __OBFID = "CL_00000725";
 
                 public int compare(StatCrafting p_compare_1_, StatCrafting p_compare_2_) {
                     int var3 = Item.getIdFromItem(p_compare_1_.func_150959_a());
@@ -479,7 +472,6 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
     }
 
     class StatsGeneral extends GuiSlot {
-        private static final String __OBFID = "CL_00000726";
 
         public StatsGeneral() {
             super(GuiStats.this.mc, GuiStats.this.width, GuiStats.this.height, 32, GuiStats.this.height - 64, 10);
@@ -518,7 +510,6 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
     }
 
     class StatsItem extends GuiStats.Stats {
-        private static final String __OBFID = "CL_00000727";
 
         public StatsItem() {
             this.field_148219_m = new ArrayList();
@@ -545,7 +536,6 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
             }
 
             this.field_148216_n = new Comparator() {
-                private static final String __OBFID = "CL_00000728";
 
                 public int compare(StatCrafting p_compare_1_, StatCrafting p_compare_2_) {
                     int var3 = Item.getIdFromItem(p_compare_1_.func_150959_a());
@@ -630,7 +620,6 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
 
     class StatsMobsList extends GuiSlot {
         private final List field_148222_l = new ArrayList();
-        private static final String __OBFID = "CL_00000729";
 
         public StatsMobsList() {
             super(GuiStats.this.mc, GuiStats.this.width, GuiStats.this.height, 32, GuiStats.this.height - 64,

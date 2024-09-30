@@ -18,7 +18,6 @@ public class RenderEndPortal extends TileEntitySpecialRenderer {
     private static final ResourceLocation field_147526_d = new ResourceLocation("textures/entity/end_portal.png");
     private static final Random field_147527_e = new Random(31100L);
     FloatBuffer field_147528_b = GLAllocation.createDirectFloatBuffer(16);
-    private static final String __OBFID = "CL_00000972";
 
     private final Minecraft mc;
 
@@ -85,23 +84,25 @@ public class RenderEndPortal extends TileEntitySpecialRenderer {
             GL11.glTranslatef(ActiveRenderInfo.objectX * var14 / var18, ActiveRenderInfo.objectZ * var14 / var18,
                     -var10);
             Tessellator var23 = this.mc.getTessellator();
-            var23.startDrawingQuads();
-            var20 = field_147527_e.nextFloat() * 0.5F + 0.1F;
-            float var21 = field_147527_e.nextFloat() * 0.5F + 0.4F;
-            float var22 = field_147527_e.nextFloat() * 0.5F + 0.5F;
+            if (var23 != null) {
+                var23.startDrawingQuads();
+                var20 = field_147527_e.nextFloat() * 0.5F + 0.1F;
+                float var21 = field_147527_e.nextFloat() * 0.5F + 0.4F;
+                float var22 = field_147527_e.nextFloat() * 0.5F + 0.5F;
 
-            if (var13 == 0) {
-                var22 = 1.0F;
-                var21 = 1.0F;
-                var20 = 1.0F;
+                if (var13 == 0) {
+                    var22 = 1.0F;
+                    var21 = 1.0F;
+                    var20 = 1.0F;
+                }
+
+                var23.setColorRGBA_F(var20 * var16, var21 * var16, var22 * var16, 1.0F);
+                var23.addVertex(p_147500_2_, p_147500_4_ + (double) var12, p_147500_6_);
+                var23.addVertex(p_147500_2_, p_147500_4_ + (double) var12, p_147500_6_ + 1.0D);
+                var23.addVertex(p_147500_2_ + 1.0D, p_147500_4_ + (double) var12, p_147500_6_ + 1.0D);
+                var23.addVertex(p_147500_2_ + 1.0D, p_147500_4_ + (double) var12, p_147500_6_);
+                var23.draw();
             }
-
-            var23.setColorRGBA_F(var20 * var16, var21 * var16, var22 * var16, 1.0F);
-            var23.addVertex(p_147500_2_, p_147500_4_ + (double) var12, p_147500_6_);
-            var23.addVertex(p_147500_2_, p_147500_4_ + (double) var12, p_147500_6_ + 1.0D);
-            var23.addVertex(p_147500_2_ + 1.0D, p_147500_4_ + (double) var12, p_147500_6_ + 1.0D);
-            var23.addVertex(p_147500_2_ + 1.0D, p_147500_4_ + (double) var12, p_147500_6_);
-            var23.draw();
             GL11.glPopMatrix();
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
         }

@@ -11,7 +11,6 @@ public class RenderHelper {
             .normalize();
     private static final Vec3 field_82885_c = Vec3.createVectorHelper(-0.20000000298023224D, 1.0D, 0.699999988079071D)
             .normalize();
-    private static final String __OBFID = "CL_00000629";
 
     /**
      * Disables the OpenGL lighting properties enabled by enableStandardItemLighting

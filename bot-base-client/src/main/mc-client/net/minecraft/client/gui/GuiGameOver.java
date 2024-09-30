@@ -3,6 +3,7 @@ package net.minecraft.client.gui;
 import java.util.Iterator;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
@@ -11,7 +12,6 @@ import gg.mineral.bot.base.lwjgl.opengl.GL11;
 public class GuiGameOver extends GuiScreen implements GuiYesNoCallback {
     private int field_146347_a;
     private boolean field_146346_f = false;
-    private static final String __OBFID = "CL_00000690";
 
     public GuiGameOver(Minecraft mc) {
         super(mc);
@@ -59,7 +59,10 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback {
     protected void actionPerformed(GuiButton p_146284_1_) {
         switch (p_146284_1_.id) {
             case 0:
-                this.mc.thePlayer.respawnPlayer();
+                EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+                if (thePlayer != null)
+                    thePlayer.respawnPlayer();
                 this.mc.displayGuiScreen((GuiScreen) null);
                 break;
 
@@ -79,7 +82,11 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback {
             this.mc.loadWorld((WorldClient) null);
             this.mc.displayGuiScreen(new GuiMainMenu(this.mc));
         } else {
-            this.mc.thePlayer.respawnPlayer();
+            EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+            if (thePlayer != null)
+                thePlayer.respawnPlayer();
+
             this.mc.displayGuiScreen((GuiScreen) null);
         }
     }
@@ -97,13 +104,15 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback {
         this.drawCenteredString(this.fontRendererObj, var5, this.width / 2 / 2, 30, 16777215);
         GL11.glPopMatrix();
 
-        if (var4) {
+        if (var4)
             this.drawCenteredString(this.fontRendererObj, I18n.format("deathScreen.hardcoreInfo", new Object[0]),
                     this.width / 2, 144, 16777215);
-        }
 
-        this.drawCenteredString(this.fontRendererObj, I18n.format("deathScreen.score", new Object[0]) + ": "
-                + EnumChatFormatting.YELLOW + this.mc.thePlayer.getScore(), this.width / 2, 100, 16777215);
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+        if (thePlayer != null)
+            this.drawCenteredString(this.fontRendererObj, I18n.format("deathScreen.score", new Object[0]) + ": "
+                    + EnumChatFormatting.YELLOW + thePlayer.getScore(), this.width / 2, 100, 16777215);
         super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
     }
 

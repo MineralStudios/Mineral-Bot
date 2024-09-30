@@ -24,7 +24,6 @@ public class S3EPacketTeams extends Packet {
     private Collection<String> field_149317_e = new ArrayList();
     private int field_149314_f;
     private int field_149315_g;
-    private static final String __OBFID = "CL_00001334";
 
     public S3EPacketTeams(ScorePlayerTeam p_i45225_1_, int p_i45225_2_) {
         this.field_149320_a = p_i45225_1_.getRegisteredName();

@@ -2,6 +2,7 @@ package net.minecraft.client.gui;
 
 import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -24,7 +25,6 @@ public class GuiRepair extends GuiContainer implements ICrafting {
     private ContainerRepair field_147092_v;
     private GuiTextField field_147091_w;
     private InventoryPlayer field_147094_x;
-    private static final String __OBFID = "CL_00000738";
 
     public GuiRepair(Minecraft mc, InventoryPlayer p_i46381_1_, World p_i46381_2_, int p_i46381_3_, int p_i46381_4_,
             int p_i46381_5_) {
@@ -70,7 +70,9 @@ public class GuiRepair extends GuiContainer implements ICrafting {
             String var5 = I18n.format("container.repair.cost",
                     new Object[] { Integer.valueOf(this.field_147092_v.maximumCost) });
 
-            if (this.field_147092_v.maximumCost >= 40 && !this.mc.thePlayer.capabilities.isCreativeMode) {
+            EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+            if (this.field_147092_v.maximumCost >= 40 && thePlayer != null
+                    && !thePlayer.capabilities.isCreativeMode) {
                 var5 = I18n.format("container.repair.expensive", new Object[0]);
                 var3 = 16736352;
             } else if (!this.field_147092_v.getSlot(2).getHasStack()) {
@@ -122,8 +124,12 @@ public class GuiRepair extends GuiContainer implements ICrafting {
         }
 
         this.field_147092_v.updateItemName(var1);
-        this.mc.thePlayer.sendQueue
-                .addToSendQueue(new C17PacketCustomPayload("MC|ItemName", var1.getBytes(Charsets.UTF_8)));
+
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+        if (thePlayer != null)
+            thePlayer.sendQueue
+                    .addToSendQueue(new C17PacketCustomPayload("MC|ItemName", var1.getBytes(Charsets.UTF_8)));
     }
 
     /**

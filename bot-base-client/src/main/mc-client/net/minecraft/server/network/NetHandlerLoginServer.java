@@ -39,7 +39,6 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer {
     private GameProfile field_147337_i;
     private String field_147334_j;
     private SecretKey field_147335_k;
-    private static final String __OBFID = "CL_00001458";
 
     public NetHandlerLoginServer(MinecraftServer p_i45298_1_, NetworkManager p_i45298_2_) {
         this.field_147328_g = NetHandlerLoginServer.LoginState.HELLO;
@@ -148,7 +147,6 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer {
             this.field_147328_g = NetHandlerLoginServer.LoginState.AUTHENTICATING;
             this.field_147333_a.enableEncryption(this.field_147335_k);
             (new Thread("User Authenticator #" + field_147331_b.incrementAndGet()) {
-                private static final String __OBFID = "CL_00001459";
 
                 public void run() {
                     GameProfile var1 = NetHandlerLoginServer.this.field_147337_i;
@@ -205,7 +203,6 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer {
 
         private static final NetHandlerLoginServer.LoginState[] $VALUES = new NetHandlerLoginServer.LoginState[] {
                 HELLO, KEY, AUTHENTICATING, READY_TO_ACCEPT, ACCEPTED };
-        private static final String __OBFID = "CL_00001463";
 
         private LoginState(String p_i45297_1_, int p_i45297_2_) {
         }

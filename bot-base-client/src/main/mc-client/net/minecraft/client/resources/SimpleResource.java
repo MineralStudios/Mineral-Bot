@@ -12,8 +12,7 @@ import net.minecraft.client.resources.data.IMetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 
-public class SimpleResource implements IResource
-{
+public class SimpleResource implements IResource {
     private final Map mapMetadataSections = Maps.newHashMap();
     private final ResourceLocation srResourceLocation;
     private final InputStream resourceInputStream;
@@ -21,54 +20,42 @@ public class SimpleResource implements IResource
     private final IMetadataSerializer srMetadataSerializer;
     private boolean mcmetaJsonChecked;
     private JsonObject mcmetaJson;
-    private static final String __OBFID = "CL_00001093";
 
-    public SimpleResource(ResourceLocation p_i1300_1_, InputStream p_i1300_2_, InputStream p_i1300_3_, IMetadataSerializer p_i1300_4_)
-    {
+    public SimpleResource(ResourceLocation p_i1300_1_, InputStream p_i1300_2_, InputStream p_i1300_3_,
+            IMetadataSerializer p_i1300_4_) {
         this.srResourceLocation = p_i1300_1_;
         this.resourceInputStream = p_i1300_2_;
         this.mcmetaInputStream = p_i1300_3_;
         this.srMetadataSerializer = p_i1300_4_;
     }
 
-    public InputStream getInputStream()
-    {
+    public InputStream getInputStream() {
         return this.resourceInputStream;
     }
 
-    public boolean hasMetadata()
-    {
+    public boolean hasMetadata() {
         return this.mcmetaInputStream != null;
     }
 
-    public IMetadataSection getMetadata(String p_110526_1_)
-    {
-        if (!this.hasMetadata())
-        {
+    public IMetadataSection getMetadata(String p_110526_1_) {
+        if (!this.hasMetadata()) {
             return null;
-        }
-        else
-        {
-            if (this.mcmetaJson == null && !this.mcmetaJsonChecked)
-            {
+        } else {
+            if (this.mcmetaJson == null && !this.mcmetaJsonChecked) {
                 this.mcmetaJsonChecked = true;
                 BufferedReader var2 = null;
 
-                try
-                {
+                try {
                     var2 = new BufferedReader(new InputStreamReader(this.mcmetaInputStream));
                     this.mcmetaJson = (new JsonParser()).parse(var2).getAsJsonObject();
-                }
-                finally
-                {
+                } finally {
                     IOUtils.closeQuietly(var2);
                 }
             }
 
-            IMetadataSection var6 = (IMetadataSection)this.mapMetadataSections.get(p_110526_1_);
+            IMetadataSection var6 = (IMetadataSection) this.mapMetadataSections.get(p_110526_1_);
 
-            if (var6 == null)
-            {
+            if (var6 == null) {
                 var6 = this.srMetadataSerializer.parseMetadataSection(p_110526_1_, this.mcmetaJson);
             }
 
@@ -76,25 +63,19 @@ public class SimpleResource implements IResource
         }
     }
 
-    public boolean equals(Object p_equals_1_)
-    {
-        if (this == p_equals_1_)
-        {
+    public boolean equals(Object p_equals_1_) {
+        if (this == p_equals_1_) {
             return true;
-        }
-        else if (p_equals_1_ instanceof SimpleResource)
-        {
-            SimpleResource var2 = (SimpleResource)p_equals_1_;
-            return this.srResourceLocation != null ? this.srResourceLocation.equals(var2.srResourceLocation) : var2.srResourceLocation == null;
-        }
-        else
-        {
+        } else if (p_equals_1_ instanceof SimpleResource) {
+            SimpleResource var2 = (SimpleResource) p_equals_1_;
+            return this.srResourceLocation != null ? this.srResourceLocation.equals(var2.srResourceLocation)
+                    : var2.srResourceLocation == null;
+        } else {
             return false;
         }
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         return this.srResourceLocation == null ? 0 : this.srResourceLocation.hashCode();
     }
 }

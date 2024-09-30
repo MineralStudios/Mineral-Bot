@@ -1,11 +1,11 @@
 package net.minecraft.client.renderer.texture;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 
 public class TextureClock extends TextureAtlasSprite {
     private double field_94239_h;
     private double field_94240_i;
-    private static final String __OBFID = "CL_00001070";
 
     public TextureClock(Minecraft mc, String p_i1285_1_) {
         super(mc, p_i1285_1_);
@@ -15,13 +15,14 @@ public class TextureClock extends TextureAtlasSprite {
         if (!this.framesTextureData.isEmpty()) {
             double var2 = 0.0D;
 
-            if (mc.theWorld != null && mc.thePlayer != null) {
-                float var4 = mc.theWorld.getCelestialAngle(1.0F);
+            WorldClient theWorld = mc.theWorld;
+
+            if (theWorld != null && mc.thePlayer != null) {
+                float var4 = theWorld.getCelestialAngle(1.0F);
                 var2 = (double) var4;
 
-                if (!mc.theWorld.provider.isSurfaceWorld()) {
+                if (!theWorld.provider.isSurfaceWorld())
                     var2 = Math.random();
-                }
             }
 
             double var7;
@@ -30,17 +31,14 @@ public class TextureClock extends TextureAtlasSprite {
                 ;
             }
 
-            while (var7 >= 0.5D) {
+            while (var7 >= 0.5D)
                 --var7;
-            }
 
-            if (var7 < -1.0D) {
+            if (var7 < -1.0D)
                 var7 = -1.0D;
-            }
 
-            if (var7 > 1.0D) {
+            if (var7 > 1.0D)
                 var7 = 1.0D;
-            }
 
             this.field_94240_i += var7 * 0.1D;
             this.field_94240_i *= 0.8D;
@@ -49,9 +47,8 @@ public class TextureClock extends TextureAtlasSprite {
 
             for (var6 = (int) ((this.field_94239_h + 1.0D) * (double) this.framesTextureData.size())
                     % this.framesTextureData.size(); var6 < 0; var6 = (var6 + this.framesTextureData.size())
-                            % this.framesTextureData.size()) {
+                            % this.framesTextureData.size())
                 ;
-            }
 
             if (var6 != this.frameCounter) {
                 this.frameCounter = var6;

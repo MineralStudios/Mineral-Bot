@@ -6,7 +6,6 @@ import java.util.Map;
 public class ClickEvent {
     private final ClickEvent.Action action;
     private final String value;
-    private static final String __OBFID = "CL_00001260";
 
     public ClickEvent(ClickEvent.Action p_i45156_1_, String p_i45156_2_) {
         this.action = p_i45156_1_;
@@ -64,10 +63,8 @@ public class ClickEvent {
     }
 
     public static enum Action {
-        OPEN_URL("OPEN_URL", 0, "open_url", true),
-        OPEN_FILE("OPEN_FILE", 1, "open_file", false),
-        RUN_COMMAND("RUN_COMMAND", 2, "run_command", true),
-        SUGGEST_COMMAND("SUGGEST_COMMAND", 4, "suggest_command", true);
+        OPEN_URL("OPEN_URL", 0, "open_url", true), OPEN_FILE("OPEN_FILE", 1, "open_file", false), RUN_COMMAND(
+                "RUN_COMMAND", 2, "run_command", true), SUGGEST_COMMAND("SUGGEST_COMMAND", 4, "suggest_command", true);
 
         private static final Map nameMapping = Maps.newHashMap();
         private final boolean allowedInChat;
@@ -75,7 +72,6 @@ public class ClickEvent {
 
         private static final ClickEvent.Action[] $VALUES = new ClickEvent.Action[] { OPEN_URL, OPEN_FILE, RUN_COMMAND,
                 SUGGEST_COMMAND };
-        private static final String __OBFID = "CL_00001261";
 
         private Action(String p_i45155_1_, int p_i45155_2_, String p_i45155_3_, boolean p_i45155_4_) {
             this.canonicalName = p_i45155_3_;

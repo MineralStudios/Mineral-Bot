@@ -15,7 +15,6 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 public class S03PacketTimeUpdate extends Packet {
     private long field_149369_a;
     private long field_149368_b;
-    private static final String __OBFID = "CL_00001337";
 
     public S03PacketTimeUpdate(long p_i45230_1_, long p_i45230_3_, boolean p_i45230_5_) {
         this.field_149369_a = p_i45230_1_;

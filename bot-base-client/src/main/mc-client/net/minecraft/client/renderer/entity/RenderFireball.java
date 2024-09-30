@@ -14,7 +14,6 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderFireball extends Render {
     private float field_77002_a;
-    private static final String __OBFID = "CL_00000995";
 
     public RenderFireball(Minecraft mc, float p_i1254_1_) {
         super(mc);
@@ -49,13 +48,19 @@ public class RenderFireball extends Render {
         float var19 = 0.25F;
         GL11.glRotatef(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        var12.startDrawingQuads();
-        var12.setNormal(0.0F, 1.0F, 0.0F);
-        var12.addVertexWithUV((double) (0.0F - var18), (double) (0.0F - var19), 0.0D, (double) var13, (double) var16);
-        var12.addVertexWithUV((double) (var17 - var18), (double) (0.0F - var19), 0.0D, (double) var14, (double) var16);
-        var12.addVertexWithUV((double) (var17 - var18), (double) (1.0F - var19), 0.0D, (double) var14, (double) var15);
-        var12.addVertexWithUV((double) (0.0F - var18), (double) (1.0F - var19), 0.0D, (double) var13, (double) var15);
-        var12.draw();
+        if (var12 != null) {
+            var12.startDrawingQuads();
+            var12.setNormal(0.0F, 1.0F, 0.0F);
+            var12.addVertexWithUV((double) (0.0F - var18), (double) (0.0F - var19), 0.0D, (double) var13,
+                    (double) var16);
+            var12.addVertexWithUV((double) (var17 - var18), (double) (0.0F - var19), 0.0D, (double) var14,
+                    (double) var16);
+            var12.addVertexWithUV((double) (var17 - var18), (double) (1.0F - var19), 0.0D, (double) var14,
+                    (double) var15);
+            var12.addVertexWithUV((double) (0.0F - var18), (double) (1.0F - var19), 0.0D, (double) var13,
+                    (double) var15);
+            var12.draw();
+        }
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         GL11.glPopMatrix();
     }

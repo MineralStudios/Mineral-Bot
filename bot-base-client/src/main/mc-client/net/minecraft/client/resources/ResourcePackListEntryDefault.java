@@ -23,7 +23,6 @@ public class ResourcePackListEntryDefault extends ResourcePackListEntry {
     private final IResourcePack field_148320_d;
     @Nullable
     private final ResourceLocation field_148321_e;
-    private static final String __OBFID = "CL_00000822";
 
     public ResourcePackListEntryDefault(Minecraft mc, GuiScreenResourcePacks p_i45052_1_) {
         super(mc, p_i45052_1_);

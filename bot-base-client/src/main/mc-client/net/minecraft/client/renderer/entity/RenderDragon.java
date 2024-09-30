@@ -28,7 +28,6 @@ public class RenderDragon extends RenderLiving {
 
     /** An instance of the dragon model in RenderDragon */
     protected ModelDragon modelDragon;
-    private static final String __OBFID = "CL_00000988";
 
     public RenderDragon(Minecraft mc) {
         super(mc, new ModelDragon(mc, 0.0F), 0.5F);
@@ -128,6 +127,9 @@ public class RenderDragon extends RenderLiving {
             float var18 = 0.0F - ((float) p_76986_1_.ticksExisted + p_76986_9_) * 0.01F;
             float var19 = MathHelper.sqrt_float(var12 * var12 + var13 * var13 + var14 * var14) / 32.0F
                     - ((float) p_76986_1_.ticksExisted + p_76986_9_) * 0.01F;
+
+            if (var17 == null)
+                return;
             var17.startDrawing(5);
             byte var20 = 8;
 
@@ -189,17 +191,19 @@ public class RenderDragon extends RenderLiving {
                 GL11.glRotatef(var6.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(var6.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glRotatef(var6.nextFloat() * 360.0F + var4 * 90.0F, 0.0F, 0.0F, 1.0F);
-                var3.startDrawing(6);
-                float var8 = var6.nextFloat() * 20.0F + 5.0F + var5 * 10.0F;
-                float var9 = var6.nextFloat() * 2.0F + 1.0F + var5 * 2.0F;
-                var3.setColorRGBA_I(16777215, (int) (255.0F * (1.0F - var5)));
-                var3.addVertex(0.0D, 0.0D, 0.0D);
-                var3.setColorRGBA_I(16711935, 0);
-                var3.addVertex(-0.866D * (double) var9, (double) var8, (double) (-0.5F * var9));
-                var3.addVertex(0.866D * (double) var9, (double) var8, (double) (-0.5F * var9));
-                var3.addVertex(0.0D, (double) var8, (double) (1.0F * var9));
-                var3.addVertex(-0.866D * (double) var9, (double) var8, (double) (-0.5F * var9));
-                var3.draw();
+                if (var3 != null) {
+                    var3.startDrawing(6);
+                    float var8 = var6.nextFloat() * 20.0F + 5.0F + var5 * 10.0F;
+                    float var9 = var6.nextFloat() * 2.0F + 1.0F + var5 * 2.0F;
+                    var3.setColorRGBA_I(16777215, (int) (255.0F * (1.0F - var5)));
+                    var3.addVertex(0.0D, 0.0D, 0.0D);
+                    var3.setColorRGBA_I(16711935, 0);
+                    var3.addVertex(-0.866D * (double) var9, (double) var8, (double) (-0.5F * var9));
+                    var3.addVertex(0.866D * (double) var9, (double) var8, (double) (-0.5F * var9));
+                    var3.addVertex(0.0D, (double) var8, (double) (1.0F * var9));
+                    var3.addVertex(-0.866D * (double) var9, (double) var8, (double) (-0.5F * var9));
+                    var3.draw();
+                }
             }
 
             GL11.glPopMatrix();

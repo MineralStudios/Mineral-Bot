@@ -34,7 +34,6 @@ public class IntegratedServer extends MinecraftServer {
     private boolean isGamePaused;
     private boolean isPublic;
     private ThreadLanServerPing lanServerPing;
-    private static final String __OBFID = "CL_00001129";
 
     public IntegratedServer(Minecraft par1Minecraft, String par2Str, String par3Str, WorldSettings par4WorldSettings) {
         super(par1Minecraft, new File(par1Minecraft.mcDataDir, "saves"), par1Minecraft.getProxy());
@@ -229,35 +228,17 @@ public class IntegratedServer extends MinecraftServer {
      */
     public CrashReport addServerInfoToCrashReport(CrashReport par1CrashReport) {
         par1CrashReport = super.addServerInfoToCrashReport(par1CrashReport);
-        par1CrashReport.getCategory().addCrashSectionCallable("Type", new Callable() {
-            private static final String __OBFID = "CL_00001130";
+        par1CrashReport.getCategory().addCrashSectionCallable("Type", () -> "Integrated Server (map_client.txt)");
+        par1CrashReport.getCategory().addCrashSectionCallable("Is Modded", () -> {
+            String var1 = ClientBrandRetriever.getClientModName();
 
-            public String call1() {
-                return "Integrated Server (map_client.txt)";
-            }
-
-            public Object call() throws Exception {
-                return this.call1();
-            }
-        });
-        par1CrashReport.getCategory().addCrashSectionCallable("Is Modded", new Callable() {
-            private static final String __OBFID = "CL_00001131";
-
-            public String call1() {
-                String var1 = ClientBrandRetriever.getClientModName();
-
-                if (!var1.equals("vanilla")) {
-                    return "Definitely; Client brand changed to \'" + var1 + "\'";
-                } else {
-                    var1 = IntegratedServer.this.getServerModName();
-                    return !var1.equals("vanilla") ? "Definitely; Server brand changed to \'" + var1 + "\'"
-                            : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated"
-                                    : "Probably not. Jar signature remains and both client + server brands are untouched.");
-                }
-            }
-
-            public Object call() throws Exception {
-                return this.call1();
+            if (!var1.equals("vanilla")) {
+                return "Definitely; Client brand changed to \'" + var1 + "\'";
+            } else {
+                var1 = IntegratedServer.this.getServerModName();
+                return !var1.equals("vanilla") ? "Definitely; Server brand changed to \'" + var1 + "\'"
+                        : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated"
+                                : "Probably not. Jar signature remains and both client + server brands are untouched.");
             }
         });
         return par1CrashReport;

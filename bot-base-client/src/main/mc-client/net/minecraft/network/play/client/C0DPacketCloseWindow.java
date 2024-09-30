@@ -16,7 +16,6 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 @Getter
 public class C0DPacketCloseWindow extends Packet {
     private int windowId;
-    private static final String __OBFID = "CL_00001354";
 
     public void processPacket(INetHandlerPlayServer p_148833_1_) {
         p_148833_1_.processCloseWindow(this);

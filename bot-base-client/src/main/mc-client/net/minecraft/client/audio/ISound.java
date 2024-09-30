@@ -2,8 +2,7 @@ package net.minecraft.client.audio;
 
 import net.minecraft.util.ResourceLocation;
 
-public interface ISound
-{
+public interface ISound {
     ResourceLocation func_147650_b();
 
     boolean func_147657_c();
@@ -22,22 +21,18 @@ public interface ISound
 
     ISound.AttenuationType func_147656_j();
 
-    public static enum AttenuationType
-    {
-        NONE("NONE", 0, 0),
-        LINEAR("LINEAR", 1, 2);
+    public static enum AttenuationType {
+        NONE("NONE", 0, 0), LINEAR("LINEAR", 1, 2);
+
         private final int field_148589_c;
 
-        private static final ISound.AttenuationType[] $VALUES = new ISound.AttenuationType[]{NONE, LINEAR};
-        private static final String __OBFID = "CL_00001126";
+        private static final ISound.AttenuationType[] $VALUES = new ISound.AttenuationType[] { NONE, LINEAR };
 
-        private AttenuationType(String p_i45110_1_, int p_i45110_2_, int p_i45110_3_)
-        {
+        private AttenuationType(String p_i45110_1_, int p_i45110_2_, int p_i45110_3_) {
             this.field_148589_c = p_i45110_3_;
         }
 
-        public int func_148586_a()
-        {
+        public int func_148586_a() {
             return this.field_148589_c;
         }
     }

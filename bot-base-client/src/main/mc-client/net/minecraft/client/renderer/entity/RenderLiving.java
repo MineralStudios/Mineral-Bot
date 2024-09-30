@@ -11,7 +11,6 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 
 public abstract class RenderLiving extends RendererLivingEntity {
-    private static final String __OBFID = "CL_00001015";
 
     public RenderLiving(Minecraft mc, ModelBase p_i1262_1_, float p_i1262_2_) {
         super(mc, p_i1262_1_, p_i1262_2_);
@@ -86,6 +85,8 @@ public abstract class RenderLiving extends RendererLivingEntity {
             GL11.glDisable(GL11.GL_CULL_FACE);
             boolean var44 = true;
             double var45 = 0.025D;
+            if (var11 == null)
+                return;
             var11.startDrawing(5);
             int var47;
             float var48;

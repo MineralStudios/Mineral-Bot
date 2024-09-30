@@ -21,7 +21,6 @@ public class GuiButton extends Gui {
     public boolean enabled;
     public boolean field_146125_m;
     protected boolean field_146123_n;
-    private static final String __OBFID = "CL_00000668";
 
     public GuiButton(Minecraft mc, int p_i1020_1_, int p_i1020_2_, int p_i1020_3_, String p_i1020_4_) {
         this(mc, p_i1020_1_, p_i1020_2_, p_i1020_3_, 200, 20, p_i1020_4_);

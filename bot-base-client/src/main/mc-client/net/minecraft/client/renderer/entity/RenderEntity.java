@@ -10,8 +10,6 @@ public class RenderEntity extends Render {
         super(mc);
     }
 
-    private static final String __OBFID = "CL_00000986";
-
     /**
      * Actually renders the given argument. This is a synthetic bridge method,
      * always casting down its argument and then

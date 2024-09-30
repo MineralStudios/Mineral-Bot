@@ -9,7 +9,6 @@ public class RecipesTools {
     private String[][] recipePatterns = new String[][] { { "XXX", " # ", " # " }, { "X", "#", "#" },
             { "XX", "X#", " #" }, { "XX", " #", " #" } };
     private Object[][] recipeItems;
-    private static final String __OBFID = "CL_00000096";
 
     public RecipesTools() {
         this.recipeItems = new Object[][] {

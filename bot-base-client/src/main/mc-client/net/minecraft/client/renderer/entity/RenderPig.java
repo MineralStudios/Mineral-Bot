@@ -11,7 +11,6 @@ public class RenderPig extends RenderLiving {
     private static final ResourceLocation saddledPigTextures = new ResourceLocation(
             "textures/entity/pig/pig_saddle.png");
     private static final ResourceLocation pigTextures = new ResourceLocation("textures/entity/pig/pig.png");
-    private static final String __OBFID = "CL_00001019";
 
     public RenderPig(Minecraft mc, ModelBase p_i1265_1_, ModelBase p_i1265_2_, float p_i1265_3_) {
         super(mc, p_i1265_1_, p_i1265_3_);

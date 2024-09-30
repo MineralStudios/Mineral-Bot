@@ -17,6 +17,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IImageBuffer;
 import net.minecraft.client.renderer.ImageBufferDownload;
@@ -32,8 +35,7 @@ public class SkinManager {
     private final TextureManager field_152795_c;
     private final File field_152796_d;
     private final MinecraftSessionService field_152797_e;
-    private final LoadingCache field_152798_f;
-    private static final String __OBFID = "CL_00001830";
+    private final LoadingCache<GameProfile, Map<MinecraftProfileTexture.Type, MinecraftProfileTexture>> field_152798_f;
     private final Minecraft mc;
 
     public SkinManager(Minecraft mc, TextureManager p_i1044_1_, File p_i1044_2_, MinecraftSessionService p_i1044_3_) {
@@ -42,15 +44,12 @@ public class SkinManager {
         this.field_152797_e = p_i1044_3_;
         this.mc = mc;
         this.field_152798_f = CacheBuilder.newBuilder().expireAfterAccess(15L, TimeUnit.SECONDS)
-                .build(new CacheLoader() {
-                    private static final String __OBFID = "CL_00001829";
+                .build(new CacheLoader<>() {
 
-                    public Map func_152786_a(GameProfile p_152786_1_) {
-                        return mc.func_152347_ac().getTextures(p_152786_1_, false);
-                    }
-
-                    public Object load(Object p_load_1_) {
-                        return this.func_152786_a((GameProfile) p_load_1_);
+                    @Override
+                    public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> load(
+                            @Nonnull GameProfile gameProfile) {
+                        return mc.func_152347_ac().getTextures(gameProfile, false);
                     }
                 });
     }
@@ -75,7 +74,6 @@ public class SkinManager {
             ThreadDownloadImageData var9 = new ThreadDownloadImageData(this.mc, var7, p_152789_1_.getUrl(),
                     field_152793_a,
                     new IImageBuffer() {
-                        private static final String __OBFID = "CL_00001828";
 
                         public BufferedImage parseUserSkin(BufferedImage p_78432_1_) {
                             if (var8 != null) {
@@ -104,7 +102,6 @@ public class SkinManager {
     public void func_152790_a(final GameProfile p_152790_1_, final SkinManager.SkinAvailableCallback p_152790_2_,
             final boolean p_152790_3_) {
         field_152794_b.submit(new Runnable() {
-            private static final String __OBFID = "CL_00001827";
 
             public void run() {
                 final HashMap var1 = Maps.newHashMap();
@@ -121,8 +118,7 @@ public class SkinManager {
                             SkinManager.this.field_152797_e.fillProfileProperties(p_152790_1_, false), false));
                 }
 
-                SkinManager.this.mc.func_152344_a(new Runnable() {
-                    private static final String __OBFID = "CL_00001826";
+                SkinManager.this.mc.scheduleOnMainThread(new Runnable() {
 
                     public void run() {
                         if (var1.containsKey(Type.SKIN)) {
@@ -140,8 +136,8 @@ public class SkinManager {
         });
     }
 
-    public Map func_152788_a(GameProfile p_152788_1_) {
-        return (Map) this.field_152798_f.getUnchecked(p_152788_1_);
+    public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> func_152788_a(GameProfile p_152788_1_) {
+        return this.field_152798_f.getUnchecked(p_152788_1_);
     }
 
     public interface SkinAvailableCallback {

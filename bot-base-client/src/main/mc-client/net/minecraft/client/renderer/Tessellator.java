@@ -9,7 +9,6 @@ import java.util.PriorityQueue;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
-import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.client.util.QuadComparator;
@@ -112,7 +111,6 @@ public class Tessellator {
     private VertexData[] vertexDatas;
     private boolean[] drawnIcons;
     private TextureAtlasSprite[] vertexQuadIcons;
-    private static final String __OBFID = "CL_00000960";
 
     public Tessellator() {
         this(65536);

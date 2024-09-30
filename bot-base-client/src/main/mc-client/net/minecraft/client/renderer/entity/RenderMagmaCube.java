@@ -11,7 +11,6 @@ import gg.mineral.bot.base.lwjgl.opengl.GL11;
 public class RenderMagmaCube extends RenderLiving {
     private static final ResourceLocation magmaCubeTextures = new ResourceLocation(
             "textures/entity/slime/magmacube.png");
-    private static final String __OBFID = "CL_00001009";
 
     public RenderMagmaCube(Minecraft mc) {
         super(mc, new ModelMagmaCube(mc), 0.25F);

@@ -1,16 +1,14 @@
 package net.minecraft.client.gui;
 
-import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.client.gui.achievement.GuiStats;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.resources.I18n;
 
 public class GuiIngameMenu extends GuiScreen {
-    private int field_146445_a;
-    private int field_146444_f;
-    private static final String __OBFID = "CL_00000703";
+    private int field_146445_a, field_146444_f;
 
     public GuiIngameMenu(Minecraft mc) {
         super(mc);
@@ -46,6 +44,7 @@ public class GuiIngameMenu extends GuiScreen {
     }
 
     protected void actionPerformed(GuiButton p_146284_1_) {
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
         switch (p_146284_1_.id) {
             case 0:
                 this.mc.displayGuiScreen(new GuiOptions(this.mc, this, this.mc.gameSettings));
@@ -53,7 +52,9 @@ public class GuiIngameMenu extends GuiScreen {
 
             case 1:
                 p_146284_1_.enabled = false;
-                this.mc.theWorld.sendQuittingDisconnectingPacket();
+                WorldClient theWorld = this.mc.theWorld;
+                if (theWorld != null)
+                    theWorld.sendQuittingDisconnectingPacket();
                 this.mc.loadWorld((WorldClient) null);
                 this.mc.displayGuiScreen(new GuiMainMenu(this.mc));
 
@@ -68,11 +69,13 @@ public class GuiIngameMenu extends GuiScreen {
                 break;
 
             case 5:
-                this.mc.displayGuiScreen(new GuiAchievements(this.mc, this, this.mc.thePlayer.func_146107_m()));
+                if (thePlayer != null)
+                    this.mc.displayGuiScreen(new GuiAchievements(this.mc, this, thePlayer.func_146107_m()));
                 break;
 
             case 6:
-                this.mc.displayGuiScreen(new GuiStats(this.mc, this, this.mc.thePlayer.func_146107_m()));
+                if (thePlayer != null)
+                    this.mc.displayGuiScreen(new GuiStats(this.mc, this, thePlayer.func_146107_m()));
                 break;
 
             case 7:

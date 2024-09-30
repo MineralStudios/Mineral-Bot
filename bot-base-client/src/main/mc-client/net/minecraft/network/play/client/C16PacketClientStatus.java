@@ -49,7 +49,6 @@ public class C16PacketClientStatus extends Packet {
 
         private static final C16PacketClientStatus.EnumState[] $VALUES = new C16PacketClientStatus.EnumState[] {
                 PERFORM_RESPAWN, REQUEST_STATS, OPEN_INVENTORY_ACHIEVEMENT };
-        private static final String __OBFID = "CL_00001349";
 
         private EnumState(String p_i45241_1_, int p_i45241_2_, int p_i45241_3_) {
             this.field_151403_d = p_i45241_3_;

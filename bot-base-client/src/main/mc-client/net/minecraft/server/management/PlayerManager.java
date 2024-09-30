@@ -61,7 +61,6 @@ public class PlayerManager {
 
     /** x, z direction vectors: east, south, west, north */
     private final int[][] xzDirectionsConst = new int[][] { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
-    private static final String __OBFID = "CL_00001434";
 
     private final Minecraft mc;
 
@@ -151,7 +150,9 @@ public class PlayerManager {
 
                 if (bestCw != null) {
                     bestCw.chunkLoaded = true;
-                    this.getWorldServer().theChunkProviderServer.loadChunk(bestCoords.chunkXPos, bestCoords.chunkZPos);
+                    if (bestCoords != null)
+                        this.getWorldServer().theChunkProviderServer.loadChunk(bestCoords.chunkXPos,
+                                bestCoords.chunkZPos);
                     bestCw.sendThisChunkToAllPlayers();
                     break;
                 }
@@ -411,7 +412,6 @@ public class PlayerManager {
         private int numberOfTilesToUpdate;
         private int flagsYAreasToUpdate;
         private long previousWorldTime;
-        private static final String __OBFID = "CL_00001435";
         public boolean chunkLoaded;
 
         public PlayerInstance(int par2, int par3) {

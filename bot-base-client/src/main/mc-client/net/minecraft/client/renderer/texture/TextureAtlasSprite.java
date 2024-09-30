@@ -48,7 +48,6 @@ public class TextureAtlasSprite implements IIcon {
     private int uploadedOwnFrameIndex = -1;
     public IntBuffer[] frameBuffers;
     public Mipmaps[] frameMipmaps;
-    private static final String __OBFID = "CL_00001062";
     protected final Minecraft mc;
 
     protected TextureAtlasSprite(Minecraft mc, String par1Str) {
@@ -290,7 +289,7 @@ public class TextureAtlasSprite implements IIcon {
     }
 
     public void func_147963_d(int p_147963_1_) {
-        ArrayList var2 = Lists.newArrayList();
+        ArrayList<int[][]> var2 = Lists.newArrayList();
 
         for (int var3 = 0; var3 < this.framesTextureData.size(); ++var3) {
             final int[][] var4 = (int[][]) ((int[][]) this.framesTextureData.get(var3));
@@ -302,30 +301,21 @@ public class TextureAtlasSprite implements IIcon {
                     CrashReport var6 = CrashReport.makeCrashReport(var8, "Generating mipmaps for frame");
                     CrashReportCategory var7 = var6.makeCategory("Frame being iterated");
                     var7.addCrashSection("Frame index", Integer.valueOf(var3));
-                    var7.addCrashSectionCallable("Frame sizes", new Callable() {
-                        private static final String __OBFID = "CL_00001063";
+                    var7.addCrashSectionCallable("Frame sizes", () -> {
+                        StringBuilder var1 = new StringBuilder();
+                        int[][] intArr2D = var4;
+                        int intArr2DLen = intArr2D.length;
 
-                        public String call1() {
-                            StringBuilder var1 = new StringBuilder();
-                            int[][] var2 = var4;
-                            int var3 = var2.length;
+                        for (int var4x = 0; var4x < intArr2DLen; ++var4x) {
+                            int[] var5 = intArr2D[var4x];
 
-                            for (int var4x = 0; var4x < var3; ++var4x) {
-                                int[] var5 = var2[var4x];
+                            if (var1.length() > 0)
+                                var1.append(", ");
 
-                                if (var1.length() > 0) {
-                                    var1.append(", ");
-                                }
-
-                                var1.append(var5 == null ? "null" : Integer.valueOf(var5.length));
-                            }
-
-                            return var1.toString();
+                            var1.append(var5 == null ? "null" : Integer.valueOf(var5.length));
                         }
 
-                        public Object call() throws Exception {
-                            return this.call1();
-                        }
+                        return var1.toString();
                     });
                     throw new ReportedException(var6);
                 }

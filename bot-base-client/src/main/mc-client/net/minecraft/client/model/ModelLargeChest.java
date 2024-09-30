@@ -3,7 +3,6 @@ package net.minecraft.client.model;
 import net.minecraft.client.Minecraft;
 
 public class ModelLargeChest extends ModelChest {
-    private static final String __OBFID = "CL_00000841";
 
     public ModelLargeChest(Minecraft mc) {
         super(mc);

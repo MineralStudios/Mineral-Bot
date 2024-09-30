@@ -8,7 +8,6 @@ public class GuiScreenServerList extends GuiScreen {
     private final GuiScreen field_146303_a;
     private final ServerData field_146301_f;
     private GuiTextField field_146302_g;
-    private static final String __OBFID = "CL_00000692";
 
     public GuiScreenServerList(Minecraft mc, GuiScreen p_i1031_1_, ServerData p_i1031_2_) {
         super(mc);

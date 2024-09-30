@@ -70,7 +70,6 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
     private static final boolean ENABLE_SKIP = Boolean
             .parseBoolean(System.getProperty("fml.skipFirstTextureLoad", "true"));
     private boolean skipFirst;
-    private static final String __OBFID = "CL_00001058";
     private final Minecraft mc;
 
     public TextureMap(Minecraft mc, int par1, String par2Str) {
@@ -250,39 +249,10 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
             } catch (Throwable var19) {
                 CrashReport debugImage1 = CrashReport.makeCrashReport(var19, "Applying mipmap");
                 CrashReportCategory var261 = debugImage1.makeCategory("Sprite being mipmapped");
-                var261.addCrashSectionCallable("Sprite name", new Callable() {
-                    private static final String __OBFID = "CL_00001059";
-
-                    public String call1() {
-                        return sheetWidth1.getIconName();
-                    }
-
-                    public Object call() throws Exception {
-                        return this.call1();
-                    }
-                });
-                var261.addCrashSectionCallable("Sprite size", new Callable() {
-                    private static final String __OBFID = "CL_00001060";
-
-                    public String call1() {
-                        return sheetWidth1.getIconWidth() + " x " + sheetWidth1.getIconHeight();
-                    }
-
-                    public Object call() throws Exception {
-                        return this.call1();
-                    }
-                });
-                var261.addCrashSectionCallable("Sprite frames", new Callable() {
-                    private static final String __OBFID = "CL_00001061";
-
-                    public String call1() {
-                        return sheetWidth1.getFrameCount() + " frames";
-                    }
-
-                    public Object call() throws Exception {
-                        return this.call1();
-                    }
-                });
+                var261.addCrashSectionCallable("Sprite name", () -> sheetWidth1.getIconName());
+                var261.addCrashSectionCallable("Sprite size",
+                        () -> sheetWidth1.getIconWidth() + " x " + sheetWidth1.getIconHeight());
+                var261.addCrashSectionCallable("Sprite frames", () -> sheetWidth1.getFrameCount() + " frames");
                 var261.addCrashSection("Mipmap levels", Integer.valueOf(this.field_147636_j));
                 throw new ReportedException(debugImage1);
             }

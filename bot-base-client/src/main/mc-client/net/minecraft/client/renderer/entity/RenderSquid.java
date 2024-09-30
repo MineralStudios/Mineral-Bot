@@ -11,7 +11,6 @@ import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public class RenderSquid extends RenderLiving {
     private static final ResourceLocation squidTextures = new ResourceLocation("textures/entity/squid.png");
-    private static final String __OBFID = "CL_00001028";
 
     public RenderSquid(Minecraft mc, ModelBase p_i1268_1_, float p_i1268_2_) {
         super(mc, p_i1268_1_, p_i1268_2_);

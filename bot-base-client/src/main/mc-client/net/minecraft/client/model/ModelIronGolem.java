@@ -23,7 +23,6 @@ public class ModelIronGolem extends ModelBase {
 
     /** The right leg model for the Iron Golem. */
     public ModelRenderer ironGolemRightLeg;
-    private static final String __OBFID = "CL_00000863";
 
     public ModelIronGolem(Minecraft mc) {
         this(mc, 0.0F);

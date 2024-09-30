@@ -2,8 +2,7 @@ package net.minecraft.world.storage;
 
 import net.minecraft.world.WorldSettings;
 
-public class SaveFormatComparator implements Comparable
-{
+public class SaveFormatComparator implements Comparable {
     /** the file name of this save */
     private final String fileName;
 
@@ -17,10 +16,9 @@ public class SaveFormatComparator implements Comparable
     private final WorldSettings.GameType theEnumGameType;
     private final boolean hardcore;
     private final boolean cheatsEnabled;
-    private static final String __OBFID = "CL_00000601";
 
-    public SaveFormatComparator(String p_i2161_1_, String p_i2161_2_, long p_i2161_3_, long p_i2161_5_, WorldSettings.GameType p_i2161_7_, boolean p_i2161_8_, boolean p_i2161_9_, boolean p_i2161_10_)
-    {
+    public SaveFormatComparator(String p_i2161_1_, String p_i2161_2_, long p_i2161_3_, long p_i2161_5_,
+            WorldSettings.GameType p_i2161_7_, boolean p_i2161_8_, boolean p_i2161_9_, boolean p_i2161_10_) {
         this.fileName = p_i2161_1_;
         this.displayName = p_i2161_2_;
         this.lastTimePlayed = p_i2161_3_;
@@ -34,62 +32,54 @@ public class SaveFormatComparator implements Comparable
     /**
      * return the file name
      */
-    public String getFileName()
-    {
+    public String getFileName() {
         return this.fileName;
     }
 
     /**
      * return the display name of the save
      */
-    public String getDisplayName()
-    {
+    public String getDisplayName() {
         return this.displayName;
     }
 
-    public long func_154336_c()
-    {
+    public long func_154336_c() {
         return this.sizeOnDisk;
     }
 
-    public boolean requiresConversion()
-    {
+    public boolean requiresConversion() {
         return this.requiresConversion;
     }
 
-    public long getLastTimePlayed()
-    {
+    public long getLastTimePlayed() {
         return this.lastTimePlayed;
     }
 
-    public int compareTo(SaveFormatComparator p_compareTo_1_)
-    {
-        return this.lastTimePlayed < p_compareTo_1_.lastTimePlayed ? 1 : (this.lastTimePlayed > p_compareTo_1_.lastTimePlayed ? -1 : this.fileName.compareTo(p_compareTo_1_.fileName));
+    public int compareTo(SaveFormatComparator p_compareTo_1_) {
+        return this.lastTimePlayed < p_compareTo_1_.lastTimePlayed ? 1
+                : (this.lastTimePlayed > p_compareTo_1_.lastTimePlayed ? -1
+                        : this.fileName.compareTo(p_compareTo_1_.fileName));
     }
 
     /**
      * Gets the EnumGameType.
      */
-    public WorldSettings.GameType getEnumGameType()
-    {
+    public WorldSettings.GameType getEnumGameType() {
         return this.theEnumGameType;
     }
 
-    public boolean isHardcoreModeEnabled()
-    {
+    public boolean isHardcoreModeEnabled() {
         return this.hardcore;
     }
 
     /**
      * @return {@code true} if cheats are enabled for this world
      */
-    public boolean getCheatsEnabled()
-    {
+    public boolean getCheatsEnabled() {
         return this.cheatsEnabled;
     }
 
-    public int compareTo(Object p_compareTo_1_)
-    {
-        return this.compareTo((SaveFormatComparator)p_compareTo_1_);
+    public int compareTo(Object p_compareTo_1_) {
+        return this.compareTo((SaveFormatComparator) p_compareTo_1_);
     }
 }

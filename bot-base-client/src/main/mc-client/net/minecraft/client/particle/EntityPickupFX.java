@@ -16,7 +16,6 @@ public class EntityPickupFX extends EntityFX {
 
     /** renamed from yOffset to fix shadowing Entity.yOffset */
     private float yOffs;
-    private static final String __OBFID = "CL_00000930";
     private final Minecraft mc;
 
     public EntityPickupFX(Minecraft mc, World p_i1233_1_, Entity p_i1233_2_, Entity p_i1233_3_, float p_i1233_4_) {

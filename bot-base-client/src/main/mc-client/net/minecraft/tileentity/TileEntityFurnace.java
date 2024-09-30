@@ -26,7 +26,6 @@ public class TileEntityFurnace extends TileEntity implements ISidedInventory {
     public int field_145963_i;
     public int field_145961_j;
     private String field_145958_o;
-    private static final String __OBFID = "CL_00000357";
 
     /**
      * Returns the number of slots in the inventory.

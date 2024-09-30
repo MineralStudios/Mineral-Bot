@@ -16,7 +16,6 @@ import net.minecraft.util.IIcon;
 public class BlockColored extends Block {
     @Nullable
     private IIcon[] field_150033_a;
-    private static final String __OBFID = "CL_00000217";
 
     public BlockColored(Material p_i45398_1_) {
         super(p_i45398_1_);
@@ -51,18 +50,21 @@ public class BlockColored extends Block {
     }
 
     public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_) {
-        for (int var4 = 0; var4 < 16; ++var4) {
+        for (int var4 = 0; var4 < 16; ++var4)
             p_149666_3_.add(new ItemStack(p_149666_1_, 1, var4));
-        }
+
     }
 
     public void registerBlockIcons(IIconRegister p_149651_1_) {
         this.field_150033_a = new IIcon[16];
 
-        for (int var2 = 0; var2 < this.field_150033_a.length; ++var2) {
-            this.field_150033_a[var2] = p_149651_1_
-                    .registerIcon(this.getTextureName() + "_" + ItemDye.field_150921_b[func_150031_c(var2)]);
-        }
+        IIcon[] arr = this.field_150033_a;
+
+        if (arr != null)
+            for (int var2 = 0; var2 < arr.length; ++var2)
+                arr[var2] = p_149651_1_
+                        .registerIcon(this.getTextureName() + "_" + ItemDye.field_150921_b[func_150031_c(var2)]);
+
     }
 
     public MapColor getMapColor(int p_149728_1_) {

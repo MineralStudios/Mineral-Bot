@@ -6,6 +6,7 @@ import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
 import gg.mineral.bot.base.lwjgl.util.glu.Project;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.model.ModelBook;
 import net.minecraft.client.renderer.RenderHelper;
@@ -37,7 +38,6 @@ public class GuiEnchantment extends GuiContainer {
     public float field_147076_A;
     ItemStack field_147077_B;
     private String field_147079_H;
-    private static final String __OBFID = "CL_00000757";
 
     public GuiEnchantment(Minecraft mc, InventoryPlayer p_i46398_1_, World p_i46398_2_, int p_i46398_3_,
             int p_i46398_4_, int p_i46398_5_, String p_i46398_6_) {
@@ -161,7 +161,9 @@ public class GuiEnchantment extends GuiContainer {
                 FontRenderer fontRenderer = this.mc.standardGalacticFontRenderer;
                 int var17 = 6839882;
 
-                if (this.mc.thePlayer.experienceLevel < var14 && !this.mc.thePlayer.capabilities.isCreativeMode) {
+                EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+                if (thePlayer != null && thePlayer.experienceLevel < var14 && !thePlayer.capabilities.isCreativeMode) {
                     this.drawTexturedModalRect(var4 + 60, var5 + 14 + 19 * var12, 0, 185, 108, 19);
                     if (fontRenderer != null)
                         fontRenderer.drawSplitString(var13, var4 + 62, var5 + 16 + 19 * var12, 104,

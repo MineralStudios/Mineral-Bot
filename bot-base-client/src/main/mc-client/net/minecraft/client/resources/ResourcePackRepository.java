@@ -32,7 +32,6 @@ import net.minecraft.util.ResourceLocation;
 
 public class ResourcePackRepository {
     protected static final FileFilter resourcePackFilter = new FileFilter() {
-        private static final String __OBFID = "CL_00001088";
 
         public boolean accept(File p_accept_1_) {
             boolean var2 = p_accept_1_.isFile() && p_accept_1_.getName().endsWith(".zip");
@@ -48,7 +47,6 @@ public class ResourcePackRepository {
     private boolean field_148533_g;
     private List repositoryEntriesAll = Lists.newArrayList();
     private List repositoryEntries = Lists.newArrayList();
-    private static final String __OBFID = "CL_00001087";
     private final Minecraft mc;
 
     public ResourcePackRepository(Minecraft mc, File p_i45101_1_, File p_i45101_2_, IResourcePack p_i45101_3_,
@@ -164,7 +162,6 @@ public class ResourcePackRepository {
         this.field_148533_g = true;
         this.mc.displayGuiScreen(var4);
         HttpUtil.func_151223_a(p_148528_2_, p_148528_1_, new HttpUtil.DownloadListener() {
-            private static final String __OBFID = "CL_00001089";
 
             public void func_148522_a(File p_148522_1_) {
                 if (ResourcePackRepository.this.field_148533_g) {
@@ -191,7 +188,6 @@ public class ResourcePackRepository {
         private PackMetadataSection rePackMetadataSection;
         private BufferedImage texturePackIcon;
         private ResourceLocation locationTexturePackIcon;
-        private static final String __OBFID = "CL_00001090";
 
         private Entry(File p_i1295_2_) {
             this.resourcePackFile = p_i1295_2_;

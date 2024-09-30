@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 public class InventoryCraftResult implements IInventory {
     /** A list of one item containing the result of the crafting formula */
     private ItemStack[] stackResult = new ItemStack[1];
-    private static final String __OBFID = "CL_00001760";
 
     /**
      * Returns the number of slots in the inventory.

@@ -18,7 +18,6 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 public class C13PacketPlayerAbilities extends Packet {
     private boolean disableDamage, flying, allowFlying, creativeMode;
     private float flySpeed, walkSpeed;
-    private static final String __OBFID = "CL_00001364";
 
     public C13PacketPlayerAbilities(PlayerCapabilities p_i45257_1_) {
         this.setDisableDamage(p_i45257_1_.disableDamage);

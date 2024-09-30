@@ -14,7 +14,6 @@ public class GuiKeyBindingList extends GuiListExtended {
     private final Minecraft field_148189_l;
     private final GuiListExtended.IGuiListEntry[] field_148190_m;
     private int field_148188_n = 0;
-    private static final String __OBFID = "CL_00000732";
 
     public GuiKeyBindingList(GuiControls p_i45031_1_, Minecraft mc) {
         super(mc, p_i45031_1_.width, p_i45031_1_.height, 63, p_i45031_1_.height - 32, 20);
@@ -70,7 +69,6 @@ public class GuiKeyBindingList extends GuiListExtended {
     public class CategoryEntry implements GuiListExtended.IGuiListEntry {
         private final String field_148285_b;
         private final int field_148286_c;
-        private static final String __OBFID = "CL_00000734";
 
         public CategoryEntry(String p_i45028_2_) {
             this.field_148285_b = I18n.format(p_i45028_2_, new Object[0]);
@@ -83,10 +81,12 @@ public class GuiKeyBindingList extends GuiListExtended {
                 Tessellator p_148279_6_, int p_148279_7_, int p_148279_8_, boolean p_148279_9_) {
             FontRenderer fontRenderer = GuiKeyBindingList.this.field_148189_l.fontRenderer;
 
-            if (fontRenderer == null)
+            GuiScreen currentScreen = GuiKeyBindingList.this.field_148189_l.currentScreen;
+
+            if (fontRenderer == null || currentScreen == null)
                 return;
             fontRenderer.drawString(this.field_148285_b,
-                    GuiKeyBindingList.this.field_148189_l.currentScreen.width / 2 - this.field_148286_c / 2,
+                    currentScreen.width / 2 - this.field_148286_c / 2,
                     p_148279_3_ + p_148279_5_ - fontRenderer.FONT_HEIGHT - 1,
                     16777215);
         }
@@ -106,7 +106,6 @@ public class GuiKeyBindingList extends GuiListExtended {
         private final String field_148283_c;
         private final GuiButton field_148280_d;
         private final GuiButton field_148281_e;
-        private static final String __OBFID = "CL_00000735";
 
         private KeyEntry(KeyBinding p_i45029_2_) {
             this.field_148282_b = p_i45029_2_;

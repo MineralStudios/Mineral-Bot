@@ -3,7 +3,6 @@ package net.minecraft.client.network;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.authlib.GameProfile;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -15,13 +14,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.kqueue.KQueue;
-import io.netty.channel.kqueue.KQueueEventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +50,6 @@ public class OldServerPinger {
     private static final Splitter field_147230_a = Splitter.on('\u0000').limit(6);
     private static final Logger logger = LogManager.getLogger(OldServerPinger.class);
     private final List field_147229_c = Collections.synchronizedList(new ArrayList());
-    private static final String __OBFID = "CL_00000892";
 
     private final Minecraft mc;
 
@@ -71,7 +63,6 @@ public class OldServerPinger {
         p_147224_1_.field_147412_i = null;
         var3.setNetHandler(new INetHandlerStatusClient() {
             private boolean field_147403_d = false;
-            private static final String __OBFID = "CL_00000893";
 
             public void handleServerInfo(S00PacketServerInfo p_147397_1_) {
                 ServerStatusResponse var2 = p_147397_1_.func_149294_c();
@@ -182,7 +173,6 @@ public class OldServerPinger {
         final ServerAddress var2 = ServerAddress.fromServerIp(p_147225_1_.serverIP);
         ((Bootstrap) ((Bootstrap) ((Bootstrap) (new Bootstrap()).group(NetworkManager.eventLoops))
                 .handler(new ChannelInitializer() {
-                    private static final String __OBFID = "CL_00000894";
 
                     protected void initChannel(Channel p_initChannel_1_) {
                         try {
@@ -198,7 +188,6 @@ public class OldServerPinger {
                         }
 
                         p_initChannel_1_.pipeline().addLast(new ChannelHandler[] { new SimpleChannelInboundHandler() {
-                            private static final String __OBFID = "CL_00000895";
 
                             public void channelActive(ChannelHandlerContext p_channelActive_1_) throws Exception {
                                 super.channelActive(p_channelActive_1_);

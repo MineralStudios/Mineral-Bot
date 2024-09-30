@@ -8,7 +8,6 @@ import net.minecraft.network.play.client.C00PacketKeepAlive;
 public class GuiDownloadTerrain extends GuiScreen {
     private NetHandlerPlayClient field_146594_a;
     private int field_146593_f;
-    private static final String __OBFID = "CL_00000708";
 
     public GuiDownloadTerrain(Minecraft mc, NetHandlerPlayClient p_i45023_1_) {
         super(mc);

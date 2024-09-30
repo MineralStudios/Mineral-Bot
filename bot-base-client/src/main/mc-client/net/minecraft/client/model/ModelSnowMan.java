@@ -10,7 +10,6 @@ public class ModelSnowMan extends ModelBase {
     public ModelRenderer head;
     public ModelRenderer rightHand;
     public ModelRenderer leftHand;
-    private static final String __OBFID = "CL_00000859";
 
     public ModelSnowMan(Minecraft mc) {
         float var1 = 4.0F;

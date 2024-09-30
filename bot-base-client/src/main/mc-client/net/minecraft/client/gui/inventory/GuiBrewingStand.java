@@ -15,7 +15,6 @@ public class GuiBrewingStand extends GuiContainer {
     private static final ResourceLocation field_147014_u = new ResourceLocation(
             "textures/gui/container/brewing_stand.png");
     private TileEntityBrewingStand field_147013_v;
-    private static final String __OBFID = "CL_00000746";
 
     public GuiBrewingStand(Minecraft mc, InventoryPlayer p_i1081_1_, TileEntityBrewingStand p_i1081_2_) {
         super(mc, new ContainerBrewingStand(p_i1081_1_, p_i1081_2_));

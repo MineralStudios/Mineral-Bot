@@ -36,7 +36,6 @@ public class StatisticsFile extends StatFileWriter {
     private final Set field_150888_e = Sets.newHashSet();
     private int field_150885_f = -300;
     private boolean field_150886_g = false;
-    private static final String __OBFID = "CL_00001471";
 
     public StatisticsFile(MinecraftServer p_i45306_1_, File p_i45306_2_) {
         this.field_150890_c = p_i45306_1_;

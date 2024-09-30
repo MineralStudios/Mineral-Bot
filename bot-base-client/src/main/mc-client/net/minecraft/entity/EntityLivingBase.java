@@ -188,7 +188,6 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
     /** Number of ticks since last jump */
     private int jumpTicks;
     private float field_110151_bq;
-    private static final String __OBFID = "CL_00001549";
 
     @Override
     public double getHeadY() {

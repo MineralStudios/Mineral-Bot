@@ -17,7 +17,6 @@ public class RenderCreeper extends RenderLiving {
 
     /** The creeper model. */
     private final ModelBase creeperModel;
-    private static final String __OBFID = "CL_00000985";
 
     public RenderCreeper(Minecraft mc) {
         super(mc, new ModelCreeper(mc), 0.5F);

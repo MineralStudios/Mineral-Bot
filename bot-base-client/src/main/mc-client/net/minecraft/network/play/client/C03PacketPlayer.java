@@ -18,7 +18,6 @@ public class C03PacketPlayer extends Packet {
     protected double x, y, z, headY;
     protected float yaw, pitch;
     protected boolean onGround, hasPos, hasLook;
-    private static final String __OBFID = "CL_00001360";
 
     public C03PacketPlayer(boolean p_i45256_1_) {
         this.onGround = p_i45256_1_;
@@ -47,7 +46,6 @@ public class C03PacketPlayer extends Packet {
     }
 
     public static class C04PacketPlayerPosition extends C03PacketPlayer {
-        private static final String __OBFID = "CL_00001361";
 
         public C04PacketPlayerPosition() {
             this.hasPos = true;
@@ -86,7 +84,6 @@ public class C03PacketPlayer extends Packet {
     }
 
     public static class C05PacketPlayerLook extends C03PacketPlayer {
-        private static final String __OBFID = "CL_00001363";
 
         public C05PacketPlayerLook() {
             this.hasLook = true;
@@ -119,7 +116,6 @@ public class C03PacketPlayer extends Packet {
     }
 
     public static class C06PacketPlayerPosLook extends C03PacketPlayer {
-        private static final String __OBFID = "CL_00001362";
 
         public C06PacketPlayerPosLook() {
             this.hasPos = true;

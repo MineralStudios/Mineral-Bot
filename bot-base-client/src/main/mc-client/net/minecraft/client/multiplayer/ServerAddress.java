@@ -7,7 +7,6 @@ import javax.naming.directory.InitialDirContext;
 public class ServerAddress {
     private final String ipAddress;
     private final int serverPort;
-    private static final String __OBFID = "CL_00000889";
 
     protected ServerAddress(String p_i1192_1_, int p_i1192_2_) {
         this.ipAddress = p_i1192_1_;

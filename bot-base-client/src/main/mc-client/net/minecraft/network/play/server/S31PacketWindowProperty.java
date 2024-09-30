@@ -12,7 +12,6 @@ public class S31PacketWindowProperty extends Packet {
     private int field_149186_a;
     private int field_149184_b;
     private int field_149185_c;
-    private static final String __OBFID = "CL_00001295";
 
     public S31PacketWindowProperty() {
     }

@@ -1,6 +1,7 @@
 package net.minecraft.client.gui;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
@@ -9,8 +10,6 @@ public class GuiSleepMP extends GuiChat {
     public GuiSleepMP(Minecraft mc) {
         super(mc);
     }
-
-    private static final String __OBFID = "CL_00000697";
 
     /**
      * Adds the buttons (and other controls) to the screen in question.
@@ -33,9 +32,9 @@ public class GuiSleepMP extends GuiChat {
         } else {
             String var3 = this.field_146415_a.getText().trim();
 
-            if (!var3.isEmpty()) {
-                this.mc.thePlayer.sendChatMessage(var3);
-            }
+            EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+            if (!var3.isEmpty() && thePlayer != null)
+                thePlayer.sendChatMessage(var3);
 
             this.field_146415_a.setText("");
             this.mc.ingameGUI.getChatGUI().resetScroll();
@@ -51,7 +50,11 @@ public class GuiSleepMP extends GuiChat {
     }
 
     private void func_146418_g() {
-        NetHandlerPlayClient var1 = this.mc.thePlayer.sendQueue;
-        var1.addToSendQueue(new C0BPacketEntityAction(this.mc.thePlayer, 3));
+        EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+        NetHandlerPlayClient var1 = thePlayer != null ? thePlayer.sendQueue : null;
+
+        if (var1 != null)
+            var1.addToSendQueue(new C0BPacketEntityAction(this.mc.thePlayer, 3));
     }
 }

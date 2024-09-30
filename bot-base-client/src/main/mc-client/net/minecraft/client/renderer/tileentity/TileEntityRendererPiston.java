@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TileEntityRendererPiston extends TileEntitySpecialRenderer {
     private RenderBlocks field_147516_b;
-    private static final String __OBFID = "CL_00000969";
 
     private final Minecraft mc;
 
@@ -41,15 +40,17 @@ public class TileEntityRendererPiston extends TileEntitySpecialRenderer {
                 GL11.glShadeModel(GL11.GL_FLAT);
             }
 
-            var10.startDrawingQuads();
-            var10.setTranslation(
-                    (double) ((float) p_147500_2_ - (float) p_147500_1_.field_145851_c
-                            + p_147500_1_.func_145865_b(p_147500_8_)),
-                    (double) ((float) p_147500_4_ - (float) p_147500_1_.field_145848_d
-                            + p_147500_1_.func_145862_c(p_147500_8_)),
-                    (double) ((float) p_147500_6_ - (float) p_147500_1_.field_145849_e
-                            + p_147500_1_.func_145859_d(p_147500_8_)));
-            var10.setColorOpaque_F(1.0F, 1.0F, 1.0F);
+            if (var10 != null) {
+                var10.startDrawingQuads();
+                var10.setTranslation(
+                        (double) ((float) p_147500_2_ - (float) p_147500_1_.field_145851_c
+                                + p_147500_1_.func_145865_b(p_147500_8_)),
+                        (double) ((float) p_147500_4_ - (float) p_147500_1_.field_145848_d
+                                + p_147500_1_.func_145862_c(p_147500_8_)),
+                        (double) ((float) p_147500_6_ - (float) p_147500_1_.field_145849_e
+                                + p_147500_1_.func_145859_d(p_147500_8_)));
+                var10.setColorOpaque_F(1.0F, 1.0F, 1.0F);
+            }
 
             if (var9 == Blocks.piston_head && p_147500_1_.func_145860_a(p_147500_8_) < 0.5F) {
                 this.field_147516_b.renderPistonExtensionAllFaces(var9, p_147500_1_.field_145851_c,
@@ -60,9 +61,10 @@ public class TileEntityRendererPiston extends TileEntitySpecialRenderer {
                         p_147500_1_.field_145848_d, p_147500_1_.field_145849_e,
                         p_147500_1_.func_145860_a(p_147500_8_) < 0.5F);
                 Blocks.piston_head.func_150087_e();
-                var10.setTranslation((double) ((float) p_147500_2_ - (float) p_147500_1_.field_145851_c),
-                        (double) ((float) p_147500_4_ - (float) p_147500_1_.field_145848_d),
-                        (double) ((float) p_147500_6_ - (float) p_147500_1_.field_145849_e));
+                if (var10 != null)
+                    var10.setTranslation((double) ((float) p_147500_2_ - (float) p_147500_1_.field_145851_c),
+                            (double) ((float) p_147500_4_ - (float) p_147500_1_.field_145848_d),
+                            (double) ((float) p_147500_6_ - (float) p_147500_1_.field_145849_e));
                 this.field_147516_b.renderPistonBaseAllFaces(var9, p_147500_1_.field_145851_c,
                         p_147500_1_.field_145848_d, p_147500_1_.field_145849_e);
             } else {
@@ -70,8 +72,10 @@ public class TileEntityRendererPiston extends TileEntitySpecialRenderer {
                         p_147500_1_.field_145849_e);
             }
 
-            var10.setTranslation(0.0D, 0.0D, 0.0D);
-            var10.draw();
+            if (var10 != null) {
+                var10.setTranslation(0.0D, 0.0D, 0.0D);
+                var10.draw();
+            }
             RenderHelper.enableStandardItemLighting();
         }
     }

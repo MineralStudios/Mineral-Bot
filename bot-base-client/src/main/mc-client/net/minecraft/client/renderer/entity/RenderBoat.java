@@ -15,7 +15,6 @@ public class RenderBoat extends Render {
 
     /** instance of ModelBoat for rendering */
     protected ModelBase modelBoat;
-    private static final String __OBFID = "CL_00000981";
 
     public RenderBoat(Minecraft mc) {
         super(mc);

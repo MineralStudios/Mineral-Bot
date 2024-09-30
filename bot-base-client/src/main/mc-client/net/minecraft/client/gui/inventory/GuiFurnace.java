@@ -12,7 +12,6 @@ import net.minecraft.util.ResourceLocation;
 public class GuiFurnace extends GuiContainer {
     private static final ResourceLocation field_147087_u = new ResourceLocation("textures/gui/container/furnace.png");
     private TileEntityFurnace field_147086_v;
-    private static final String __OBFID = "CL_00000758";
 
     public GuiFurnace(Minecraft mc, InventoryPlayer p_i1091_1_, TileEntityFurnace p_i1091_2_) {
         super(mc, new ContainerFurnace(p_i1091_1_, p_i1091_2_));

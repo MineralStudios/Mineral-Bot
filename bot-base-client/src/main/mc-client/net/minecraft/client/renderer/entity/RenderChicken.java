@@ -11,7 +11,6 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderChicken extends RenderLiving {
     private static final ResourceLocation chickenTextures = new ResourceLocation("textures/entity/chicken.png");
-    private static final String __OBFID = "CL_00000983";
 
     public RenderChicken(Minecraft mc, ModelBase p_i1252_1_, float p_i1252_2_) {
         super(mc, p_i1252_1_, p_i1252_2_);

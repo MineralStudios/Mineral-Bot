@@ -8,7 +8,6 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderCow extends RenderLiving {
     private static final ResourceLocation cowTextures = new ResourceLocation("textures/entity/cow/cow.png");
-    private static final String __OBFID = "CL_00000984";
 
     public RenderCow(Minecraft mc, ModelBase p_i1253_1_, float p_i1253_2_) {
         super(mc, p_i1253_1_, p_i1253_2_);

@@ -80,7 +80,6 @@ public class Material {
      */
     private int mobilityFlag;
     private boolean isAdventureModeExempt;
-    private static final String __OBFID = "CL_00000542";
 
     public Material(MapColor p_i2116_1_) {
         this.materialMapColor = p_i2116_1_;

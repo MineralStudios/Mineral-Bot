@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Help.Ansi.Text;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GLContext;
@@ -348,14 +347,16 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
                 if (textureManager != null)
                     textureManager.bindTexture(titlePanoramaPaths[var10]);
 
-                var4.startDrawingQuads();
-                var4.setColorRGBA_I(16777215, 255 / (var6 + 1));
-                float var11 = 0.0F;
-                var4.addVertexWithUV(-1.0D, -1.0D, 1.0D, (double) (0.0F + var11), (double) (0.0F + var11));
-                var4.addVertexWithUV(1.0D, -1.0D, 1.0D, (double) (1.0F - var11), (double) (0.0F + var11));
-                var4.addVertexWithUV(1.0D, 1.0D, 1.0D, (double) (1.0F - var11), (double) (1.0F - var11));
-                var4.addVertexWithUV(-1.0D, 1.0D, 1.0D, (double) (0.0F + var11), (double) (1.0F - var11));
-                var4.draw();
+                if (var4 != null) {
+                    var4.startDrawingQuads();
+                    var4.setColorRGBA_I(16777215, 255 / (var6 + 1));
+                    float var11 = 0.0F;
+                    var4.addVertexWithUV(-1.0D, -1.0D, 1.0D, (double) (0.0F + var11), (double) (0.0F + var11));
+                    var4.addVertexWithUV(1.0D, -1.0D, 1.0D, (double) (1.0F - var11), (double) (0.0F + var11));
+                    var4.addVertexWithUV(1.0D, 1.0D, 1.0D, (double) (1.0F - var11), (double) (1.0F - var11));
+                    var4.addVertexWithUV(-1.0D, 1.0D, 1.0D, (double) (0.0F + var11), (double) (1.0F - var11));
+                    var4.draw();
+                }
                 GL11.glPopMatrix();
             }
 
@@ -363,7 +364,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
             GL11.glColorMask(true, true, true, false);
         }
 
-        var4.setTranslation(0.0D, 0.0D, 0.0D);
+        if (var4 != null)
+            var4.setTranslation(0.0D, 0.0D, 0.0D);
         GL11.glColorMask(true, true, true, true);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPopMatrix();
@@ -390,22 +392,24 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
         GL11.glColorMask(true, true, true, false);
         Tessellator var2 = this.mc.getTessellator();
-        var2.startDrawingQuads();
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
-        byte var3 = 3;
+        if (var2 != null) {
+            var2.startDrawingQuads();
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
+            byte var3 = 3;
 
-        for (int var4 = 0; var4 < var3; ++var4) {
-            var2.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F / (float) (var4 + 1));
-            int var5 = this.width;
-            int var6 = this.height;
-            float var7 = (float) (var4 - var3 / 2) / 256.0F;
-            var2.addVertexWithUV((double) var5, (double) var6, (double) this.zLevel, (double) (0.0F + var7), 1.0D);
-            var2.addVertexWithUV((double) var5, 0.0D, (double) this.zLevel, (double) (1.0F + var7), 1.0D);
-            var2.addVertexWithUV(0.0D, 0.0D, (double) this.zLevel, (double) (1.0F + var7), 0.0D);
-            var2.addVertexWithUV(0.0D, (double) var6, (double) this.zLevel, (double) (0.0F + var7), 0.0D);
+            for (int var4 = 0; var4 < var3; ++var4) {
+                var2.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F / (float) (var4 + 1));
+                int var5 = this.width;
+                int var6 = this.height;
+                float var7 = (float) (var4 - var3 / 2) / 256.0F;
+                var2.addVertexWithUV((double) var5, (double) var6, (double) this.zLevel, (double) (0.0F + var7), 1.0D);
+                var2.addVertexWithUV((double) var5, 0.0D, (double) this.zLevel, (double) (1.0F + var7), 1.0D);
+                var2.addVertexWithUV(0.0D, 0.0D, (double) this.zLevel, (double) (1.0F + var7), 0.0D);
+                var2.addVertexWithUV(0.0D, (double) var6, (double) this.zLevel, (double) (0.0F + var7), 0.0D);
+            }
+
+            var2.draw();
         }
-
-        var2.draw();
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glColorMask(true, true, true, true);
     }
@@ -427,6 +431,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         this.mc.getFramebuffer().bindFramebuffer(true);
         GL11.glViewport(0, 0, this.mc.displayWidth, this.mc.displayHeight);
         Tessellator var4 = this.mc.getTessellator();
+        if (var4 == null)
+            return;
         var4.startDrawingQuads();
         float var5 = this.width > this.height ? 120.0F / (float) this.width : 120.0F / (float) this.height;
         float var6 = (float) this.height * var5 / 256.0F;
@@ -474,7 +480,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
             this.drawTexturedModalRect(var6 + 155, var7 + 0, 0, 45, 155, 44);
         }
 
-        var4.setColorOpaque_I(-1);
+        if (var4 != null)
+            var4.setColorOpaque_I(-1);
         GL11.glPushMatrix();
         GL11.glTranslatef((float) (this.width / 2 + 90), 70.0F, 0.0F);
         GL11.glRotatef(-20.0F, 0.0F, 0.0F, 1.0F);

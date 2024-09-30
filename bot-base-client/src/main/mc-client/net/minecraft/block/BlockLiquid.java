@@ -18,7 +18,6 @@ import net.minecraft.world.World;
 public abstract class BlockLiquid extends Block {
     @Nullable
     private IIcon[] field_149806_a;
-    private static final String __OBFID = "CL_00000265";
 
     protected BlockLiquid(Material p_i45413_1_) {
         super(p_i45413_1_);
@@ -510,9 +509,12 @@ public abstract class BlockLiquid extends Block {
     }
 
     public static IIcon func_149803_e(String p_149803_0_) {
-        return p_149803_0_ == "water_still" ? Blocks.flowing_water.field_149806_a[0]
-                : (p_149803_0_ == "water_flow" ? Blocks.flowing_water.field_149806_a[1]
-                        : (p_149803_0_ == "lava_still" ? Blocks.flowing_lava.field_149806_a[0]
-                                : (p_149803_0_ == "lava_flow" ? Blocks.flowing_lava.field_149806_a[1] : null)));
+        IIcon[] waterArr = Blocks.flowing_water.field_149806_a;
+        IIcon[] lavaArr = Blocks.flowing_lava.field_149806_a;
+
+        return p_149803_0_ == "water_still" && waterArr != null ? waterArr[0]
+                : (p_149803_0_ == "water_flow" && waterArr != null ? waterArr[1]
+                        : (p_149803_0_ == "lava_still" && lavaArr != null ? lavaArr[0]
+                                : (p_149803_0_ == "lava_flow" && lavaArr != null ? lavaArr[1] : null)));
     }
 }

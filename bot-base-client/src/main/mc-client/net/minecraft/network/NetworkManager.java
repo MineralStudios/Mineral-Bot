@@ -100,7 +100,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     /** A String indicating why the network has shutdown. */
     protected IChatComponent terminationReason;
     protected boolean encryptionEnabled;
-    private static final String __OBFID = "CL_00001240";
 
     protected final Minecraft mc;
 
@@ -210,7 +209,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
                     .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
         } else {
             this.channel.eventLoop().execute(new Runnable() {
-                private static final String __OBFID = "CL_00001241";
 
                 public void run() {
                     if (var3 != var4) {
@@ -299,7 +297,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     public static NetworkManager provideLanClient(Minecraft mc, InetAddress p_150726_0_, int p_150726_1_) {
         final NetworkManager var2 = new NetworkManager(mc, true);
         ((Bootstrap) ((Bootstrap) ((Bootstrap) (new Bootstrap()).group(eventLoops)).handler(new ChannelInitializer() {
-            private static final String __OBFID = "CL_00001242";
 
             protected void initChannel(Channel p_initChannel_1_) {
                 try {
@@ -336,7 +333,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     public static NetworkManager provideLocalClient(Minecraft mc, SocketAddress p_150722_0_) {
         final NetworkManager var1 = new NetworkManager(mc, true);
         ((Bootstrap) ((Bootstrap) ((Bootstrap) (new Bootstrap()).group(eventLoops)).handler(new ChannelInitializer() {
-            private static final String __OBFID = "CL_00001243";
 
             protected void initChannel(Channel p_initChannel_1_) {
                 p_initChannel_1_.pipeline().addLast("packet_handler", var1);

@@ -12,7 +12,6 @@ import net.minecraft.network.login.INetHandlerLoginClient;
 
 public class S02PacketLoginSuccess extends Packet {
     private GameProfile field_149602_a;
-    private static final String __OBFID = "CL_00001375";
 
     public S02PacketLoginSuccess() {
     }

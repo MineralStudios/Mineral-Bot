@@ -15,7 +15,6 @@ public class S08PacketPlayerPosLook extends Packet {
     private float field_148936_d;
     private float field_148937_e;
     private boolean field_148935_f;
-    private static final String __OBFID = "CL_00001273";
 
     public S08PacketPlayerPosLook() {
     }

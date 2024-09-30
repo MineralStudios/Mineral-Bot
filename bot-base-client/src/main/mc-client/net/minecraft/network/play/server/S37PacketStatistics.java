@@ -23,7 +23,6 @@ import net.minecraft.stats.StatList;
 @NoArgsConstructor
 public class S37PacketStatistics extends Packet {
     private Object2IntOpenHashMap<StatBase> field_148976_a;
-    private static final String __OBFID = "CL_00001283";
 
     public void processPacket(INetHandlerPlayClient p_148833_1_) {
         p_148833_1_.handleStatistics(this);

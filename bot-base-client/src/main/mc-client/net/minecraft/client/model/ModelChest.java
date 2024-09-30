@@ -11,7 +11,6 @@ public class ModelChest extends ModelBase {
 
     /** The chest's knob in the chest model. */
     public ModelRenderer chestKnob;
-    private static final String __OBFID = "CL_00000834";
 
     public ModelChest(Minecraft mc) {
         this.chestLid = (new ModelRenderer(mc, this, 0, 0)).setTextureSize(64, 64);

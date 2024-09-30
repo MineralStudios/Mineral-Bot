@@ -40,7 +40,6 @@ public class GuiCreateWorld extends GuiScreen {
     private static final String[] field_146327_L = new String[] { "CON", "COM", "PRN", "AUX", "CLOCK$", "NUL", "COM1",
             "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5",
             "LPT6", "LPT7", "LPT8", "LPT9" };
-    private static final String __OBFID = "CL_00000689";
 
     public GuiCreateWorld(Minecraft mc, GuiScreen p_i46320_1_) {
         super(mc);

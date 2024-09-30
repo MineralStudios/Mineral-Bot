@@ -8,60 +8,50 @@ import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-public class EntityMinecartMobSpawner extends EntityMinecart
-{
+public class EntityMinecartMobSpawner extends EntityMinecart {
     /** Mob spawner logic for this spawner minecart. */
-    private final MobSpawnerBaseLogic mobSpawnerLogic = new MobSpawnerBaseLogic()
-    {
-        private static final String __OBFID = "CL_00001679";
-        public void func_98267_a(int p_98267_1_)
-        {
-            EntityMinecartMobSpawner.this.worldObj.setEntityState(EntityMinecartMobSpawner.this, (byte)p_98267_1_);
+    private final MobSpawnerBaseLogic mobSpawnerLogic = new MobSpawnerBaseLogic() {
+        public void func_98267_a(int p_98267_1_) {
+            EntityMinecartMobSpawner.this.worldObj.setEntityState(EntityMinecartMobSpawner.this, (byte) p_98267_1_);
         }
-        public World getSpawnerWorld()
-        {
+
+        public World getSpawnerWorld() {
             return EntityMinecartMobSpawner.this.worldObj;
         }
-        public int getSpawnerX()
-        {
+
+        public int getSpawnerX() {
             return MathHelper.floor_double(EntityMinecartMobSpawner.this.posX);
         }
-        public int getSpawnerY()
-        {
+
+        public int getSpawnerY() {
             return MathHelper.floor_double(EntityMinecartMobSpawner.this.posY);
         }
-        public int getSpawnerZ()
-        {
+
+        public int getSpawnerZ() {
             return MathHelper.floor_double(EntityMinecartMobSpawner.this.posZ);
         }
     };
-    private static final String __OBFID = "CL_00001678";
 
-    public EntityMinecartMobSpawner(World p_i1725_1_)
-    {
+    public EntityMinecartMobSpawner(World p_i1725_1_) {
         super(p_i1725_1_);
     }
 
-    public EntityMinecartMobSpawner(World p_i1726_1_, double p_i1726_2_, double p_i1726_4_, double p_i1726_6_)
-    {
+    public EntityMinecartMobSpawner(World p_i1726_1_, double p_i1726_2_, double p_i1726_4_, double p_i1726_6_) {
         super(p_i1726_1_, p_i1726_2_, p_i1726_4_, p_i1726_6_);
     }
 
-    public int getMinecartType()
-    {
+    public int getMinecartType() {
         return 4;
     }
 
-    public Block func_145817_o()
-    {
+    public Block func_145817_o() {
         return Blocks.mob_spawner;
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound p_70037_1_)
-    {
+    protected void readEntityFromNBT(NBTTagCompound p_70037_1_) {
         super.readEntityFromNBT(p_70037_1_);
         this.mobSpawnerLogic.readFromNBT(p_70037_1_);
     }
@@ -69,28 +59,24 @@ public class EntityMinecartMobSpawner extends EntityMinecart
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound p_70014_1_)
-    {
+    protected void writeEntityToNBT(NBTTagCompound p_70014_1_) {
         super.writeEntityToNBT(p_70014_1_);
         this.mobSpawnerLogic.writeToNBT(p_70014_1_);
     }
 
-    public void handleHealthUpdate(byte p_70103_1_)
-    {
+    public void handleHealthUpdate(byte p_70103_1_) {
         this.mobSpawnerLogic.setDelayToMin(p_70103_1_);
     }
 
     /**
      * Called to update the entity's position/logic.
      */
-    public void onUpdate()
-    {
+    public void onUpdate() {
         super.onUpdate();
         this.mobSpawnerLogic.updateSpawner();
     }
 
-    public MobSpawnerBaseLogic func_98039_d()
-    {
+    public MobSpawnerBaseLogic func_98039_d() {
         return this.mobSpawnerLogic;
     }
 }

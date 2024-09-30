@@ -5,15 +5,12 @@ import net.minecraft.block.material.Material;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-public class EntityRainFX extends EntityFX
-{
-    private static final String __OBFID = "CL_00000934";
+public class EntityRainFX extends EntityFX {
 
-    public EntityRainFX(World p_i1235_1_, double p_i1235_2_, double p_i1235_4_, double p_i1235_6_)
-    {
+    public EntityRainFX(World p_i1235_1_, double p_i1235_2_, double p_i1235_4_, double p_i1235_6_) {
         super(p_i1235_1_, p_i1235_2_, p_i1235_4_, p_i1235_6_, 0.0D, 0.0D, 0.0D);
         this.motionX *= 0.30000001192092896D;
-        this.motionY = (double)((float)Math.random() * 0.2F + 0.1F);
+        this.motionY = (double) ((float) Math.random() * 0.2F + 0.1F);
         this.motionZ *= 0.30000001192092896D;
         this.particleRed = 1.0F;
         this.particleGreen = 1.0F;
@@ -21,32 +18,28 @@ public class EntityRainFX extends EntityFX
         this.setParticleTextureIndex(19 + this.rand.nextInt(4));
         this.setSize(0.01F, 0.01F);
         this.particleGravity = 0.06F;
-        this.particleMaxAge = (int)(8.0D / (Math.random() * 0.8D + 0.2D));
+        this.particleMaxAge = (int) (8.0D / (Math.random() * 0.8D + 0.2D));
     }
 
     /**
      * Called to update the entity's position/logic.
      */
-    public void onUpdate()
-    {
+    public void onUpdate() {
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
-        this.motionY -= (double)this.particleGravity;
+        this.motionY -= (double) this.particleGravity;
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
         this.motionX *= 0.9800000190734863D;
         this.motionY *= 0.9800000190734863D;
         this.motionZ *= 0.9800000190734863D;
 
-        if (this.particleMaxAge-- <= 0)
-        {
+        if (this.particleMaxAge-- <= 0) {
             this.setDead();
         }
 
-        if (this.onGround)
-        {
-            if (Math.random() < 0.5D)
-            {
+        if (this.onGround) {
+            if (Math.random() < 0.5D) {
                 this.setDead();
             }
 
@@ -54,14 +47,15 @@ public class EntityRainFX extends EntityFX
             this.motionZ *= 0.699999988079071D;
         }
 
-        Material var1 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial();
+        Material var1 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY),
+                MathHelper.floor_double(this.posZ)).getMaterial();
 
-        if (var1.isLiquid() || var1.isSolid())
-        {
-            double var2 = (double)((float)(MathHelper.floor_double(this.posY) + 1) - BlockLiquid.func_149801_b(this.worldObj.getBlockMetadata(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))));
+        if (var1.isLiquid() || var1.isSolid()) {
+            double var2 = (double) ((float) (MathHelper.floor_double(this.posY) + 1)
+                    - BlockLiquid.func_149801_b(this.worldObj.getBlockMetadata(MathHelper.floor_double(this.posX),
+                            MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))));
 
-            if (this.posY < var2)
-            {
+            if (this.posY < var2) {
                 this.setDead();
             }
         }

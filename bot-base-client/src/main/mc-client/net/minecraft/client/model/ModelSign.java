@@ -8,7 +8,6 @@ public class ModelSign extends ModelBase {
 
     /** The stick a sign stands on. */
     public ModelRenderer signStick;
-    private static final String __OBFID = "CL_00000854";
 
     public ModelSign(Minecraft mc) {
         this.signBoard = new ModelRenderer(mc, this, 0, 0);

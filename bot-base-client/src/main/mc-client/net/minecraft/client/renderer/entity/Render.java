@@ -32,7 +32,6 @@ public abstract class Render {
      */
     protected float shadowOpaque = 1.0F;
     private boolean field_147908_f = false;
-    private static final String __OBFID = "CL_00000992";
     protected final Minecraft mc;
 
     public Render(Minecraft mc) {
@@ -92,6 +91,9 @@ public abstract class Render {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float var17 = 0.0F;
         int var18 = 0;
+
+        if (var12 == null)
+            return;
         var12.startDrawingQuads();
 
         while (var15 > 0.0F) {
@@ -165,7 +167,8 @@ public abstract class Render {
         double var26 = p_76975_4_ - var14;
         double var28 = p_76975_6_ - var16;
         Tessellator var30 = this.mc.getTessellator();
-        var30.startDrawingQuads();
+        if (var30 != null)
+            var30.startDrawingQuads();
 
         for (int var31 = var18; var31 <= var19; ++var31) {
             for (int var32 = var20; var32 <= var21; ++var32) {
@@ -181,7 +184,8 @@ public abstract class Render {
             }
         }
 
-        var30.draw();
+        if (var30 != null)
+            var30.draw();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDepthMask(true);
@@ -205,10 +209,11 @@ public abstract class Render {
                             p_147907_10_);
 
             if (var20 >= 0.0D) {
-                if (var20 > 1.0D) {
+                if (var20 > 1.0D)
                     var20 = 1.0D;
-                }
 
+                if (var19 == null)
+                    return;
                 var19.setColorRGBA_F(1.0F, 1.0F, 1.0F, (float) var20);
                 double var22 = (double) p_147907_8_ + p_147907_1_.getBlockBoundsMinX() + p_147907_13_;
                 double var24 = (double) p_147907_8_ + p_147907_1_.getBlockBoundsMaxX() + p_147907_13_;
@@ -236,6 +241,9 @@ public abstract class Render {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         Tessellator var7 = mc.getTessellator();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+
+        if (var7 == null)
+            return;
         var7.startDrawingQuads();
         var7.setTranslation(p_76978_1_, p_76978_3_, p_76978_5_);
         var7.setNormal(0.0F, 0.0F, -1.0F);
@@ -278,6 +286,8 @@ public abstract class Render {
      */
     public static void renderAABB(Minecraft mc, AxisAlignedBB p_76980_0_) {
         Tessellator var1 = mc.getTessellator();
+        if (var1 == null)
+            return;
         var1.startDrawingQuads();
         var1.addVertex(p_76980_0_.minX, p_76980_0_.maxY, p_76980_0_.minZ);
         var1.addVertex(p_76980_0_.maxX, p_76980_0_.maxY, p_76980_0_.minZ);
@@ -366,19 +376,20 @@ public abstract class Render {
             Tessellator var15 = this.mc.getTessellator();
             byte var16 = 0;
 
-            if (p_147906_2_.equals("deadmau5")) {
+            if (p_147906_2_.equals("deadmau5"))
                 var16 = -10;
-            }
 
             GL11.glDisable(GL11.GL_TEXTURE_2D);
-            var15.startDrawingQuads();
-            int var17 = var12.getStringWidth(p_147906_2_) / 2;
-            var15.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
-            var15.addVertex((double) (-var17 - 1), (double) (-1 + var16), 0.0D);
-            var15.addVertex((double) (-var17 - 1), (double) (8 + var16), 0.0D);
-            var15.addVertex((double) (var17 + 1), (double) (8 + var16), 0.0D);
-            var15.addVertex((double) (var17 + 1), (double) (-1 + var16), 0.0D);
-            var15.draw();
+            if (var15 != null) {
+                var15.startDrawingQuads();
+                int var17 = var12.getStringWidth(p_147906_2_) / 2;
+                var15.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
+                var15.addVertex((double) (-var17 - 1), (double) (-1 + var16), 0.0D);
+                var15.addVertex((double) (-var17 - 1), (double) (8 + var16), 0.0D);
+                var15.addVertex((double) (var17 + 1), (double) (8 + var16), 0.0D);
+                var15.addVertex((double) (var17 + 1), (double) (-1 + var16), 0.0D);
+                var15.draw();
+            }
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             var12.drawString(p_147906_2_, -var12.getStringWidth(p_147906_2_) / 2, var16, 553648127);
             GL11.glEnable(GL11.GL_DEPTH_TEST);

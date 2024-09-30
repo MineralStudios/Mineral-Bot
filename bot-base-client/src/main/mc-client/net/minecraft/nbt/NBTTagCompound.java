@@ -25,7 +25,6 @@ public class NBTTagCompound extends NBTBase {
      * tag.
      */
     private Map<String, NBTBase> tagMap = new Object2ObjectOpenHashMap<>();
-    private static final String __OBFID = "CL_00001215";
 
     /**
      * Write the actual data contents of the tag, implemented in NBT extension
@@ -374,20 +373,9 @@ public class NBTTagCompound extends NBTBase {
             ClassCastException p_82581_3_) {
         CrashReport var4 = CrashReport.makeCrashReport(p_82581_3_, "Reading NBT data");
         CrashReportCategory var5 = var4.makeCategoryDepth("Corrupt NBT tag", 1);
-        var5.addCrashSectionCallable("Tag type found", new Callable() {
-            private static final String __OBFID = "CL_00001216";
-
-            public String call() {
-                return NBTBase.NBTTypes[((NBTBase) NBTTagCompound.this.tagMap.get(p_82581_1_)).getId()];
-            }
-        });
-        var5.addCrashSectionCallable("Tag type expected", new Callable() {
-            private static final String __OBFID = "CL_00001217";
-
-            public String call() {
-                return NBTBase.NBTTypes[p_82581_2_];
-            }
-        });
+        var5.addCrashSectionCallable("Tag type found",
+                () -> NBTBase.NBTTypes[((NBTBase) NBTTagCompound.this.tagMap.get(p_82581_1_)).getId()]);
+        var5.addCrashSectionCallable("Tag type expected", () -> NBTBase.NBTTypes[p_82581_2_]);
         var5.addCrashSection("Tag name", p_82581_1_);
         return var4;
     }

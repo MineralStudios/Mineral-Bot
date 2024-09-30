@@ -1,12 +1,13 @@
 package net.minecraft.client.renderer.tileentity;
 
+import java.util.Map;
+
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 
-import lombok.RequiredArgsConstructor;
-
-import java.util.Map;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.base.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelSkeletonHead;
@@ -15,8 +16,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
 
 public class TileEntitySkullRenderer extends TileEntitySpecialRenderer {
     private static final ResourceLocation field_147537_c = new ResourceLocation(
@@ -28,7 +27,6 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer {
     public static TileEntitySkullRenderer field_147536_b;
     private ModelSkeletonHead field_147533_g;
     private ModelSkeletonHead field_147538_h;
-    private static final String __OBFID = "CL_00000971";
     private final Minecraft mc;
 
     public TileEntitySkullRenderer(Minecraft mc) {
@@ -73,12 +71,12 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer {
 
                 SkinManager skinManager = mc.getSkinManager();
                 if (p_152674_7_ != null && skinManager != null) {
-                    Map var11 = skinManager.func_152788_a(p_152674_7_);
+                    Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> var11 = skinManager
+                            .func_152788_a(p_152674_7_);
 
-                    if (var11.containsKey(Type.SKIN)) {
+                    if (var11.containsKey(Type.SKIN))
                         var9 = skinManager.func_152792_a((MinecraftProfileTexture) var11.get(Type.SKIN),
                                 Type.SKIN);
-                    }
                 }
 
                 this.bindTexture(var9);

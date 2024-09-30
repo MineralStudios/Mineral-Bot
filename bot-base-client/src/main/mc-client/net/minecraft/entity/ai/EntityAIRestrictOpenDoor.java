@@ -5,38 +5,34 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.village.Village;
 import net.minecraft.village.VillageDoorInfo;
 
-public class EntityAIRestrictOpenDoor extends EntityAIBase
-{
+public class EntityAIRestrictOpenDoor extends EntityAIBase {
     private EntityCreature entityObj;
     private VillageDoorInfo frontDoor;
-    private static final String __OBFID = "CL_00001610";
 
-    public EntityAIRestrictOpenDoor(EntityCreature p_i1651_1_)
-    {
+    public EntityAIRestrictOpenDoor(EntityCreature p_i1651_1_) {
         this.entityObj = p_i1651_1_;
     }
 
     /**
      * Returns whether the EntityAIBase should begin execution.
      */
-    public boolean shouldExecute()
-    {
-        if (this.entityObj.worldObj.isDaytime())
-        {
+    public boolean shouldExecute() {
+        if (this.entityObj.worldObj.isDaytime()) {
             return false;
-        }
-        else
-        {
-            Village var1 = this.entityObj.worldObj.villageCollectionObj.findNearestVillage(MathHelper.floor_double(this.entityObj.posX), MathHelper.floor_double(this.entityObj.posY), MathHelper.floor_double(this.entityObj.posZ), 16);
+        } else {
+            Village var1 = this.entityObj.worldObj.villageCollectionObj.findNearestVillage(
+                    MathHelper.floor_double(this.entityObj.posX), MathHelper.floor_double(this.entityObj.posY),
+                    MathHelper.floor_double(this.entityObj.posZ), 16);
 
-            if (var1 == null)
-            {
+            if (var1 == null) {
                 return false;
-            }
-            else
-            {
-                this.frontDoor = var1.findNearestDoor(MathHelper.floor_double(this.entityObj.posX), MathHelper.floor_double(this.entityObj.posY), MathHelper.floor_double(this.entityObj.posZ));
-                return this.frontDoor == null ? false : (double)this.frontDoor.getInsideDistanceSquare(MathHelper.floor_double(this.entityObj.posX), MathHelper.floor_double(this.entityObj.posY), MathHelper.floor_double(this.entityObj.posZ)) < 2.25D;
+            } else {
+                this.frontDoor = var1.findNearestDoor(MathHelper.floor_double(this.entityObj.posX),
+                        MathHelper.floor_double(this.entityObj.posY), MathHelper.floor_double(this.entityObj.posZ));
+                return this.frontDoor == null ? false
+                        : (double) this.frontDoor.getInsideDistanceSquare(MathHelper.floor_double(this.entityObj.posX),
+                                MathHelper.floor_double(this.entityObj.posY),
+                                MathHelper.floor_double(this.entityObj.posZ)) < 2.25D;
             }
         }
     }
@@ -44,16 +40,16 @@ public class EntityAIRestrictOpenDoor extends EntityAIBase
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
-    public boolean continueExecuting()
-    {
-        return this.entityObj.worldObj.isDaytime() ? false : !this.frontDoor.isDetachedFromVillageFlag && this.frontDoor.isInside(MathHelper.floor_double(this.entityObj.posX), MathHelper.floor_double(this.entityObj.posZ));
+    public boolean continueExecuting() {
+        return this.entityObj.worldObj.isDaytime() ? false
+                : !this.frontDoor.isDetachedFromVillageFlag && this.frontDoor.isInside(
+                        MathHelper.floor_double(this.entityObj.posX), MathHelper.floor_double(this.entityObj.posZ));
     }
 
     /**
      * Execute a one shot task or start executing a continuous task
      */
-    public void startExecuting()
-    {
+    public void startExecuting() {
         this.entityObj.getNavigator().setBreakDoors(false);
         this.entityObj.getNavigator().setEnterDoors(false);
     }
@@ -61,8 +57,7 @@ public class EntityAIRestrictOpenDoor extends EntityAIBase
     /**
      * Resets the task
      */
-    public void resetTask()
-    {
+    public void resetTask() {
         this.entityObj.getNavigator().setBreakDoors(true);
         this.entityObj.getNavigator().setEnterDoors(true);
         this.frontDoor = null;
@@ -71,8 +66,7 @@ public class EntityAIRestrictOpenDoor extends EntityAIBase
     /**
      * Updates the task
      */
-    public void updateTask()
-    {
+    public void updateTask() {
         this.frontDoor.incrementDoorOpeningRestrictionCounter();
     }
 }

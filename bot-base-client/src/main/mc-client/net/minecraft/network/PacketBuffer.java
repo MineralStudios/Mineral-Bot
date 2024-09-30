@@ -26,7 +26,6 @@ import net.minecraft.nbt.NBTTagCompound;
 @RequiredArgsConstructor
 public class PacketBuffer extends ByteBuf {
     private final ByteBuf buf;
-    private static final String __OBFID = "CL_00001251";
 
     /**
      * Calculates the number of bytes required to fit the supplied int (0-5) if it

@@ -52,7 +52,6 @@ public class SoundManager {
     private final List field_148625_l;
     private final Map field_148626_m;
     private final Map field_148624_n;
-    private static final String __OBFID = "CL_00001141";
     private final Minecraft mc;
 
     public SoundManager(Minecraft mc, SoundHandler p_i45119_1_, GameSettings p_i45119_2_) {
@@ -87,7 +86,6 @@ public class SoundManager {
         if (!this.field_148617_f) {
             try {
                 ThreadManager.getAsyncExecutor().execute(new Runnable() {
-                    private static final String __OBFID = "CL_00001142";
 
                     public void run() {
                         SoundManager.this.field_148620_e = SoundManager.this.new SoundSystemStarterThread(null);
@@ -368,11 +366,9 @@ public class SoundManager {
         String var1 = String.format("%s:%s:%s",
                 new Object[] { "mcsounddomain", p_148612_0_.getResourceDomain(), p_148612_0_.getResourcePath() });
         URLStreamHandler var2 = new URLStreamHandler() {
-            private static final String __OBFID = "CL_00001143";
 
             protected URLConnection openConnection(final URL p_openConnection_1_) {
                 return new URLConnection(p_openConnection_1_) {
-                    private static final String __OBFID = "CL_00001144";
 
                     public void connect() {
                     }
@@ -416,7 +412,6 @@ public class SoundManager {
     }
 
     class SoundSystemStarterThread extends SoundSystem {
-        private static final String __OBFID = "CL_00001145";
 
         private SoundSystemStarterThread() {
         }

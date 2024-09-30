@@ -42,7 +42,6 @@ public abstract class EntityMinecart extends Entity {
     private double velocityX;
     private double velocityY;
     private double velocityZ;
-    private static final String __OBFID = "CL_00001670";
 
     public EntityMinecart(World p_i1712_1_) {
         super(p_i1712_1_);

@@ -61,7 +61,6 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
 
     /** Item frame this stack is on, or null if not on an item frame. */
     private EntityItemFrame itemFrame;
-    private static final String __OBFID = "CL_00000043";
 
     public ItemStack(Block block) {
         this(block, 1);

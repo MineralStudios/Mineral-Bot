@@ -20,7 +20,6 @@ public class RenderBat extends RenderLiving {
      * it seems a good match for a bats size
      */
     private int renderedBatSize;
-    private static final String __OBFID = "CL_00000979";
 
     public RenderBat(Minecraft mc) {
         super(mc, new ModelBat(mc), 0.25F);

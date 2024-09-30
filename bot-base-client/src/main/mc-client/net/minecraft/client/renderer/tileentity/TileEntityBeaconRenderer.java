@@ -13,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 @RequiredArgsConstructor
 public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer {
     private static final ResourceLocation field_147523_b = new ResourceLocation("textures/entity/beacon_beam.png");
-    private static final String __OBFID = "CL_00000962";
     private final Minecraft mc;
 
     public void renderTileEntityAt(TileEntityBeacon p_147500_1_, double p_147500_2_, double p_147500_4_,
@@ -35,8 +34,10 @@ public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer {
             float var12 = -var11 * 0.2F - (float) MathHelper.floor_float(-var11 * 0.1F);
             byte var13 = 1;
             double var14 = (double) var11 * 0.025D * (1.0D - (double) (var13 & 1) * 2.5D);
-            var10.startDrawingQuads();
-            var10.setColorRGBA(255, 255, 255, 32);
+            if (var10 != null) {
+                var10.startDrawingQuads();
+                var10.setColorRGBA(255, 255, 255, 32);
+            }
             double var16 = (double) var13 * 0.2D;
             double var18 = 0.5D + Math.cos(var14 + 2.356194490192345D) * var16;
             double var20 = 0.5D + Math.sin(var14 + 2.356194490192345D) * var16;
@@ -51,28 +52,32 @@ public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer {
             double var38 = 1.0D;
             double var40 = (double) (-1.0F + var12);
             double var42 = (double) (256.0F * var9) * (0.5D / var16) + var40;
-            var10.addVertexWithUV(p_147500_2_ + var18, p_147500_4_ + var34, p_147500_6_ + var20, var38, var42);
-            var10.addVertexWithUV(p_147500_2_ + var18, p_147500_4_, p_147500_6_ + var20, var38, var40);
-            var10.addVertexWithUV(p_147500_2_ + var22, p_147500_4_, p_147500_6_ + var24, var36, var40);
-            var10.addVertexWithUV(p_147500_2_ + var22, p_147500_4_ + var34, p_147500_6_ + var24, var36, var42);
-            var10.addVertexWithUV(p_147500_2_ + var30, p_147500_4_ + var34, p_147500_6_ + var32, var38, var42);
-            var10.addVertexWithUV(p_147500_2_ + var30, p_147500_4_, p_147500_6_ + var32, var38, var40);
-            var10.addVertexWithUV(p_147500_2_ + var26, p_147500_4_, p_147500_6_ + var28, var36, var40);
-            var10.addVertexWithUV(p_147500_2_ + var26, p_147500_4_ + var34, p_147500_6_ + var28, var36, var42);
-            var10.addVertexWithUV(p_147500_2_ + var22, p_147500_4_ + var34, p_147500_6_ + var24, var38, var42);
-            var10.addVertexWithUV(p_147500_2_ + var22, p_147500_4_, p_147500_6_ + var24, var38, var40);
-            var10.addVertexWithUV(p_147500_2_ + var30, p_147500_4_, p_147500_6_ + var32, var36, var40);
-            var10.addVertexWithUV(p_147500_2_ + var30, p_147500_4_ + var34, p_147500_6_ + var32, var36, var42);
-            var10.addVertexWithUV(p_147500_2_ + var26, p_147500_4_ + var34, p_147500_6_ + var28, var38, var42);
-            var10.addVertexWithUV(p_147500_2_ + var26, p_147500_4_, p_147500_6_ + var28, var38, var40);
-            var10.addVertexWithUV(p_147500_2_ + var18, p_147500_4_, p_147500_6_ + var20, var36, var40);
-            var10.addVertexWithUV(p_147500_2_ + var18, p_147500_4_ + var34, p_147500_6_ + var20, var36, var42);
-            var10.draw();
+            if (var10 != null) {
+                var10.addVertexWithUV(p_147500_2_ + var18, p_147500_4_ + var34, p_147500_6_ + var20, var38, var42);
+                var10.addVertexWithUV(p_147500_2_ + var18, p_147500_4_, p_147500_6_ + var20, var38, var40);
+                var10.addVertexWithUV(p_147500_2_ + var22, p_147500_4_, p_147500_6_ + var24, var36, var40);
+                var10.addVertexWithUV(p_147500_2_ + var22, p_147500_4_ + var34, p_147500_6_ + var24, var36, var42);
+                var10.addVertexWithUV(p_147500_2_ + var30, p_147500_4_ + var34, p_147500_6_ + var32, var38, var42);
+                var10.addVertexWithUV(p_147500_2_ + var30, p_147500_4_, p_147500_6_ + var32, var38, var40);
+                var10.addVertexWithUV(p_147500_2_ + var26, p_147500_4_, p_147500_6_ + var28, var36, var40);
+                var10.addVertexWithUV(p_147500_2_ + var26, p_147500_4_ + var34, p_147500_6_ + var28, var36, var42);
+                var10.addVertexWithUV(p_147500_2_ + var22, p_147500_4_ + var34, p_147500_6_ + var24, var38, var42);
+                var10.addVertexWithUV(p_147500_2_ + var22, p_147500_4_, p_147500_6_ + var24, var38, var40);
+                var10.addVertexWithUV(p_147500_2_ + var30, p_147500_4_, p_147500_6_ + var32, var36, var40);
+                var10.addVertexWithUV(p_147500_2_ + var30, p_147500_4_ + var34, p_147500_6_ + var32, var36, var42);
+                var10.addVertexWithUV(p_147500_2_ + var26, p_147500_4_ + var34, p_147500_6_ + var28, var38, var42);
+                var10.addVertexWithUV(p_147500_2_ + var26, p_147500_4_, p_147500_6_ + var28, var38, var40);
+                var10.addVertexWithUV(p_147500_2_ + var18, p_147500_4_, p_147500_6_ + var20, var36, var40);
+                var10.addVertexWithUV(p_147500_2_ + var18, p_147500_4_ + var34, p_147500_6_ + var20, var36, var42);
+                var10.draw();
+            }
             GL11.glEnable(GL11.GL_BLEND);
             OpenGlHelper.glBlendFunc(770, 771, 1, 0);
             GL11.glDepthMask(false);
-            var10.startDrawingQuads();
-            var10.setColorRGBA(255, 255, 255, 32);
+            if (var10 != null) {
+                var10.startDrawingQuads();
+                var10.setColorRGBA(255, 255, 255, 32);
+            }
             double var44 = 0.2D;
             double var15 = 0.2D;
             double var17 = 0.8D;
@@ -86,23 +91,25 @@ public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer {
             double var33 = 1.0D;
             double var35 = (double) (-1.0F + var12);
             double var37 = (double) (256.0F * var9) + var35;
-            var10.addVertexWithUV(p_147500_2_ + var44, p_147500_4_ + var29, p_147500_6_ + var15, var33, var37);
-            var10.addVertexWithUV(p_147500_2_ + var44, p_147500_4_, p_147500_6_ + var15, var33, var35);
-            var10.addVertexWithUV(p_147500_2_ + var17, p_147500_4_, p_147500_6_ + var19, var31, var35);
-            var10.addVertexWithUV(p_147500_2_ + var17, p_147500_4_ + var29, p_147500_6_ + var19, var31, var37);
-            var10.addVertexWithUV(p_147500_2_ + var25, p_147500_4_ + var29, p_147500_6_ + var27, var33, var37);
-            var10.addVertexWithUV(p_147500_2_ + var25, p_147500_4_, p_147500_6_ + var27, var33, var35);
-            var10.addVertexWithUV(p_147500_2_ + var21, p_147500_4_, p_147500_6_ + var23, var31, var35);
-            var10.addVertexWithUV(p_147500_2_ + var21, p_147500_4_ + var29, p_147500_6_ + var23, var31, var37);
-            var10.addVertexWithUV(p_147500_2_ + var17, p_147500_4_ + var29, p_147500_6_ + var19, var33, var37);
-            var10.addVertexWithUV(p_147500_2_ + var17, p_147500_4_, p_147500_6_ + var19, var33, var35);
-            var10.addVertexWithUV(p_147500_2_ + var25, p_147500_4_, p_147500_6_ + var27, var31, var35);
-            var10.addVertexWithUV(p_147500_2_ + var25, p_147500_4_ + var29, p_147500_6_ + var27, var31, var37);
-            var10.addVertexWithUV(p_147500_2_ + var21, p_147500_4_ + var29, p_147500_6_ + var23, var33, var37);
-            var10.addVertexWithUV(p_147500_2_ + var21, p_147500_4_, p_147500_6_ + var23, var33, var35);
-            var10.addVertexWithUV(p_147500_2_ + var44, p_147500_4_, p_147500_6_ + var15, var31, var35);
-            var10.addVertexWithUV(p_147500_2_ + var44, p_147500_4_ + var29, p_147500_6_ + var15, var31, var37);
-            var10.draw();
+            if (var10 != null) {
+                var10.addVertexWithUV(p_147500_2_ + var44, p_147500_4_ + var29, p_147500_6_ + var15, var33, var37);
+                var10.addVertexWithUV(p_147500_2_ + var44, p_147500_4_, p_147500_6_ + var15, var33, var35);
+                var10.addVertexWithUV(p_147500_2_ + var17, p_147500_4_, p_147500_6_ + var19, var31, var35);
+                var10.addVertexWithUV(p_147500_2_ + var17, p_147500_4_ + var29, p_147500_6_ + var19, var31, var37);
+                var10.addVertexWithUV(p_147500_2_ + var25, p_147500_4_ + var29, p_147500_6_ + var27, var33, var37);
+                var10.addVertexWithUV(p_147500_2_ + var25, p_147500_4_, p_147500_6_ + var27, var33, var35);
+                var10.addVertexWithUV(p_147500_2_ + var21, p_147500_4_, p_147500_6_ + var23, var31, var35);
+                var10.addVertexWithUV(p_147500_2_ + var21, p_147500_4_ + var29, p_147500_6_ + var23, var31, var37);
+                var10.addVertexWithUV(p_147500_2_ + var17, p_147500_4_ + var29, p_147500_6_ + var19, var33, var37);
+                var10.addVertexWithUV(p_147500_2_ + var17, p_147500_4_, p_147500_6_ + var19, var33, var35);
+                var10.addVertexWithUV(p_147500_2_ + var25, p_147500_4_, p_147500_6_ + var27, var31, var35);
+                var10.addVertexWithUV(p_147500_2_ + var25, p_147500_4_ + var29, p_147500_6_ + var27, var31, var37);
+                var10.addVertexWithUV(p_147500_2_ + var21, p_147500_4_ + var29, p_147500_6_ + var23, var33, var37);
+                var10.addVertexWithUV(p_147500_2_ + var21, p_147500_4_, p_147500_6_ + var23, var33, var35);
+                var10.addVertexWithUV(p_147500_2_ + var44, p_147500_4_, p_147500_6_ + var15, var31, var35);
+                var10.addVertexWithUV(p_147500_2_ + var44, p_147500_4_ + var29, p_147500_6_ + var15, var31, var37);
+                var10.draw();
+            }
             GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glDepthMask(true);

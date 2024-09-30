@@ -19,7 +19,6 @@ public class Framebuffer {
     public int depthBuffer;
     public float[] framebufferColor;
     public int framebufferFilter;
-    private static final String __OBFID = "CL_00000959";
     private final Minecraft mc;
 
     public Framebuffer(Minecraft mc, int p_i45078_1_, int p_i45078_2_, boolean p_i45078_3_) {
@@ -202,13 +201,15 @@ public class Framebuffer {
             float var5 = (float) this.framebufferWidth / (float) this.framebufferTextureWidth;
             float var6 = (float) this.framebufferHeight / (float) this.framebufferTextureHeight;
             Tessellator var7 = this.mc.getTessellator();
-            var7.startDrawingQuads();
-            var7.setColorOpaque_I(-1);
-            var7.addVertexWithUV(0.0D, (double) var4, 0.0D, 0.0D, 0.0D);
-            var7.addVertexWithUV((double) var3, (double) var4, 0.0D, (double) var5, 0.0D);
-            var7.addVertexWithUV((double) var3, 0.0D, 0.0D, (double) var5, (double) var6);
-            var7.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, (double) var6);
-            var7.draw();
+            if (var7 != null) {
+                var7.startDrawingQuads();
+                var7.setColorOpaque_I(-1);
+                var7.addVertexWithUV(0.0D, (double) var4, 0.0D, 0.0D, 0.0D);
+                var7.addVertexWithUV((double) var3, (double) var4, 0.0D, (double) var5, 0.0D);
+                var7.addVertexWithUV((double) var3, 0.0D, 0.0D, (double) var5, (double) var6);
+                var7.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, (double) var6);
+                var7.draw();
+            }
             this.unbindFramebufferTexture();
             GL11.glDepthMask(true);
             GL11.glColorMask(true, true, true, true);

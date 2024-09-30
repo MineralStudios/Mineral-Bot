@@ -18,7 +18,6 @@ public class S10PacketSpawnPainting extends Packet {
     private int field_148969_d;
     private int field_148970_e;
     private String field_148968_f;
-    private static final String __OBFID = "CL_00001280";
 
     public S10PacketSpawnPainting() {
     }

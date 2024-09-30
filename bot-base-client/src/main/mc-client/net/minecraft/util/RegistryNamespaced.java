@@ -9,7 +9,6 @@ public class RegistryNamespaced extends RegistrySimple implements IObjectIntIter
     /** The backing store that maps Integers to objects. */
     protected final ObjectIntIdentityMap underlyingIntegerMap = new ObjectIntIdentityMap();
     protected final Map<Object, Object> field_148758_b;
-    private static final String __OBFID = "CL_00001206";
 
     public RegistryNamespaced() {
         this.field_148758_b = ((BiMap) this.registryObjects).inverse();

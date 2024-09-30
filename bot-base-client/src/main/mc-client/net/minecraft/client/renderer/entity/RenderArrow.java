@@ -15,7 +15,6 @@ public class RenderArrow extends Render {
     }
 
     private static final ResourceLocation arrowTextures = new ResourceLocation("textures/entity/arrow.png");
-    private static final String __OBFID = "CL_00000978";
 
     /**
      * Actually renders the given argument. This is a synthetic bridge method,
@@ -60,6 +59,9 @@ public class RenderArrow extends Render {
         GL11.glScalef(var20, var20, var20);
         GL11.glTranslatef(-4.0F, 0.0F, 0.0F);
         GL11.glNormal3f(var20, 0.0F, 0.0F);
+
+        if (var10 == null)
+            return;
         var10.startDrawingQuads();
         var10.addVertexWithUV(-7.0D, -2.0D, -2.0D, (double) var16, (double) var18);
         var10.addVertexWithUV(-7.0D, -2.0D, 2.0D, (double) var17, (double) var18);

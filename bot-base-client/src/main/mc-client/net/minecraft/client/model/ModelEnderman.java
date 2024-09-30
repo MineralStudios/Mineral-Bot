@@ -9,7 +9,6 @@ public class ModelEnderman extends ModelBiped {
 
     /** Is the enderman attacking an entity? */
     public boolean isAttacking;
-    private static final String __OBFID = "CL_00000838";
 
     public ModelEnderman(Minecraft mc) {
         super(mc, 0.0F, -14.0F, 64, 32);

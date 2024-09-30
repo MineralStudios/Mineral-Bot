@@ -9,7 +9,6 @@ public class ModelSquid extends ModelBase {
 
     /** The squid's tentacles */
     ModelRenderer[] squidTentacles = new ModelRenderer[8];
-    private static final String __OBFID = "CL_00000861";
 
     public ModelSquid(Minecraft mc) {
         byte var1 = -16;

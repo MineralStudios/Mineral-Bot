@@ -14,7 +14,6 @@ import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public class RenderMooshroom extends RenderLiving {
     private static final ResourceLocation mooshroomTextures = new ResourceLocation("textures/entity/cow/mooshroom.png");
-    private static final String __OBFID = "CL_00001016";
 
     public RenderMooshroom(Minecraft mc, ModelBase p_i1263_1_, float p_i1263_2_) {
         super(mc, p_i1263_1_, p_i1263_2_);

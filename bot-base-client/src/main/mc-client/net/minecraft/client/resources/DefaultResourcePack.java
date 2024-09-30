@@ -15,87 +15,71 @@ import net.minecraft.client.resources.data.IMetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 import optifine.ReflectorForge;
 
-public class DefaultResourcePack implements IResourcePack
-{
+public class DefaultResourcePack implements IResourcePack {
     public static final Set defaultResourceDomains = ImmutableSet.of("minecraft", "realms");
     private final Map field_152781_b;
-    private static final String __OBFID = "CL_00001073";
 
-    public DefaultResourcePack(Map par1GuiScreen)
-    {
+    public DefaultResourcePack(Map par1GuiScreen) {
         this.field_152781_b = par1GuiScreen;
     }
 
-    public InputStream getInputStream(ResourceLocation par1ResourceLocation) throws IOException
-    {
+    public InputStream getInputStream(ResourceLocation par1ResourceLocation) throws IOException {
         InputStream var2 = this.getResourceStream(par1ResourceLocation);
 
-        if (var2 != null)
-        {
+        if (var2 != null) {
             return var2;
-        }
-        else
-        {
+        } else {
             InputStream var3 = this.func_152780_c(par1ResourceLocation);
 
-            if (var3 != null)
-            {
+            if (var3 != null) {
                 return var3;
-            }
-            else
-            {
+            } else {
                 throw new FileNotFoundException(par1ResourceLocation.getResourcePath());
             }
         }
     }
 
-    public InputStream func_152780_c(ResourceLocation p_152780_1_) throws IOException
-    {
-        File var2 = (File)this.field_152781_b.get(p_152780_1_.toString());
+    public InputStream func_152780_c(ResourceLocation p_152780_1_) throws IOException {
+        File var2 = (File) this.field_152781_b.get(p_152780_1_.toString());
         return var2 != null && var2.isFile() ? new FileInputStream(var2) : null;
     }
 
-    private InputStream getResourceStream(ResourceLocation par1ResourceLocation)
-    {
-        String path = "/assets/" + par1ResourceLocation.getResourceDomain() + "/" + par1ResourceLocation.getResourcePath();
+    private InputStream getResourceStream(ResourceLocation par1ResourceLocation) {
+        String path = "/assets/" + par1ResourceLocation.getResourceDomain() + "/"
+                + par1ResourceLocation.getResourcePath();
         InputStream is = ReflectorForge.getOptiFineResourceStream(path);
-        return is != null ? is : DefaultResourcePack.class.getResourceAsStream("/assets/" + par1ResourceLocation.getResourceDomain() + "/" + par1ResourceLocation.getResourcePath());
+        return is != null ? is
+                : DefaultResourcePack.class.getResourceAsStream("/assets/" + par1ResourceLocation.getResourceDomain()
+                        + "/" + par1ResourceLocation.getResourcePath());
     }
 
-    public boolean resourceExists(ResourceLocation par1ResourceLocation)
-    {
-        return this.getResourceStream(par1ResourceLocation) != null || this.field_152781_b.containsKey(par1ResourceLocation.toString());
+    public boolean resourceExists(ResourceLocation par1ResourceLocation) {
+        return this.getResourceStream(par1ResourceLocation) != null
+                || this.field_152781_b.containsKey(par1ResourceLocation.toString());
     }
 
-    public Set getResourceDomains()
-    {
+    public Set getResourceDomains() {
         return defaultResourceDomains;
     }
 
-    public IMetadataSection getPackMetadata(IMetadataSerializer par1MetadataSerializer, String par2Str) throws IOException
-    {
-        try
-        {
-            FileInputStream var5 = new FileInputStream((File)this.field_152781_b.get("pack.mcmeta"));
+    public IMetadataSection getPackMetadata(IMetadataSerializer par1MetadataSerializer, String par2Str)
+            throws IOException {
+        try {
+            FileInputStream var5 = new FileInputStream((File) this.field_152781_b.get("pack.mcmeta"));
             return AbstractResourcePack.readMetadata(par1MetadataSerializer, var5, par2Str);
-        }
-        catch (RuntimeException var4)
-        {
+        } catch (RuntimeException var4) {
             return null;
-        }
-        catch (FileNotFoundException var51)
-        {
+        } catch (FileNotFoundException var51) {
             return null;
         }
     }
 
-    public BufferedImage getPackImage() throws IOException
-    {
-        return ImageIO.read(DefaultResourcePack.class.getResourceAsStream("/" + (new ResourceLocation("pack.png")).getResourcePath()));
+    public BufferedImage getPackImage() throws IOException {
+        return ImageIO.read(DefaultResourcePack.class
+                .getResourceAsStream("/" + (new ResourceLocation("pack.png")).getResourcePath()));
     }
 
-    public String getPackName()
-    {
+    public String getPackName() {
         return "Default";
     }
 }

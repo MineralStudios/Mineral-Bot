@@ -14,7 +14,6 @@ public class EntityMinecartFurnace extends EntityMinecart {
     private int fuel;
     public double pushX;
     public double pushZ;
-    private static final String __OBFID = "CL_00001675";
 
     public EntityMinecartFurnace(World p_i1718_1_) {
         super(p_i1718_1_);

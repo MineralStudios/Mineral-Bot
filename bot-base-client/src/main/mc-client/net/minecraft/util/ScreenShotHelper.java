@@ -32,7 +32,6 @@ public class ScreenShotHelper {
      * The built-up array that contains all the pixel values returned by OpenGL.
      */
     private static int[] pixelValues;
-    private static final String __OBFID = "CL_00000656";
 
     /**
      * Saves a screenshot in the game directory with a time-stamped filename. Args:

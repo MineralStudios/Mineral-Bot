@@ -18,7 +18,6 @@ public class C17PacketCustomPayload extends Packet {
     private String channel;
     private int length;
     private byte[] data;
-    private static final String __OBFID = "CL_00001356";
 
     public C17PacketCustomPayload(String p_i45248_1_, ByteBuf p_i45248_2_) {
         this(p_i45248_1_, p_i45248_2_.array());

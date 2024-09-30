@@ -24,7 +24,6 @@ public class GuiTextField extends Gui {
     private int field_146222_t = 14737632;
     private int field_146221_u = 7368816;
     private boolean field_146220_v = true;
-    private static final String __OBFID = "CL_00000670";
 
     public GuiTextField(Minecraft mc, FontRenderer p_i46392_1_, int p_i46392_2_, int p_i46392_3_, int p_i46392_4_,
             int p_i46392_5_) {
@@ -438,12 +437,14 @@ public class GuiTextField extends Gui {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_COLOR_LOGIC_OP);
         GL11.glLogicOp(GL11.GL_OR_REVERSE);
-        var6.startDrawingQuads();
-        var6.addVertex((double) p_146188_1_, (double) p_146188_4_, 0.0D);
-        var6.addVertex((double) p_146188_3_, (double) p_146188_4_, 0.0D);
-        var6.addVertex((double) p_146188_3_, (double) p_146188_2_, 0.0D);
-        var6.addVertex((double) p_146188_1_, (double) p_146188_2_, 0.0D);
-        var6.draw();
+        if (var6 != null) {
+            var6.startDrawingQuads();
+            var6.addVertex((double) p_146188_1_, (double) p_146188_4_, 0.0D);
+            var6.addVertex((double) p_146188_3_, (double) p_146188_4_, 0.0D);
+            var6.addVertex((double) p_146188_3_, (double) p_146188_2_, 0.0D);
+            var6.addVertex((double) p_146188_1_, (double) p_146188_2_, 0.0D);
+            var6.draw();
+        }
         GL11.glDisable(GL11.GL_COLOR_LOGIC_OP);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }

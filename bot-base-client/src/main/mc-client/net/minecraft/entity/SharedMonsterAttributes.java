@@ -25,7 +25,6 @@ public class SharedMonsterAttributes {
             0.0D, Double.MAX_VALUE)).setDescription("Movement Speed").setShouldWatch(true);
     public static final IAttribute attackDamage = new RangedAttribute("generic.attackDamage", 2.0D, 0.0D,
             Double.MAX_VALUE);
-    private static final String __OBFID = "CL_00001695";
 
     /**
      * Creates an NBTTagList from a BaseAttributeMap, including all its

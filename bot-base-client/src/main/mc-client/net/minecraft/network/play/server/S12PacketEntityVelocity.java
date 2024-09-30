@@ -14,7 +14,6 @@ public class S12PacketEntityVelocity extends Packet {
     private int field_149415_b;
     private int field_149416_c;
     private int field_149414_d;
-    private static final String __OBFID = "CL_00001328";
 
     public S12PacketEntityVelocity() {
     }

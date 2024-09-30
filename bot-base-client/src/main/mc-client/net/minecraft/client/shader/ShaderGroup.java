@@ -37,7 +37,6 @@ public class ShaderGroup {
     private int mainFramebufferHeight;
     private float field_148036_j;
     private float field_148037_k;
-    private static final String __OBFID = "CL_00001041";
     private final Minecraft mc;
 
     public ShaderGroup(Minecraft mc, TextureManager p_i1050_1_, IResourceManager p_i1050_2_, Framebuffer p_i1050_3_,

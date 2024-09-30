@@ -25,6 +25,9 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.MapData;
+
+import javax.annotation.Nullable;
+
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public class RenderItemFrame extends Render {
@@ -32,7 +35,6 @@ public class RenderItemFrame extends Render {
             "textures/map/map_background.png");
     private final RenderBlocks field_147916_f;
     private IIcon field_94147_f;
-    private static final String __OBFID = "CL_00001002";
 
     public RenderItemFrame(Minecraft mc) {
         super(mc);
@@ -236,12 +238,15 @@ public class RenderItemFrame extends Render {
             } else {
                 if (var4 == Items.compass) {
                     TextureManager var12 = this.mc.getTextureManager();
-                    var12.bindTexture(TextureMap.locationItemsTexture);
-                    TextureAtlasSprite var14 = ((TextureMap) var12.getTexture(TextureMap.locationItemsTexture))
-                            .getAtlasSprite(Items.compass.getIconIndex(var3.getEntityItem()).getIconName());
+                    if (var12 != null)
+                        var12.bindTexture(TextureMap.locationItemsTexture);
+                    @Nullable
+                    TextureAtlasSprite var14 = var12 != null
+                            ? ((TextureMap) var12.getTexture(TextureMap.locationItemsTexture))
+                                    .getAtlasSprite(Items.compass.getIconIndex(var3.getEntityItem()).getIconName())
+                            : null;
 
-                    if (var14 instanceof TextureCompass) {
-                        TextureCompass var15 = (TextureCompass) var14;
+                    if (var14 instanceof TextureCompass var15) {
                         double var8 = var15.currentAngle;
                         double var10 = var15.angleDelta;
                         var15.currentAngle = 0.0D;
@@ -308,14 +313,17 @@ public class RenderItemFrame extends Render {
                     GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                     Tessellator var15 = this.mc.getTessellator();
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    var15.startDrawingQuads();
+                    if (var15 != null)
+                        var15.startDrawingQuads();
                     int var16 = var14.getStringWidth(var13) / 2;
-                    var15.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
-                    var15.addVertex((double) (-var16 - 1), -1.0D, 0.0D);
-                    var15.addVertex((double) (-var16 - 1), 8.0D, 0.0D);
-                    var15.addVertex((double) (var16 + 1), 8.0D, 0.0D);
-                    var15.addVertex((double) (var16 + 1), -1.0D, 0.0D);
-                    var15.draw();
+                    if (var15 != null) {
+                        var15.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
+                        var15.addVertex((double) (-var16 - 1), -1.0D, 0.0D);
+                        var15.addVertex((double) (-var16 - 1), 8.0D, 0.0D);
+                        var15.addVertex((double) (var16 + 1), 8.0D, 0.0D);
+                        var15.addVertex((double) (var16 + 1), -1.0D, 0.0D);
+                        var15.draw();
+                    }
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
                     GL11.glDepthMask(true);
                     var14.drawString(var13, -var14.getStringWidth(var13) / 2, 0, 553648127);

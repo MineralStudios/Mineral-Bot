@@ -11,7 +11,6 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 public class S0DPacketCollectItem extends Packet {
     private int field_149357_a;
     private int field_149356_b;
-    private static final String __OBFID = "CL_00001339";
 
     public S0DPacketCollectItem() {
     }

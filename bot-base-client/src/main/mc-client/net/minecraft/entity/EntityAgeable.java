@@ -9,7 +9,6 @@ import net.minecraft.world.World;
 public abstract class EntityAgeable extends EntityCreature {
     private float field_98056_d = -1.0F;
     private float field_98057_e;
-    private static final String __OBFID = "CL_00001530";
 
     public EntityAgeable(World p_i1578_1_) {
         super(p_i1578_1_);

@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 
 public abstract class GuiListExtended extends GuiSlot {
-    private static final String __OBFID = "CL_00000674";
 
     public GuiListExtended(Minecraft p_i45010_1_, int p_i45010_2_, int p_i45010_3_, int p_i45010_4_, int p_i45010_5_,
             int p_i45010_6_) {

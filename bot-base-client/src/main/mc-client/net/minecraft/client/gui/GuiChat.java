@@ -48,7 +48,6 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
     private URI field_146411_u;
     protected GuiTextField field_146415_a;
     private String textInput = "";
-    private static final String __OBFID = "CL_00000682";
 
     public GuiChat(Minecraft mc) {
         super(mc);
@@ -281,8 +280,12 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
 
     private void func_146405_a(String p_146405_1_, String p_146405_2_) {
         if (p_146405_1_.length() >= 1) {
-            this.mc.thePlayer.sendQueue.addToSendQueue(new C14PacketTabComplete(p_146405_1_));
-            this.field_146414_r = true;
+            EntityClientPlayerMP thePlayer = this.mc.thePlayer;
+
+            if (thePlayer != null) {
+                thePlayer.sendQueue.addToSendQueue(new C14PacketTabComplete(p_146405_1_));
+                this.field_146414_r = true;
+            }
         }
     }
 

@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
-    private static final String __OBFID = "CL_00000968";
     private final Minecraft mc;
 
     public void renderTileEntityAt(TileEntityMobSpawner p_147500_1_, double p_147500_2_,

@@ -12,7 +12,6 @@ public class GuiScreenWorking extends GuiScreen implements IProgressUpdate {
     private String field_146589_f = "";
     private int field_146590_g;
     private boolean field_146592_h;
-    private static final String __OBFID = "CL_00000707";
 
     /**
      * "Saving level", or the loading,or downloading equivelent

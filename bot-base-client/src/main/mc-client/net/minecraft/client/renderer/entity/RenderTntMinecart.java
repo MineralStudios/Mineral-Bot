@@ -12,8 +12,6 @@ public class RenderTntMinecart extends RenderMinecart {
         super(mc);
     }
 
-    private static final String __OBFID = "CL_00001029";
-
     protected void func_147910_a(EntityMinecartTNT p_147910_1_, float p_147910_2_, Block p_147910_3_, int p_147910_4_) {
         int var5 = p_147910_1_.func_94104_d();
 

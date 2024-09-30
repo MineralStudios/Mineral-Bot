@@ -19,7 +19,6 @@ public class MessageSerializer extends MessageToByteEncoder {
     private static final Marker field_150797_b = MarkerManager.getMarker("PACKET_SENT",
             NetworkManager.logMarkerPackets);
     private final NetworkStatistics field_152500_c;
-    private static final String __OBFID = "CL_00001253";
 
     public MessageSerializer(NetworkStatistics p_i46391_1_) {
         this.field_152500_c = p_i46391_1_;

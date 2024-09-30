@@ -50,7 +50,6 @@ public class GameSettings {
     private static final Logger logger = LogManager.getLogger();
     private static final Gson gson = new Gson();
     private static final ParameterizedType typeListString = new ParameterizedType() {
-        private static final String __OBFID = "CL_00000651";
 
         public Type[] getActualTypeArguments() {
             return new Type[] { String.class };
@@ -278,7 +277,6 @@ public class GameSettings {
     /** Game settings language */
     public String language;
     public boolean forceUnicodeFont;
-    private static final String __OBFID = "CL_00000650";
 
     public GameSettings(Minecraft par1Minecraft, File par2File) {
         this.chatVisibility = EntityPlayer.EnumChatVisibility.FULL;
@@ -2787,7 +2785,6 @@ public class GameSettings {
                                                                                                                                                                                                                                                                 0.0F,
                                                                                                                                                                                                                                                                 (Object) null,
                                                                                                                                                                                                                                                                 null) {
-                                                                                                                                                                                                                                                            private static final String __OBFID = "CL_00000654";
 
                                                                                                                                                                                                                                                             protected float snapToStep(
                                                                                                                                                                                                                                                                     float p_148264_1_) {
@@ -3194,7 +3191,6 @@ public class GameSettings {
                 ANIMATED_ITEMS, SWAMP_COLORS, RANDOM_MOBS, SMOOTH_BIOMES, CUSTOM_FONTS, CUSTOM_COLORS, SHOW_CAPES,
                 CONNECTED_TEXTURES, AA_LEVEL, ANIMATED_TEXTURES, NATURAL_TEXTURES, CHUNK_LOADING, HELD_ITEM_TOOLTIPS,
                 DROPPED_ITEMS, LAZY_CHUNK_LOADING, CUSTOM_SKY, FAST_MATH, FAST_RENDER, TRANSLUCENT_BLOCKS };
-        private static final String __OBFID = "CL_00000653";
 
         public static GameSettings.Options getEnumOptions(int par0) {
             GameSettings.Options[] var1 = values();
@@ -3288,7 +3284,6 @@ public class GameSettings {
 
     static final class SwitchOptions {
         static final int[] optionIds = new int[GameSettings.Options.values().length];
-        private static final String __OBFID = "CL_00000652";
 
         static {
             try {

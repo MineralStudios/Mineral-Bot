@@ -28,7 +28,6 @@ public class S21PacketChunkData extends Packet {
     @Getter
     private boolean groundUpContinuous;
     private int compressedSize;
-    private static final String __OBFID = "CL_00001304";
 
     public S21PacketChunkData(Minecraft mc, int chunkX, int chunkZ, ExtendedBlockStorage[] chunkSections,
             byte[] biomeArray,
@@ -326,6 +325,5 @@ public class S21PacketChunkData extends Packet {
     public static class Extracted {
         public byte[] data;
         public int primaryBitMap, addBitMap;
-        private static final String __OBFID = "CL_00001305";
     }
 }

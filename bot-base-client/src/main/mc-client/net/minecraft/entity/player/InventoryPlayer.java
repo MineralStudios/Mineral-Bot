@@ -39,7 +39,6 @@ public class InventoryPlayer implements IInventory {
      * it and reset the value.
      */
     public boolean inventoryChanged;
-    private static final String __OBFID = "CL_00001709";
 
     public InventoryPlayer(EntityPlayer p_i1750_1_) {
         this.player = p_i1750_1_;
@@ -352,13 +351,7 @@ public class InventoryPlayer implements IInventory {
                 CrashReportCategory var4 = var3.makeCategory("Item being added");
                 var4.addCrashSection("Item ID", Integer.valueOf(Item.getIdFromItem(p_70441_1_.getItem())));
                 var4.addCrashSection("Item data", Integer.valueOf(p_70441_1_.getItemDamage()));
-                var4.addCrashSectionCallable("Item name", new Callable() {
-                    private static final String __OBFID = "CL_00001710";
-
-                    public String call() {
-                        return p_70441_1_.getDisplayName();
-                    }
-                });
+                var4.addCrashSectionCallable("Item name", () -> p_70441_1_.getDisplayName());
                 throw new ReportedException(var3);
             }
         } else {

@@ -14,7 +14,6 @@ public class ModelQuadruped extends ModelBase {
     public ModelRenderer leg4;
     protected float field_78145_g = 8.0F;
     protected float field_78151_h = 4.0F;
-    private static final String __OBFID = "CL_00000851";
 
     public ModelQuadruped(Minecraft mc, int p_i1154_1_, float p_i1154_2_) {
         this.head = new ModelRenderer(mc, this, 0, 0);

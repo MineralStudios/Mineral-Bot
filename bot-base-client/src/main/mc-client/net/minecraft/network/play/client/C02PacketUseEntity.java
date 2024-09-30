@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 public class C02PacketUseEntity extends Packet {
     private int entityId;
     private C02PacketUseEntity.Action action;
-    private static final String __OBFID = "CL_00001357";
 
     public C02PacketUseEntity(Entity p_i45251_1_, C02PacketUseEntity.Action p_i45251_2_) {
         this.entityId = p_i45251_1_.getEntityId();
@@ -60,7 +59,6 @@ public class C02PacketUseEntity extends Packet {
         private final int field_151418_d;
 
         private static final C02PacketUseEntity.Action[] $VALUES = new C02PacketUseEntity.Action[] { INTERACT, ATTACK };
-        private static final String __OBFID = "CL_00001358";
 
         private Action(String p_i45250_1_, int p_i45250_2_, int p_i45250_3_) {
             this.field_151418_d = p_i45250_3_;

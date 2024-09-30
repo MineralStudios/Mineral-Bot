@@ -10,7 +10,6 @@ import net.minecraft.network.status.INetHandlerStatusServer;
 
 public class C01PacketPing extends Packet {
     private long field_149290_a;
-    private static final String __OBFID = "CL_00001392";
 
     public C01PacketPing() {
     }

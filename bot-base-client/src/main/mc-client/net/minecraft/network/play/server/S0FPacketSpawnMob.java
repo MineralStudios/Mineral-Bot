@@ -31,7 +31,6 @@ public class S0FPacketSpawnMob extends Packet {
     private byte field_149046_k;
     private DataWatcher dataWatcher;
     private List field_149044_m;
-    private static final String __OBFID = "CL_00001279";
 
     public S0FPacketSpawnMob(EntityLivingBase p_i45192_1_) {
         this.field_149042_a = p_i45192_1_.getEntityId();

@@ -37,7 +37,6 @@ public class ModelSpider extends ModelBase {
 
     /** Spider's eight leg */
     public ModelRenderer spiderLeg8;
-    private static final String __OBFID = "CL_00000860";
 
     public ModelSpider(Minecraft mc) {
         float var1 = 0.0F;

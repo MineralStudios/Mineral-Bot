@@ -25,7 +25,6 @@ public class S00PacketServerInfo extends Packet {
             .registerTypeHierarchyAdapter(ChatStyle.class, new ChatStyle.Serializer())
             .registerTypeAdapterFactory(new EnumTypeAdapterFactory()).create();
     private ServerStatusResponse field_149296_b;
-    private static final String __OBFID = "CL_00001384";
 
     public S00PacketServerInfo() {
     }
