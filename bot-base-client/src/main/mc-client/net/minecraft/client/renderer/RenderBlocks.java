@@ -58,7 +58,6 @@ import javax.annotation.Nullable;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
-import lombok.experimental.var;
 
 public class RenderBlocks {
     /** The IBlockAccess used by this instance of RenderBlocks */
