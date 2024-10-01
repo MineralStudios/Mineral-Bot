@@ -45,6 +45,7 @@ public class ServerBotImpl extends BotImpl implements Listener {
 
     @Override
     public FakePlayer spawn(BotConfiguration configuration, ServerLocation location) {
+        long startTime = System.nanoTime() / 1000000;
         File file = configuration.getRunDirectory();
 
         if (!file.exists())
@@ -161,6 +162,8 @@ public class ServerBotImpl extends BotImpl implements Listener {
         // serverSide.getEffectPackets().forEach(packet ->
         // getServerConnection().queuePacket(packet));
         serverSide.syncInventory();
+
+        spawnRecords.add(new SpawnRecord(configuration.getUsername(), (System.nanoTime() / 1000000) - startTime));
 
         return instance;
     }

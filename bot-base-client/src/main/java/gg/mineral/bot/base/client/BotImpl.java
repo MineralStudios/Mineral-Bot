@@ -73,6 +73,7 @@ public abstract class BotImpl extends BotAPI {
 
     @Override
     public FakePlayer spawn(BotConfiguration configuration, String serverIp, int serverPort) {
+        long startTime = System.nanoTime() / 1000000;
         File file = configuration.getRunDirectory();
 
         if (!file.exists())
@@ -91,6 +92,8 @@ public abstract class BotImpl extends BotAPI {
         instance.setServer(serverIp, serverPort);
         instance.run();
         InstanceManager.getInstances().put(instance.getUuid(), instance);
+
+        spawnRecords.add(new SpawnRecord(configuration.getUsername(), (System.nanoTime() / 1000000) - startTime));
         return instance;
     }
 

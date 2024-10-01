@@ -31,6 +31,6 @@ public abstract class BotAPI {
 
     protected final Set<SpawnRecord> spawnRecords;
 
-    protected record SpawnRecord(String name, long time) {
+    public record SpawnRecord(String name, long time) {
     }
 }
