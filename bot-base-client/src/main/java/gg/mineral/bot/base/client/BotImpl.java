@@ -51,15 +51,21 @@ public abstract class BotImpl extends BotAPI {
             iterator.remove();
         }
 
-        System.out.println(ChatColor.STRIKETHROUGH + ChatColor.GRAY + "----------------------------------------");
-        System.out.println(ChatColor.WHITE + "Recent Spawn Info:");
-        System.out.println(" ");
-        System.out.println(ChatColor.WHITE + "Amount: " + ChatColor.CYAN + amount);
-        System.out.println(ChatColor.WHITE + "Total Spawn Time: " + ChatColor.CYAN + totalTime + "ms");
-        System.out.println(ChatColor.WHITE + "Average Spawn Time: " + ChatColor.CYAN + (totalTime / amount) + "ms");
-        System.out.println(ChatColor.WHITE + "Names: " + sb.toString());
+        sb.append(ChatColor.GRAY + "]");
 
-        System.out.println(ChatColor.STRIKETHROUGH + ChatColor.GRAY + "----------------------------------------");
+        System.out.println(ChatColor.STRIKETHROUGH + ChatColor.GRAY + "----------------------------------------"
+                + ChatColor.RESET);
+        System.out.println(ChatColor.WHITE + "Recent Spawn Info:" + ChatColor.RESET);
+        System.out.println(" " + ChatColor.RESET);
+        System.out.println(ChatColor.WHITE + "Amount: " + ChatColor.CYAN + amount + ChatColor.RESET);
+        System.out
+                .println(ChatColor.WHITE + "Total Spawn Time: " + ChatColor.CYAN + totalTime + "ms" + ChatColor.RESET);
+        System.out.println(ChatColor.WHITE + "Average Spawn Time: " + ChatColor.CYAN + (totalTime / amount) + "ms"
+                + ChatColor.RESET);
+        System.out.println(ChatColor.WHITE + "Names: " + sb.toString() + ChatColor.RESET);
+
+        System.out.println(ChatColor.STRIKETHROUGH + ChatColor.GRAY + "----------------------------------------"
+                + ChatColor.RESET);
     }
 
     public static void init() {
