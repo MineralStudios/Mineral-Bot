@@ -1,5 +1,7 @@
 package gg.mineral.bot.base.client.tick;
 
+import gg.mineral.bot.api.BotAPI;
+import gg.mineral.bot.base.client.BotImpl;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import gg.mineral.bot.impl.thread.ThreadManager;
@@ -12,6 +14,7 @@ import net.minecraft.util.ReportedException;
 public class GameLoop {
     static {
         ThreadManager.getGameLoopExecutor().scheduleAtFixedRate(() -> {
+
             for (Minecraft instance : InstanceManager.getInstances().values()) {
                 try {
                     if (instance.running) {
@@ -46,6 +49,9 @@ public class GameLoop {
                         instance.shutdownMinecraftApplet();
                 }
             }
+
+            if (BotAPI.INSTANCE != null && BotAPI.INSTANCE instanceof BotImpl botImpl)
+                botImpl.printSpawnInfo();
         }, 0, BotGlobalConfig.getGameLoopDelay(), java.util.concurrent.TimeUnit.MILLISECONDS);
     }
 

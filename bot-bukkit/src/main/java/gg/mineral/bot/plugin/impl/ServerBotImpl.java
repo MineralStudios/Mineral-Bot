@@ -162,9 +162,6 @@ public class ServerBotImpl extends BotImpl implements Listener {
         // getServerConnection().queuePacket(packet));
         serverSide.syncInventory();
 
-        // BotAPIBase.getPlugin().getConsoleHook()
-        // .writeMessage(ChatColor.GREEN + getConfiguration().getName() + " has been
-        // spawned.");
         return instance;
     }
 

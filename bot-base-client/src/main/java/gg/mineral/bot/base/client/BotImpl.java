@@ -1,7 +1,9 @@
 package gg.mineral.bot.base.client;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import com.google.common.collect.HashMultimap;
@@ -10,13 +12,55 @@ import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.math.ServerLocation;
+import gg.mineral.bot.api.message.ChatColor;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
 public abstract class BotImpl extends BotAPI {
+
+    private long lastSpawnInfo = 0;
+
+    public BotImpl() {
+        super(new ObjectOpenHashSet<>());
+    }
+
+    public void printSpawnInfo() {
+        if (spawnRecords.isEmpty() || System.currentTimeMillis() - lastSpawnInfo < 3000)
+            return;
+
+        lastSpawnInfo = System.currentTimeMillis();
+
+        StringBuilder sb = new StringBuilder(ChatColor.GRAY + "[");
+
+        Iterator<SpawnRecord> iterator = spawnRecords.iterator();
+
+        long totalTime = 0;
+        int amount = 0;
+
+        while (iterator.hasNext()) {
+            SpawnRecord record = iterator.next();
+            sb.append(ChatColor.GREEN + record.name());
+            amount++;
+            totalTime += record.time();
+            if (iterator.hasNext())
+                sb.append(ChatColor.GRAY + ", ");
+
+            iterator.remove();
+        }
+
+        System.out.println(ChatColor.STRIKETHROUGH + ChatColor.GRAY + "----------------------------------------");
+        System.out.println(ChatColor.WHITE + "Recent Spawn Info:");
+        System.out.println(" ");
+        System.out.println(ChatColor.WHITE + "Amount: " + ChatColor.CYAN + amount);
+        System.out.println(ChatColor.WHITE + "Total Spawn Time: " + ChatColor.CYAN + totalTime + "ms");
+        System.out.println(ChatColor.WHITE + "Average Spawn Time: " + ChatColor.CYAN + (totalTime / amount) + "ms");
+        System.out.println(ChatColor.WHITE + "Names: " + sb.toString());
+
+        System.out.println(ChatColor.STRIKETHROUGH + ChatColor.GRAY + "----------------------------------------");
+    }
 
     public static void init() {
         BotAPI.INSTANCE = new BotImpl() {

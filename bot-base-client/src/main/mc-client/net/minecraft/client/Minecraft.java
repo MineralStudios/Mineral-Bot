@@ -680,7 +680,8 @@ public class Minecraft {
             this.gameSettings.saveOptions();
         }
 
-        System.out.println("Game has been started successfully!");
+        if (BotGlobalConfig.isDebug())
+            System.out.println("Game has been started successfully!");
     }
 
     public boolean func_152349_b() {
@@ -929,7 +930,8 @@ public class Minecraft {
     public void shutdownMinecraftApplet() {
         ThreadManager.shutdown();
         try {
-            logger.info("Stopping!");
+            if (BotGlobalConfig.isDebug())
+                logger.info("Stopping!");
 
             try {
                 this.loadWorld((WorldClient) null);

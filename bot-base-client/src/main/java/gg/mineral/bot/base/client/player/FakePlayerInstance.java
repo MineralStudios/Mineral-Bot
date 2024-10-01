@@ -24,6 +24,7 @@ import gg.mineral.bot.api.math.BoundingBox;
 import gg.mineral.bot.api.screen.Screen;
 import gg.mineral.bot.api.world.ClientWorld;
 import gg.mineral.bot.base.client.manager.InstanceManager;
+import gg.mineral.bot.impl.config.BotGlobalConfig;
 import gg.mineral.bot.impl.thread.ThreadManager;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -258,7 +259,8 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
 
         this.running = false;
 
-        logger.info("Stopping!");
+        if (BotGlobalConfig.isDebug())
+            logger.info("Stopping!");
 
         try {
             this.loadWorld((WorldClient) null);
