@@ -42,7 +42,6 @@ import com.google.common.util.concurrent.ListenableFutureTask;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 
-import gg.mineral.bot.api.world.ClientWorld;
 import gg.mineral.bot.base.client.gui.GuiConnecting;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.lwjgl.Sys;
@@ -54,6 +53,7 @@ import gg.mineral.bot.impl.config.BotGlobalConfig;
 import gg.mineral.bot.impl.thread.ThreadManager;
 import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.block.Block;
@@ -387,7 +387,8 @@ public class Minecraft {
         this.launchedVersion = p_i1103_10_;
         this.field_152356_J = p_i1103_11_;
         this.mcDefaultResourcePack = new DefaultResourcePack(
-                (new ResourceIndex(p_i1103_7_, p_i1103_12_)).func_152782_a());
+                BotGlobalConfig.isOptimizedGameLoop() ? new Object2ObjectOpenHashMap<String, File>()
+                        : (new ResourceIndex(p_i1103_7_, p_i1103_12_)).func_152782_a());
         this.addDefaultResourcePack();
         this.proxy = p_i1103_9_ == null ? Proxy.NO_PROXY : p_i1103_9_;
         this.field_152355_az = (new YggdrasilAuthenticationService(p_i1103_9_, UUID.randomUUID().toString()))

@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ResourceIndex {
     private static final Logger field_152783_a = LogManager.getLogger();
-    private final Map field_152784_b = Maps.newHashMap();
+    private final Map<String, File> field_152784_b = Maps.newHashMap();
 
     public ResourceIndex(File p_i1047_1_, String p_i1047_2_) {
         if (p_i1047_2_ != null) {
@@ -56,7 +56,7 @@ public class ResourceIndex {
         }
     }
 
-    public Map func_152782_a() {
+    public Map<String, File> func_152782_a() {
         return this.field_152784_b;
     }
 }
