@@ -37,6 +37,7 @@ import gg.mineral.bot.base.lwjgl.Sys;
 import gg.mineral.bot.base.lwjgl.opengl.Display;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GLContext;
+import gg.mineral.bot.impl.config.BotGlobalConfig;
 import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.client.LoadingScreenRenderer;
@@ -129,12 +130,16 @@ public class Config {
             if (Display.isCreated()) {
                 initialized = true;
                 checkOpenGlCaps();
+                if (BotGlobalConfig.isOptimizedGameLoop())
+                    return;
                 startVersionCheckThread();
             }
         }
     }
 
     private static void checkOpenGlCaps() {
+        if (!BotGlobalConfig.isDebug())
+            return;
         log("");
         log(getVersion());
         log("Build: " + getBuild());

@@ -394,8 +394,10 @@ public class Minecraft {
         this.field_152355_az = (new YggdrasilAuthenticationService(p_i1103_9_, UUID.randomUUID().toString()))
                 .createMinecraftSessionService();
         this.session = p_i1103_1_;
-        logger.info("Setting user: " + p_i1103_1_.getUsername());
-        logger.info("(Session ID is " + p_i1103_1_.getSessionID() + ")");
+        if (BotGlobalConfig.isDebug())
+            logger.info("Setting user: " + p_i1103_1_.getUsername());
+        if (BotGlobalConfig.isDebug())
+            logger.info("(Session ID is " + p_i1103_1_.getSessionID() + ")");
         this.isDemo = p_i1103_5_;
         this.displayWidth = p_i1103_2_;
         this.displayHeight = p_i1103_3_;
@@ -508,7 +510,9 @@ public class Minecraft {
 
         Display.setResizable(true);
         Display.setTitle("Mineral Bot Client 1.7.10");
-        logger.info("LWJGL Version: " + Sys.getVersion());
+
+        if (BotGlobalConfig.isDebug())
+            logger.info("LWJGL Version: " + Sys.getVersion());
 
         Util.EnumOS var1 = Util.getOSType();
 
