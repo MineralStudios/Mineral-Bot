@@ -4,6 +4,7 @@ public class ChatColor {
     // ANSI escape codes
     public static final String RESET = "\033[0m"; // Text Reset
     public static final String STRIKETHROUGH = "\033[9m"; // STRIKETHROUGH
+    public static final String UNDERLINE = "\033[4m"; // UNDERLINE
 
     // Regular Colors
     public static final String GRAY = "\033[1;30m"; // GRAY

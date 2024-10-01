@@ -53,19 +53,13 @@ public abstract class BotImpl extends BotAPI {
 
         sb.append(ChatColor.GRAY + "]");
 
-        System.out.println(ChatColor.STRIKETHROUGH + ChatColor.GRAY + "----------------------------------------"
-                + ChatColor.RESET);
-        System.out.println(ChatColor.WHITE + "Recent Spawn Info:" + ChatColor.RESET);
-        System.out.println(" " + ChatColor.RESET);
+        System.out.println(ChatColor.WHITE + ChatColor.UNDERLINE + "Recent Spawn Info:" + ChatColor.RESET);
         System.out.println(ChatColor.WHITE + "Amount: " + ChatColor.CYAN + amount + ChatColor.RESET);
         System.out
                 .println(ChatColor.WHITE + "Total Spawn Time: " + ChatColor.CYAN + totalTime + "ms" + ChatColor.RESET);
         System.out.println(ChatColor.WHITE + "Average Spawn Time: " + ChatColor.CYAN + (totalTime / amount) + "ms"
                 + ChatColor.RESET);
         System.out.println(ChatColor.WHITE + "Names: " + sb.toString() + ChatColor.RESET);
-
-        System.out.println(ChatColor.STRIKETHROUGH + ChatColor.GRAY + "----------------------------------------"
-                + ChatColor.RESET);
     }
 
     public static void init() {
