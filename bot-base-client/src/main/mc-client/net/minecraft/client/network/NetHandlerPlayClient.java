@@ -1457,7 +1457,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         if (thePlayer != null)
             for (ObjectIterator<it.unimi.dsi.fastutil.objects.Object2IntMap.Entry<StatBase>> var3 = p_147293_1_
                     .func_148974_c().object2IntEntrySet().iterator(); var3
-                            .hasNext(); thePlayer.func_146107_m().func_150873_a(
+                            .hasNext(); thePlayer.getStatFileWriter().func_150873_a(
                                     this.gameController.thePlayer,
                                     var5, var6)) {
                 it.unimi.dsi.fastutil.objects.Object2IntMap.Entry<StatBase> var4 = var3.next();
@@ -1465,9 +1465,10 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                 var6 = var4.getIntValue();
 
                 if (var5.isAchievement() && var6 > 0) {
-                    if (this.field_147308_k && thePlayer.func_146107_m().writeStat(var5) == 0) {
+                    if (this.field_147308_k && thePlayer.getStatFileWriter().writeStat(var5) == 0) {
                         Achievement var7 = (Achievement) var5;
-                        this.gameController.guiAchievement.func_146256_a(var7);
+                        if (this.gameController.guiAchievement != null)
+                            this.gameController.guiAchievement.func_146256_a(var7);
 
                         if (var5 == AchievementList.openInventory) {
                             this.gameController.gameSettings.showInventoryAchievementHint = false;
@@ -1480,7 +1481,8 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
             }
 
         if (!this.field_147308_k && !var2 && this.gameController.gameSettings.showInventoryAchievementHint)
-            this.gameController.guiAchievement.func_146255_b(AchievementList.openInventory);
+            if (this.gameController.guiAchievement != null)
+                this.gameController.guiAchievement.func_146255_b(AchievementList.openInventory);
 
         this.field_147308_k = true;
 

@@ -283,7 +283,7 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
         return this.field_142022_ce;
     }
 
-    public StatFileWriter func_146107_m() {
+    public StatFileWriter getStatFileWriter() {
         return this.field_146108_bO;
     }
 }

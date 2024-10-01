@@ -70,12 +70,12 @@ public class GuiIngameMenu extends GuiScreen {
 
             case 5:
                 if (thePlayer != null)
-                    this.mc.displayGuiScreen(new GuiAchievements(this.mc, this, thePlayer.func_146107_m()));
+                    this.mc.displayGuiScreen(new GuiAchievements(this.mc, this, thePlayer.getStatFileWriter()));
                 break;
 
             case 6:
                 if (thePlayer != null)
-                    this.mc.displayGuiScreen(new GuiStats(this.mc, this, thePlayer.func_146107_m()));
+                    this.mc.displayGuiScreen(new GuiStats(this.mc, this, thePlayer.getStatFileWriter()));
                 break;
 
             case 7:

@@ -101,6 +101,7 @@ import net.minecraft.client.resources.GrassColorReloadListener;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.client.resources.ResourceIndex;
 import net.minecraft.client.resources.ResourcePackRepository;
@@ -248,6 +249,7 @@ public class Minecraft {
     private IntegratedServer theIntegratedServer;
 
     /** Gui achievement */
+    @Nullable
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
 
@@ -310,7 +312,8 @@ public class Minecraft {
     private long field_83002_am = -1L;
     private IReloadableResourceManager mcResourceManager;
     private final IMetadataSerializer metadataSerializer_ = new IMetadataSerializer();
-    private List defaultResourcePacks = Lists.newArrayList();
+    private List<IResourcePack> defaultResourcePacks = Lists.newArrayList();
+    @Nullable
     private DefaultResourcePack mcDefaultResourcePack;
     private ResourcePackRepository mcResourcePackRepository;
     private LanguageManager mcLanguageManager;
@@ -319,6 +322,7 @@ public class Minecraft {
     private TextureMap textureMapBlocks;
     protected SoundHandler mcSoundHandler;
     private MusicTicker mcMusicTicker;
+    @Nullable
     private ResourceLocation minecraftLogoTexture;
     private final MinecraftSessionService field_152355_az;
     @Getter
@@ -386,9 +390,10 @@ public class Minecraft {
         this.fileResourcepacks = p_i1103_8_;
         this.launchedVersion = p_i1103_10_;
         this.field_152356_J = p_i1103_11_;
-        this.mcDefaultResourcePack = new DefaultResourcePack(
-                BotGlobalConfig.isOptimizedGameLoop() ? new Object2ObjectOpenHashMap<String, File>()
-                        : (new ResourceIndex(p_i1103_7_, p_i1103_12_)).func_152782_a());
+        if (!BotGlobalConfig.isOptimizedGameLoop())
+            this.mcDefaultResourcePack = new DefaultResourcePack(
+                    BotGlobalConfig.isOptimizedGameLoop() ? new Object2ObjectOpenHashMap<String, File>()
+                            : (new ResourceIndex(p_i1103_7_, p_i1103_12_)).func_152782_a());
         this.addDefaultResourcePack();
         this.proxy = p_i1103_9_ == null ? Proxy.NO_PROXY : p_i1103_9_;
         this.field_152355_az = (new YggdrasilAuthenticationService(p_i1103_9_, UUID.randomUUID().toString()))
@@ -516,11 +521,12 @@ public class Minecraft {
 
         Util.EnumOS var1 = Util.getOSType();
 
-        if (var1 != Util.EnumOS.OSX) {
+        DefaultResourcePack mcDefaultResourcePack = this.mcDefaultResourcePack;
+        if (var1 != Util.EnumOS.OSX && mcDefaultResourcePack != null) {
             try {
-                InputStream var2 = this.mcDefaultResourcePack
+                InputStream var2 = mcDefaultResourcePack
                         .func_152780_c(new ResourceLocation("icons/icon_16x16.png"));
-                InputStream var3 = this.mcDefaultResourcePack
+                InputStream var3 = mcDefaultResourcePack
                         .func_152780_c(new ResourceLocation("icons/icon_32x32.png"));
 
                 if (var2 != null && var3 != null)
@@ -536,10 +542,12 @@ public class Minecraft {
         } catch (LWJGLException var7) {
             logger.error("Couldn\'t set pixel format", var7);
 
-            try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException var6) {
-                ;
+            if (!BotGlobalConfig.isOptimizedGameLoop()) {
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException var6) {
+                    ;
+                }
             }
 
             if (this.fullscreen)
@@ -552,7 +560,8 @@ public class Minecraft {
 
         this.mcFramebuffer = new Framebuffer(this, this.displayWidth, this.displayHeight, true);
         this.mcFramebuffer.setFramebufferColor(0.0F, 0.0F, 0.0F, 0.0F);
-        this.guiAchievement = new GuiAchievement(this);
+        if (!BotGlobalConfig.isOptimizedGameLoop())
+            this.guiAchievement = new GuiAchievement(this);
         this.metadataSerializer_.registerMetadataSectionType(new TextureMetadataSectionSerializer(),
                 TextureMetadataSection.class);
         this.metadataSerializer_.registerMetadataSectionType(new FontMetadataSectionSerializer(),
@@ -722,6 +731,8 @@ public class Minecraft {
     }
 
     private void addDefaultResourcePack() {
+        if (mcDefaultResourcePack == null)
+            return;
         this.defaultResourcePacks.add(this.mcDefaultResourcePack);
     }
 
@@ -808,7 +819,8 @@ public class Minecraft {
         TextureManager renderEngine = this.renderEngine;
         TextureUtil textureUtil = this.textureUtil;
 
-        if (!BotGlobalConfig.isOptimizedGameLoop() && renderEngine != null && textureUtil != null) {
+        if (!BotGlobalConfig.isOptimizedGameLoop() && renderEngine != null && textureUtil != null
+                && this.mcDefaultResourcePack != null) {
             try {
                 this.minecraftLogoTexture = renderEngine.getDynamicTextureLocation("logo",
                         new DynamicTexture(this, textureUtil.dataBuffer,
@@ -1085,7 +1097,8 @@ public class Minecraft {
             this.prevFrameTime = System.nanoTime();
         }
 
-        this.guiAchievement.func_146254_a();
+        if (this.guiAchievement != null)
+            this.guiAchievement.func_146254_a();
         this.mcFramebuffer.unbindFramebuffer();
         GL11.glPopMatrix();
         GL11.glPushMatrix();
@@ -2044,7 +2057,8 @@ public class Minecraft {
                 this.theIntegratedServer.initiateShutdown();
 
             this.theIntegratedServer = null;
-            this.guiAchievement.func_146257_b();
+            if (this.guiAchievement != null)
+                this.guiAchievement.func_146257_b();
             this.entityRenderer.getMapItemRenderer().func_148249_a();
         }
 
@@ -2159,7 +2173,7 @@ public class Minecraft {
 
         this.renderViewEntity = null;
         this.thePlayer = this.playerController.func_147493_a(this.theWorld,
-                this.thePlayer == null ? new StatFileWriter() : this.thePlayer.func_146107_m());
+                this.thePlayer == null ? new StatFileWriter() : this.thePlayer.getStatFileWriter());
         if (this.thePlayer != null)
             this.thePlayer.dimension = p_71354_1_;
         this.renderViewEntity = this.thePlayer;

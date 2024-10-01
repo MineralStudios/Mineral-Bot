@@ -756,10 +756,10 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
             return;
 
         if (p_146284_1_.id == 0)
-            this.mc.displayGuiScreen(new GuiAchievements(this.mc, this, thePlayer.func_146107_m()));
+            this.mc.displayGuiScreen(new GuiAchievements(this.mc, this, thePlayer.getStatFileWriter()));
 
         if (p_146284_1_.id == 1)
-            this.mc.displayGuiScreen(new GuiStats(this.mc, this, thePlayer.func_146107_m()));
+            this.mc.displayGuiScreen(new GuiStats(this.mc, this, thePlayer.getStatFileWriter()));
     }
 
     public int func_147056_g() {
