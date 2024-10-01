@@ -3,6 +3,7 @@ package net.minecraft.client.entity;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 
+import gg.mineral.bot.impl.config.BotGlobalConfig;
 import lombok.Getter;
 
 import java.io.File;
@@ -45,10 +46,11 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
 
         this.nameClear = p_i45074_2_.getName();
 
-        if (this.nameClear != null && !this.nameClear.isEmpty()) {
+        if (this.nameClear != null && !this.nameClear.isEmpty())
             this.nameClear = StringUtils.stripControlCodes(this.nameClear);
-        }
 
+        if (BotGlobalConfig.isOptimizedGameLoop())
+            return;
         CapeUtils.downloadCape(this);
         PlayerConfigurations.getPlayerConfiguration(this);
     }
