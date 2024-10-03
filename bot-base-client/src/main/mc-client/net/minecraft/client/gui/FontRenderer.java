@@ -890,15 +890,14 @@ public class FontRenderer implements IResourceManagerReloadListener {
                 ResourceLocation e = new ResourceLocation(this.locationFontTexture.getResourceDomain(), fileName);
                 InputStream in = Config.getResourceStream(Config.getResourceManager(), e);
 
-                if (in == null) {
+                if (in == null)
                     return;
-                }
 
                 Config.log("Loading " + fileName);
                 Properties props = new Properties();
                 props.load(in);
-                Set keySet = props.keySet();
-                Iterator iter = keySet.iterator();
+                Set<Object> keySet = props.keySet();
+                Iterator<Object> iter = keySet.iterator();
 
                 while (iter.hasNext()) {
                     String key = (String) iter.next();

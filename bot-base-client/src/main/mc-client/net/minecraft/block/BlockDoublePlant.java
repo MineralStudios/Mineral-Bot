@@ -219,7 +219,8 @@ public class BlockDoublePlant extends BlockBush implements IGrowable {
         this.field_149891_b[1] = p_149651_1_.registerIcon("double_plant_sunflower_back");
     }
 
-    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_) {
+    @Override
+    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List<ItemStack> p_149666_3_) {
         for (int var4 = 0; var4 < this.field_149893_M.length; ++var4) {
             p_149666_3_.add(new ItemStack(p_149666_1_, 1, var4));
         }

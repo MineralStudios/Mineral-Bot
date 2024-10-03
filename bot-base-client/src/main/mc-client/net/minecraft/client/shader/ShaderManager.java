@@ -50,23 +50,23 @@ public class ShaderManager {
     private final ShaderLoader field_148012_t;
 
     public ShaderManager(IResourceManager p_i45087_1_, String p_i45087_2_) throws JsonException {
-        JsonParser var3 = new JsonParser();
+
         ResourceLocation var4 = new ResourceLocation("shaders/program/" + p_i45087_2_ + ".json");
         this.field_148007_m = p_i45087_2_;
         InputStream var5 = null;
 
         try {
             var5 = p_i45087_1_.getResource(var4).getInputStream();
-            JsonObject var6 = var3.parse(IOUtils.toString(var5, Charsets.UTF_8)).getAsJsonObject();
+            JsonObject var6 = JsonParser.parseString(IOUtils.toString(var5, Charsets.UTF_8)).getAsJsonObject();
             String var7 = JsonUtils.getJsonObjectStringFieldValue(var6, "vertex");
             String var28 = JsonUtils.getJsonObjectStringFieldValue(var6, "fragment");
-            JsonArray var9 = JsonUtils.getJsonObjectJsonArrayFieldOrDefault(var6, "samplers", (JsonArray) null);
+            JsonArray var9 = JsonUtils.getJsonObjectJsonArrayFieldOrDefault(var6, "samplers", null);
 
             if (var9 != null) {
                 int var10 = 0;
 
-                for (Iterator var11 = var9.iterator(); var11.hasNext(); ++var10) {
-                    JsonElement var12 = (JsonElement) var11.next();
+                for (Iterator<JsonElement> var11 = var9.iterator(); var11.hasNext(); ++var10) {
+                    JsonElement var12 = var11.next();
 
                     try {
                         this.func_147996_a(var12);

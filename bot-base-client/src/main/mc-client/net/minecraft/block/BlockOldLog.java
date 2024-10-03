@@ -10,7 +10,8 @@ import net.minecraft.util.IIcon;
 public class BlockOldLog extends BlockLog {
     public static final String[] field_150168_M = new String[] { "oak", "spruce", "birch", "jungle" };
 
-    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_) {
+    @Override
+    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List<ItemStack> p_149666_3_) {
         p_149666_3_.add(new ItemStack(p_149666_1_, 1, 0));
         p_149666_3_.add(new ItemStack(p_149666_1_, 1, 1));
         p_149666_3_.add(new ItemStack(p_149666_1_, 1, 2));

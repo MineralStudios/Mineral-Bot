@@ -44,7 +44,8 @@ public class ItemAppleGold extends ItemFood {
     /**
      * This returns the sub items
      */
-    public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_, List p_150895_3_) {
+    @Override
+    public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_, List<ItemStack> p_150895_3_) {
         p_150895_3_.add(new ItemStack(p_150895_1_, 1, 0));
         p_150895_3_.add(new ItemStack(p_150895_1_, 1, 1));
     }

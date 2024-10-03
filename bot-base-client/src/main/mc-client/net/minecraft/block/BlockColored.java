@@ -49,7 +49,8 @@ public class BlockColored extends Block {
         return ~p_150031_0_ & 15;
     }
 
-    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_) {
+    @Override
+    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List<ItemStack> p_149666_3_) {
         for (int var4 = 0; var4 < 16; ++var4)
             p_149666_3_.add(new ItemStack(p_149666_1_, 1, var4));
 

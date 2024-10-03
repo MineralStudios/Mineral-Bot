@@ -70,7 +70,8 @@ public class BlockStoneSlab extends BlockSlab {
         return super.getUnlocalizedName() + "." + field_150006_b[p_150002_1_];
     }
 
-    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_) {
+    @Override
+    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List<ItemStack> p_149666_3_) {
         if (p_149666_1_ != Item.getItemFromBlock(Blocks.double_stone_slab)) {
             for (int var4 = 0; var4 <= 7; ++var4) {
                 if (var4 != 2) {

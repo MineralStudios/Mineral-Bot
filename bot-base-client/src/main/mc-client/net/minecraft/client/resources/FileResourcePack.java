@@ -84,9 +84,13 @@ public class FileResourcePack extends AbstractResourcePack implements Closeable 
         return var3;
     }
 
+    @Override
     protected void finalize() throws Throwable {
-        this.close();
-        super.finalize();
+        try {
+            this.close();
+        } finally {
+            super.finalize();
+        }
     }
 
     public void close() throws IOException {

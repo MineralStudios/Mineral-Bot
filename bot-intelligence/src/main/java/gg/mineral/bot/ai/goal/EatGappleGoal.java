@@ -5,6 +5,7 @@ import gg.mineral.bot.api.controls.MouseButton;
 import gg.mineral.bot.api.entity.effect.PotionEffectType;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
+import gg.mineral.bot.api.event.mouse.MouseButtonEvent;
 import gg.mineral.bot.api.goal.Goal;
 import gg.mineral.bot.api.inv.Inventory;
 import gg.mineral.bot.api.inv.InventoryContainer;
@@ -175,6 +176,10 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
     @Override
     public boolean onEvent(Event event) {
+        if (event instanceof MouseButtonEvent mouseButtonEvent)
+            if (eating && mouseButtonEvent.getType() == MouseButton.Type.RIGHT_CLICK && !mouseButtonEvent.isPressed())
+                return true;
+
         return false;
     }
 

@@ -97,7 +97,7 @@ public class ServerBotImpl extends BotImpl implements Listener {
         PlayerConnection playerConnection = new PlayerConnection(MinecraftServer.getServer(), sNetworkManager,
                 serverSide) {
             @Getter
-            boolean disconnected = false;
+            private boolean disconnected = false;
 
             @Override
             public void disconnect(String s) {

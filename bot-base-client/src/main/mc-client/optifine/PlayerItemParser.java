@@ -11,7 +11,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -19,7 +18,6 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 
 public class PlayerItemParser {
-    private static JsonParser jsonParser = new JsonParser();
     public static final String ITEM_TYPE = "type";
     public static final String ITEM_TEXTURE_SIZE = "textureSize";
     public static final String ITEM_USE_PLAYER_TEXTURE = "usePlayerTexture";

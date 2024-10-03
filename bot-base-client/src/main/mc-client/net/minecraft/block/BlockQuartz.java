@@ -98,7 +98,8 @@ public class BlockQuartz extends Block {
         return 39;
     }
 
-    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_) {
+    @Override
+    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List<ItemStack> p_149666_3_) {
         p_149666_3_.add(new ItemStack(p_149666_1_, 1, 0));
         p_149666_3_.add(new ItemStack(p_149666_1_, 1, 1));
         p_149666_3_.add(new ItemStack(p_149666_1_, 1, 2));

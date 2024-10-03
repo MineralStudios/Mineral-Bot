@@ -5,12 +5,15 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gg.mineral.bot.api.controls.MouseButton.Type;
+import gg.mineral.bot.api.entity.living.player.FakePlayer;
+import gg.mineral.bot.api.event.mouse.MouseButtonEvent;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 
 public abstract class Mouse implements gg.mineral.bot.api.controls.Mouse {
 
+    private final FakePlayer fakePlayer;
     private final MouseButton[] mouseButtons;
     @Getter
     @Setter
@@ -25,7 +28,8 @@ public abstract class Mouse implements gg.mineral.bot.api.controls.Mouse {
 
     private final Object2LongOpenHashMap<Runnable> scheduledTasks = new Object2LongOpenHashMap<>();
 
-    public Mouse() {
+    public Mouse(FakePlayer fakePlayer) {
+        this.fakePlayer = fakePlayer;
         mouseButtons = new MouseButton[MouseButton.Type.values().length];
 
         for (MouseButton.Type type : MouseButton.Type.values())
@@ -59,6 +63,11 @@ public abstract class Mouse implements gg.mineral.bot.api.controls.Mouse {
             if (button == null || button.isPressed())
                 return;
 
+            MouseButtonEvent event = new MouseButtonEvent(type, true, durationMillis);
+
+            if (fakePlayer != null && fakePlayer.callEvent(event))
+                return;
+
             button.setPressed(true);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -75,6 +84,11 @@ public abstract class Mouse implements gg.mineral.bot.api.controls.Mouse {
             MouseButton button = getButton(type);
 
             if (button == null || !button.isPressed())
+                return;
+
+            MouseButtonEvent event = new MouseButtonEvent(type, true, durationMillis);
+
+            if (fakePlayer != null && fakePlayer.callEvent(event))
                 return;
 
             button.setPressed(false);

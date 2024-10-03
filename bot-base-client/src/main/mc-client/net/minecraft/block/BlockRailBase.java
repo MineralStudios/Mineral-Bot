@@ -187,7 +187,7 @@ public abstract class BlockRailBase extends Block {
         private int field_150658_d;
         private int field_150659_e;
         private final boolean field_150656_f;
-        private List field_150657_g = new ArrayList();
+        private List<ChunkPosition> field_150657_g = new ArrayList<>();
 
         public Rail(World p_i45388_2_, int p_i45388_3_, int p_i45388_4_, int p_i45388_5_) {
             this.field_150660_b = p_i45388_2_;

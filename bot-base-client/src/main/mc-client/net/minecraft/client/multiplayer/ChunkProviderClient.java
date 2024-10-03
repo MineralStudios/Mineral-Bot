@@ -37,7 +37,7 @@ public class ChunkProviderClient implements IChunkProvider {
      * with identical contents to chunkMapping's values. However it is never
      * actually added to.
      */
-    private List chunkListing = new ArrayList();
+    private List<Chunk> chunkListing = new ArrayList<>();
 
     /** Reference to the World object. */
     private World worldObj;

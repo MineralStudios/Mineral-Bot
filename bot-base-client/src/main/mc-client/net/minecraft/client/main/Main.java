@@ -63,34 +63,36 @@ public class Main {
         var1.allowsUnrecognizedOptions();
         var1.accepts("demo");
         var1.accepts("fullscreen");
-        ArgumentAcceptingOptionSpec var2 = var1.accepts("server").withRequiredArg();
-        ArgumentAcceptingOptionSpec portOption = var1.accepts("port").withRequiredArg().ofType(Integer.class)
+        ArgumentAcceptingOptionSpec<String> var2 = var1.accepts("server").withRequiredArg();
+        ArgumentAcceptingOptionSpec<Integer> portOption = var1.accepts("port").withRequiredArg().ofType(Integer.class)
                 .defaultsTo(Integer.valueOf(25565), new Integer[0]);
-        ArgumentAcceptingOptionSpec gameDirOption = var1.accepts("gameDir").withRequiredArg().ofType(File.class)
+        ArgumentAcceptingOptionSpec<File> gameDirOption = var1.accepts("gameDir").withRequiredArg().ofType(File.class)
                 .defaultsTo(new File("."), new File[0]);
-        ArgumentAcceptingOptionSpec var5 = var1.accepts("assetsDir").withRequiredArg().ofType(File.class);
-        ArgumentAcceptingOptionSpec var6 = var1.accepts("resourcePackDir").withRequiredArg().ofType(File.class);
-        ArgumentAcceptingOptionSpec var7 = var1.accepts("proxyHost").withRequiredArg();
-        ArgumentAcceptingOptionSpec var8 = var1.accepts("proxyPort").withRequiredArg().defaultsTo("8080", new String[0])
+        ArgumentAcceptingOptionSpec<File> var5 = var1.accepts("assetsDir").withRequiredArg().ofType(File.class);
+        ArgumentAcceptingOptionSpec<File> var6 = var1.accepts("resourcePackDir").withRequiredArg().ofType(File.class);
+        ArgumentAcceptingOptionSpec<String> var7 = var1.accepts("proxyHost").withRequiredArg();
+        ArgumentAcceptingOptionSpec<Integer> var8 = var1.accepts("proxyPort").withRequiredArg()
+                .defaultsTo("8080", new String[0])
                 .ofType(Integer.class);
-        ArgumentAcceptingOptionSpec var9 = var1.accepts("proxyUser").withRequiredArg();
-        ArgumentAcceptingOptionSpec var10 = var1.accepts("proxyPass").withRequiredArg();
-        ArgumentAcceptingOptionSpec var11 = var1.accepts("username").withRequiredArg()
+        ArgumentAcceptingOptionSpec<String> var9 = var1.accepts("proxyUser").withRequiredArg();
+        ArgumentAcceptingOptionSpec<String> var10 = var1.accepts("proxyPass").withRequiredArg();
+        ArgumentAcceptingOptionSpec<String> var11 = var1.accepts("username").withRequiredArg()
                 .defaultsTo("Player" + Minecraft.getSystemTime() % 1000L, new String[0]);
-        ArgumentAcceptingOptionSpec var12 = var1.accepts("uuid").withRequiredArg();
-        ArgumentAcceptingOptionSpec var13 = var1.accepts("accessToken").withRequiredArg().required();
-        ArgumentAcceptingOptionSpec var14 = var1.accepts("version").withRequiredArg().required();
-        ArgumentAcceptingOptionSpec widthOption = var1.accepts("width").withRequiredArg().ofType(Integer.class)
+        ArgumentAcceptingOptionSpec<String> var12 = var1.accepts("uuid").withRequiredArg();
+        ArgumentAcceptingOptionSpec<String> var13 = var1.accepts("accessToken").withRequiredArg().required();
+        ArgumentAcceptingOptionSpec<String> var14 = var1.accepts("version").withRequiredArg().required();
+        ArgumentAcceptingOptionSpec<Integer> widthOption = var1.accepts("width").withRequiredArg().ofType(Integer.class)
                 .defaultsTo(Integer.valueOf(854), new Integer[0]);
-        ArgumentAcceptingOptionSpec heightOption = var1.accepts("height").withRequiredArg().ofType(Integer.class)
+        ArgumentAcceptingOptionSpec<Integer> heightOption = var1.accepts("height").withRequiredArg()
+                .ofType(Integer.class)
                 .defaultsTo(Integer.valueOf(480), new Integer[0]);
         ArgumentAcceptingOptionSpec<String> var17 = var1.accepts("userProperties").withRequiredArg().required();
-        ArgumentAcceptingOptionSpec var18 = var1.accepts("assetIndex").withRequiredArg();
-        ArgumentAcceptingOptionSpec var19 = var1.accepts("userType").withRequiredArg().defaultsTo("legacy",
+        ArgumentAcceptingOptionSpec<String> var18 = var1.accepts("assetIndex").withRequiredArg();
+        ArgumentAcceptingOptionSpec<String> var19 = var1.accepts("userType").withRequiredArg().defaultsTo("legacy",
                 new String[0]);
-        NonOptionArgumentSpec var20 = var1.nonOptions();
+        NonOptionArgumentSpec<String> var20 = var1.nonOptions();
         OptionSet var21 = var1.parse(p_main_0_);
-        List var22 = var21.valuesOf(var20);
+        List<String> var22 = var21.valuesOf(var20);
         String var23 = (String) var21.valueOf(var7);
         Proxy proxy = Proxy.NO_PROXY;
 

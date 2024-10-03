@@ -101,7 +101,8 @@ public class BlockTallGrass extends BlockBush implements IGrowable {
         return p_149643_1_.getBlockMetadata(p_149643_2_, p_149643_3_, p_149643_4_);
     }
 
-    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_) {
+    @Override
+    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List<ItemStack> p_149666_3_) {
         for (int var4 = 1; var4 < 3; ++var4) {
             p_149666_3_.add(new ItemStack(p_149666_1_, 1, var4));
         }

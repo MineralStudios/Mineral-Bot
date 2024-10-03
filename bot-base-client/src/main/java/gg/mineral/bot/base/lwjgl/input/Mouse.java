@@ -1,13 +1,17 @@
 package gg.mineral.bot.base.lwjgl.input;
 
 import gg.mineral.bot.api.controls.MouseButton.Type;
+import gg.mineral.bot.base.client.player.FakePlayerInstance;
 import gg.mineral.bot.base.lwjgl.opengl.Display;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 
-@RequiredArgsConstructor
 public class Mouse extends gg.mineral.bot.impl.controls.Mouse {
+
+    public Mouse(Minecraft mc) {
+        super(mc instanceof FakePlayerInstance fp ? fp : null);
+        this.mc = mc;
+    }
 
     private final Minecraft mc;
 

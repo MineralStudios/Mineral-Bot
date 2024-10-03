@@ -48,7 +48,8 @@ public class BlockWoodSlab extends BlockSlab {
         return super.getUnlocalizedName() + "." + field_150005_b[p_150002_1_];
     }
 
-    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_) {
+    @Override
+    public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List<ItemStack> p_149666_3_) {
         if (p_149666_1_ != Item.getItemFromBlock(Blocks.double_wooden_slab)) {
             for (int var4 = 0; var4 < field_150005_b.length; ++var4) {
                 p_149666_3_.add(new ItemStack(p_149666_1_, 1, var4));

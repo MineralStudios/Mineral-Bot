@@ -337,7 +337,8 @@ public class ItemPotion extends Item {
     /**
      * This returns the sub items
      */
-    public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_, List p_150895_3_) {
+    @Override
+    public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_, List<ItemStack> p_150895_3_) {
         super.getSubItems(p_150895_1_, p_150895_2_, p_150895_3_);
         int var5;
 

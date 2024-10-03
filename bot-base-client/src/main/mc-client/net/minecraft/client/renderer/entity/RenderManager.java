@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
-
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -96,7 +96,7 @@ import net.minecraft.world.World;
 
 public class RenderManager {
     /** A map of entity classes and the associated renderer. */
-    private Map entityRenderMap = new HashMap();
+    private Map<Class<? extends Entity>, Render> entityRenderMap = new Object2ObjectOpenHashMap<>();
 
     /** Renders fonts */
     private FontRenderer fontRenderer;

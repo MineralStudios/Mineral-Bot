@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -72,10 +74,10 @@ public class EntityVillager extends EntityAgeable implements IMerchant, INpc {
     private float field_82191_bN;
 
     /** Selling list of Villagers items. */
-    private static final Map villagersSellingList = new HashMap();
+    private static final Map<Item, Tuple> villagersSellingList = new Object2ObjectOpenHashMap<>();
 
     /** Selling list of Blacksmith items. */
-    private static final Map blacksmithSellingList = new HashMap();
+    private static final Map<Item, Tuple> blacksmithSellingList = new Object2ObjectOpenHashMap<>();
 
     public EntityVillager(World p_i1747_1_) {
         this(p_i1747_1_, 0);

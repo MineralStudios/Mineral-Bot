@@ -174,7 +174,7 @@ public class Minecraft {
 
     /** A 10MiB preallocation to ensure the heap is reasonably sized. */
     public static byte[] memoryReserve = new byte[10485760];
-    private static final List macDisplayModes = Lists
+    private static final List<DisplayMode> macDisplayModes = Lists
             .newArrayList(new DisplayMode[] { new DisplayMode(2560, 1600), new DisplayMode(2880, 1800) });
     private final File fileResourcepacks;
     private final Multimap field_152356_J;
@@ -753,21 +753,21 @@ public class Minecraft {
     }
 
     private void updateDisplayMode() throws LWJGLException {
-        HashSet var1 = new HashSet();
+        HashSet<DisplayMode> var1 = new HashSet<>();
         Collections.addAll(var1, Display.getAvailableDisplayModes());
         DisplayMode var2 = Display.getDesktopDisplayMode();
 
         if (!var1.contains(var2) && Util.getOSType() == Util.EnumOS.OSX) {
-            Iterator var3 = macDisplayModes.iterator();
+            Iterator<DisplayMode> var3 = macDisplayModes.iterator();
 
             while (var3.hasNext()) {
                 DisplayMode var4 = (DisplayMode) var3.next();
                 boolean var5 = true;
-                Iterator var6 = var1.iterator();
+                Iterator<DisplayMode> var6 = var1.iterator();
                 DisplayMode var7;
 
                 while (var6.hasNext()) {
-                    var7 = (DisplayMode) var6.next();
+                    var7 = var6.next();
 
                     if (var7.getBitsPerPixel() == 32 && var7.getWidth() == var4.getWidth()
                             && var7.getHeight() == var4.getHeight()) {
@@ -780,7 +780,7 @@ public class Minecraft {
                     var6 = var1.iterator();
 
                     while (var6.hasNext()) {
-                        var7 = (DisplayMode) var6.next();
+                        var7 = var6.next();
 
                         if (var7.getBitsPerPixel() == 32 && var7.getWidth() == var4.getWidth() / 2
                                 && var7.getHeight() == var4.getHeight() / 2) {

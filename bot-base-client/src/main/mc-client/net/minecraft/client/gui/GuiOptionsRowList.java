@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.settings.GameSettings;
 
 public class GuiOptionsRowList extends GuiListExtended {
-    private final List field_148184_k = Lists.newArrayList();
+    private final List<GuiOptionsRowList.Row> field_148184_k = Lists.newArrayList();
 
     public GuiOptionsRowList(Minecraft mc, int p_i45015_2_, int p_i45015_3_, int p_i45015_4_, int p_i45015_5_,
             int p_i45015_6_, GameSettings.Options... p_i45015_7_) {
@@ -28,19 +28,18 @@ public class GuiOptionsRowList extends GuiListExtended {
 
     private GuiButton func_148182_a(Minecraft p_148182_1_, int p_148182_2_, int p_148182_3_,
             GameSettings.Options p_148182_4_) {
-        if (p_148182_4_ == null) {
+        if (p_148182_4_ == null)
             return null;
-        } else {
-            int var5 = p_148182_4_.returnEnumOrdinal();
-            return (GuiButton) (p_148182_4_.getEnumFloat()
-                    ? new GuiOptionSlider(this.mc, var5, p_148182_2_, p_148182_3_, p_148182_4_)
-                    : new GuiOptionButton(this.mc, var5, p_148182_2_, p_148182_3_, p_148182_4_,
-                            p_148182_1_.gameSettings.getKeyBinding(p_148182_4_)));
-        }
+
+        int var5 = p_148182_4_.returnEnumOrdinal();
+        return (GuiButton) (p_148182_4_.getEnumFloat()
+                ? new GuiOptionSlider(this.mc, var5, p_148182_2_, p_148182_3_, p_148182_4_)
+                : new GuiOptionButton(this.mc, var5, p_148182_2_, p_148182_3_, p_148182_4_,
+                        p_148182_1_.gameSettings.getKeyBinding(p_148182_4_)));
     }
 
     public GuiOptionsRowList.Row func_148180_b(int p_148180_1_) {
-        return (GuiOptionsRowList.Row) this.field_148184_k.get(p_148180_1_);
+        return this.field_148184_k.get(p_148180_1_);
     }
 
     protected int getSize() {

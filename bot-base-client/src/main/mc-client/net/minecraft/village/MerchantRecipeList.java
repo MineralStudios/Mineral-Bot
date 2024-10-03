@@ -7,7 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.PacketBuffer;
 
-public class MerchantRecipeList extends ArrayList {
+public class MerchantRecipeList extends ArrayList<MerchantRecipe> {
 
     public MerchantRecipeList() {
     }

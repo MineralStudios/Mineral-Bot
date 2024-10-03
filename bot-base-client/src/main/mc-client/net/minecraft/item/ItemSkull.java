@@ -105,7 +105,8 @@ public class ItemSkull extends Item {
     /**
      * This returns the sub items
      */
-    public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_, List p_150895_3_) {
+    @Override
+    public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_, List<ItemStack> p_150895_3_) {
         for (int var4 = 0; var4 < skullTypes.length; ++var4) {
             p_150895_3_.add(new ItemStack(p_150895_1_, 1, var4));
         }

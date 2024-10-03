@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import gg.mineral.bot.impl.thread.ThreadManager;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,7 +52,7 @@ public class SoundManager {
     private final Multimap field_148628_k;
     private final List field_148625_l;
     private final Map field_148626_m;
-    private final Map field_148624_n;
+    private final Object2IntOpenHashMap<String> field_148624_n;
     private final Minecraft mc;
 
     public SoundManager(Minecraft mc, SoundHandler p_i45119_1_, GameSettings p_i45119_2_) {
@@ -62,7 +63,7 @@ public class SoundManager {
         this.field_148628_k = HashMultimap.create();
         this.field_148625_l = Lists.newArrayList();
         this.field_148626_m = Maps.newHashMap();
-        this.field_148624_n = Maps.newHashMap();
+        this.field_148624_n = new Object2IntOpenHashMap<>();
         this.field_148622_c = p_i45119_1_;
         this.field_148619_d = p_i45119_2_;
         loadNativeLibrary();
@@ -188,7 +189,7 @@ public class SoundManager {
             var4 = (ISound) var9.getValue();
 
             if (!this.field_148620_e.playing(var3)) {
-                int var5 = ((Integer) this.field_148624_n.get(var3)).intValue();
+                int var5 = this.field_148624_n.getInt(var3);
 
                 if (var5 <= this.field_148618_g) {
                     int var6 = var4.func_147652_d();
@@ -201,7 +202,7 @@ public class SoundManager {
                     logger.debug(field_148623_a, "Removed channel {} because it\'s not playing anymore",
                             new Object[] { var3 });
                     this.field_148620_e.removeSource(var3);
-                    this.field_148624_n.remove(var3);
+                    this.field_148624_n.removeInt(var3);
                     this.field_148627_j.remove(var4);
 
                     try {
@@ -237,14 +238,14 @@ public class SoundManager {
     }
 
     public boolean func_148597_a(ISound p_148597_1_) {
-        if (!this.field_148617_f) {
+        if (!this.field_148617_f)
             return false;
-        } else {
-            String var2 = (String) this.field_148630_i.get(p_148597_1_);
-            return var2 == null ? false
-                    : this.field_148620_e.playing(var2) || this.field_148624_n.containsKey(var2)
-                            && ((Integer) this.field_148624_n.get(var2)).intValue() <= this.field_148618_g;
-        }
+
+        String var2 = (String) this.field_148630_i.get(p_148597_1_);
+        return var2 == null ? false
+                : this.field_148620_e.playing(var2) || this.field_148624_n.containsKey(var2)
+                        && this.field_148624_n.getInt(var2) <= this.field_148618_g;
+
     }
 
     public void func_148602_b(ISound p_148602_1_) {
@@ -310,7 +311,7 @@ public class SoundManager {
                             this.field_148620_e.setPitch(var12, (float) var8);
                             this.field_148620_e.setVolume(var12, var7);
                             this.field_148620_e.play(var12);
-                            this.field_148624_n.put(var12, Integer.valueOf(this.field_148618_g + 20));
+                            this.field_148624_n.put(var12, this.field_148618_g + 20);
                             this.field_148629_h.put(var12, p_148611_1_);
                             this.field_148627_j.put(p_148611_1_, var3);
 

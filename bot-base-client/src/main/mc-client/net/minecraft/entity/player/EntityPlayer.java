@@ -1678,7 +1678,7 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
         }
 
         int var2 = EntityList.getEntityID(p_70074_1_);
-        EntityList.EntityEggInfo var3 = (EntityList.EntityEggInfo) EntityList.entityEggs.get(Integer.valueOf(var2));
+        EntityList.EntityEggInfo var3 = (EntityList.EntityEggInfo) EntityList.entityEggs.get(var2);
 
         if (var3 != null) {
             this.addStat(var3.field_151512_d, 1);

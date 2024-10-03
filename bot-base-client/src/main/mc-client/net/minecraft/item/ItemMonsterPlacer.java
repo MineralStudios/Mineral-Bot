@@ -40,7 +40,7 @@ public class ItemMonsterPlacer extends Item {
 
     public int getColorFromItemStack(ItemStack p_82790_1_, int p_82790_2_) {
         EntityList.EntityEggInfo var3 = (EntityList.EntityEggInfo) EntityList.entityEggs
-                .get(Integer.valueOf(p_82790_1_.getItemDamage()));
+                .get(p_82790_1_.getItemDamage());
         return var3 != null ? (p_82790_2_ == 0 ? var3.primaryColor : var3.secondaryColor) : 16777215;
     }
 
@@ -146,7 +146,7 @@ public class ItemMonsterPlacer extends Item {
      */
     public static Entity spawnCreature(World p_77840_0_, int p_77840_1_, double p_77840_2_, double p_77840_4_,
             double p_77840_6_) {
-        if (!EntityList.entityEggs.containsKey(Integer.valueOf(p_77840_1_))) {
+        if (!EntityList.entityEggs.containsKey(p_77840_1_)) {
             return null;
         } else {
             Entity var8 = null;
@@ -173,7 +173,8 @@ public class ItemMonsterPlacer extends Item {
     /**
      * This returns the sub items
      */
-    public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_, List p_150895_3_) {
+    @Override
+    public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_, List<ItemStack> p_150895_3_) {
         Iterator var4 = EntityList.entityEggs.values().iterator();
 
         while (var4.hasNext()) {
