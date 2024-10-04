@@ -89,6 +89,11 @@ public class ServerBotImpl extends BotImpl implements Listener {
                 instance);
         ServerNetworkManager sNetworkManager = new ServerNetworkManager(s2cTranslator, instance);
 
+        NetHandlerPlayClient netHandlerPlayClient = new NetHandlerPlayClient(instance, null,
+                cNetworkManager);
+
+        s2cTranslator.setNetHandlerPlayClient(netHandlerPlayClient);
+
         PlayerConnection playerConnection = new PlayerConnection(MinecraftServer.getServer(), sNetworkManager,
                 serverSide) {
             @Getter
