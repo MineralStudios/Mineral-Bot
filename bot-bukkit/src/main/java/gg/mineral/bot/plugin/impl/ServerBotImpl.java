@@ -161,7 +161,7 @@ public class ServerBotImpl extends BotImpl implements Listener {
         // getServerConnection().queuePacket(packet));
         serverSide.syncInventory();
 
-        ThreadManager.getGameLoopExecutor().execute(() -> {
+        ThreadManager.getAsyncExecutor().execute(() -> {
             instance.run();
             InstanceManager.getInstances().put(instance.getUuid(), instance);
             MinecraftServer.getServer().postToMainThread(() -> sNetworkManager.releasePacketQueue());
