@@ -76,94 +76,97 @@ public class ServerBotImpl extends BotImpl implements Listener {
         instance.setServer("127.0.0.1", Bukkit.getServer().getPort());
         ThreadManager.getGameLoopExecutor().execute(() -> {
             instance.run();
-            InstanceManager.getInstances().put(instance.getUuid(), instance);
+            String name = configuration.getUsername();
+
+            MinecraftServer.getServer().postToMainThread(() -> {
+                NMSServerPlayer serverSide = new NMSServerPlayer(location.getWorld(),
+                        configuration.getUuid(), name, configuration.getSkin().getValue(),
+                        configuration.getSkin().getSignature());
+
+                serverSide.setPosition(location.getX(), location.getY(), location.getZ());
+                serverSide.setYawPitch(location.getYaw(), location.getPitch());
+                serverSide.spawnInWorld(location.getWorld());
+
+                ClientNetworkManager cNetworkManager = new ClientNetworkManager(c2sTranslator,
+                        instance);
+                ServerNetworkManager sNetworkManager = new ServerNetworkManager(s2cTranslator, instance);
+
+                NetHandlerPlayClient netHandlerPlayClient = new NetHandlerPlayClient(instance, null,
+                        cNetworkManager);
+
+                s2cTranslator.setNetHandlerPlayClient(netHandlerPlayClient);
+
+                PlayerConnection playerConnection = new PlayerConnection(MinecraftServer.getServer(), sNetworkManager,
+                        serverSide) {
+                    @Getter
+                    private boolean disconnected = false;
+
+                    @Override
+                    public void disconnect(String s) {
+                        despawn(configuration.getUuid());
+                        // TODO: cancellable kick event
+                        super.disconnect(s);
+                        disconnected = true;
+                    }
+
+                    @Override
+                    // TODO: Temporary fix for the issue with the player's ping
+                    public void a(PacketPlayInKeepAlive packetplayinkeepalive) {
+                        this.player.ping = instance.getLatency();
+                    }
+
+                };
+
+                c2sTranslator.setPlayerConnection(playerConnection);
+
+                serverSide.callSpawnEvents();
+
+                playerConnection.sendPacket(new PacketPlayOutLogin(serverSide.getId(),
+                        EnumGamemode.getById(serverSide.getGameModeId()), serverSide.isWorldHardcore(),
+                        serverSide.getDimensionId(), EnumDifficulty.getById(serverSide.getDifficultyId()),
+                        Math.min(serverSide.getMaxPlayers(), 60),
+                        WorldType.getType(serverSide.getWorldTypeName()),
+                        serverSide.isReducedDebugInfo()));
+
+                InstanceManager.getInstances().put(instance.getUuid(), instance);
+
+                int[] spawn = serverSide.getWorldSpawn();
+                serverSide.initializeGameMode();
+
+                serverSide.sendSupportedChannels();
+
+                // playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|Brand",
+                // new PacketDataSerializer(
+                // Unpooled.wrappedBuffer(ByteUtil.stringToBytes(serverSide.getServerModName())))));
+
+                playerConnection.sendPacket(new PacketPlayOutServerDifficulty(
+                        EnumDifficulty.getById(serverSide.getDifficultyId()), serverSide.isDifficultyLocked()));
+
+                playerConnection
+                        .sendPacket(new PacketPlayOutSpawnPosition(new BlockPosition(spawn[0], spawn[1], spawn[2])));
+
+                playerConnection.sendPacket(new PacketPlayOutAbilities(serverSide.abilities));
+
+                playerConnection.sendPacket(new PacketPlayOutHeldItemSlot(serverSide.getItemInHandIndex()));
+
+                serverSide.sendScoreboard();
+                serverSide.resetPlayerSampleUpdateTimer();
+
+                serverSide.onJoin();
+
+                // Send location to client
+                serverSide.sendLocationToClient();
+
+                // World border, time, weather
+                serverSide.initWorld();
+
+                serverSide.initResourcePack();
+
+                // serverSide.getEffectPackets().forEach(packet ->
+                // getServerConnection().queuePacket(packet));
+                serverSide.syncInventory();
+            });
         });
-
-        String name = configuration.getUsername();
-
-        NMSServerPlayer serverSide = new NMSServerPlayer(location.getWorld(),
-                configuration.getUuid(), name, configuration.getSkin().getValue(),
-                configuration.getSkin().getSignature());
-
-        serverSide.setPosition(location.getX(), location.getY(), location.getZ());
-        serverSide.setYawPitch(location.getYaw(), location.getPitch());
-        serverSide.spawnInWorld(location.getWorld());
-
-        ClientNetworkManager cNetworkManager = new ClientNetworkManager(c2sTranslator,
-                instance);
-        ServerNetworkManager sNetworkManager = new ServerNetworkManager(s2cTranslator, instance);
-
-        NetHandlerPlayClient netHandlerPlayClient = new NetHandlerPlayClient(instance, null,
-                cNetworkManager);
-
-        s2cTranslator.setNetHandlerPlayClient(netHandlerPlayClient);
-
-        PlayerConnection playerConnection = new PlayerConnection(MinecraftServer.getServer(), sNetworkManager,
-                serverSide) {
-            @Getter
-            private boolean disconnected = false;
-
-            @Override
-            public void disconnect(String s) {
-                despawn(configuration.getUuid());
-                // TODO: cancellable kick event
-                super.disconnect(s);
-                disconnected = true;
-            }
-
-            @Override
-            // TODO: Temporary fix for the issue with the player's ping
-            public void a(PacketPlayInKeepAlive packetplayinkeepalive) {
-                this.player.ping = instance.getLatency();
-            }
-
-        };
-
-        c2sTranslator.setPlayerConnection(playerConnection);
-
-        serverSide.callSpawnEvents();
-
-        playerConnection.sendPacket(new PacketPlayOutLogin(serverSide.getId(),
-                EnumGamemode.getById(serverSide.getGameModeId()), serverSide.isWorldHardcore(),
-                serverSide.getDimensionId(), EnumDifficulty.getById(serverSide.getDifficultyId()),
-                Math.min(serverSide.getMaxPlayers(), 60),
-                WorldType.getType(serverSide.getWorldTypeName()),
-                serverSide.isReducedDebugInfo()));
-
-        int[] spawn = serverSide.getWorldSpawn();
-        serverSide.initializeGameMode();
-
-        serverSide.sendSupportedChannels();
-
-        // playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|Brand",
-        // new PacketDataSerializer(
-        // Unpooled.wrappedBuffer(ByteUtil.stringToBytes(serverSide.getServerModName())))));
-
-        playerConnection.sendPacket(new PacketPlayOutServerDifficulty(
-                EnumDifficulty.getById(serverSide.getDifficultyId()), serverSide.isDifficultyLocked()));
-
-        playerConnection.sendPacket(new PacketPlayOutSpawnPosition(new BlockPosition(spawn[0], spawn[1], spawn[2])));
-
-        playerConnection.sendPacket(new PacketPlayOutAbilities(serverSide.abilities));
-
-        playerConnection.sendPacket(new PacketPlayOutHeldItemSlot(serverSide.getItemInHandIndex()));
-
-        serverSide.sendScoreboard();
-        serverSide.resetPlayerSampleUpdateTimer();
-
-        serverSide.onJoin();
-
-        // Send location to client
-        serverSide.sendLocationToClient();
-
-        // World border, time, weather
-        serverSide.initWorld();
-
-        serverSide.initResourcePack();
-
-        // serverSide.getEffectPackets().forEach(packet ->
-        // getServerConnection().queuePacket(packet));
-        serverSide.syncInventory();
 
         spawnRecords.add(new SpawnRecord(configuration.getUsername(), (System.nanoTime() / 1000000) - startTime));
 
