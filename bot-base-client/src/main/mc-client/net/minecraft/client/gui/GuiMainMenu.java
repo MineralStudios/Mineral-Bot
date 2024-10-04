@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GLContext;
 import gg.mineral.bot.base.lwjgl.util.glu.Project;
+import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -84,36 +85,38 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         super(mc);
         this.field_146972_A = field_96138_a;
         this.splashText = "missingno";
-        BufferedReader var1 = null;
+        if (!BotGlobalConfig.isOptimizedGameLoop()) {
+            BufferedReader var1 = null;
 
-        try {
-            ArrayList<String> var2 = new ArrayList<>();
-            var1 = new BufferedReader(new InputStreamReader(
-                    mc.getResourceManager().getResource(splashTexts).getInputStream(),
-                    Charsets.UTF_8));
-            String var3;
+            try {
+                ArrayList<String> var2 = new ArrayList<>();
+                var1 = new BufferedReader(new InputStreamReader(
+                        mc.getResourceManager().getResource(splashTexts).getInputStream(),
+                        Charsets.UTF_8));
+                String var3;
 
-            while ((var3 = var1.readLine()) != null) {
-                var3 = var3.trim();
+                while ((var3 = var1.readLine()) != null) {
+                    var3 = var3.trim();
 
-                if (!var3.isEmpty()) {
-                    var2.add(var3);
+                    if (!var3.isEmpty()) {
+                        var2.add(var3);
+                    }
                 }
-            }
 
-            if (!var2.isEmpty()) {
-                do {
-                    this.splashText = (String) var2.get(rand.nextInt(var2.size()));
-                } while (this.splashText.hashCode() == 125780783);
-            }
-        } catch (IOException var12) {
-            ;
-        } finally {
-            if (var1 != null) {
-                try {
-                    var1.close();
-                } catch (IOException var11) {
-                    ;
+                if (!var2.isEmpty()) {
+                    do {
+                        this.splashText = (String) var2.get(rand.nextInt(var2.size()));
+                    } while (this.splashText.hashCode() == 125780783);
+                }
+            } catch (IOException var12) {
+                ;
+            } finally {
+                if (var1 != null) {
+                    try {
+                        var1.close();
+                    } catch (IOException var11) {
+                        ;
+                    }
                 }
             }
         }
