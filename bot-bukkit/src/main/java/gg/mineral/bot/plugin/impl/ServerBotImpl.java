@@ -16,6 +16,7 @@ import gg.mineral.bot.base.client.BotImpl;
 import gg.mineral.bot.base.client.gui.GuiConnecting;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import gg.mineral.bot.impl.thread.ThreadManager;
 import gg.mineral.bot.plugin.impl.player.NMSServerPlayer;
 import gg.mineral.bot.plugin.network.ClientNetworkManager;
 import gg.mineral.bot.plugin.network.ServerNetworkManager;
@@ -73,7 +74,10 @@ public class ServerBotImpl extends BotImpl implements Listener {
             }
         };
         instance.setServer("127.0.0.1", Bukkit.getServer().getPort());
-        instance.run();
+        ThreadManager.getGameLoopExecutor().execute(() -> {
+            instance.run();
+            InstanceManager.getInstances().put(instance.getUuid(), instance);
+        });
 
         String name = configuration.getUsername();
 
@@ -125,8 +129,6 @@ public class ServerBotImpl extends BotImpl implements Listener {
                 Math.min(serverSide.getMaxPlayers(), 60),
                 WorldType.getType(serverSide.getWorldTypeName()),
                 serverSide.isReducedDebugInfo()));
-
-        InstanceManager.getInstances().put(instance.getUuid(), instance);
 
         int[] spawn = serverSide.getWorldSpawn();
         serverSide.initializeGameMode();

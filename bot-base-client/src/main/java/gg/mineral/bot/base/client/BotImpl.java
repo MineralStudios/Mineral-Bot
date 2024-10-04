@@ -15,6 +15,7 @@ import gg.mineral.bot.api.math.ServerLocation;
 import gg.mineral.bot.api.message.ChatColor;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import gg.mineral.bot.impl.thread.ThreadManager;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import java.util.Iterator;
@@ -90,8 +91,10 @@ public abstract class BotImpl extends BotAPI {
                 "1.7.10");
 
         instance.setServer(serverIp, serverPort);
-        instance.run();
-        InstanceManager.getInstances().put(instance.getUuid(), instance);
+        ThreadManager.getGameLoopExecutor().execute(() -> {
+            instance.run();
+            InstanceManager.getInstances().put(instance.getUuid(), instance);
+        });
 
         spawnRecords.add(new SpawnRecord(configuration.getUsername(), (System.nanoTime() / 1000000) - startTime));
         return instance;
