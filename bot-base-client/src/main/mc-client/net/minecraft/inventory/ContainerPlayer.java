@@ -69,9 +69,20 @@ public class ContainerPlayer extends Container {
     /**
      * Callback for when the crafting matrix is changed.
      */
-    public void onCraftMatrixChanged(IInventory p_75130_1_) {
-        this.craftResult.setInventorySlotContents(0,
-                CraftingManager.getInstance().findMatchingRecipe(this.craftMatrix, this.thePlayer.worldObj));
+    public void onCraftMatrixChanged(IInventory inventory) {
+        if (!isCraftMatrixEmpty())
+            this.craftResult.setInventorySlotContents(0,
+                    CraftingManager.getInstance().findMatchingRecipe(this.craftMatrix, this.thePlayer.worldObj));
+        else
+            this.craftResult.setInventorySlotContents(0, null);
+    }
+
+    private boolean isCraftMatrixEmpty() {
+        for (int i = 0; i < this.craftMatrix.getSizeInventory(); ++i)
+            if (this.craftMatrix.getStackInSlot(i) != null)
+                return false;
+
+        return true;
     }
 
     /**
