@@ -173,7 +173,7 @@ public class Minecraft {
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
 
     /** A 10MiB preallocation to ensure the heap is reasonably sized. */
-    public static byte[] memoryReserve = new byte[10485760];
+    public static byte[] memoryReserve = BotGlobalConfig.isOptimizedGameLoop() ? new byte[0] : new byte[10485760];
     private static final List<DisplayMode> macDisplayModes = Lists
             .newArrayList(new DisplayMode[] { new DisplayMode(2560, 1600), new DisplayMode(2880, 1800) });
     private final File fileResourcepacks;
@@ -324,7 +324,9 @@ public class Minecraft {
     private MusicTicker mcMusicTicker;
     @Nullable
     private ResourceLocation minecraftLogoTexture;
-    private final MinecraftSessionService field_152355_az;
+    @Nullable
+    @Getter
+    private final MinecraftSessionService authenticationService;
     @Getter
     @Nullable
     private SkinManager skinManager;
@@ -404,8 +406,9 @@ public class Minecraft {
                             : (new ResourceIndex(p_i1103_7_, p_i1103_12_)).func_152782_a());
         this.addDefaultResourcePack();
         this.proxy = p_i1103_9_ == null ? Proxy.NO_PROXY : p_i1103_9_;
-        this.field_152355_az = (new YggdrasilAuthenticationService(p_i1103_9_, UUID.randomUUID().toString()))
-                .createMinecraftSessionService();
+        this.authenticationService = BotGlobalConfig.isDisableConnection() ? null
+                : (new YggdrasilAuthenticationService(p_i1103_9_, UUID.randomUUID().toString()))
+                        .createMinecraftSessionService();
         this.session = p_i1103_1_;
         if (BotGlobalConfig.isDebug())
             logger.info("Setting user: " + p_i1103_1_.getUsername());
@@ -593,7 +596,7 @@ public class Minecraft {
             this.renderEngine = new TextureManager(this, this.mcResourceManager);
             this.mcResourceManager.registerReloadListener(this.renderEngine);
             this.skinManager = new SkinManager(this, this.renderEngine, new File(this.fileAssets, "skins"),
-                    this.field_152355_az);
+                    this.authenticationService);
         }
         this.loadScreen();
         this.mcSoundHandler = new SoundHandler(this, this.mcResourceManager, this.gameSettings);
@@ -2388,13 +2391,6 @@ public class Minecraft {
     }
 
     /**
-     * Returns whether snooping is enabled or not.
-     */
-    public boolean isSnooperEnabled() {
-        return this.gameSettings.snooperEnabled;
-    }
-
-    /**
      * Set the current ServerData instance.
      */
     public void setServerData(ServerData p_71351_1_) {
@@ -2542,10 +2538,6 @@ public class Minecraft {
 
     public boolean isMainThread() {
         return Thread.currentThread() == this.mainThread;
-    }
-
-    public MinecraftSessionService func_152347_ac() {
-        return this.field_152355_az;
     }
 
     static final class SwitchMovingObjectType {

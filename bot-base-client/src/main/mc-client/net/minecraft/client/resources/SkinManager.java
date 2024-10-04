@@ -19,6 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IImageBuffer;
@@ -34,14 +35,16 @@ public class SkinManager {
             new LinkedBlockingQueue());
     private final TextureManager field_152795_c;
     private final File field_152796_d;
-    private final MinecraftSessionService field_152797_e;
+    @Nullable
+    private final MinecraftSessionService authenticationService;
     private final LoadingCache<GameProfile, Map<MinecraftProfileTexture.Type, MinecraftProfileTexture>> field_152798_f;
     private final Minecraft mc;
 
-    public SkinManager(Minecraft mc, TextureManager p_i1044_1_, File p_i1044_2_, MinecraftSessionService p_i1044_3_) {
+    public SkinManager(Minecraft mc, TextureManager p_i1044_1_, File p_i1044_2_,
+            @Nullable MinecraftSessionService authenticationService) {
         this.field_152795_c = p_i1044_1_;
         this.field_152796_d = p_i1044_2_;
-        this.field_152797_e = p_i1044_3_;
+        this.authenticationService = authenticationService;
         this.mc = mc;
         this.field_152798_f = CacheBuilder.newBuilder().expireAfterAccess(15L, TimeUnit.SECONDS)
                 .build(new CacheLoader<>() {
@@ -49,7 +52,12 @@ public class SkinManager {
                     @Override
                     public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> load(
                             @Nonnull GameProfile gameProfile) {
-                        return mc.func_152347_ac().getTextures(gameProfile, false);
+                        MinecraftSessionService mcSessionService = mc.getAuthenticationService();
+
+                        if (mcSessionService == null)
+                            return Maps.newHashMap();
+
+                        return mcSessionService.getTextures(gameProfile, false);
                     }
                 });
     }
@@ -101,21 +109,26 @@ public class SkinManager {
 
     public void func_152790_a(final GameProfile p_152790_1_, final SkinManager.SkinAvailableCallback p_152790_2_,
             final boolean p_152790_3_) {
+
+        MinecraftSessionService authenticationService = this.authenticationService;
+
+        if (authenticationService == null)
+            return;
         field_152794_b.submit(new Runnable() {
 
             public void run() {
                 final HashMap var1 = Maps.newHashMap();
 
                 try {
-                    var1.putAll(SkinManager.this.field_152797_e.getTextures(p_152790_1_, p_152790_3_));
+                    var1.putAll(authenticationService.getTextures(p_152790_1_, p_152790_3_));
                 } catch (InsecureTextureException var3) {
                     ;
                 }
 
                 if (var1.isEmpty()
                         && p_152790_1_.getId().equals(SkinManager.this.mc.getSession().getGameProfile().getId())) {
-                    var1.putAll(SkinManager.this.field_152797_e.getTextures(
-                            SkinManager.this.field_152797_e.fillProfileProperties(p_152790_1_, false), false));
+                    var1.putAll(authenticationService.getTextures(
+                            authenticationService.fillProfileProperties(p_152790_1_, false), false));
                 }
 
                 SkinManager.this.mc.scheduleOnMainThread(new Runnable() {

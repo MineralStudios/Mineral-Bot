@@ -180,7 +180,6 @@ public class GameSettings {
     public boolean chatLinks;
     public boolean chatLinksPrompt;
     public float chatOpacity;
-    public boolean snooperEnabled;
     public boolean fullScreen;
     public boolean enableVsync;
     public boolean hideServerAddress;
@@ -284,7 +283,6 @@ public class GameSettings {
         this.chatLinks = true;
         this.chatLinksPrompt = true;
         this.chatOpacity = 1.0F;
-        this.snooperEnabled = true;
         this.enableVsync = true;
         this.pauseOnLostFocus = true;
         this.showCape = true;
@@ -371,7 +369,6 @@ public class GameSettings {
         this.chatLinks = true;
         this.chatLinksPrompt = true;
         this.chatOpacity = 1.0F;
-        this.snooperEnabled = true;
         this.enableVsync = true;
         this.pauseOnLostFocus = true;
         this.showCape = true;
@@ -1098,9 +1095,6 @@ public class GameSettings {
         if (par1EnumOptions == GameSettings.Options.CHAT_LINKS_PROMPT)
             this.chatLinksPrompt = !this.chatLinksPrompt;
 
-        if (par1EnumOptions == GameSettings.Options.SNOOPER_ENABLED)
-            this.snooperEnabled = !this.snooperEnabled;
-
         if (par1EnumOptions == GameSettings.Options.SHOW_CAPE)
             this.showCape = !this.showCape;
 
@@ -1183,9 +1177,6 @@ public class GameSettings {
 
             case 9:
                 return this.chatLinksPrompt;
-
-            case 10:
-                return this.snooperEnabled;
 
             case 11:
                 return this.fullScreen;
@@ -1764,10 +1755,6 @@ public class GameSettings {
                         this.chatOpacity = this.parseFloat(var8[1]);
                     }
 
-                    if (var8[0].equals("snooperEnabled")) {
-                        this.snooperEnabled = var8[1].equals("true");
-                    }
-
                     if (var8[0].equals("fullscreen")) {
                         this.fullScreen = var8[1].equals("true");
                     }
@@ -1968,7 +1955,6 @@ public class GameSettings {
             var81.println("chatLinks:" + this.chatLinks);
             var81.println("chatLinksPrompt:" + this.chatLinksPrompt);
             var81.println("chatOpacity:" + this.chatOpacity);
-            var81.println("snooperEnabled:" + this.snooperEnabled);
             var81.println("fullscreen:" + this.fullScreen);
             var81.println("enableVsync:" + this.enableVsync);
             var81.println("hideServerAddress:" + this.hideServerAddress);
@@ -2699,100 +2685,93 @@ public class GameSettings {
                                                                                                                                                                         21,
                                                                                                                                                                         "options.chat.links.prompt",
                                                                                                                                                                         false,
-                                                                                                                                                                        true), SNOOPER_ENABLED(
-                                                                                                                                                                                "SNOOPER_ENABLED",
-                                                                                                                                                                                22,
-                                                                                                                                                                                "SNOOPER_ENABLED",
-                                                                                                                                                                                22,
-                                                                                                                                                                                "options.snooper",
+                                                                                                                                                                        true), USE_FULLSCREEN(
+                                                                                                                                                                                "USE_FULLSCREEN",
+                                                                                                                                                                                23,
+                                                                                                                                                                                "USE_FULLSCREEN",
+                                                                                                                                                                                23,
+                                                                                                                                                                                "options.fullscreen",
                                                                                                                                                                                 false,
-                                                                                                                                                                                true), USE_FULLSCREEN(
-                                                                                                                                                                                        "USE_FULLSCREEN",
-                                                                                                                                                                                        23,
-                                                                                                                                                                                        "USE_FULLSCREEN",
-                                                                                                                                                                                        23,
-                                                                                                                                                                                        "options.fullscreen",
+                                                                                                                                                                                true), ENABLE_VSYNC(
+                                                                                                                                                                                        "ENABLE_VSYNC",
+                                                                                                                                                                                        24,
+                                                                                                                                                                                        "ENABLE_VSYNC",
+                                                                                                                                                                                        24,
+                                                                                                                                                                                        "options.vsync",
                                                                                                                                                                                         false,
-                                                                                                                                                                                        true), ENABLE_VSYNC(
-                                                                                                                                                                                                "ENABLE_VSYNC",
-                                                                                                                                                                                                24,
-                                                                                                                                                                                                "ENABLE_VSYNC",
-                                                                                                                                                                                                24,
-                                                                                                                                                                                                "options.vsync",
+                                                                                                                                                                                        true), SHOW_CAPE(
+                                                                                                                                                                                                "SHOW_CAPE",
+                                                                                                                                                                                                25,
+                                                                                                                                                                                                "SHOW_CAPE",
+                                                                                                                                                                                                25,
+                                                                                                                                                                                                "options.showCape",
                                                                                                                                                                                                 false,
-                                                                                                                                                                                                true), SHOW_CAPE(
-                                                                                                                                                                                                        "SHOW_CAPE",
-                                                                                                                                                                                                        25,
-                                                                                                                                                                                                        "SHOW_CAPE",
-                                                                                                                                                                                                        25,
-                                                                                                                                                                                                        "options.showCape",
+                                                                                                                                                                                                true), TOUCHSCREEN(
+                                                                                                                                                                                                        "TOUCHSCREEN",
+                                                                                                                                                                                                        26,
+                                                                                                                                                                                                        "TOUCHSCREEN",
+                                                                                                                                                                                                        26,
+                                                                                                                                                                                                        "options.touchscreen",
                                                                                                                                                                                                         false,
-                                                                                                                                                                                                        true), TOUCHSCREEN(
-                                                                                                                                                                                                                "TOUCHSCREEN",
-                                                                                                                                                                                                                26,
-                                                                                                                                                                                                                "TOUCHSCREEN",
-                                                                                                                                                                                                                26,
-                                                                                                                                                                                                                "options.touchscreen",
-                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                true), CHAT_SCALE(
-                                                                                                                                                                                                                        "CHAT_SCALE",
-                                                                                                                                                                                                                        27,
-                                                                                                                                                                                                                        "CHAT_SCALE",
-                                                                                                                                                                                                                        27,
-                                                                                                                                                                                                                        "options.chat.scale",
+                                                                                                                                                                                                        true), CHAT_SCALE(
+                                                                                                                                                                                                                "CHAT_SCALE",
+                                                                                                                                                                                                                27,
+                                                                                                                                                                                                                "CHAT_SCALE",
+                                                                                                                                                                                                                27,
+                                                                                                                                                                                                                "options.chat.scale",
+                                                                                                                                                                                                                true,
+                                                                                                                                                                                                                false), CHAT_WIDTH(
+                                                                                                                                                                                                                        "CHAT_WIDTH",
+                                                                                                                                                                                                                        28,
+                                                                                                                                                                                                                        "CHAT_WIDTH",
+                                                                                                                                                                                                                        28,
+                                                                                                                                                                                                                        "options.chat.width",
                                                                                                                                                                                                                         true,
-                                                                                                                                                                                                                        false), CHAT_WIDTH(
-                                                                                                                                                                                                                                "CHAT_WIDTH",
-                                                                                                                                                                                                                                28,
-                                                                                                                                                                                                                                "CHAT_WIDTH",
-                                                                                                                                                                                                                                28,
-                                                                                                                                                                                                                                "options.chat.width",
+                                                                                                                                                                                                                        false), CHAT_HEIGHT_FOCUSED(
+                                                                                                                                                                                                                                "CHAT_HEIGHT_FOCUSED",
+                                                                                                                                                                                                                                29,
+                                                                                                                                                                                                                                "CHAT_HEIGHT_FOCUSED",
+                                                                                                                                                                                                                                29,
+                                                                                                                                                                                                                                "options.chat.height.focused",
                                                                                                                                                                                                                                 true,
-                                                                                                                                                                                                                                false), CHAT_HEIGHT_FOCUSED(
-                                                                                                                                                                                                                                        "CHAT_HEIGHT_FOCUSED",
-                                                                                                                                                                                                                                        29,
-                                                                                                                                                                                                                                        "CHAT_HEIGHT_FOCUSED",
-                                                                                                                                                                                                                                        29,
-                                                                                                                                                                                                                                        "options.chat.height.focused",
+                                                                                                                                                                                                                                false), CHAT_HEIGHT_UNFOCUSED(
+                                                                                                                                                                                                                                        "CHAT_HEIGHT_UNFOCUSED",
+                                                                                                                                                                                                                                        30,
+                                                                                                                                                                                                                                        "CHAT_HEIGHT_UNFOCUSED",
+                                                                                                                                                                                                                                        30,
+                                                                                                                                                                                                                                        "options.chat.height.unfocused",
                                                                                                                                                                                                                                         true,
-                                                                                                                                                                                                                                        false), CHAT_HEIGHT_UNFOCUSED(
-                                                                                                                                                                                                                                                "CHAT_HEIGHT_UNFOCUSED",
-                                                                                                                                                                                                                                                30,
-                                                                                                                                                                                                                                                "CHAT_HEIGHT_UNFOCUSED",
-                                                                                                                                                                                                                                                30,
-                                                                                                                                                                                                                                                "options.chat.height.unfocused",
+                                                                                                                                                                                                                                        false), MIPMAP_LEVELS(
+                                                                                                                                                                                                                                                "MIPMAP_LEVELS",
+                                                                                                                                                                                                                                                31,
+                                                                                                                                                                                                                                                "MIPMAP_LEVELS",
+                                                                                                                                                                                                                                                31,
+                                                                                                                                                                                                                                                "options.mipmapLevels",
                                                                                                                                                                                                                                                 true,
-                                                                                                                                                                                                                                                false), MIPMAP_LEVELS(
-                                                                                                                                                                                                                                                        "MIPMAP_LEVELS",
-                                                                                                                                                                                                                                                        31,
-                                                                                                                                                                                                                                                        "MIPMAP_LEVELS",
-                                                                                                                                                                                                                                                        31,
-                                                                                                                                                                                                                                                        "options.mipmapLevels",
+                                                                                                                                                                                                                                                false,
+                                                                                                                                                                                                                                                0.0F,
+                                                                                                                                                                                                                                                4.0F,
+                                                                                                                                                                                                                                                1.0F), ANISOTROPIC_FILTERING(
+                                                                                                                                                                                                                                                        "ANISOTROPIC_FILTERING",
+                                                                                                                                                                                                                                                        32,
+                                                                                                                                                                                                                                                        "ANISOTROPIC_FILTERING",
+                                                                                                                                                                                                                                                        32,
+                                                                                                                                                                                                                                                        "options.anisotropicFiltering",
                                                                                                                                                                                                                                                         true,
                                                                                                                                                                                                                                                         false,
+                                                                                                                                                                                                                                                        1.0F,
+                                                                                                                                                                                                                                                        16.0F,
                                                                                                                                                                                                                                                         0.0F,
-                                                                                                                                                                                                                                                        4.0F,
-                                                                                                                                                                                                                                                        1.0F), ANISOTROPIC_FILTERING(
-                                                                                                                                                                                                                                                                "ANISOTROPIC_FILTERING",
-                                                                                                                                                                                                                                                                32,
-                                                                                                                                                                                                                                                                "ANISOTROPIC_FILTERING",
-                                                                                                                                                                                                                                                                32,
-                                                                                                                                                                                                                                                                "options.anisotropicFiltering",
-                                                                                                                                                                                                                                                                true,
-                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                1.0F,
-                                                                                                                                                                                                                                                                16.0F,
-                                                                                                                                                                                                                                                                0.0F,
-                                                                                                                                                                                                                                                                (Object) null,
-                                                                                                                                                                                                                                                                null) {
+                                                                                                                                                                                                                                                        (Object) null,
+                                                                                                                                                                                                                                                        null) {
 
-                                                                                                                                                                                                                                                            protected float snapToStep(
-                                                                                                                                                                                                                                                                    float p_148264_1_) {
-                                                                                                                                                                                                                                                                return (float) MathHelper
-                                                                                                                                                                                                                                                                        .roundUpToPowerOfTwo(
-                                                                                                                                                                                                                                                                                (int) p_148264_1_);
-                                                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                                        },
+                                                                                                                                                                                                                                                    protected float snapToStep(
+                                                                                                                                                                                                                                                            float p_148264_1_) {
+                                                                                                                                                                                                                                                        return (float) MathHelper
+                                                                                                                                                                                                                                                                .roundUpToPowerOfTwo(
+                                                                                                                                                                                                                                                                        (int) p_148264_1_);
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                },
         FORCE_UNICODE_FONT("FORCE_UNICODE_FONT", 33, "FORCE_UNICODE_FONT", 33, "options.forceUnicodeFont", false, true),
 
         FOG_FANCY("FOG_FANCY", 44, "FOG", 999, "Fog", false, false), FOG_START("FOG_START", 45, "", 999, "Fog Start",
@@ -3172,14 +3151,14 @@ public class GameSettings {
         private static final GameSettings.Options[] $VALUES = new GameSettings.Options[] { INVERT_MOUSE, SENSITIVITY,
                 FOV, GAMMA, SATURATION, RENDER_DISTANCE, VIEW_BOBBING, ANAGLYPH, ADVANCED_OPENGL, FRAMERATE_LIMIT,
                 FBO_ENABLE, DIFFICULTY, GRAPHICS, AMBIENT_OCCLUSION, GUI_SCALE, RENDER_CLOUDS, PARTICLES,
-                CHAT_VISIBILITY, CHAT_COLOR, CHAT_LINKS, CHAT_OPACITY, CHAT_LINKS_PROMPT, SNOOPER_ENABLED,
+                CHAT_VISIBILITY, CHAT_COLOR, CHAT_LINKS, CHAT_OPACITY, CHAT_LINKS_PROMPT,
                 USE_FULLSCREEN, ENABLE_VSYNC, SHOW_CAPE, TOUCHSCREEN, CHAT_SCALE, CHAT_WIDTH, CHAT_HEIGHT_FOCUSED,
                 CHAT_HEIGHT_UNFOCUSED, MIPMAP_LEVELS, ANISOTROPIC_FILTERING, FORCE_UNICODE_FONT };
 
         private static final GameSettings.Options[] $VALUES$ = new GameSettings.Options[] { INVERT_MOUSE, SENSITIVITY,
                 FOV, GAMMA, SATURATION, RENDER_DISTANCE, VIEW_BOBBING, ANAGLYPH, ADVANCED_OPENGL, FRAMERATE_LIMIT,
                 FBO_ENABLE, DIFFICULTY, GRAPHICS, AMBIENT_OCCLUSION, GUI_SCALE, RENDER_CLOUDS, PARTICLES,
-                CHAT_VISIBILITY, CHAT_COLOR, CHAT_LINKS, CHAT_OPACITY, CHAT_LINKS_PROMPT, SNOOPER_ENABLED,
+                CHAT_VISIBILITY, CHAT_COLOR, CHAT_LINKS, CHAT_OPACITY, CHAT_LINKS_PROMPT,
                 USE_FULLSCREEN, ENABLE_VSYNC, SHOW_CAPE, TOUCHSCREEN, CHAT_SCALE, CHAT_WIDTH, CHAT_HEIGHT_FOCUSED,
                 CHAT_HEIGHT_UNFOCUSED, MIPMAP_LEVELS, ANISOTROPIC_FILTERING, FORCE_UNICODE_FONT,
                 FOG_FANCY, FOG_START, MIPMAP_TYPE, LOAD_FAR, PRELOADED_CHUNKS, SMOOTH_FPS, CLOUDS, CLOUD_HEIGHT, TREES,
@@ -3337,12 +3316,6 @@ public class GameSettings {
             try {
                 optionIds[GameSettings.Options.CHAT_LINKS_PROMPT.ordinal()] = 9;
             } catch (NoSuchFieldError var8) {
-                ;
-            }
-
-            try {
-                optionIds[GameSettings.Options.SNOOPER_ENABLED.ordinal()] = 10;
-            } catch (NoSuchFieldError var7) {
                 ;
             }
 

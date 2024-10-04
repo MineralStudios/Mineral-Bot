@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -21,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ReportedException;
 import net.minecraft.world.gen.layer.IntCache;
-import optifine.CrashReporter;
 import optifine.Reflector;
 
 public class CrashReport {
@@ -207,10 +205,8 @@ public class CrashReport {
      * a string.
      */
     public String getCompleteReport(Minecraft mc) {
-        if (!this.reported) {
+        if (!this.reported)
             this.reported = true;
-            CrashReporter.onCrashReport(mc, this, this.theReportCategory);
-        }
 
         StringBuilder var1 = new StringBuilder();
         var1.append("---- Minecraft Crash Report ----\n");
