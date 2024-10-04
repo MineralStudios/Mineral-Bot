@@ -114,8 +114,12 @@ public class InventoryCrafting implements IInventory {
      * crafting or armor sections).
      */
     public void setInventorySlotContents(int p_70299_1_, ItemStack p_70299_2_) {
+        ItemStack prevItem = this.stackList[p_70299_1_];
+        boolean changed = prevItem != null && p_70299_2_ != null && prevItem.getItem() != p_70299_2_.getItem();
         this.stackList[p_70299_1_] = p_70299_2_;
-        this.eventHandler.onCraftMatrixChanged(this);
+
+        if (changed)
+            this.eventHandler.onCraftMatrixChanged(this);
     }
 
     /**
