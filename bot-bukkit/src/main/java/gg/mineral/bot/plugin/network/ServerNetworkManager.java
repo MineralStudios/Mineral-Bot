@@ -1,5 +1,8 @@
 package gg.mineral.bot.plugin.network;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import gg.mineral.bot.base.client.player.FakePlayerInstance;
 import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator;
 import io.netty.util.concurrent.Future;
@@ -11,8 +14,11 @@ import net.minecraft.server.v1_8_R3.Packet;
 
 public class ServerNetworkManager extends NetworkManager {
 
+    private boolean started = false;
+
     private final Server2ClientTranslator translator;
     private final Minecraft mc;
+    private final Queue<Packet<?>> packetQueue = new ConcurrentLinkedQueue<>();
 
     public ServerNetworkManager(Server2ClientTranslator translator, Minecraft mc) {
         super(EnumProtocolDirection.SERVERBOUND);
@@ -20,9 +26,21 @@ public class ServerNetworkManager extends NetworkManager {
         this.mc = mc;
     }
 
+    public void releasePacketQueue() {
+        started = true;
+        Packet<?> packet;
+        while ((packet = packetQueue.poll()) != null)
+            handle(packet);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void handle(@SuppressWarnings("rawtypes") Packet packet) {
+        if (!started) {
+            packetQueue.add(packet);
+            return;
+        }
+
         if (mc instanceof FakePlayerInstance instance && (!mc.isMainThread() || instance.getLatency() > 0))
             instance.scheduleTask(() -> translator.handlePacket(packet), instance.getLatency());
         else
