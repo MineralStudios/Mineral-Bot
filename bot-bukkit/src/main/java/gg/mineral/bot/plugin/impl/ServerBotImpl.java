@@ -89,11 +89,6 @@ public class ServerBotImpl extends BotImpl implements Listener {
                 instance);
         ServerNetworkManager sNetworkManager = new ServerNetworkManager(s2cTranslator, instance);
 
-        NetHandlerPlayClient netHandlerPlayClient = new NetHandlerPlayClient(instance, null,
-                cNetworkManager);
-
-        s2cTranslator.setNetHandlerPlayClient(netHandlerPlayClient);
-
         PlayerConnection playerConnection = new PlayerConnection(MinecraftServer.getServer(), sNetworkManager,
                 serverSide) {
             @Getter
@@ -164,7 +159,7 @@ public class ServerBotImpl extends BotImpl implements Listener {
         ThreadManager.getGameLoopExecutor().execute(() -> {
             instance.run();
             InstanceManager.getInstances().put(instance.getUuid(), instance);
-            sNetworkManager.releasePacketQueue();
+            MinecraftServer.getServer().postToMainThread(() -> sNetworkManager.releasePacketQueue());
         });
 
         spawnRecords.add(new SpawnRecord(configuration.getUsername(), (System.nanoTime() / 1000000) - startTime));
