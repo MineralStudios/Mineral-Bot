@@ -349,7 +349,9 @@ public class Minecraft {
 
     /** Profiler currently displayed in the debug screen pie chart */
     private String debugProfilerName = "root";
+    @Nullable
     public final TileEntityRendererDispatcher tileEntityRendererDispatcher;
+    @Nullable
     public final TileEntityRendererChestHelper tileEntityRendererChestHelper;
 
     @Getter
@@ -385,8 +387,14 @@ public class Minecraft {
         this.mcDataDir = p_i1103_6_;
         this.fileAssets = p_i1103_7_;
         this.renderManager = !BotGlobalConfig.isOptimizedGameLoop() ? new RenderManager(this) : null;
-        this.tileEntityRendererDispatcher = new TileEntityRendererDispatcher(this);
-        this.tileEntityRendererChestHelper = new TileEntityRendererChestHelper(this);
+
+        this.tileEntityRendererDispatcher = !BotGlobalConfig.isOptimizedGameLoop()
+                ? new TileEntityRendererDispatcher(this)
+                : null;
+        this.tileEntityRendererChestHelper = !BotGlobalConfig.isOptimizedGameLoop()
+                ? new TileEntityRendererChestHelper(this)
+                : null;
+
         this.fileResourcepacks = p_i1103_8_;
         this.launchedVersion = p_i1103_10_;
         this.field_152356_J = p_i1103_11_;

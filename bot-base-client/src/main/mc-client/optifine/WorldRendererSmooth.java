@@ -210,16 +210,16 @@ public class WorldRendererSmooth extends WorldRenderer {
                                         TileEntity blockPass = chunkcache != null ? chunkcache.getTileEntity(x, y, z)
                                                 : null;
 
-                                        if (this.mc.tileEntityRendererDispatcher.hasSpecialRenderer(blockPass)) {
+                                        if (this.mc.tileEntityRendererDispatcher != null
+                                                && this.mc.tileEntityRendererDispatcher.hasSpecialRenderer(blockPass))
                                             this.tileEntityRenderers.add(blockPass);
-                                        }
+
                                     }
 
                                     int var33 = block.getRenderBlockPass();
 
-                                    if (var33 > var31) {
+                                    if (var33 > var31)
                                         var32 = true;
-                                    }
 
                                     boolean canRender = var33 == var31;
 

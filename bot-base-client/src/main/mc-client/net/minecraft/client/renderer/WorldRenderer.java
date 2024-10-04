@@ -87,7 +87,7 @@ public class WorldRenderer {
     /** Is the chunk lit */
     public boolean isChunkLit;
     protected boolean isInitialized;
-    public List tileEntityRenderers;
+    public List<TileEntity> tileEntityRenderers;
     protected List tileEntities;
 
     /** Bytes sent to the GPU */
@@ -113,7 +113,7 @@ public class WorldRenderer {
         this.tessellator = mc.getTessellator();
         this.mc = mc;
         this.skipRenderPass = new boolean[] { true, true };
-        this.tileEntityRenderers = new ArrayList();
+        this.tileEntityRenderers = new ArrayList<>();
         this.isVisibleFromPosition = false;
         this.isInFrustrumFully = false;
         this.needsBoxUpdate = false;
@@ -253,9 +253,11 @@ public class WorldRenderer {
                                         if (renderPass == 0 && hasTileEntity) {
                                             TileEntity blockPass = chunkcache.getTileEntity(x, y, z);
 
-                                            if (this.mc.tileEntityRendererDispatcher.hasSpecialRenderer(blockPass)) {
+                                            if (this.mc.tileEntityRendererDispatcher != null
+                                                    && this.mc.tileEntityRendererDispatcher
+                                                            .hasSpecialRenderer(blockPass))
                                                 this.tileEntityRenderers.add(blockPass);
-                                            }
+
                                         }
 
                                         int var32 = block.getRenderBlockPass();

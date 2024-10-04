@@ -170,6 +170,8 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
         if (itemStack != null && itemStack.getItem().getId() == Item.GOLDEN_APPLE)
             eatGapple();
+        else if (rmbHeld)
+            getMouse().unpressButton(MouseButton.Type.RIGHT_CLICK);
         else
             switchToGapple();
     }

@@ -123,16 +123,16 @@ public class WorldRendererThreaded extends WorldRenderer {
                                     if (renderPass == 0 && hasTileEntity) {
                                         TileEntity blockPass = chunkcache.getTileEntity(x, y, z);
 
-                                        if (this.mc.tileEntityRendererDispatcher.hasSpecialRenderer(blockPass)) {
+                                        if (this.mc.tileEntityRendererDispatcher != null
+                                                && this.mc.tileEntityRendererDispatcher.hasSpecialRenderer(blockPass))
                                             this.tileEntityRenderers.add(blockPass);
-                                        }
+
                                     }
 
                                     int var32 = block.getRenderBlockPass();
 
-                                    if (var32 > renderPass) {
+                                    if (var32 > renderPass)
                                         renderNextPass = true;
-                                    }
 
                                     boolean canRender = var32 == renderPass;
 

@@ -573,8 +573,9 @@ public class RenderGlobal implements IWorldAccess {
             double var6 = p_147589_1_.prevPosY + (p_147589_1_.posY - p_147589_1_.prevPosY) * (double) p_147589_3_;
             double var8 = p_147589_1_.prevPosZ + (p_147589_1_.posZ - p_147589_1_.prevPosZ) * (double) p_147589_3_;
             this.theWorld.theProfiler.startSection("prepare");
-            this.mc.tileEntityRendererDispatcher.func_147542_a(this.theWorld, this.mc.getTextureManager(),
-                    this.mc.fontRenderer, this.mc.renderViewEntity, p_147589_3_);
+            if (this.mc.tileEntityRendererDispatcher != null)
+                this.mc.tileEntityRendererDispatcher.func_147542_a(this.theWorld, this.mc.getTextureManager(),
+                        this.mc.fontRenderer, this.mc.renderViewEntity, p_147589_3_);
             RenderManager renderManager = this.mc.renderManager;
 
             if (renderManager != null)
@@ -616,13 +617,11 @@ public class RenderGlobal implements IWorldAccess {
             this.theWorld.theProfiler.endStartSection("global");
             List var24 = this.theWorld.getLoadedEntityList();
 
-            if (pass == 0) {
+            if (pass == 0)
                 this.countEntitiesTotal = var24.size();
-            }
 
-            if (Config.isFogOff() && this.mc.entityRenderer.fogStandard) {
+            if (Config.isFogOff() && this.mc.entityRenderer.fogStandard)
                 GL11.glDisable(GL11.GL_FOG);
-            }
 
             Entity var19;
             int var25;
@@ -703,11 +702,17 @@ public class RenderGlobal implements IWorldAccess {
                                     : Double.MAX_VALUE;
 
                             if (distSq > 256.0D) {
-                                FontRenderer fr = this.mc.tileEntityRendererDispatcher.func_147548_a();
-                                fr.enabled = false;
-                                this.mc.tileEntityRendererDispatcher.func_147544_a(var27, p_147589_3_);
+                                @Nullable
+                                FontRenderer fr = this.mc.tileEntityRendererDispatcher != null
+                                        ? this.mc.tileEntityRendererDispatcher.func_147548_a()
+                                        : null;
+                                if (fr != null)
+                                    fr.enabled = false;
+                                if (this.mc.tileEntityRendererDispatcher != null)
+                                    this.mc.tileEntityRendererDispatcher.func_147544_a(var27, p_147589_3_);
                                 ++this.countTileEntitiesRendered;
-                                fr.enabled = true;
+                                if (fr != null)
+                                    fr.enabled = true;
                                 continue;
                             }
                         }
@@ -721,7 +726,8 @@ public class RenderGlobal implements IWorldAccess {
                             }
                         }
 
-                        this.mc.tileEntityRendererDispatcher.func_147544_a(var27, p_147589_3_);
+                        if (this.mc.tileEntityRendererDispatcher != null)
+                            this.mc.tileEntityRendererDispatcher.func_147544_a(var27, p_147589_3_);
                         ++this.countTileEntitiesRendered;
                     }
                 }

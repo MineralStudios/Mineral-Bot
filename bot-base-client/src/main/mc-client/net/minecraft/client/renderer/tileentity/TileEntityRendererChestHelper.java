@@ -15,12 +15,16 @@ public class TileEntityRendererChestHelper {
     private final Minecraft mc;
 
     public void func_147715_a(Block p_147715_1_, int p_147715_2_, float p_147715_3_) {
-        if (p_147715_1_ == Blocks.ender_chest) {
-            this.mc.tileEntityRendererDispatcher.func_147549_a(this.field_147716_d, 0.0D, 0.0D, 0.0D, 0.0F);
-        } else if (p_147715_1_ == Blocks.trapped_chest) {
-            this.mc.tileEntityRendererDispatcher.func_147549_a(this.field_147718_c, 0.0D, 0.0D, 0.0D, 0.0F);
-        } else {
-            this.mc.tileEntityRendererDispatcher.func_147549_a(this.field_147717_b, 0.0D, 0.0D, 0.0D, 0.0F);
-        }
+        TileEntityRendererDispatcher tileEntityRendererDispatcher = this.mc.tileEntityRendererDispatcher;
+
+        if (tileEntityRendererDispatcher == null)
+            return;
+
+        if (p_147715_1_ == Blocks.ender_chest)
+            tileEntityRendererDispatcher.func_147549_a(this.field_147716_d, 0.0D, 0.0D, 0.0D, 0.0F);
+        else if (p_147715_1_ == Blocks.trapped_chest)
+            tileEntityRendererDispatcher.func_147549_a(this.field_147718_c, 0.0D, 0.0D, 0.0D, 0.0F);
+        else
+            tileEntityRendererDispatcher.func_147549_a(this.field_147717_b, 0.0D, 0.0D, 0.0D, 0.0F);
     }
 }

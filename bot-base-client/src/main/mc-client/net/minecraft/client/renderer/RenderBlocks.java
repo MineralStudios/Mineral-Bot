@@ -9216,7 +9216,8 @@ public class RenderBlocks {
             } else if (var6 == 22) {
                 GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-                this.mc.tileEntityRendererChestHelper.func_147715_a(p_147800_1_, p_147800_2_, p_147800_3_);
+                if (this.mc.tileEntityRendererChestHelper != null)
+                    this.mc.tileEntityRendererChestHelper.func_147715_a(p_147800_1_, p_147800_2_, p_147800_3_);
                 GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             } else if (var6 == 6) {
                 if (var4 != null) {

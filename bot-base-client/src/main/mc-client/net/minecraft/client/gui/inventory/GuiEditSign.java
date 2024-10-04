@@ -118,27 +118,24 @@ public class GuiEditSign extends GuiScreen {
             int var8 = this.field_146848_f.getBlockMetadata();
             float var7 = 0.0F;
 
-            if (var8 == 2) {
+            if (var8 == 2)
                 var7 = 180.0F;
-            }
 
-            if (var8 == 4) {
+            if (var8 == 4)
                 var7 = 90.0F;
-            }
 
-            if (var8 == 5) {
+            if (var8 == 5)
                 var7 = -90.0F;
-            }
 
             GL11.glRotatef(var7, 0.0F, 1.0F, 0.0F);
             GL11.glTranslatef(0.0F, -1.0625F, 0.0F);
         }
 
-        if (this.field_146849_g / 6 % 2 == 0) {
+        if (this.field_146849_g / 6 % 2 == 0)
             this.field_146848_f.field_145918_i = this.field_146851_h;
-        }
 
-        this.mc.tileEntityRendererDispatcher.func_147549_a(this.field_146848_f, -0.5D, -0.75D, -0.5D, 0.0F);
+        if (this.mc.tileEntityRendererDispatcher != null)
+            this.mc.tileEntityRendererDispatcher.func_147549_a(this.field_146848_f, -0.5D, -0.75D, -0.5D, 0.0F);
         this.field_146848_f.field_145918_i = -1;
         GL11.glPopMatrix();
         super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
