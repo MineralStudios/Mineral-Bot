@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import gg.mineral.bot.api.entity.ClientEntity;
 import gg.mineral.bot.api.util.MathUtil;
 import gg.mineral.bot.api.world.ClientWorld;
+import gg.mineral.bot.impl.config.BotGlobalConfig;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -128,6 +129,8 @@ public class WorldClient extends World implements ClientWorld {
     }
 
     protected void func_147456_g() {
+        if (BotGlobalConfig.isOptimizedGameLoop())
+            return;
         super.func_147456_g();
         this.previousActiveChunkSet.retainAll(this.activeChunkSet);
 
@@ -147,7 +150,7 @@ public class WorldClient extends World implements ClientWorld {
                 int var5 = chunkZPos * 16;
                 this.theProfiler.startSection("getChunk");
                 Chunk var6 = this.getChunkFromChunkCoords(chunkXPos, chunkZPos);
-                this.func_147467_a(var4, var5, var6);
+                this.moodSoundAndCheckLight(var4, var5, var6);
                 this.theProfiler.endSection();
                 this.previousActiveChunkSet.add(var3);
                 ++var1;

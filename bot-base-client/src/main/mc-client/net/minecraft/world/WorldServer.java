@@ -305,7 +305,7 @@ public class WorldServer extends World {
             int var6 = chunkZPos * 16;
             this.theProfiler.startSection("getChunk");
             Chunk var7 = this.getChunkFromChunkCoords(chunkXPos, chunkZPos);
-            this.func_147467_a(var5, var6, var7);
+            this.moodSoundAndCheckLight(var5, var6, var7);
             this.theProfiler.endStartSection("tickChunk");
             var7.func_150804_b(false);
             this.theProfiler.endStartSection("thunder");
