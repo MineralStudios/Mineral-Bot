@@ -223,6 +223,8 @@ public class Config {
     }
 
     public static void updateThreadPriorities() {
+        if (BotGlobalConfig.isOptimizedGameLoop())
+            return;
         try {
             ThreadGroup e = Thread.currentThread().getThreadGroup();
 
@@ -1274,6 +1276,9 @@ public class Config {
     }
 
     public static void checkDisplaySettings() {
+
+        if (BotGlobalConfig.isOptimizedGameLoop())
+            return;
         int samples = getAntialiasingLevel();
 
         if (samples > 0) {
@@ -1340,6 +1345,8 @@ public class Config {
     }
 
     public static void checkDisplayMode() {
+        if (BotGlobalConfig.isOptimizedGameLoop())
+            return;
         try {
             if (minecraft.isFullScreen()) {
                 if (fullscreenModeChecked)

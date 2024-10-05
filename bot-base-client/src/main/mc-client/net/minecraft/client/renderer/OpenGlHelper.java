@@ -18,6 +18,7 @@ import gg.mineral.bot.base.lwjgl.opengl.GL13;
 import gg.mineral.bot.base.lwjgl.opengl.GL14;
 import gg.mineral.bot.base.lwjgl.opengl.GL30;
 import gg.mineral.bot.base.lwjgl.opengl.GLContext;
+import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import optifine.Config;
@@ -71,6 +72,9 @@ public class OpenGlHelper {
      */
     public static void initializeTextures() {
         Config.initDisplay();
+
+        if (BotGlobalConfig.isOptimizedGameLoop())
+            return;
         ContextCapabilities var0 = GLContext.getCapabilities();
         field_153215_z = var0.GL_ARB_multitexture && !var0.OpenGL13;
 
