@@ -21,8 +21,10 @@ import com.google.gson.Gson;
 
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.base.lwjgl.opengl.Display;
+import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -205,7 +207,7 @@ public class GameSettings {
     public boolean showInventoryAchievementHint;
     public int mipmapLevels;
     public int anisotropicFiltering;
-    private Map mapSoundLevels;
+    private Object2FloatOpenHashMap<SoundCategory> mapSoundLevels;
     public float field_152400_J;
     public float field_152401_K;
     public float field_152402_L;
@@ -1891,7 +1893,7 @@ public class GameSettings {
                         SoundCategory var11 = var111[var6];
 
                         if (var8[0].equals("soundCategory_" + var11.getCategoryName())) {
-                            this.mapSoundLevels.put(var11, Float.valueOf(this.parseFloat(var8[1])));
+                            this.mapSoundLevels.put(var11, this.parseFloat(var8[1]));
                         }
                     }
                 } catch (Exception var91) {
@@ -2012,13 +2014,16 @@ public class GameSettings {
 
     public float getSoundLevel(SoundCategory p_151438_1_) {
         return this.mapSoundLevels.containsKey(p_151438_1_)
-                ? ((Float) this.mapSoundLevels.get(p_151438_1_)).floatValue()
+                ? this.mapSoundLevels.getFloat(p_151438_1_)
                 : 1.0F;
     }
 
     public void setSoundLevel(SoundCategory p_151439_1_, float p_151439_2_) {
-        this.mc.getSoundHandler().setSoundLevel(p_151439_1_, p_151439_2_);
-        this.mapSoundLevels.put(p_151439_1_, Float.valueOf(p_151439_2_));
+        SoundHandler soundHandler = this.mc.getSoundHandler();
+
+        if (soundHandler != null)
+            soundHandler.setSoundLevel(p_151439_1_, p_151439_2_);
+        this.mapSoundLevels.put(p_151439_1_, p_151439_2_);
     }
 
     /**

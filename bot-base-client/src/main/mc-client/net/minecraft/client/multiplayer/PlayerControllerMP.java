@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -267,8 +268,10 @@ public class PlayerControllerMP {
                     this.curBlockDamageMP += var5.getPlayerRelativeBlockHardness(this.mc.thePlayer,
                             thePlayer.worldObj, p_78759_1_, p_78759_2_, p_78759_3_);
 
-                if (this.stepSoundTickCounter % 4.0F == 0.0F)
-                    this.mc.getSoundHandler()
+                SoundHandler soundHandler = this.mc.getSoundHandler();
+
+                if (soundHandler != null && this.stepSoundTickCounter % 4.0F == 0.0F)
+                    soundHandler
                             .playSound(new PositionedSoundRecord(new ResourceLocation(var5.stepSound.func_150498_e()),
                                     (var5.stepSound.func_150497_c() + 1.0F) / 8.0F,
                                     var5.stepSound.func_150494_d() * 0.5F, (float) p_78759_1_ + 0.5F,

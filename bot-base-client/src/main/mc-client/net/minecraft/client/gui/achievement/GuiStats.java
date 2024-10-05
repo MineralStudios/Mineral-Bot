@@ -8,6 +8,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
@@ -259,8 +260,12 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
 
             if (this.field_148218_l >= 0) {
                 this.func_148212_h(this.field_148218_l);
-                GuiStats.this.mc.getSoundHandler()
-                        .playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
+                SoundHandler soundHandler = GuiStats.this.mc.getSoundHandler();
+
+                if (soundHandler != null)
+                    soundHandler
+                            .playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"),
+                                    1.0F));
             }
         }
 

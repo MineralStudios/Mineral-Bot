@@ -18,6 +18,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecart;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.particle.EntityFireworkStarterFX;
@@ -178,11 +179,12 @@ public class WorldClient extends World implements ClientWorld {
         boolean var2 = super.spawnEntityInWorld(p_72838_1_);
         this.entityList.add(p_72838_1_);
 
-        if (!var2) {
+        SoundHandler soundHandler = this.mc.getSoundHandler();
+
+        if (!var2)
             this.entitySpawnQueue.add(p_72838_1_);
-        } else if (p_72838_1_ instanceof EntityMinecart) {
-            this.mc.getSoundHandler().playSound(new MovingSoundMinecart((EntityMinecart) p_72838_1_));
-        }
+        else if (p_72838_1_ instanceof EntityMinecart && soundHandler != null)
+            soundHandler.playSound(new MovingSoundMinecart((EntityMinecart) p_72838_1_));
 
         return var2;
     }
@@ -407,11 +409,14 @@ public class WorldClient extends World implements ClientWorld {
         PositionedSoundRecord var13 = new PositionedSoundRecord(new ResourceLocation(p_72980_7_), p_72980_8_,
                 p_72980_9_, (float) p_72980_1_, (float) p_72980_3_, (float) p_72980_5_);
 
-        if (p_72980_10_ && var11 > 100.0D) {
-            double var14 = Math.sqrt(var11) / 40.0D;
-            this.mc.getSoundHandler().playDelayedSound(var13, (int) (var14 * 20.0D));
-        } else
-            this.mc.getSoundHandler().playSound(var13);
+        SoundHandler soundHandler = this.mc.getSoundHandler();
+        if (soundHandler != null) {
+            if (p_72980_10_ && var11 > 100.0D) {
+                double var14 = Math.sqrt(var11) / 40.0D;
+                soundHandler.playDelayedSound(var13, (int) (var14 * 20.0D));
+            } else
+                soundHandler.playSound(var13);
+        }
     }
 
     public void makeFireworks(double p_92088_1_, double p_92088_3_, double p_92088_5_, double p_92088_7_,

@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.GuiCommandBlock;
 import net.minecraft.client.gui.GuiEnchantment;
 import net.minecraft.client.gui.GuiHopper;
@@ -135,42 +136,39 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             this.prevTimeInPortal = this.timeInPortal;
 
             if (this.inPortal) {
-                if (this.mc.currentScreen != null) {
+                if (this.mc.currentScreen != null)
                     this.mc.displayGuiScreen((GuiScreen) null);
-                }
 
-                if (this.timeInPortal == 0.0F) {
-                    this.mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(
+                SoundHandler soundHandler = this.mc.getSoundHandler();
+
+                if (soundHandler != null && this.timeInPortal == 0.0F)
+                    soundHandler.playSound(PositionedSoundRecord.func_147674_a(
                             new ResourceLocation("portal.trigger"), this.rand.nextFloat() * 0.4F + 0.8F));
-                }
 
                 this.timeInPortal += 0.0125F;
 
-                if (this.timeInPortal >= 1.0F) {
+                if (this.timeInPortal >= 1.0F)
                     this.timeInPortal = 1.0F;
-                }
 
                 this.inPortal = false;
             } else if (this.isPotionActive(Potion.confusion)
                     && this.getActivePotionEffect(Potion.confusion).getDuration() > 60) {
                 this.timeInPortal += 0.006666667F;
 
-                if (this.timeInPortal > 1.0F) {
+                if (this.timeInPortal > 1.0F)
                     this.timeInPortal = 1.0F;
-                }
+
             } else {
-                if (this.timeInPortal > 0.0F) {
+                if (this.timeInPortal > 0.0F)
                     this.timeInPortal -= 0.05F;
-                }
 
-                if (this.timeInPortal < 0.0F) {
+                if (this.timeInPortal < 0.0F)
                     this.timeInPortal = 0.0F;
-                }
+
             }
 
-            if (this.timeUntilPortal > 0) {
+            if (this.timeUntilPortal > 0)
                 --this.timeUntilPortal;
-            }
 
             MovementInput movementInput = this.movementInput;
 

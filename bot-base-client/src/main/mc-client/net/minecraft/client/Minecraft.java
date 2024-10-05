@@ -2494,6 +2494,7 @@ public class Minecraft {
         return this.isGamePaused;
     }
 
+    @Nullable
     public SoundHandler getSoundHandler() {
         return this.mcSoundHandler;
     }

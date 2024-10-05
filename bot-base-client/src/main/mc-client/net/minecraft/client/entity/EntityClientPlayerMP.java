@@ -2,6 +2,7 @@ package net.minecraft.client.entity;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -80,9 +81,11 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
     public void mountEntity(Entity p_70078_1_) {
         super.mountEntity(p_70078_1_);
 
-        if (p_70078_1_ instanceof EntityMinecart) {
-            this.mc.getSoundHandler().playSound(new MovingSoundMinecartRiding(this, (EntityMinecart) p_70078_1_));
-        }
+        SoundHandler soundHandler = this.mc.getSoundHandler();
+
+        if (p_70078_1_ instanceof EntityMinecart minecart && soundHandler != null)
+            soundHandler.playSound(new MovingSoundMinecartRiding(this, minecart));
+
     }
 
     /**

@@ -28,6 +28,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -2378,8 +2379,10 @@ public class RenderGlobal implements IWorldAccess {
         ChunkCoordinates var5 = new ChunkCoordinates(par2, par3, par4);
         ISound var6 = (ISound) this.mapSoundPositions.get(var5);
 
+        SoundHandler soundHandler = this.mc.getSoundHandler();
         if (var6 != null) {
-            this.mc.getSoundHandler().func_147683_b(var6);
+            if (soundHandler != null)
+                soundHandler.func_147683_b(var6);
             this.mapSoundPositions.remove(var5);
         }
 
@@ -2404,7 +2407,9 @@ public class RenderGlobal implements IWorldAccess {
             PositionedSoundRecord var8 = PositionedSoundRecord.func_147675_a(resource, (float) par2, (float) par3,
                     (float) par4);
             this.mapSoundPositions.put(var5, var8);
-            this.mc.getSoundHandler().playSound(var8);
+
+            if (soundHandler != null)
+                soundHandler.playSound(var8);
         }
     }
 
@@ -2854,11 +2859,15 @@ public class RenderGlobal implements IWorldAccess {
                 var8 = Block.getBlockById(par6 & 4095);
 
                 if (var8.getMaterial() != Material.air) {
-                    this.mc.getSoundHandler()
-                            .playSound(new PositionedSoundRecord(new ResourceLocation(var8.stepSound.func_150495_a()),
-                                    (var8.stepSound.func_150497_c() + 1.0F) / 2.0F,
-                                    var8.stepSound.func_150494_d() * 0.8F, (float) par3 + 0.5F, (float) par4 + 0.5F,
-                                    (float) par5 + 0.5F));
+                    SoundHandler soundHandler = this.mc.getSoundHandler();
+
+                    if (soundHandler != null)
+                        soundHandler
+                                .playSound(new PositionedSoundRecord(
+                                        new ResourceLocation(var8.stepSound.func_150495_a()),
+                                        (var8.stepSound.func_150497_c() + 1.0F) / 2.0F,
+                                        var8.stepSound.func_150494_d() * 0.8F, (float) par3 + 0.5F, (float) par4 + 0.5F,
+                                        (float) par5 + 0.5F));
                 }
 
                 this.mc.effectRenderer.func_147215_a(par3, par4, par5, var8, par6 >> 12 & 255);

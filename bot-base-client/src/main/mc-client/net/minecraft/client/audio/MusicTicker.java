@@ -24,13 +24,16 @@ public class MusicTicker implements IUpdatePlayerListBox {
         MusicTicker.MusicType var1 = this.field_147677_b.func_147109_W();
 
         if (this.field_147678_c != null) {
+            SoundHandler soundHandler = this.field_147677_b.getSoundHandler();
             if (!var1.func_148635_a().equals(this.field_147678_c.func_147650_b())) {
-                this.field_147677_b.getSoundHandler().func_147683_b(this.field_147678_c);
+
+                if (soundHandler != null)
+                    soundHandler.func_147683_b(this.field_147678_c);
                 this.field_147676_d = MathHelper.getRandomIntegerInRange(this.field_147679_a, 0,
                         var1.func_148634_b() / 2);
             }
 
-            if (!this.field_147677_b.getSoundHandler().func_147692_c(this.field_147678_c)) {
+            if (soundHandler != null && !soundHandler.func_147692_c(this.field_147678_c)) {
                 this.field_147678_c = null;
                 this.field_147676_d = Math.min(MathHelper.getRandomIntegerInRange(this.field_147679_a,
                         var1.func_148634_b(), var1.func_148633_c()), this.field_147676_d);
@@ -39,7 +42,10 @@ public class MusicTicker implements IUpdatePlayerListBox {
 
         if (this.field_147678_c == null && this.field_147676_d-- <= 0) {
             this.field_147678_c = PositionedSoundRecord.func_147673_a(var1.func_148635_a());
-            this.field_147677_b.getSoundHandler().playSound(this.field_147678_c);
+            SoundHandler soundHandler = this.field_147677_b.getSoundHandler();
+
+            if (soundHandler != null)
+                soundHandler.playSound(this.field_147678_c);
             this.field_147676_d = Integer.MAX_VALUE;
         }
     }
