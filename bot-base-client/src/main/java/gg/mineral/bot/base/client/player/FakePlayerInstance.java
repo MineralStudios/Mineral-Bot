@@ -268,7 +268,8 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
             ;
         }
 
-        this.mcSoundHandler.func_147685_d();
+        if (this.mcSoundHandler != null)
+            this.mcSoundHandler.func_147685_d();
     }
 
     @Override

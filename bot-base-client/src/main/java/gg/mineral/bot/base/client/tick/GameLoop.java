@@ -24,7 +24,8 @@ public class GameLoop {
                             } catch (OutOfMemoryError var10) {
                                 instance.freeMemory();
                                 instance.displayGuiScreen(new GuiMemoryErrorScreen(instance));
-                                System.gc();
+                                if (BotGlobalConfig.isManualGarbageCollection())
+                                    System.gc();
                             }
                         } else {
                             instance.displayCrashReport(instance.crashReporter);

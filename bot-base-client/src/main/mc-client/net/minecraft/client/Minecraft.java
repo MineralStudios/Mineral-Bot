@@ -320,7 +320,9 @@ public class Minecraft {
     private Framebuffer mcFramebuffer;
     @Nullable
     private TextureMap textureMapBlocks;
+    @Nullable
     protected SoundHandler mcSoundHandler;
+    @Nullable
     private MusicTicker mcMusicTicker;
     @Nullable
     private ResourceLocation minecraftLogoTexture;
@@ -375,7 +377,8 @@ public class Minecraft {
 
     static {
         jvm64bit = isJvm64bit();
-        startTimerHackThread();
+        if (!BotGlobalConfig.isOptimizedGameLoop())
+            startTimerHackThread();
         Bootstrap.func_151354_b();
     }
 
@@ -420,9 +423,10 @@ public class Minecraft {
         this.tempDisplayWidth = p_i1103_2_;
         this.tempDisplayHeight = p_i1103_3_;
         this.fullscreen = p_i1103_4_;
-        ImageIO.setUseCache(false);
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.isOptimizedGameLoop()) {
+            ImageIO.setUseCache(false);
             this.tessellator = new Tessellator(524288);
+        }
     }
 
     private static boolean isJvm64bit() {
@@ -599,12 +603,13 @@ public class Minecraft {
                     this.authenticationService);
         }
         this.loadScreen();
-        this.mcSoundHandler = new SoundHandler(this, this.mcResourceManager, this.gameSettings);
+        if (!BotGlobalConfig.isOptimizedGameLoop())
+            this.mcSoundHandler = new SoundHandler(this, this.mcResourceManager, this.gameSettings);
         if (!BotGlobalConfig.isHeadless() && !BotGlobalConfig.isOptimizedGameLoop())
             this.mcResourceManager.registerReloadListener(this.mcSoundHandler);
-        this.mcMusicTicker = new MusicTicker(this);
-
         if (!BotGlobalConfig.isOptimizedGameLoop()) {
+            this.mcMusicTicker = new MusicTicker(this);
+
             this.fontRenderer = new FontRenderer(this, this.gameSettings,
                     new ResourceLocation("textures/font/ascii.png"),
                     this.renderEngine, false);
@@ -925,7 +930,9 @@ public class Minecraft {
             ((GuiScreen) p_147108_1_).setWorldAndResolution(this, var3, var4);
             this.skipRenderWorld = false;
         } else {
-            this.mcSoundHandler.func_147687_e();
+            if (this.mcSoundHandler != null)
+                this.mcSoundHandler.func_147687_e();
+
             this.setIngameFocus();
         }
     }
@@ -968,7 +975,8 @@ public class Minecraft {
                 ;
             }
 
-            this.mcSoundHandler.func_147685_d();
+            if (this.mcSoundHandler != null)
+                this.mcSoundHandler.func_147685_d();
         } finally {
             Display.destroy();
 
@@ -976,7 +984,8 @@ public class Minecraft {
                 System.exit(0);
         }
 
-        System.gc();
+        if (BotGlobalConfig.isManualGarbageCollection())
+            System.gc();
     }
 
     public void run() {
@@ -1068,7 +1077,8 @@ public class Minecraft {
         this.checkGLError("Pre render");
         RenderBlocks.fancyGrass = this.gameSettings.fancyGraphics;
         this.mcProfiler.endStartSection("sound");
-        this.mcSoundHandler.func_147691_a(this.thePlayer, this.timer.renderPartialTicks);
+        if (this.mcSoundHandler != null)
+            this.mcSoundHandler.func_147691_a(this.thePlayer, this.timer.renderPartialTicks);
         this.mcProfiler.endSection();
         this.mcProfiler.startSection("render");
         GL11.glPushMatrix();
@@ -1195,19 +1205,22 @@ public class Minecraft {
         }
 
         try {
-            System.gc();
+            if (BotGlobalConfig.isManualGarbageCollection())
+                System.gc();
         } catch (Throwable var3) {
             ;
         }
 
         try {
-            System.gc();
+            if (BotGlobalConfig.isManualGarbageCollection())
+                System.gc();
             this.loadWorld((WorldClient) null);
         } catch (Throwable var2) {
             ;
         }
 
-        System.gc();
+        if (BotGlobalConfig.isManualGarbageCollection())
+            System.gc();
     }
 
     /**
@@ -1408,9 +1421,10 @@ public class Minecraft {
         if (this.currentScreen == null) {
             this.displayGuiScreen(new GuiIngameMenu(this));
 
-            if (this.isSingleplayer() && !this.theIntegratedServer.getPublic()) {
-                this.mcSoundHandler.func_147689_b();
-            }
+            if (this.isSingleplayer() && !this.theIntegratedServer.getPublic())
+                if (this.mcSoundHandler != null)
+                    this.mcSoundHandler.func_147689_b();
+
         }
     }
 
@@ -1939,8 +1953,11 @@ public class Minecraft {
         }
 
         if (!BotGlobalConfig.isOptimizedGameLoop() && !BotGlobalConfig.isHeadless() && !this.isGamePaused) {
-            this.mcMusicTicker.update();
-            this.mcSoundHandler.update();
+            if (this.mcMusicTicker != null)
+                this.mcMusicTicker.update();
+
+            if (this.mcSoundHandler != null)
+                this.mcSoundHandler.update();
         }
 
         WorldClient theWorld = this.theWorld;
@@ -1994,7 +2011,8 @@ public class Minecraft {
      */
     public void launchIntegratedServer(String p_71371_1_, String p_71371_2_, WorldSettings p_71371_3_) {
         this.loadWorld((WorldClient) null);
-        System.gc();
+        if (BotGlobalConfig.isManualGarbageCollection())
+            System.gc();
         ISaveHandler var4 = this.saveLoader.getSaveLoader(p_71371_1_, false);
         WorldInfo var5 = var4.loadWorldInfo();
 
@@ -2091,17 +2109,16 @@ public class Minecraft {
             this.integratedServerIsRunning = false;
         }
 
-        this.mcSoundHandler.func_147690_c();
+        if (this.mcSoundHandler != null)
+            this.mcSoundHandler.func_147690_c();
         this.theWorld = p_71353_1_;
 
         if (p_71353_1_ != null) {
-            if (this.renderGlobal != null) {
+            if (this.renderGlobal != null)
                 this.renderGlobal.setWorldAndLoadRenderers(p_71353_1_);
-            }
 
-            if (this.effectRenderer != null) {
+            if (this.effectRenderer != null)
                 this.effectRenderer.clearEffects(p_71353_1_);
-            }
 
             if (this.thePlayer == null) {
                 this.thePlayer = this.playerController.func_147493_a(p_71353_1_, new StatFileWriter());
@@ -2120,7 +2137,8 @@ public class Minecraft {
             this.thePlayer = null;
         }
 
-        System.gc();
+        if (BotGlobalConfig.isManualGarbageCollection())
+            System.gc();
         this.systemTime = 0L;
     }
 
