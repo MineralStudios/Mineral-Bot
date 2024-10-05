@@ -296,7 +296,7 @@ public class GameSettings {
         this.showInventoryAchievementHint = true;
         this.mipmapLevels = 4;
         this.anisotropicFiltering = 1;
-        this.mapSoundLevels = Maps.newEnumMap(SoundCategory.class);
+        this.mapSoundLevels = new Object2FloatOpenHashMap<>();
         this.field_152400_J = 0.5F;
         this.field_152401_K = 1.0F;
         this.field_152402_L = 1.0F;
@@ -383,7 +383,7 @@ public class GameSettings {
         this.showInventoryAchievementHint = true;
         this.mipmapLevels = 4;
         this.anisotropicFiltering = 1;
-        this.mapSoundLevels = Maps.newEnumMap(SoundCategory.class);
+        this.mapSoundLevels = new Object2FloatOpenHashMap<>();
         this.field_152400_J = 0.5F;
         this.field_152401_K = 1.0F;
         this.field_152402_L = 1.0F;
