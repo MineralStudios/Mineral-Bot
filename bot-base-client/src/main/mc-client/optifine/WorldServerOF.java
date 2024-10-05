@@ -289,7 +289,7 @@ public class WorldServerOF extends WorldServer {
     protected void setActivePlayerChunksAndCheckLight() {
         super.setActivePlayerChunksAndCheckLight();
         this.limitedChunkSet.clear();
-        int viewDistance = this.func_152379_p();
+        int viewDistance = this.getViewDistance();
 
         if (viewDistance > 10) {
             if (viewDistance != this.lastViewDistance) {
@@ -318,7 +318,7 @@ public class WorldServerOF extends WorldServer {
     }
 
     public void addChunkToTickOnce(int cx, int cz) {
-        int viewDistance = this.func_152379_p();
+        int viewDistance = this.getViewDistance();
 
         if (viewDistance > 10)
             this.setChunkCoordsToTickOnce.add(MathUtil.combineIntsToLong(cx, cz));

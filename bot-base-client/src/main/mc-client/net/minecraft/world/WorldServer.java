@@ -938,7 +938,7 @@ public class WorldServer extends World {
         }
     }
 
-    protected int func_152379_p() {
+    protected int getViewDistance() {
         return this.mcServer.getConfigurationManager().getViewDistance();
     }
 

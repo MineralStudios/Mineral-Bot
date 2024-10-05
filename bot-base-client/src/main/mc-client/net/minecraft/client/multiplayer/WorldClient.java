@@ -303,7 +303,7 @@ public class WorldClient extends World implements ClientWorld {
         }
     }
 
-    protected int func_152379_p() {
+    protected int getViewDistance() {
         return this.mc.gameSettings.renderDistanceChunks;
     }
 

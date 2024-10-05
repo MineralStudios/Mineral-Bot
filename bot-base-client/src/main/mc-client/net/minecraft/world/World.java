@@ -2453,23 +2453,33 @@ public abstract class World implements IBlockAccess {
     }
 
     protected void setActivePlayerChunksAndCheckLight() {
-        this.activeChunkSet.clear();
+        // Estimate the expected size
+        int var5 = this.getViewDistance();
+        int chunkRadius = 2 * var5 + 1;
+        int chunksPerPlayer = chunkRadius * chunkRadius;
+        int expectedSize = this.playerEntities.size() * chunksPerPlayer;
+
+        // Reinitialize activeChunkSet with the expected capacity
+        this.activeChunkSet = new LongOpenHashSet(expectedSize);
+
         this.theProfiler.startSection("buildList");
         int var1;
         EntityPlayer var2;
         int var3;
         int var4;
-        int var5;
 
         for (var1 = 0; var1 < this.playerEntities.size(); ++var1) {
-            var2 = (EntityPlayer) this.playerEntities.get(var1);
+            var2 = this.playerEntities.get(var1);
             var3 = MathHelper.floor_double(var2.posX / 16.0D);
             var4 = MathHelper.floor_double(var2.posZ / 16.0D);
-            var5 = this.func_152379_p();
 
-            for (int var6 = -var5; var6 <= var5; ++var6)
-                for (int var7 = -var5; var7 <= var5; ++var7)
-                    this.activeChunkSet.add(MathUtil.combineIntsToLong(var6 + var3, var7 + var4));
+            for (int dx = -var5; dx <= var5; ++dx) {
+                int chunkX = var3 + dx;
+                for (int dz = -var5; dz <= var5; ++dz) {
+                    int chunkZ = var4 + dz;
+                    this.activeChunkSet.add(MathUtil.combineIntsToLong(chunkX, chunkZ));
+                }
+            }
         }
 
         this.theProfiler.endSection();
@@ -2481,7 +2491,7 @@ public abstract class World implements IBlockAccess {
 
         if (!this.playerEntities.isEmpty()) {
             var1 = this.rand.nextInt(this.playerEntities.size());
-            var2 = (EntityPlayer) this.playerEntities.get(var1);
+            var2 = this.playerEntities.get(var1);
             var3 = MathHelper.floor_double(var2.posX) + this.rand.nextInt(11) - 5;
             var4 = MathHelper.floor_double(var2.posY) + this.rand.nextInt(11) - 5;
             var5 = MathHelper.floor_double(var2.posZ) + this.rand.nextInt(11) - 5;
@@ -2491,7 +2501,7 @@ public abstract class World implements IBlockAccess {
         this.theProfiler.endSection();
     }
 
-    protected abstract int func_152379_p();
+    protected abstract int getViewDistance();
 
     protected void func_147467_a(int p_147467_1_, int p_147467_2_, Chunk p_147467_3_) {
         if (BotGlobalConfig.isOptimizedGameLoop())
