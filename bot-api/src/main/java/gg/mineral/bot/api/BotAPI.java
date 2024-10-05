@@ -19,6 +19,10 @@ public abstract class BotAPI {
 
     public abstract FakePlayer spawn(BotConfiguration configuration, ServerLocation location);
 
+    public abstract boolean[] despawn(FakePlayer... players);
+
+    public abstract boolean[] despawn(UUID... uuids);
+
     public abstract boolean despawn(FakePlayer player);
 
     public abstract boolean despawn(UUID uuid);

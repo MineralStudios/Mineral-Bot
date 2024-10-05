@@ -116,6 +116,22 @@ public abstract class BotImpl extends BotAPI {
     }
 
     @Override
+    public boolean[] despawn(FakePlayer... players) {
+        boolean[] results = new boolean[players.length];
+        for (int i = 0; i < players.length; i++)
+            results[i] = despawn(players[i]);
+        return results;
+    }
+
+    @Override
+    public boolean[] despawn(UUID... uuids) {
+        boolean[] results = new boolean[uuids.length];
+        for (int i = 0; i < uuids.length; i++)
+            results[i] = despawn(uuids[i]);
+        return results;
+    }
+
+    @Override
     public boolean isFakePlayer(UUID uuid) {
         synchronized (InstanceManager.getInstances()) {
             return InstanceManager.getInstances().containsKey(uuid);
