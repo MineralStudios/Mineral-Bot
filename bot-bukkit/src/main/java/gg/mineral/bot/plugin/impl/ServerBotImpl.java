@@ -75,7 +75,7 @@ public class ServerBotImpl extends BotImpl implements Listener {
         };
         instance.setServer("127.0.0.1", Bukkit.getServer().getPort());
 
-        String name = configuration.getUsername();
+        String name = configuration.getFullUsername();
 
         NMSServerPlayer serverSide = new NMSServerPlayer(location.getWorld(),
                 configuration.getUuid(), name, configuration.getSkin().getValue(),

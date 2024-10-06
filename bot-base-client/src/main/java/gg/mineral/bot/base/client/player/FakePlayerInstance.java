@@ -67,7 +67,7 @@ public class FakePlayerInstance extends Minecraft implements FakePlayer {
             boolean fullscreen,
             boolean demo, File gameDir, File assetsDir, File resourcePackDir, Proxy proxy, String version,
             @SuppressWarnings("rawtypes") Multimap userProperties, String assetIndex) {
-        super(new Session(configuration.getUsername(), configuration.getUuid().toString(),
+        super(new Session(configuration.getFullUsername(), configuration.getUuid().toString(),
                 "0",
                 "legacy"), width, height, fullscreen, demo, gameDir, assetsDir, resourcePackDir,
                 proxy,

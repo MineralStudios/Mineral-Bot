@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 public class BotConfiguration {
     @Builder.Default
-    private String username = "MineralBot";
+    private String username = "MineralBot", usernamePrefix = "", usernameSuffix = "";
     @Builder.Default
     private UUID uuid = UUID.randomUUID();
     @Builder.Default
@@ -33,4 +33,8 @@ public class BotConfiguration {
     private int pearlCooldown = 15;
     @Builder.Default
     private Skins skin = Skins.MINERAL_DEFAULT;
+
+    public String getFullUsername() {
+        return usernamePrefix + username + usernameSuffix;
+    }
 }
