@@ -1,14 +1,14 @@
 package gg.mineral.bot.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.math.ServerLocation;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Set;
 
 @RequiredArgsConstructor
 public abstract class BotAPI {
@@ -33,7 +33,7 @@ public abstract class BotAPI {
 
     public abstract Collection<FakePlayer> getFakePlayers();
 
-    protected final Set<SpawnRecord> spawnRecords;
+    protected final List<SpawnRecord> spawnRecords = new ArrayList<>();
 
     public record SpawnRecord(String name, long time) {
     }

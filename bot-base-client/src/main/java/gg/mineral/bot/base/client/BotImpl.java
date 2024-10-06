@@ -3,6 +3,7 @@ package gg.mineral.bot.base.client;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,17 +17,12 @@ import gg.mineral.bot.api.message.ChatColor;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.client.player.FakePlayerInstance;
 import gg.mineral.bot.impl.thread.ThreadManager;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-
-import java.util.Iterator;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public abstract class BotImpl extends BotAPI {
 
     private long lastSpawnInfo = 0;
-
-    public BotImpl() {
-        super(new ObjectOpenHashSet<>());
-    }
 
     public void printSpawnInfo() {
         if (spawnRecords.isEmpty() || System.currentTimeMillis() - lastSpawnInfo < 3000)
@@ -34,25 +30,35 @@ public abstract class BotImpl extends BotAPI {
 
         lastSpawnInfo = System.currentTimeMillis();
 
-        StringBuilder sb = new StringBuilder(ChatColor.GRAY + "[");
-
         Iterator<SpawnRecord> iterator = spawnRecords.iterator();
 
         long totalTime = 0;
         int amount = 0;
 
+        Object2IntOpenHashMap<String> nameCount = new Object2IntOpenHashMap<>();
+
         while (iterator.hasNext()) {
             SpawnRecord record = iterator.next();
-            sb.append(ChatColor.GREEN + record.name());
+            nameCount.put(record.name(), nameCount.getInt(record.name()) + 1);
             amount++;
             totalTime += record.time();
-            if (iterator.hasNext())
-                sb.append(ChatColor.GRAY + ", ");
-
             iterator.remove();
         }
 
-        sb.append(ChatColor.GRAY + "]");
+        StringBuilder sb = new StringBuilder();
+
+        String newLine = System.lineSeparator();
+
+        for (Iterator<Entry<String>> it = nameCount.object2IntEntrySet().iterator(); it.hasNext();) {
+            Entry<String> e = it.next();
+            String name = e.getKey();
+            int count = e.getIntValue();
+
+            if (it.hasNext())
+                sb.append(newLine);
+
+            sb.append("• " + name + " x" + count);
+        }
 
         System.out.println(ChatColor.WHITE + ChatColor.UNDERLINE + "Recent Spawn Info:" + ChatColor.RESET);
         System.out.println(ChatColor.WHITE + "Amount: " + ChatColor.CYAN + amount + ChatColor.RESET);
