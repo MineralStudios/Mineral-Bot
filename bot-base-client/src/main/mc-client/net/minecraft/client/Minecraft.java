@@ -1467,12 +1467,11 @@ public class Minecraft {
                     this.leftClickCounter = 10;
 
             } else {
-                switch (Minecraft.SwitchMovingObjectType.field_152390_a[this.objectMouseOver.typeOfHit.ordinal()]) {
-                    case 1:
+                switch (this.objectMouseOver.typeOfHit) {
+                    case ENTITY:
                         this.playerController.attackEntity(this.thePlayer, this.objectMouseOver.entityHit);
                         break;
-
-                    case 2:
+                    case BLOCK:
                         int var1 = this.objectMouseOver.blockX;
                         int var2 = this.objectMouseOver.blockY;
                         int var3 = this.objectMouseOver.blockZ;
@@ -1484,7 +1483,8 @@ public class Minecraft {
 
                         } else
                             this.playerController.clickBlock(var1, var2, var3, this.objectMouseOver.sideHit);
-
+                    default:
+                        break;
                 }
             }
         }
@@ -1500,42 +1500,44 @@ public class Minecraft {
 
         if (this.objectMouseOver == null) {
             logger.warn("Null returned as \'hitResult\', this shouldn\'t happen!");
-        } else {
-            switch (Minecraft.SwitchMovingObjectType.field_152390_a[this.objectMouseOver.typeOfHit.ordinal()]) {
-                case 1:
-                    if (this.playerController.interactWithEntitySendPacket(this.thePlayer,
-                            this.objectMouseOver.entityHit)) {
+            return;
+        }
+
+        switch (this.objectMouseOver.typeOfHit) {
+            case ENTITY:
+                if (this.playerController.interactWithEntitySendPacket(this.thePlayer,
+                        this.objectMouseOver.entityHit))
+                    var1 = false;
+
+                break;
+
+            case BLOCK:
+                int var3 = this.objectMouseOver.blockX;
+                int var4 = this.objectMouseOver.blockY;
+                int var5 = this.objectMouseOver.blockZ;
+
+                if (this.theWorld != null
+                        && this.theWorld.getBlock(var3, var4, var5).getMaterial() != Material.air) {
+                    int var6 = var2 != null ? var2.stackSize : 0;
+
+                    if (this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, var2, var3, var4,
+                            var5, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec)) {
                         var1 = false;
+                        if (this.thePlayer != null)
+                            this.thePlayer.swingItem();
                     }
 
-                    break;
+                    if (var2 == null)
+                        return;
 
-                case 2:
-                    int var3 = this.objectMouseOver.blockX;
-                    int var4 = this.objectMouseOver.blockY;
-                    int var5 = this.objectMouseOver.blockZ;
-
-                    if (this.theWorld != null
-                            && this.theWorld.getBlock(var3, var4, var5).getMaterial() != Material.air) {
-                        int var6 = var2 != null ? var2.stackSize : 0;
-
-                        if (this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, var2, var3, var4,
-                                var5, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec)) {
-                            var1 = false;
-                            if (this.thePlayer != null)
-                                this.thePlayer.swingItem();
-                        }
-
-                        if (var2 == null)
-                            return;
-
-                        if (var2.stackSize == 0) {
-                            if (this.thePlayer != null)
-                                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-                        } else if (var2.stackSize != var6 || this.playerController.isInCreativeMode())
-                            this.entityRenderer.itemRenderer.resetEquippedProgress();
-                    }
-            }
+                    if (var2.stackSize == 0) {
+                        if (this.thePlayer != null)
+                            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
+                    } else if (var2.stackSize != var6 || this.playerController.isInCreativeMode())
+                        this.entityRenderer.itemRenderer.resetEquippedProgress();
+                }
+            default:
+                break;
         }
 
         if (var1) {
@@ -1656,7 +1658,7 @@ public class Minecraft {
         EntityClientPlayerMP thePlayer = this.thePlayer;
         if (this.currentScreen == null && thePlayer != null) {
             if (thePlayer.getHealth() <= 0.0F) {
-                this.displayGuiScreen((GuiScreen) null);
+                this.displayGuiScreen(null);
             } else if (thePlayer.isPlayerSleeping() && this.theWorld != null) {
                 this.displayGuiScreen(new GuiSleepMP(this));
             }
@@ -2557,23 +2559,5 @@ public class Minecraft {
 
     public boolean isMainThread() {
         return Thread.currentThread() == this.mainThread;
-    }
-
-    static final class SwitchMovingObjectType {
-        static final int[] field_152390_a = new int[MovingObjectPosition.MovingObjectType.values().length];
-
-        static {
-            try {
-                field_152390_a[MovingObjectPosition.MovingObjectType.ENTITY.ordinal()] = 1;
-            } catch (NoSuchFieldError var2) {
-                ;
-            }
-
-            try {
-                field_152390_a[MovingObjectPosition.MovingObjectType.BLOCK.ordinal()] = 2;
-            } catch (NoSuchFieldError var1) {
-                ;
-            }
-        }
     }
 }
