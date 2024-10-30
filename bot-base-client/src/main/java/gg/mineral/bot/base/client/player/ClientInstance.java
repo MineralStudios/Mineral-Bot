@@ -52,7 +52,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     private Set<Goal> goals = new ObjectLinkedOpenHashSet<>();
 
     private Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
-
+    private Thread mainThread = null;
     @Getter
     private int latency = 0, currentTick;
 
@@ -63,7 +63,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     }
 
     public boolean scheduleTask(Runnable runnable, long delay) {
-        if (delay <= 0 && delayedTasks.isEmpty()) {
+        if (isMainThread() && delay <= 0 && delayedTasks.isEmpty()) {
             runnable.run();
             return true;
         }
@@ -82,6 +82,11 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
                 version, userProperties, assetIndex);
 
         this.configuration = configuration;
+    }
+
+    @Override
+    public boolean isMainThread() {
+        return Thread.currentThread() == this.mainThread;
     }
 
     @Override
@@ -152,6 +157,8 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
     @Override
     public void runGameLoop() {
+        if (this.mainThread == null)
+            this.mainThread = Thread.currentThread();
 
         while (!delayedTasks.isEmpty()) {
             val task = delayedTasks.peek();

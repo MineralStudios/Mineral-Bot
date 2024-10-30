@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -41,6 +44,7 @@ public class GuiScreen extends Gui implements Screen {
     public boolean field_146291_p;
 
     /** The FontRenderer used by GuiScreen */
+    @Nullable
     protected FontRenderer fontRendererObj;
 
     /** The button that was just pressed. */
@@ -138,7 +142,7 @@ public class GuiScreen extends Gui implements Screen {
 
             while (var5.hasNext()) {
                 String var6 = (String) var5.next();
-                int var7 = this.fontRendererObj.getStringWidth(var6);
+                int var7 = this.fontRendererObj != null ? this.fontRendererObj.getStringWidth(var6) : 0;
 
                 if (var7 > var4) {
                     var4 = var7;
