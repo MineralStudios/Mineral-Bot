@@ -83,11 +83,11 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
                 && isTargetValid(target, targetSearchRange))
             return;
 
-        ClientLivingEntity closestTarget = null;
+        ClientPlayer closestTarget = null;
         var closestDistance = Double.MAX_VALUE;
 
         for (val entity : entities) {
-            if (entity instanceof ClientLivingEntity living) {
+            if (entity instanceof ClientPlayer living) {
                 if (isTargetValid(living, targetSearchRange)) {
                     double distance = fakePlayer.distance3DTo(living);
                     if (distance < closestDistance) {
