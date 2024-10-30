@@ -74,25 +74,21 @@ public class KeyboardState implements gg.mineral.bot.api.controls.KeyboardState 
 
     @Override
     public Type getEventKeyType() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEventKeyType'");
+        return this.eventLog != null ? this.eventLog.type : null;
     }
 
     @Override
     public int getEventKey() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEventKey'");
+        return this.eventLog != null ? this.eventLog.type.getKeyCode() : -1;
     }
 
     @Override
     public boolean isKeyDown(Type type) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isKeyDown'");
+        return getKey(type).isPressed();
     }
 
     @Override
     public boolean getEventKeyState() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEventKeyState'");
+        return this.eventLog != null ? this.eventLog.pressed : false;
     }
 }
