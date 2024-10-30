@@ -1,5 +1,6 @@
 package gg.mineral.bot.base.client.player.controller;
 
+import gg.mineral.bot.base.client.player.FakePlayer;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -18,7 +19,7 @@ public class BotController extends PlayerControllerMP {
     public EntityClientPlayerMP createClientPlayerMP(World world, StatFileWriter statFileWriter) {
         val mc = this.getMc();
         val netClientHandler = this.getNetClientHandler();
-        return new EntityClientPlayerMP(mc, world, mc.getSession(), netClientHandler, statFileWriter);
+        return new FakePlayer(mc, world, mc.getSession(), netClientHandler, statFileWriter);
     }
 
 }

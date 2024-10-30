@@ -2,13 +2,13 @@ package gg.mineral.bot.base.client.network;
 
 import com.google.common.base.Charsets;
 
+import gg.mineral.bot.base.client.player.controller.BotController;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.val;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetworkManager;
@@ -25,7 +25,7 @@ public class ClientNetHandler extends NetHandlerPlayClient {
     @Override
     public void handleJoinGame(S01PacketJoinGame packet) {
         val gameController = this.getGameController();
-        gameController.playerController = new PlayerControllerMP(gameController, this);
+        gameController.playerController = new BotController(gameController, this);
 
         val clientWorldController = new WorldClient(gameController, this,
                 new WorldSettings(0L, packet.func_149198_e(), false, packet.func_149195_d(),
