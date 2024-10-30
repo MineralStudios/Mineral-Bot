@@ -13,24 +13,17 @@ import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.instance.ClientInstance;
 import lombok.Getter;
-
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 @Getter
-
+@RequiredArgsConstructor
 public abstract class Goal {
     @NonNull
     protected final ClientInstance clientInstance;
-    @NonNull
-    protected final FakePlayer fakePlayer;
     private Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
     private Mouse mouse;
     private Keyboard keyboard;
-
-    public Goal(ClientInstance clientInstance) {
-        this.clientInstance = clientInstance;
-        this.fakePlayer = clientInstance.getFakePlayer();
-    }
 
     protected static long timeMillis() {
         return System.nanoTime() / 1000000;
@@ -76,11 +69,19 @@ public abstract class Goal {
     }
 
     public void setMouseYaw(float yaw) {
+        val fakePlayer = clientInstance.getFakePlayer();
+
+        if (fakePlayer == null)
+            return;
         val rotYaw = fakePlayer.getYaw();
         getMouse().changeYaw(yaw - rotYaw);
     }
 
     public void setMousePitch(float pitch) {
+        val fakePlayer = clientInstance.getFakePlayer();
+
+        if (fakePlayer == null)
+            return;
         val rotPitch = fakePlayer.getPitch();
         getMouse().changePitch(pitch - rotPitch);
     }

@@ -61,6 +61,10 @@ public class ThrowHealthPotGoal extends Goal implements MathUtil {
     }
 
     private void switchToPearl() {
+        val fakePlayer = clientInstance.getFakePlayer();
+
+        if (fakePlayer == null)
+            return;
         var pearlSlot = -1;
         val inventory = fakePlayer.getInventory();
 
@@ -143,6 +147,11 @@ public class ThrowHealthPotGoal extends Goal implements MathUtil {
         if (clientInstance.getCurrentTick() - lastPearledTick < 20 || !canSeeEnemy())
             return false;
 
+        val fakePlayer = clientInstance.getFakePlayer();
+
+        if (fakePlayer == null)
+            return false;
+
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null || !inventory.contains(Item.ENDER_PEARL))
@@ -164,6 +173,10 @@ public class ThrowHealthPotGoal extends Goal implements MathUtil {
     }
 
     private boolean canSeeEnemy() {
+        val fakePlayer = clientInstance.getFakePlayer();
+
+        if (fakePlayer == null)
+            return false;
         val world = fakePlayer.getWorld();
         return world == null ? false
                 : world.getEntities().stream()
@@ -172,6 +185,10 @@ public class ThrowHealthPotGoal extends Goal implements MathUtil {
 
     @Override
     public void onTick() {
+        val fakePlayer = clientInstance.getFakePlayer();
+
+        if (fakePlayer == null)
+            return;
 
         val world = fakePlayer.getWorld();
 
