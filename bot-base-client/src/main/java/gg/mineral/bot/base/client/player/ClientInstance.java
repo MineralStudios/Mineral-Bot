@@ -13,6 +13,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.google.common.collect.Multimap;
 
 import gg.mineral.bot.api.configuration.BotConfiguration;
+import gg.mineral.bot.api.controls.Keyboard;
+import gg.mineral.bot.api.controls.Mouse;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.goal.Goal;
@@ -272,5 +274,15 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     @Override
     public FakePlayer getFakePlayer() {
         return this.thePlayer instanceof FakePlayer fakePlayer ? fakePlayer : null;
+    }
+
+    @Override
+    public Mouse newMouse() {
+        return new gg.mineral.bot.impl.controls.Mouse();
+    }
+
+    @Override
+    public Keyboard newKeyboard() {
+        return new gg.mineral.bot.impl.controls.Keyboard();
     }
 }

@@ -125,4 +125,18 @@ public interface ClientInstance extends EventHandler {
      * Shuts down the instance.
      */
     void shutdown();
+
+    /**
+     * Create a new mouse.
+     * 
+     * @return the new mouse
+     */
+    Mouse newMouse();
+
+    /**
+     * Create a new keyboard.
+     * 
+     * @return the new keyboard
+     */
+    Keyboard newKeyboard();
 }

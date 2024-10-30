@@ -9,21 +9,24 @@ import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.Keyboard;
 import gg.mineral.bot.api.controls.Mouse;
 import gg.mineral.bot.api.controls.MouseButton;
-import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.instance.ClientInstance;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 @Getter
-@RequiredArgsConstructor
 public abstract class Goal {
     @NonNull
     protected final ClientInstance clientInstance;
     private Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
     private Mouse mouse;
     private Keyboard keyboard;
+
+    public Goal(ClientInstance clientInstance) {
+        this.clientInstance = clientInstance;
+        this.mouse = clientInstance.newMouse();
+        this.keyboard = clientInstance.newKeyboard();
+    }
 
     protected static long timeMillis() {
         return System.nanoTime() / 1000000;
