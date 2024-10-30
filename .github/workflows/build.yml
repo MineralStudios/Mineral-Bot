@@ -1,0 +1,26 @@
+name: Build on Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main  # or the branch you want to monitor for pull requests
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'  # You can change this to the JDK distribution you prefer
+          java-version: '17'  # Set this to the Java version you need
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
