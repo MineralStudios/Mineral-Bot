@@ -10,7 +10,7 @@ import net.minecraft.util.IRegistry;
 import net.minecraft.util.RegistrySimple;
 
 public class IMetadataSerializer {
-    private final IRegistry metadataSectionSerializerRegistry = new RegistrySimple();
+    private final IRegistry<String, IMetadataSerializer.Registration> metadataSectionSerializerRegistry = new RegistrySimple<>();
     private final GsonBuilder gsonBuilder = new GsonBuilder();
 
     /**

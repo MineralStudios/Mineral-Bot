@@ -1,6 +1,6 @@
 package net.minecraft.entity.player;
 
-import java.util.concurrent.Callable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReport;
@@ -108,7 +108,6 @@ public class InventoryPlayer implements IInventory {
     }
 
     public void func_146030_a(Item p_146030_1_, int p_146030_2_, boolean p_146030_3_, boolean p_146030_4_) {
-        boolean var5 = true;
         this.currentItemStack = this.getCurrentItem();
         int var7;
 
@@ -706,5 +705,25 @@ public class InventoryPlayer implements IInventory {
     public int findSlot(int id) {
         Item item = Item.getItemById(id);
         return item == null ? -1 : findSlot(item);
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getHelmet() {
+        return armorItemInSlot(3);
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getChestplate() {
+        return armorItemInSlot(2);
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getLeggings() {
+        return armorItemInSlot(1);
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getBoots() {
+        return armorItemInSlot(0);
     }
 }

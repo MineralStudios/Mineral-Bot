@@ -290,4 +290,24 @@ public abstract class EntityMinecartContainer extends EntityMinecart implements 
         Item item = Item.getItemById(id);
         return item == null ? -1 : findSlot(item);
     }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack getHelmet() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack getChestplate() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack getLeggings() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack getBoots() {
+        return null;
+    }
 }

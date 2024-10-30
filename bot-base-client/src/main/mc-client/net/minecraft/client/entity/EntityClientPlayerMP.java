@@ -1,5 +1,6 @@
 package net.minecraft.client.entity;
 
+import gg.mineral.bot.api.entity.living.player.ClientPlayerMP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.SoundHandler;
@@ -25,10 +26,10 @@ import net.minecraft.util.MovementInput;
 import net.minecraft.util.Session;
 import net.minecraft.world.World;
 
-public class EntityClientPlayerMP extends EntityPlayerSP {
+public class EntityClientPlayerMP extends EntityPlayerSP implements ClientPlayerMP {
     public final NetHandlerPlayClient sendQueue;
     private final StatFileWriter field_146108_bO;
-    private double oldPosX;
+    public double oldPosX;
 
     /** Old Minimum Y of the bounding box */
     private double oldMinY;
@@ -288,5 +289,20 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 
     public StatFileWriter getStatFileWriter() {
         return this.field_146108_bO;
+    }
+
+    @Override
+    public double getLastReportedX() {
+        return this.oldPosX;
+    }
+
+    @Override
+    public double getLastReportedY() {
+        return this.oldPosY;
+    }
+
+    @Override
+    public double getLastReportedZ() {
+        return this.oldPosZ;
     }
 }

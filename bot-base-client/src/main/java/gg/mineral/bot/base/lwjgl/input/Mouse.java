@@ -1,19 +1,10 @@
 package gg.mineral.bot.base.lwjgl.input;
 
 import gg.mineral.bot.api.controls.MouseButton.Type;
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
-import gg.mineral.bot.base.lwjgl.opengl.Display;
+
 import gg.mineral.bot.impl.config.BotGlobalConfig;
-import net.minecraft.client.Minecraft;
 
 public class Mouse extends gg.mineral.bot.impl.controls.Mouse {
-
-    public Mouse(Minecraft mc) {
-        super(mc instanceof FakePlayerInstance fp ? fp : null);
-        this.mc = mc;
-    }
-
-    private final Minecraft mc;
 
     @Override
     public boolean next() {
@@ -121,38 +112,5 @@ public class Mouse extends gg.mineral.bot.impl.controls.Mouse {
             return;
 
         org.lwjgl.input.Mouse.setGrabbed(grab);
-    }
-
-    @Override
-    public void changeYaw(float dYaw) {
-        if (this.mc.inGameHasFocus && Display.isActive()) {
-            float defaultMouseSense = 0.5f;
-            float sensitivity = defaultMouseSense * 0.6F + 0.2F;
-            float deltaX = dYaw / (sensitivity * sensitivity * sensitivity * 8.0F);
-            this.setDX((int) (deltaX / 0.15));
-        }
-    }
-
-    @Override
-    public void changePitch(float dPitch) {
-        if (this.mc.inGameHasFocus && Display.isActive()) {
-            float defaultMouseSense = 0.5f;
-            float sensitivity = defaultMouseSense * 0.6F + 0.2F;
-            float inverted = this.mc.gameSettings.invertMouse ? -1 : 1;
-            float deltaY = -dPitch / (sensitivity * sensitivity * sensitivity * 8.0F * inverted);
-            this.setDY((int) (deltaY / 0.15));
-        }
-    }
-
-    @Override
-    public void setYaw(float yaw) {
-        float rotYaw = this.mc.thePlayer == null ? 0.0f : this.mc.thePlayer.rotationYaw;
-        changeYaw(yaw - rotYaw);
-    }
-
-    @Override
-    public void setPitch(float pitch) {
-        float rotPitch = this.mc.thePlayer == null ? 0.0f : this.mc.thePlayer.rotationPitch;
-        changePitch(pitch - rotPitch);
     }
 }

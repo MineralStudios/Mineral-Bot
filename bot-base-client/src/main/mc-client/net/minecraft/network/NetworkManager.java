@@ -77,10 +77,11 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
      * The queue for received, unprioritized packets that will be processed at the
      * earliest opportunity
      */
-    protected final Queue receivedPacketsQueue = Queues.newConcurrentLinkedQueue();
+    protected final Queue<Packet> receivedPacketsQueue = Queues.newConcurrentLinkedQueue();
 
     /** The queue for packets that require transmission */
-    protected final Queue outboundPacketsQueue = Queues.newConcurrentLinkedQueue();
+    protected final Queue<NetworkManager.InboundHandlerTuplePacketListener> outboundPacketsQueue = Queues
+            .newConcurrentLinkedQueue();
 
     /** The active channel */
     private Channel channel;
@@ -321,7 +322,8 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
             }
         })).channel(Epoll.isAvailable() ? EpollSocketChannel.class
                 : KQueue.isAvailable() ? KQueueSocketChannel.class
-                        : NioSocketChannel.class)).connect(p_150726_0_, p_150726_1_).syncUninterruptibly();
+                        : NioSocketChannel.class))
+                .connect(p_150726_0_, p_150726_1_).syncUninterruptibly();
         return var2;
     }
 

@@ -1,6 +1,8 @@
 package net.minecraft.entity.projectile;
 
 import java.util.List;
+
+import gg.mineral.bot.api.entity.throwable.ClientThrowableEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,7 +16,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-public abstract class EntityThrowable extends Entity implements IProjectile {
+public abstract class EntityThrowable extends Entity implements IProjectile, ClientThrowableEntity {
     private int field_145788_c = -1;
     private int field_145786_d = -1;
     private int field_145787_e = -1;

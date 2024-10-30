@@ -119,9 +119,7 @@ public class BlockEnderChest extends BlockContainer {
     public void randomDisplayTick(World p_149734_1_, int p_149734_2_, int p_149734_3_, int p_149734_4_,
             Random p_149734_5_) {
         for (int var6 = 0; var6 < 3; ++var6) {
-            double var10000 = (double) ((float) p_149734_2_ + p_149734_5_.nextFloat());
             double var9 = (double) ((float) p_149734_3_ + p_149734_5_.nextFloat());
-            var10000 = (double) ((float) p_149734_4_ + p_149734_5_.nextFloat());
             double var13 = 0.0D;
             double var15 = 0.0D;
             double var17 = 0.0D;

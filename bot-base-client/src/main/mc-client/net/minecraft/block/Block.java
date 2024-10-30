@@ -4,6 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import org.eclipse.jdt.annotation.NonNull;
+
+import gg.mineral.bot.api.math.BoundingBox;
+import gg.mineral.bot.api.world.ClientWorld;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -30,7 +34,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class Block implements gg.mineral.bot.api.world.block.Block {
-        public static final RegistryNamespaced blockRegistry = new RegistryNamespacedDefaultedByKey("air");
+        public static final RegistryNamespaced<Block> blockRegistry = new RegistryNamespacedDefaultedByKey<>("air");
         private CreativeTabs displayOnCreativeTab;
         protected String textureName;
         public static final Block.SoundType soundTypeStone = new Block.SoundType("stone", 1.0F, 1.0F);
@@ -388,8 +392,8 @@ public class Block implements gg.mineral.bot.api.world.block.Block {
                 blockRegistry.addObject(72, "wooden_pressure_plate",
                                 (new BlockPressurePlate("planks_oak", Material.wood,
                                                 BlockPressurePlate.Sensitivity.everything))
-                                                                .setHardness(0.5F).setStepSound(soundTypeWood)
-                                                                .setBlockName("pressurePlate"));
+                                                .setHardness(0.5F).setStepSound(soundTypeWood)
+                                                .setBlockName("pressurePlate"));
                 blockRegistry.addObject(73, "redstone_ore",
                                 (new BlockRedstoneOre(false)).setHardness(3.0F).setResistance(5.0F)
                                                 .setStepSound(soundTypePiston)
@@ -910,7 +914,7 @@ public class Block implements gg.mineral.bot.api.world.block.Block {
         }
 
         public void addCollisionBoxesToList(World p_149743_1_, int p_149743_2_, int p_149743_3_, int p_149743_4_,
-                        AxisAlignedBB p_149743_5_, List p_149743_6_, Entity p_149743_7_) {
+                        AxisAlignedBB p_149743_5_, List<AxisAlignedBB> p_149743_6_, Entity p_149743_7_) {
                 AxisAlignedBB var8 = this.getCollisionBoundingBoxFromPool(p_149743_1_, p_149743_2_, p_149743_3_,
                                 p_149743_4_);
 
@@ -1647,5 +1651,17 @@ public class Block implements gg.mineral.bot.api.world.block.Block {
                 public String func_150496_b() {
                         return this.func_150495_a();
                 }
+        }
+
+        @Override
+        public int getId() {
+                return getIdFromBlock(this);
+        }
+
+        @Override
+        public BoundingBox getCollisionBoundingBox(@NonNull ClientWorld clientWorld, int xTile, int yTile, int zTile) {
+                if (clientWorld instanceof World world)
+                        return getCollisionBoundingBoxFromPool(world, xTile, yTile, zTile);
+                return null;
         }
 }

@@ -4,16 +4,20 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import gg.mineral.bot.api.entity.ClientEntity;
-import gg.mineral.bot.api.util.MathUtil;
+import gg.mineral.bot.api.math.optimization.Optimizer;
+import gg.mineral.bot.api.math.optimization.Optimizer.Data;
+import gg.mineral.bot.api.math.optimization.Optimizer.Param;
+import gg.mineral.bot.api.math.optimization.RecursiveCalculation;
 import gg.mineral.bot.api.world.ClientWorld;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -144,8 +148,8 @@ public class WorldClient extends World implements ClientWorld {
             long var3 = var2.nextLong();
 
             if (!this.previousActiveChunkSet.contains(var3)) {
-                int chunkXPos = MathUtil.getHighInt(var3);
-                int chunkZPos = MathUtil.getLowInt(var3);
+                int chunkXPos = highInt(var3);
+                int chunkZPos = lowInt(var3);
                 int var4 = chunkXPos * 16;
                 int var5 = chunkZPos * 16;
                 this.theProfiler.startSection("getChunk");
@@ -449,5 +453,46 @@ public class WorldClient extends World implements ClientWorld {
     @Override
     public Collection<ClientEntity> getEntities() {
         return entityHashSet.values();
+    }
+
+    @Override
+    public gg.mineral.bot.api.world.block.Block getBlockAt(int x, int y, int z) {
+        return getBlock(x, y, z);
+    }
+
+    @Override
+    public <C extends RecursiveCalculation<?>> Optimizer.Data<C, Number> univariateOptimizer(Class<C> calcClass,
+            Function<C, Number> valueFunction,
+            int maxEval) {
+
+        val world = this;
+
+        return new Optimizer.Data<C, Number>() {
+
+            @Override
+            public Optimizer<C, Number> build() {
+                return new gg.mineral.bot.impl.math.optimization.UnivariateOptimizer<C>(world, calcClass,
+                        valueFunction,
+                        maxEval, queue.toArray(new Param<?>[0]));
+            }
+
+        };
+    }
+
+    @Override
+    public <C extends RecursiveCalculation<?>> Data<C, Number[]> bivariateOptimizer(Class<C> calcClass,
+            Function<C, Number> valueFunction, int maxEval) {
+        val world = this;
+
+        return new Optimizer.Data<C, Number[]>() {
+
+            @Override
+            public Optimizer<C, Number[]> build() {
+                return new gg.mineral.bot.impl.math.optimization.BivariateOptimizer<C>(world, calcClass,
+                        valueFunction,
+                        maxEval, queue.toArray(new Param<?>[0]));
+            }
+
+        };
     }
 }

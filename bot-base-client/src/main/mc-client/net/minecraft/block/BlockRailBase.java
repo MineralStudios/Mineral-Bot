@@ -285,22 +285,22 @@ public abstract class BlockRailBase extends Block {
         }
 
         private BlockRailBase.Rail func_150654_a(ChunkPosition p_150654_1_) {
-            return BlockRailBase.func_150049_b_(this.field_150660_b, p_150654_1_.field_151329_a,
-                    p_150654_1_.field_151327_b, p_150654_1_.field_151328_c)
-                            ? BlockRailBase.this.new Rail(this.field_150660_b, p_150654_1_.field_151329_a,
-                                    p_150654_1_.field_151327_b, p_150654_1_.field_151328_c)
-                            : (BlockRailBase.func_150049_b_(this.field_150660_b, p_150654_1_.field_151329_a,
-                                    p_150654_1_.field_151327_b + 1, p_150654_1_.field_151328_c)
+            return BlockRailBase.func_150049_b_(this.field_150660_b, p_150654_1_.x,
+                    p_150654_1_.y, p_150654_1_.z)
+                            ? BlockRailBase.this.new Rail(this.field_150660_b, p_150654_1_.x,
+                                    p_150654_1_.y, p_150654_1_.z)
+                            : (BlockRailBase.func_150049_b_(this.field_150660_b, p_150654_1_.x,
+                                    p_150654_1_.y + 1, p_150654_1_.z)
                                             ? BlockRailBase.this.new Rail(this.field_150660_b,
-                                                    p_150654_1_.field_151329_a, p_150654_1_.field_151327_b + 1,
-                                                    p_150654_1_.field_151328_c)
+                                                    p_150654_1_.x, p_150654_1_.y + 1,
+                                                    p_150654_1_.z)
                                             : (BlockRailBase.func_150049_b_(this.field_150660_b,
-                                                    p_150654_1_.field_151329_a, p_150654_1_.field_151327_b - 1,
-                                                    p_150654_1_.field_151328_c)
+                                                    p_150654_1_.x, p_150654_1_.y - 1,
+                                                    p_150654_1_.z)
                                                             ? BlockRailBase.this.new Rail(this.field_150660_b,
-                                                                    p_150654_1_.field_151329_a,
-                                                                    p_150654_1_.field_151327_b - 1,
-                                                                    p_150654_1_.field_151328_c)
+                                                                    p_150654_1_.x,
+                                                                    p_150654_1_.y - 1,
+                                                                    p_150654_1_.z)
                                                             : null));
         }
 
@@ -308,8 +308,8 @@ public abstract class BlockRailBase extends Block {
             for (int var2 = 0; var2 < this.field_150657_g.size(); ++var2) {
                 ChunkPosition var3 = (ChunkPosition) this.field_150657_g.get(var2);
 
-                if (var3.field_151329_a == p_150653_1_.field_150661_c
-                        && var3.field_151328_c == p_150653_1_.field_150659_e) {
+                if (var3.x == p_150653_1_.field_150661_c
+                        && var3.z == p_150653_1_.field_150659_e) {
                     return true;
                 }
             }
@@ -321,7 +321,7 @@ public abstract class BlockRailBase extends Block {
             for (int var4 = 0; var4 < this.field_150657_g.size(); ++var4) {
                 ChunkPosition var5 = (ChunkPosition) this.field_150657_g.get(var4);
 
-                if (var5.field_151329_a == p_150652_1_ && var5.field_151328_c == p_150652_3_) {
+                if (var5.x == p_150652_1_ && var5.z == p_150652_3_) {
                     return true;
                 }
             }

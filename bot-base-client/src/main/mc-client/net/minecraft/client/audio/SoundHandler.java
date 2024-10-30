@@ -16,10 +16,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
@@ -49,7 +49,7 @@ public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlay
     };
     public static final SoundPoolEntry field_147700_a = new SoundPoolEntry(new ResourceLocation("meta:missing_sound"),
             0.0D, 0.0D, false);
-    private final SoundRegistry field_147697_e = new SoundRegistry();
+    private final SoundRegistry soundRegistry = new SoundRegistry();
     private final SoundManager field_147694_f;
     private final IResourceManager field_147695_g;
 
@@ -60,11 +60,11 @@ public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlay
 
     public void onResourceManagerReload(IResourceManager p_110549_1_) {
         this.field_147694_f.func_148596_a();
-        this.field_147697_e.func_148763_c();
-        Iterator var2 = p_110549_1_.getResourceDomains().iterator();
+        this.soundRegistry.clear();
+        Iterator<String> var2 = p_110549_1_.getResourceDomains().iterator();
 
         while (var2.hasNext()) {
-            String var3 = (String) var2.next();
+            String var3 = var2.next();
 
             try {
                 List var4 = p_110549_1_.getAllResources(new ResourceLocation(var3, "sounds.json"));
@@ -96,12 +96,12 @@ public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlay
     private void func_147693_a(ResourceLocation p_147693_1_, SoundList p_147693_2_) {
         SoundEventAccessorComposite var3;
 
-        if (this.field_147697_e.containsKey(p_147693_1_) && !p_147693_2_.func_148574_b()) {
-            var3 = (SoundEventAccessorComposite) this.field_147697_e.getObject(p_147693_1_);
+        if (this.soundRegistry.containsKey(p_147693_1_) && !p_147693_2_.func_148574_b()) {
+            var3 = this.soundRegistry.getObject(p_147693_1_);
         } else {
             logger.debug("Registered/replaced new sound event location {}", new Object[] { p_147693_1_ });
             var3 = new SoundEventAccessorComposite(p_147693_1_, 1.0D, 1.0D, p_147693_2_.func_148573_c());
-            this.field_147697_e.func_148762_a(var3);
+            this.soundRegistry.add(var3);
         }
 
         Iterator var4 = p_147693_2_.func_148570_a().iterator();
@@ -138,13 +138,13 @@ public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlay
                         final ResourceLocation field_148726_a = new ResourceLocation(var8, var5.func_148556_a());
 
                         public int func_148721_a() {
-                            SoundEventAccessorComposite var1 = (SoundEventAccessorComposite) SoundHandler.this.field_147697_e
+                            SoundEventAccessorComposite var1 = SoundHandler.this.soundRegistry
                                     .getObject(this.field_148726_a);
                             return var1 == null ? 0 : var1.func_148721_a();
                         }
 
                         public SoundPoolEntry func_148720_g() {
-                            SoundEventAccessorComposite var1 = (SoundEventAccessorComposite) SoundHandler.this.field_147697_e
+                            SoundEventAccessorComposite var1 = SoundHandler.this.soundRegistry
                                     .getObject(this.field_148726_a);
                             return var1 == null ? SoundHandler.field_147700_a : var1.func_148720_g();
                         }
@@ -160,7 +160,7 @@ public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlay
     }
 
     public SoundEventAccessorComposite func_147680_a(ResourceLocation p_147680_1_) {
-        return (SoundEventAccessorComposite) this.field_147697_e.getObject(p_147680_1_);
+        return this.soundRegistry.getObject(p_147680_1_);
     }
 
     /**
@@ -205,9 +205,8 @@ public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlay
     }
 
     public void setSoundLevel(SoundCategory p_147684_1_, float p_147684_2_) {
-        if (p_147684_1_ == SoundCategory.MASTER && p_147684_2_ <= 0.0F) {
+        if (p_147684_1_ == SoundCategory.MASTER && p_147684_2_ <= 0.0F)
             this.func_147690_c();
-        }
 
         this.field_147694_f.func_148601_a(p_147684_1_, p_147684_2_);
     }
@@ -217,23 +216,18 @@ public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlay
     }
 
     public SoundEventAccessorComposite func_147686_a(SoundCategory... p_147686_1_) {
-        ArrayList var2 = Lists.newArrayList();
-        Iterator var3 = this.field_147697_e.getKeys().iterator();
+        val var2 = new ArrayList<SoundEventAccessorComposite>();
+        val var3 = this.soundRegistry.getKeys().iterator();
 
         while (var3.hasNext()) {
-            ResourceLocation var4 = (ResourceLocation) var3.next();
-            SoundEventAccessorComposite var5 = (SoundEventAccessorComposite) this.field_147697_e.getObject(var4);
+            ResourceLocation var4 = var3.next();
+            SoundEventAccessorComposite var5 = this.soundRegistry.getObject(var4);
 
-            if (ArrayUtils.contains(p_147686_1_, var5.func_148728_d())) {
+            if (ArrayUtils.contains(p_147686_1_, var5.func_148728_d()))
                 var2.add(var5);
-            }
         }
 
-        if (var2.isEmpty()) {
-            return null;
-        } else {
-            return (SoundEventAccessorComposite) var2.get((new Random()).nextInt(var2.size()));
-        }
+        return var2.isEmpty() ? null : var2.get((new Random()).nextInt(var2.size()));
     }
 
     public boolean func_147692_c(ISound p_147692_1_) {

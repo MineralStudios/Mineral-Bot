@@ -21,8 +21,9 @@ public class BlockFence extends Block {
         this.setCreativeTab(CreativeTabs.tabDecorations);
     }
 
+    @Override
     public void addCollisionBoxesToList(World p_149743_1_, int p_149743_2_, int p_149743_3_, int p_149743_4_,
-            AxisAlignedBB p_149743_5_, List p_149743_6_, Entity p_149743_7_) {
+            AxisAlignedBB p_149743_5_, List<AxisAlignedBB> p_149743_6_, Entity p_149743_7_) {
         boolean var8 = this.func_149826_e(p_149743_1_, p_149743_2_, p_149743_3_, p_149743_4_ - 1);
         boolean var9 = this.func_149826_e(p_149743_1_, p_149743_2_, p_149743_3_, p_149743_4_ + 1);
         boolean var10 = this.func_149826_e(p_149743_1_, p_149743_2_ - 1, p_149743_3_, p_149743_4_);
@@ -32,13 +33,11 @@ public class BlockFence extends Block {
         float var14 = 0.375F;
         float var15 = 0.625F;
 
-        if (var8) {
+        if (var8)
             var14 = 0.0F;
-        }
 
-        if (var9) {
+        if (var9)
             var15 = 1.0F;
-        }
 
         if (var8 || var9) {
             this.setBlockBounds(var12, 0.0F, var14, var13, 1.5F, var15);
@@ -49,13 +48,11 @@ public class BlockFence extends Block {
         var14 = 0.375F;
         var15 = 0.625F;
 
-        if (var10) {
+        if (var10)
             var12 = 0.0F;
-        }
 
-        if (var11) {
+        if (var11)
             var13 = 1.0F;
-        }
 
         if (var10 || var11 || !var8 && !var9) {
             this.setBlockBounds(var12, 0.0F, var14, var13, 1.5F, var15);
@@ -63,13 +60,11 @@ public class BlockFence extends Block {
                     p_149743_7_);
         }
 
-        if (var8) {
+        if (var8)
             var14 = 0.0F;
-        }
 
-        if (var9) {
+        if (var9)
             var15 = 1.0F;
-        }
 
         this.setBlockBounds(var12, 0.0F, var14, var13, 1.0F, var15);
     }

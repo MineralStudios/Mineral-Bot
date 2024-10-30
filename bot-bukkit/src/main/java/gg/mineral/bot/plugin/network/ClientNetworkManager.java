@@ -2,11 +2,11 @@ package gg.mineral.bot.plugin.network;
 
 import javax.crypto.SecretKey;
 
-import gg.mineral.bot.api.BotAPI;
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import gg.mineral.bot.base.client.player.ClientInstance;
 import gg.mineral.bot.plugin.network.packet.Client2ServerTranslator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.GenericFutureListener;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.NetworkManager;
@@ -33,7 +33,6 @@ public class ClientNetworkManager extends NetworkManager {
         this.connectionState = state;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Packet p_channelRead0_2_) {
         if (p_channelRead0_2_.hasPriority())
@@ -50,45 +49,45 @@ public class ClientNetworkManager extends NetworkManager {
     }
 
     @Override
-    protected void dispatchPacket(final Packet p_150732_1_,
+    protected void dispatchPacket(final Packet packet,
             @SuppressWarnings("rawtypes") final GenericFutureListener[] p_150732_2_) {
-        final EnumConnectionState var3 = EnumConnectionState.func_150752_a(p_150732_1_);
-        final EnumConnectionState var4 = this.connectionState;
+        val newState = EnumConnectionState.func_150752_a(packet);
+        val currState = this.connectionState;
 
-        if (var3 != var4)
-            this.setConnectionState(var3);
+        if (newState != currState)
+            this.setConnectionState(newState);
 
-        if (mc instanceof FakePlayerInstance instance && (!mc.isMainThread() || instance.getLatency() > 0))
-            instance.scheduleTask(() -> p_150732_1_.processPacket(translator), instance.getLatency());
+        if (mc instanceof ClientInstance instance && (!mc.isMainThread() || instance.getLatency() > 0))
+            instance.scheduleTask(() -> packet.processPacket(translator), instance.getLatency());
         else
-            p_150732_1_.processPacket(translator);
+            packet.processPacket(translator);
     }
 
     @Override
     protected void flushOutboundQueue() {
         while (!this.outboundPacketsQueue.isEmpty()) {
-            NetworkManager.InboundHandlerTuplePacketListener var1 = (NetworkManager.InboundHandlerTuplePacketListener) this.outboundPacketsQueue
+            val packet = this.outboundPacketsQueue
                     .poll();
-            this.dispatchPacket(var1.field_150774_a, var1.field_150773_b);
+            this.dispatchPacket(packet.field_150774_a, packet.field_150773_b);
         }
     }
 
     @Override
     public void processReceivedPackets() {
         this.flushOutboundQueue();
-        EnumConnectionState var1 = this.connectionState;
+        val currConnectionState = this.connectionState;
 
-        if (this.connectionState != var1) {
+        if (this.connectionState != currConnectionState) {
             if (this.connectionState != null)
-                this.netHandler.onConnectionStateTransition(this.connectionState, var1);
+                this.netHandler.onConnectionStateTransition(this.connectionState, currConnectionState);
 
-            this.connectionState = var1;
+            this.connectionState = currConnectionState;
         }
 
         if (this.netHandler != null) {
-            for (int var2 = 1000; !this.receivedPacketsQueue.isEmpty() && var2 >= 0; --var2) {
-                Packet var3 = (Packet) this.receivedPacketsQueue.poll();
-                var3.processPacket(this.netHandler);
+            for (int iterations = 1000; !this.receivedPacketsQueue.isEmpty() && iterations >= 0; --iterations) {
+                val packet = this.receivedPacketsQueue.poll();
+                packet.processPacket(this.netHandler);
             }
 
             this.netHandler.onNetworkTick();
@@ -99,8 +98,8 @@ public class ClientNetworkManager extends NetworkManager {
 
     @Override
     public void closeChannel(IChatComponent p_150718_1_) {
-        if (mc instanceof FakePlayerInstance instance)
-            BotAPI.INSTANCE.despawn(instance);
+        if (mc instanceof ClientInstance instance)
+            instance.shutdown();
         this.open = false;
         this.terminationReason = p_150718_1_;
     }

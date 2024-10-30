@@ -93,13 +93,11 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         this.textureType = par1;
         this.basePath = par2Str;
 
-        if (this.textureType == 0) {
+        if (this.textureType == 0)
             textureMapBlocks = this;
-        }
 
-        if (this.textureType == 1) {
+        if (this.textureType == 1)
             textureMapItems = this;
-        }
 
         this.registerIcons();
         this.skipFirst = skipFirst && ENABLE_SKIP;

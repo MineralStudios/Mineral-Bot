@@ -2,9 +2,10 @@ package net.minecraft.item;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import java.util.HashSet;
-import java.util.Iterator;
+
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import lombok.val;
+
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -46,7 +47,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 public class Item implements gg.mineral.bot.api.inv.item.Item {
-        public static final RegistryNamespaced itemRegistry = new RegistryNamespaced();
+        public static final RegistryNamespaced<Item> itemRegistry = new RegistryNamespaced<>();
         protected static final UUID field_111210_e = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
         private CreativeTabs tabToDisplayOn;
 
@@ -514,7 +515,8 @@ public class Item implements gg.mineral.bot.api.inv.item.Item {
                                 (new ItemRecord("11")).setUnlocalizedName("record").setTextureName("record_11"));
                 itemRegistry.addObject(2267, "record_wait",
                                 (new ItemRecord("wait")).setUnlocalizedName("record").setTextureName("record_wait"));
-                HashSet var1 = Sets.newHashSet(new Block[] { Blocks.air, Blocks.brewing_stand, Blocks.bed,
+                val excludedItemBlocks = new ObjectOpenHashSet<>(new Block[] { Blocks.air, Blocks.brewing_stand,
+                                Blocks.bed,
                                 Blocks.nether_wart,
                                 Blocks.cauldron, Blocks.flower_pot, Blocks.wheat, Blocks.reeds, Blocks.cake,
                                 Blocks.skull,
@@ -525,119 +527,118 @@ public class Item implements gg.mineral.bot.api.inv.item.Item {
                                 Blocks.unpowered_comparator,
                                 Blocks.redstone_wire, Blocks.wall_sign, Blocks.unpowered_repeater, Blocks.iron_door,
                                 Blocks.wooden_door });
-                Iterator var2 = Block.blockRegistry.getKeys().iterator();
+                val blockRegKeys = Block.blockRegistry.getKeys().iterator();
 
-                while (var2.hasNext()) {
-                        String var3 = (String) var2.next();
-                        Block var4 = (Block) Block.blockRegistry.getObject(var3);
-                        Object var5;
+                while (blockRegKeys.hasNext()) {
+                        val key = blockRegKeys.next();
+                        val block = Block.blockRegistry.getObject(key);
+                        Item item;
 
-                        if (var4 == Blocks.wool) {
-                                var5 = (new ItemCloth(Blocks.wool)).setUnlocalizedName("cloth");
-                        } else if (var4 == Blocks.stained_hardened_clay) {
-                                var5 = (new ItemCloth(Blocks.stained_hardened_clay))
+                        if (block == Blocks.wool) {
+                                item = (new ItemCloth(Blocks.wool)).setUnlocalizedName("cloth");
+                        } else if (block == Blocks.stained_hardened_clay) {
+                                item = (new ItemCloth(Blocks.stained_hardened_clay))
                                                 .setUnlocalizedName("clayHardenedStained");
-                        } else if (var4 == Blocks.stained_glass) {
-                                var5 = (new ItemCloth(Blocks.stained_glass)).setUnlocalizedName("stainedGlass");
-                        } else if (var4 == Blocks.stained_glass_pane) {
-                                var5 = (new ItemCloth(Blocks.stained_glass_pane))
+                        } else if (block == Blocks.stained_glass) {
+                                item = (new ItemCloth(Blocks.stained_glass)).setUnlocalizedName("stainedGlass");
+                        } else if (block == Blocks.stained_glass_pane) {
+                                item = (new ItemCloth(Blocks.stained_glass_pane))
                                                 .setUnlocalizedName("stainedGlassPane");
-                        } else if (var4 == Blocks.carpet) {
-                                var5 = (new ItemCloth(Blocks.carpet)).setUnlocalizedName("woolCarpet");
-                        } else if (var4 == Blocks.dirt) {
-                                var5 = (new ItemMultiTexture(Blocks.dirt, Blocks.dirt, BlockDirt.field_150009_a))
+                        } else if (block == Blocks.carpet) {
+                                item = (new ItemCloth(Blocks.carpet)).setUnlocalizedName("woolCarpet");
+                        } else if (block == Blocks.dirt) {
+                                item = (new ItemMultiTexture(Blocks.dirt, Blocks.dirt, BlockDirt.field_150009_a))
                                                 .setUnlocalizedName("dirt");
-                        } else if (var4 == Blocks.sand) {
-                                var5 = (new ItemMultiTexture(Blocks.sand, Blocks.sand, BlockSand.field_149838_a))
+                        } else if (block == Blocks.sand) {
+                                item = (new ItemMultiTexture(Blocks.sand, Blocks.sand, BlockSand.field_149838_a))
                                                 .setUnlocalizedName("sand");
-                        } else if (var4 == Blocks.log) {
-                                var5 = (new ItemMultiTexture(Blocks.log, Blocks.log, BlockOldLog.field_150168_M))
+                        } else if (block == Blocks.log) {
+                                item = (new ItemMultiTexture(Blocks.log, Blocks.log, BlockOldLog.field_150168_M))
                                                 .setUnlocalizedName("log");
-                        } else if (var4 == Blocks.log2) {
-                                var5 = (new ItemMultiTexture(Blocks.log2, Blocks.log2, BlockNewLog.field_150169_M))
+                        } else if (block == Blocks.log2) {
+                                item = (new ItemMultiTexture(Blocks.log2, Blocks.log2, BlockNewLog.field_150169_M))
                                                 .setUnlocalizedName("log");
-                        } else if (var4 == Blocks.planks) {
-                                var5 = (new ItemMultiTexture(Blocks.planks, Blocks.planks, BlockWood.field_150096_a))
+                        } else if (block == Blocks.planks) {
+                                item = (new ItemMultiTexture(Blocks.planks, Blocks.planks, BlockWood.field_150096_a))
                                                 .setUnlocalizedName("wood");
-                        } else if (var4 == Blocks.monster_egg) {
-                                var5 = (new ItemMultiTexture(Blocks.monster_egg, Blocks.monster_egg,
+                        } else if (block == Blocks.monster_egg) {
+                                item = (new ItemMultiTexture(Blocks.monster_egg, Blocks.monster_egg,
                                                 BlockSilverfish.field_150198_a))
-                                                                .setUnlocalizedName("monsterStoneEgg");
-                        } else if (var4 == Blocks.stonebrick) {
-                                var5 = (new ItemMultiTexture(Blocks.stonebrick, Blocks.stonebrick,
+                                                .setUnlocalizedName("monsterStoneEgg");
+                        } else if (block == Blocks.stonebrick) {
+                                item = (new ItemMultiTexture(Blocks.stonebrick, Blocks.stonebrick,
                                                 BlockStoneBrick.field_150142_a))
-                                                                .setUnlocalizedName("stonebricksmooth");
-                        } else if (var4 == Blocks.sandstone) {
-                                var5 = (new ItemMultiTexture(Blocks.sandstone, Blocks.sandstone,
+                                                .setUnlocalizedName("stonebricksmooth");
+                        } else if (block == Blocks.sandstone) {
+                                item = (new ItemMultiTexture(Blocks.sandstone, Blocks.sandstone,
                                                 BlockSandStone.field_150157_a))
-                                                                .setUnlocalizedName("sandStone");
-                        } else if (var4 == Blocks.quartz_block) {
-                                var5 = (new ItemMultiTexture(Blocks.quartz_block, Blocks.quartz_block,
+                                                .setUnlocalizedName("sandStone");
+                        } else if (block == Blocks.quartz_block) {
+                                item = (new ItemMultiTexture(Blocks.quartz_block, Blocks.quartz_block,
                                                 BlockQuartz.field_150191_a))
-                                                                .setUnlocalizedName("quartzBlock");
-                        } else if (var4 == Blocks.stone_slab) {
-                                var5 = (new ItemSlab(Blocks.stone_slab, Blocks.stone_slab, Blocks.double_stone_slab,
+                                                .setUnlocalizedName("quartzBlock");
+                        } else if (block == Blocks.stone_slab) {
+                                item = (new ItemSlab(Blocks.stone_slab, Blocks.stone_slab, Blocks.double_stone_slab,
                                                 false))
-                                                                .setUnlocalizedName("stoneSlab");
-                        } else if (var4 == Blocks.double_stone_slab) {
-                                var5 = (new ItemSlab(Blocks.double_stone_slab, Blocks.stone_slab,
+                                                .setUnlocalizedName("stoneSlab");
+                        } else if (block == Blocks.double_stone_slab) {
+                                item = (new ItemSlab(Blocks.double_stone_slab, Blocks.stone_slab,
                                                 Blocks.double_stone_slab, true))
-                                                                .setUnlocalizedName("stoneSlab");
-                        } else if (var4 == Blocks.wooden_slab) {
-                                var5 = (new ItemSlab(Blocks.wooden_slab, Blocks.wooden_slab, Blocks.double_wooden_slab,
+                                                .setUnlocalizedName("stoneSlab");
+                        } else if (block == Blocks.wooden_slab) {
+                                item = (new ItemSlab(Blocks.wooden_slab, Blocks.wooden_slab, Blocks.double_wooden_slab,
                                                 false))
-                                                                .setUnlocalizedName("woodSlab");
-                        } else if (var4 == Blocks.double_wooden_slab) {
-                                var5 = (new ItemSlab(Blocks.double_wooden_slab, Blocks.wooden_slab,
+                                                .setUnlocalizedName("woodSlab");
+                        } else if (block == Blocks.double_wooden_slab) {
+                                item = (new ItemSlab(Blocks.double_wooden_slab, Blocks.wooden_slab,
                                                 Blocks.double_wooden_slab, true))
-                                                                .setUnlocalizedName("woodSlab");
-                        } else if (var4 == Blocks.sapling) {
-                                var5 = (new ItemMultiTexture(Blocks.sapling, Blocks.sapling,
+                                                .setUnlocalizedName("woodSlab");
+                        } else if (block == Blocks.sapling) {
+                                item = (new ItemMultiTexture(Blocks.sapling, Blocks.sapling,
                                                 BlockSapling.field_149882_a))
-                                                                .setUnlocalizedName("sapling");
-                        } else if (var4 == Blocks.leaves) {
-                                var5 = (new ItemLeaves(Blocks.leaves)).setUnlocalizedName("leaves");
-                        } else if (var4 == Blocks.leaves2) {
-                                var5 = (new ItemLeaves(Blocks.leaves2)).setUnlocalizedName("leaves");
-                        } else if (var4 == Blocks.vine) {
-                                var5 = new ItemColored(Blocks.vine, false);
-                        } else if (var4 == Blocks.tallgrass) {
-                                var5 = (new ItemColored(Blocks.tallgrass, true))
+                                                .setUnlocalizedName("sapling");
+                        } else if (block == Blocks.leaves) {
+                                item = (new ItemLeaves(Blocks.leaves)).setUnlocalizedName("leaves");
+                        } else if (block == Blocks.leaves2) {
+                                item = (new ItemLeaves(Blocks.leaves2)).setUnlocalizedName("leaves");
+                        } else if (block == Blocks.vine) {
+                                item = new ItemColored(Blocks.vine, false);
+                        } else if (block == Blocks.tallgrass) {
+                                item = (new ItemColored(Blocks.tallgrass, true))
                                                 .func_150943_a(new String[] { "shrub", "grass", "fern" });
-                        } else if (var4 == Blocks.yellow_flower) {
-                                var5 = (new ItemMultiTexture(Blocks.yellow_flower, Blocks.yellow_flower,
+                        } else if (block == Blocks.yellow_flower) {
+                                item = (new ItemMultiTexture(Blocks.yellow_flower, Blocks.yellow_flower,
                                                 BlockFlower.field_149858_b))
-                                                                .setUnlocalizedName("flower");
-                        } else if (var4 == Blocks.red_flower) {
-                                var5 = (new ItemMultiTexture(Blocks.red_flower, Blocks.red_flower,
+                                                .setUnlocalizedName("flower");
+                        } else if (block == Blocks.red_flower) {
+                                item = (new ItemMultiTexture(Blocks.red_flower, Blocks.red_flower,
                                                 BlockFlower.field_149859_a))
-                                                                .setUnlocalizedName("rose");
-                        } else if (var4 == Blocks.snow_layer) {
-                                var5 = new ItemSnow(Blocks.snow_layer, Blocks.snow_layer);
-                        } else if (var4 == Blocks.waterlily) {
-                                var5 = new ItemLilyPad(Blocks.waterlily);
-                        } else if (var4 == Blocks.piston) {
-                                var5 = new ItemPiston(Blocks.piston);
-                        } else if (var4 == Blocks.sticky_piston) {
-                                var5 = new ItemPiston(Blocks.sticky_piston);
-                        } else if (var4 == Blocks.cobblestone_wall) {
-                                var5 = (new ItemMultiTexture(Blocks.cobblestone_wall, Blocks.cobblestone_wall,
+                                                .setUnlocalizedName("rose");
+                        } else if (block == Blocks.snow_layer) {
+                                item = new ItemSnow(Blocks.snow_layer, Blocks.snow_layer);
+                        } else if (block == Blocks.waterlily) {
+                                item = new ItemLilyPad(Blocks.waterlily);
+                        } else if (block == Blocks.piston) {
+                                item = new ItemPiston(Blocks.piston);
+                        } else if (block == Blocks.sticky_piston) {
+                                item = new ItemPiston(Blocks.sticky_piston);
+                        } else if (block == Blocks.cobblestone_wall) {
+                                item = (new ItemMultiTexture(Blocks.cobblestone_wall, Blocks.cobblestone_wall,
                                                 BlockWall.field_150092_a)).setUnlocalizedName("cobbleWall");
-                        } else if (var4 == Blocks.anvil) {
-                                var5 = (new ItemAnvilBlock(Blocks.anvil)).setUnlocalizedName("anvil");
-                        } else if (var4 == Blocks.double_plant) {
-                                var5 = (new ItemDoublePlant(Blocks.double_plant, Blocks.double_plant,
+                        } else if (block == Blocks.anvil) {
+                                item = (new ItemAnvilBlock(Blocks.anvil)).setUnlocalizedName("anvil");
+                        } else if (block == Blocks.double_plant) {
+                                item = (new ItemDoublePlant(Blocks.double_plant, Blocks.double_plant,
                                                 BlockDoublePlant.field_149892_a))
-                                                                .setUnlocalizedName("doublePlant");
+                                                .setUnlocalizedName("doublePlant");
                         } else {
-                                if (var1.contains(var4)) {
+                                if (excludedItemBlocks.contains(block))
                                         continue;
-                                }
 
-                                var5 = new ItemBlock(var4);
+                                item = new ItemBlock(block);
                         }
 
-                        itemRegistry.addObject(Block.getIdFromBlock(var4), var3, var5);
+                        itemRegistry.addObject(Block.getIdFromBlock(block), key, item);
                 }
         }
 
@@ -1058,17 +1059,16 @@ public class Item implements gg.mineral.bot.api.inv.item.Item {
         public static enum ToolMaterial {
                 WOOD("WOOD", 0, 0, 59, 2.0F, 0.0F, 15), STONE("STONE", 1, 1, 131, 4.0F, 1.0F, 5), IRON("IRON", 2, 2,
                                 250, 6.0F,
-                                2.0F, 14), EMERALD("EMERALD", 3, 3, 1561, 8.0F, 3.0F,
-                                                10), GOLD("GOLD", 4, 0, 32, 12.0F, 0.0F, 22);
+                                2.0F, 14),
+                EMERALD("EMERALD", 3, 3, 1561, 8.0F, 3.0F,
+                                10),
+                GOLD("GOLD", 4, 0, 32, 12.0F, 0.0F, 22);
 
                 private final int harvestLevel;
                 private final int maxUses;
                 private final float efficiencyOnProperMaterial;
                 private final float damageVsEntity;
                 private final int enchantability;
-
-                private static final Item.ToolMaterial[] $VALUES = new Item.ToolMaterial[] { WOOD, STONE, IRON, EMERALD,
-                                GOLD };
 
                 private ToolMaterial(String p_i1874_1_, int p_i1874_2_, int p_i1874_3_, int p_i1874_4_,
                                 float p_i1874_5_,

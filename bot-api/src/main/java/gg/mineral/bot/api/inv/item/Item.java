@@ -1,5 +1,7 @@
 package gg.mineral.bot.api.inv.item;
 
+import lombok.Getter;
+
 public interface Item {
     public static int IRON_SHOVEL = 256,
             IRON_PICKAXE = 257,
@@ -179,5 +181,27 @@ public interface Item {
      * @return the id of the item
      */
     int getId();
+
+    @Getter
+    public static enum Type {
+        HELMET(LEATHER_HELMET, CHAINMAIL_HELMET, IRON_HELMET, DIAMOND_HELMET, GOLDEN_HELMET),
+        CHESTPLATE(LEATHER_CHESTPLATE, CHAINMAIL_CHESTPLATE, IRON_CHESTPLATE, DIAMOND_CHESTPLATE, GOLDEN_CHESTPLATE),
+        LEGGINGS(LEATHER_LEGGINGS, CHAINMAIL_LEGGINGS, IRON_LEGGINGS, DIAMOND_LEGGINGS, GOLDEN_LEGGINGS),
+        BOOTS(LEATHER_BOOTS, CHAINMAIL_BOOTS, IRON_BOOTS, DIAMOND_BOOTS, GOLDEN_BOOTS),
+        NONE(0);
+
+        private final int[] ids;
+
+        Type(int... ids) {
+            this.ids = ids;
+        }
+
+        public boolean isType(int id) {
+            for (int i = 0; i < ids.length; i++)
+                if (ids[i] == id)
+                    return true;
+            return false;
+        }
+    }
 
 }

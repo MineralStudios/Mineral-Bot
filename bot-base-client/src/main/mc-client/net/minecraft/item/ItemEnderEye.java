@@ -147,7 +147,7 @@ public class ItemEnderEye extends Item {
                 if (var5 != null) {
                     EntityEnderEye var6 = new EntityEnderEye(p_77659_2_, p_77659_3_.posX,
                             p_77659_3_.posY + 1.62D - (double) p_77659_3_.yOffset, p_77659_3_.posZ);
-                    var6.moveTowards((double) var5.field_151329_a, var5.field_151327_b, (double) var5.field_151328_c);
+                    var6.moveTowards((double) var5.x, var5.y, (double) var5.z);
                     p_77659_2_.spawnEntityInWorld(var6);
                     p_77659_2_.playSoundAtEntity(p_77659_3_, "random.bow", 0.5F,
                             0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));

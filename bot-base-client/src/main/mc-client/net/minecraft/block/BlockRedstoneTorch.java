@@ -1,10 +1,11 @@
 package net.minecraft.block;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -13,20 +14,19 @@ import net.minecraft.world.World;
 
 public class BlockRedstoneTorch extends BlockTorch {
     private boolean field_150113_a;
-    private static Map field_150112_b = new HashMap();
+    private static Map<World, List<Toggle>> field_150112_b = new Object2ObjectOpenHashMap<>();
 
     private boolean func_150111_a(World p_150111_1_, int p_150111_2_, int p_150111_3_, int p_150111_4_,
             boolean p_150111_5_) {
         if (!field_150112_b.containsKey(p_150111_1_)) {
-            field_150112_b.put(p_150111_1_, new ArrayList());
+            field_150112_b.put(p_150111_1_, new ArrayList<>());
         }
 
-        List var6 = (List) field_150112_b.get(p_150111_1_);
+        List<Toggle> var6 = field_150112_b.get(p_150111_1_);
 
-        if (p_150111_5_) {
+        if (p_150111_5_)
             var6.add(new BlockRedstoneTorch.Toggle(p_150111_2_, p_150111_3_, p_150111_4_,
                     p_150111_1_.getTotalWorldTime()));
-        }
 
         int var7 = 0;
 
@@ -113,12 +113,11 @@ public class BlockRedstoneTorch extends BlockTorch {
      */
     public void updateTick(World p_149674_1_, int p_149674_2_, int p_149674_3_, int p_149674_4_, Random p_149674_5_) {
         boolean var6 = this.func_150110_m(p_149674_1_, p_149674_2_, p_149674_3_, p_149674_4_);
-        List var7 = (List) field_150112_b.get(p_149674_1_);
+        List<Toggle> var7 = field_150112_b.get(p_149674_1_);
 
         while (var7 != null && !var7.isEmpty()
-                && p_149674_1_.getTotalWorldTime() - ((BlockRedstoneTorch.Toggle) var7.get(0)).field_150844_d > 60L) {
+                && p_149674_1_.getTotalWorldTime() - ((BlockRedstoneTorch.Toggle) var7.get(0)).field_150844_d > 60L)
             var7.remove(0);
-        }
 
         if (this.field_150113_a) {
             if (var6) {

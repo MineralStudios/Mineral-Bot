@@ -1,5 +1,7 @@
 package net.minecraft.inventory;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -228,5 +230,25 @@ public class InventoryMerchant implements IInventory {
     public int findSlot(int id) {
         Item item = Item.getItemById(id);
         return item == null ? -1 : findSlot(item);
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getHelmet() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getChestplate() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getLeggings() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getBoots() {
+        return null;
     }
 }

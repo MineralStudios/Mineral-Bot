@@ -116,22 +116,16 @@ public class BlockCocoa extends BlockDirectional implements IGrowable {
         float var10 = (float) var8 / 2.0F;
 
         switch (var6) {
-            case 0:
+            case 0 ->
                 this.setBlockBounds((8.0F - var10) / 16.0F, (12.0F - (float) var9) / 16.0F,
                         (15.0F - (float) var8) / 16.0F, (8.0F + var10) / 16.0F, 0.75F, 0.9375F);
-                break;
-
-            case 1:
+            case 1 ->
                 this.setBlockBounds(0.0625F, (12.0F - (float) var9) / 16.0F, (8.0F - var10) / 16.0F,
                         (1.0F + (float) var8) / 16.0F, 0.75F, (8.0F + var10) / 16.0F);
-                break;
-
-            case 2:
+            case 2 ->
                 this.setBlockBounds((8.0F - var10) / 16.0F, (12.0F - (float) var9) / 16.0F, 0.0625F,
                         (8.0F + var10) / 16.0F, 0.75F, (1.0F + (float) var8) / 16.0F);
-                break;
-
-            case 3:
+            case 3 ->
                 this.setBlockBounds((15.0F - (float) var8) / 16.0F, (12.0F - (float) var9) / 16.0F,
                         (8.0F - var10) / 16.0F, 0.9375F, 0.75F, (8.0F + var10) / 16.0F);
         }

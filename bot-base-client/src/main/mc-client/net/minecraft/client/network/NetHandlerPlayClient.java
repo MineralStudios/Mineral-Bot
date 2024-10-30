@@ -18,12 +18,14 @@ import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
 
 import gg.mineral.bot.api.event.network.ClientboundPacketEvent;
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import gg.mineral.bot.base.client.player.ClientInstance;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -223,6 +225,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
      * operate on
      */
     @Getter
+    @Setter
     private WorldClient clientWorldController;
 
     /**
@@ -300,7 +303,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                 p_147282_1_.func_149194_f(), p_147282_1_.func_149192_g(), this.gameController.mcProfiler);
         this.clientWorldController.isClient = true;
         this.gameController.loadWorld(this.clientWorldController);
-        EntityClientPlayerMP thePlayer = this.gameController.thePlayer;
+        val thePlayer = this.gameController.thePlayer;
 
         if (thePlayer != null)
             thePlayer.dimension = p_147282_1_.func_149194_f();
@@ -608,6 +611,8 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
      * increases beyond a certain treshold (typically the viewing distance)
      */
     public void handleDestroyEntities(S13PacketDestroyEntities p_147238_1_) {
+        if (this.clientWorldController == null)
+            return;
         for (int var2 = 0; var2 < p_147238_1_.func_149098_c().length; ++var2) {
             this.clientWorldController.removeEntityFromWorld(p_147238_1_.func_149098_c()[var2]);
         }
@@ -942,7 +947,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
      * mode, angry and happy), Wolf (...)
      */
     public void handleEntityStatus(S19PacketEntityStatus p_147236_1_) {
-        if (getGameController() instanceof FakePlayerInstance instance
+        if (getGameController() instanceof ClientInstance instance
                 && instance.callEvent(new ClientboundPacketEvent(p_147236_1_)))
             return;
 
@@ -997,7 +1002,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
      * blocks indicated by the packet.
      */
     public void handleExplosion(S27PacketExplosion p_147283_1_) {
-        Explosion var2 = new Explosion(this.gameController.theWorld, (Entity) null, p_147283_1_.func_149148_f(),
+        Explosion var2 = new Explosion(this.gameController.theWorld, null, p_147283_1_.func_149148_f(),
                 p_147283_1_.func_149143_g(), p_147283_1_.func_149145_h(), p_147283_1_.func_149146_i());
         var2.affectedBlockPositions = p_147283_1_.func_149150_j();
         var2.doExplosionB(true);

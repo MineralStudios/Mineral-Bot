@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.Player;
+
 import org.bukkit.event.player.PlayerInitialSpawnEvent;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
@@ -14,6 +14,7 @@ import com.mojang.authlib.properties.Property;
 import gg.mineral.bot.api.entity.living.player.ServerPlayer;
 import gg.mineral.bot.api.world.ServerWorld;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
+import lombok.val;
 import net.minecraft.server.v1_8_R3.Block;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
@@ -185,14 +186,16 @@ public class NMSServerPlayer extends EntityPlayer implements ServerPlayer {
 
     @Override
     public void initResourcePack() {
-        if (MinecraftServer.getServer().getResourcePack().length() > 0)
-            setResourcePack(MinecraftServer.getServer().getResourcePack(),
-                    MinecraftServer.getServer().getResourcePackHash());
+        val server = MinecraftServer.getServer();
+        val resourcePack = server.getResourcePack();
+        if (resourcePack.length() > 0)
+            setResourcePack(resourcePack,
+                    server.getResourcePackHash());
     }
 
     @Override
     public void callSpawnEvents() {
-        Player bukkitPlayer = getBukkitEntity();
+        val bukkitPlayer = getBukkitEntity();
         Bukkit.getPluginManager().callEvent(new PlayerInitialSpawnEvent(
                 bukkitPlayer, bukkitPlayer.getLocation()));
         Bukkit.getPluginManager().callEvent(new PlayerSpawnLocationEvent(bukkitPlayer, bukkitPlayer.getLocation()));

@@ -100,25 +100,25 @@ public class BlockSilverfish extends Block {
         return 0;
     }
 
-    public static ImmutablePair func_150197_b(int p_150197_0_) {
+    public static ImmutablePair<Block, Integer> func_150197_b(int p_150197_0_) {
         switch (p_150197_0_) {
             case 1:
-                return new ImmutablePair(Blocks.cobblestone, Integer.valueOf(0));
+                return new ImmutablePair<>(Blocks.cobblestone, Integer.valueOf(0));
 
             case 2:
-                return new ImmutablePair(Blocks.stonebrick, Integer.valueOf(0));
+                return new ImmutablePair<>(Blocks.stonebrick, Integer.valueOf(0));
 
             case 3:
-                return new ImmutablePair(Blocks.stonebrick, Integer.valueOf(1));
+                return new ImmutablePair<>(Blocks.stonebrick, Integer.valueOf(1));
 
             case 4:
-                return new ImmutablePair(Blocks.stonebrick, Integer.valueOf(2));
+                return new ImmutablePair<>(Blocks.stonebrick, Integer.valueOf(2));
 
             case 5:
-                return new ImmutablePair(Blocks.stonebrick, Integer.valueOf(3));
+                return new ImmutablePair<>(Blocks.stonebrick, Integer.valueOf(3));
 
             default:
-                return new ImmutablePair(Blocks.stone, Integer.valueOf(0));
+                return new ImmutablePair<>(Blocks.stone, Integer.valueOf(0));
         }
     }
 

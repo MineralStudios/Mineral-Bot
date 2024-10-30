@@ -22,4 +22,18 @@ public interface ClientPlayer extends ClientLivingEntity {
      */
     @Nullable
     InventoryContainer getInventoryContainer();
+
+    /**
+     * Gets the player's eye height.
+     * 
+     * @return the player's eye height
+     */
+    float getEyeHeight();
+
+    /**
+     * Gets the player's username.
+     * 
+     * @return the player's username
+     */
+    String getUsername();
 }

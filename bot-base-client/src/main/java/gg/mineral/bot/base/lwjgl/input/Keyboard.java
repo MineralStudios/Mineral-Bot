@@ -3,6 +3,7 @@ package gg.mineral.bot.base.lwjgl.input;
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.Key.Type;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
+import lombok.val;
 
 public class Keyboard extends gg.mineral.bot.impl.controls.Keyboard {
 
@@ -73,7 +74,7 @@ public class Keyboard extends gg.mineral.bot.impl.controls.Keyboard {
 
     public char getEventCharacter() {
         if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl()) {
-            Key.Type type = getEventKeyType();
+            val type = getEventKeyType();
 
             if (type == null)
                 return '\0';

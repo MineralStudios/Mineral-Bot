@@ -5,6 +5,7 @@ import gg.mineral.bot.base.client.BotImpl;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import gg.mineral.bot.impl.thread.ThreadManager;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMemoryErrorScreen;
 import net.minecraft.crash.CrashReport;
@@ -15,7 +16,7 @@ public class GameLoop {
     static {
         ThreadManager.getGameLoopExecutor().scheduleAtFixedRate(() -> {
 
-            for (Minecraft instance : InstanceManager.getInstances().values()) {
+            for (val instance : InstanceManager.getInstances().values()) {
                 try {
                     if (instance.running) {
                         if (!instance.hasCrashed || instance.crashReporter == null) {
@@ -40,7 +41,7 @@ public class GameLoop {
                     Minecraft.logger.fatal("Reported exception thrown!", var13);
                     instance.displayCrashReport(var13.getCrashReport());
                 } catch (Throwable var14) {
-                    CrashReport headlessCrashReport = instance.addGraphicsAndWorldToCrashReport(
+                    val headlessCrashReport = instance.addGraphicsAndWorldToCrashReport(
                             new CrashReport("Unexpected error", var14));
                     instance.freeMemory();
                     Minecraft.logger.fatal("Unreported exception thrown!", var14);

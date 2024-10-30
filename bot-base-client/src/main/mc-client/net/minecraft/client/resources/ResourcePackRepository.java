@@ -46,7 +46,7 @@ public class ResourcePackRepository {
     private IResourcePack field_148532_f;
     private boolean field_148533_g;
     private List repositoryEntriesAll = Lists.newArrayList();
-    private List repositoryEntries = Lists.newArrayList();
+    private List<ResourcePackRepository.Entry> repositoryEntries = Lists.newArrayList();
     private final Minecraft mc;
 
     public ResourcePackRepository(Minecraft mc, File p_i45101_1_, File p_i45101_2_, IResourcePack p_i45101_3_,
@@ -126,7 +126,7 @@ public class ResourcePackRepository {
         return ImmutableList.copyOf(this.repositoryEntriesAll);
     }
 
-    public List getRepositoryEntries() {
+    public List<ResourcePackRepository.Entry> getRepositoryEntries() {
         return ImmutableList.copyOf(this.repositoryEntries);
     }
 

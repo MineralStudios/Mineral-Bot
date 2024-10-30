@@ -10,14 +10,15 @@ import java.io.File;
 
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import gg.mineral.bot.base.client.player.ClientInstance;
+import lombok.val;
 
 public class ConnectCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-        File file = new File("run");
+        val file = new File("run");
 
         if (!file.exists())
             file.mkdirs();
@@ -26,13 +27,14 @@ public class ConnectCommand implements CommandExecutor {
             return false;
         }
 
-        String username = args[0];
+        val username = args[0];
         InstanceManager.getInstances().values()
                 .stream()
                 .filter(mc -> mc.getSession().getUsername().equals(username)).findFirst()
                 .ifPresentOrElse(mc -> System.out.println("Player already connected"), () -> {
-                    FakePlayerInstance minecraftInstance = new FakePlayerInstance(
-                            BotConfiguration.builder().username(username).build(), 1280, 720,
+                    val configuration = BotConfiguration.builder().username(username).build();
+                    val minecraftInstance = new ClientInstance(
+                            configuration, 1280, 720,
                             false,
                             false,
                             file,
@@ -44,7 +46,7 @@ public class ConnectCommand implements CommandExecutor {
 
                     minecraftInstance.setServer("127.0.0.1", Bukkit.getServer().getPort());
                     minecraftInstance.run();
-                    InstanceManager.getInstances().put(minecraftInstance.getUuid(), minecraftInstance);
+                    InstanceManager.getInstances().put(configuration.getUuid(), minecraftInstance);
                 });
 
         return true;

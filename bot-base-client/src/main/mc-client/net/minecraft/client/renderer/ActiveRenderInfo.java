@@ -96,16 +96,16 @@ public class ActiveRenderInfo {
     public static Block getBlockAtEntityViewpoint(World p_151460_0_, EntityLivingBase p_151460_1_, float p_151460_2_) {
         Vec3 var3 = projectViewFromEntity(p_151460_1_, (double) p_151460_2_);
         ChunkPosition var4 = new ChunkPosition(var3);
-        Block var5 = p_151460_0_.getBlock(var4.field_151329_a, var4.field_151327_b, var4.field_151328_c);
+        Block var5 = p_151460_0_.getBlock(var4.x, var4.y, var4.z);
 
         if (var5.getMaterial().isLiquid()) {
             float var6 = BlockLiquid.func_149801_b(
-                    p_151460_0_.getBlockMetadata(var4.field_151329_a, var4.field_151327_b, var4.field_151328_c))
+                    p_151460_0_.getBlockMetadata(var4.x, var4.y, var4.z))
                     - 0.11111111F;
-            float var7 = (float) (var4.field_151327_b + 1) - var6;
+            float var7 = (float) (var4.y + 1) - var6;
 
             if (var3.yCoord >= (double) var7) {
-                var5 = p_151460_0_.getBlock(var4.field_151329_a, var4.field_151327_b + 1, var4.field_151328_c);
+                var5 = p_151460_0_.getBlock(var4.x, var4.y + 1, var4.z);
             }
         }
 

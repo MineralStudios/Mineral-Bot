@@ -2,6 +2,8 @@ package gg.mineral.bot.api.math;
 
 import org.eclipse.jdt.annotation.NonNull;
 
+import lombok.val;
+
 public interface Positionable {
 
     double getX();
@@ -15,18 +17,22 @@ public interface Positionable {
     }
 
     default double distance3DToSq(@NonNull Positionable entityIn) {
-        double dX = this.getX() - entityIn.getX(), dY = this.getY() - entityIn.getY(),
-                dZ = this.getZ() - entityIn.getZ();
+        val dX = this.getX() - entityIn.getX();
+        val dY = this.getY() - entityIn.getY();
+        val dZ = this.getZ() - entityIn.getZ();
         return dX * dX + dY * dY + dZ * dZ;
     }
 
     default double distance3DToSq(double x, double y, double z) {
-        double dX = this.getX() - x, dY = this.getY() - y, dZ = this.getZ() - z;
+        val dX = this.getX() - x;
+        val dY = this.getY() - y;
+        val dZ = this.getZ() - z;
         return dX * dX + dY * dY + dZ * dZ;
     }
 
     default double distance2DToSq(double x, double z) {
-        double dX = this.getX() - x, dZ = this.getZ() - z;
+        val dX = this.getX() - x;
+        val dZ = this.getZ() - z;
         return dX * dX + dZ * dZ;
     }
 

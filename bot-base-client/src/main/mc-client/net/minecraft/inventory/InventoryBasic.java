@@ -2,6 +2,9 @@ package net.minecraft.inventory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -10,7 +13,7 @@ public class InventoryBasic implements IInventory {
     private String inventoryTitle;
     private int slotsCount;
     private ItemStack[] inventoryContents;
-    private List field_70480_d;
+    private List<IInvBasic> field_70480_d;
     private boolean field_94051_e;
 
     public InventoryBasic(String p_i1561_1_, boolean p_i1561_2_, int p_i1561_3_) {
@@ -21,9 +24,8 @@ public class InventoryBasic implements IInventory {
     }
 
     public void func_110134_a(IInvBasic p_110134_1_) {
-        if (this.field_70480_d == null) {
-            this.field_70480_d = new ArrayList();
-        }
+        if (this.field_70480_d == null)
+            this.field_70480_d = new ArrayList<>();
 
         this.field_70480_d.add(p_110134_1_);
     }
@@ -183,5 +185,25 @@ public class InventoryBasic implements IInventory {
     public int findSlot(int id) {
         Item item = Item.getItemById(id);
         return item == null ? -1 : findSlot(item);
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getHelmet() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getChestplate() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getLeggings() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getBoots() {
+        return null;
     }
 }

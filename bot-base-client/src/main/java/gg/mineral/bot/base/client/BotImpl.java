@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 
 import com.google.common.collect.HashMultimap;
@@ -12,13 +11,14 @@ import com.google.common.collect.HashMultimap;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
+import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.math.ServerLocation;
 import gg.mineral.bot.api.message.ChatColor;
 import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
 import gg.mineral.bot.impl.thread.ThreadManager;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.val;
 
 public abstract class BotImpl extends BotAPI {
 
@@ -30,12 +30,12 @@ public abstract class BotImpl extends BotAPI {
 
         lastSpawnInfo = System.currentTimeMillis();
 
-        Iterator<SpawnRecord> iterator = spawnRecords.iterator();
+        val iterator = spawnRecords.iterator();
 
-        long totalTime = 0;
-        int amount = 0;
+        var totalTime = 0;
+        var amount = 0;
 
-        Object2IntOpenHashMap<String> nameCount = new Object2IntOpenHashMap<>();
+        val nameCount = new Object2IntOpenHashMap<String>();
 
         while (iterator.hasNext()) {
             SpawnRecord record = iterator.next();
@@ -45,14 +45,14 @@ public abstract class BotImpl extends BotAPI {
             iterator.remove();
         }
 
-        StringBuilder sb = new StringBuilder();
+        val sb = new StringBuilder();
 
-        String newLine = System.lineSeparator();
+        val newLine = System.lineSeparator();
 
         for (Iterator<Entry<String>> it = nameCount.object2IntEntrySet().iterator(); it.hasNext();) {
-            Entry<String> e = it.next();
-            String name = e.getKey();
-            int count = e.getIntValue();
+            val e = it.next();
+            val name = e.getKey();
+            val count = e.getIntValue();
 
             if (it.hasNext())
                 sb.append(newLine);
@@ -72,21 +72,21 @@ public abstract class BotImpl extends BotAPI {
     public static void init() {
         BotAPI.INSTANCE = new BotImpl() {
             @Override
-            public FakePlayer spawn(BotConfiguration configuration, ServerLocation location) {
+            public ClientInstance spawn(BotConfiguration configuration, ServerLocation location) {
                 return spawn(configuration, "localhost", 25565);
             }
         };
     }
 
     @Override
-    public FakePlayer spawn(BotConfiguration configuration, String serverIp, int serverPort) {
-        long startTime = System.nanoTime() / 1000000;
-        File file = configuration.getRunDirectory();
+    public ClientInstance spawn(BotConfiguration configuration, String serverIp, int serverPort) {
+        val startTime = System.nanoTime() / 1000000;
+        val file = configuration.getRunDirectory();
 
         if (!file.exists())
             file.mkdirs();
 
-        FakePlayerInstance instance = new FakePlayerInstance(configuration, 1280, 720,
+        val instance = new gg.mineral.bot.base.client.player.ClientInstance(configuration, 1280, 720,
                 false,
                 false,
                 file,
@@ -99,7 +99,7 @@ public abstract class BotImpl extends BotAPI {
         instance.setServer(serverIp, serverPort);
         ThreadManager.getGameLoopExecutor().execute(() -> {
             instance.run();
-            InstanceManager.getInstances().put(instance.getUuid(), instance);
+            InstanceManager.getInstances().put(configuration.getUuid(), instance);
         });
 
         spawnRecords.add(new SpawnRecord(configuration.getUsername(), (System.nanoTime() / 1000000) - startTime));
@@ -107,14 +107,9 @@ public abstract class BotImpl extends BotAPI {
     }
 
     @Override
-    public boolean despawn(FakePlayer player) {
-        return despawn(player.getUuid());
-    }
-
-    @Override
     public boolean despawn(UUID uuid) {
-        FakePlayerInstance instance = InstanceManager.getInstances().get(uuid);
-        boolean running = instance != null && instance.running;
+        val instance = InstanceManager.getInstances().get(uuid);
+        val running = instance != null && instance.running;
         if (instance != null)
             instance.shutdown();
 
@@ -122,16 +117,8 @@ public abstract class BotImpl extends BotAPI {
     }
 
     @Override
-    public boolean[] despawn(FakePlayer... players) {
-        boolean[] results = new boolean[players.length];
-        for (int i = 0; i < players.length; i++)
-            results[i] = despawn(players[i]);
-        return results;
-    }
-
-    @Override
     public boolean[] despawn(UUID... uuids) {
-        boolean[] results = new boolean[uuids.length];
+        val results = new boolean[uuids.length];
         for (int i = 0; i < uuids.length; i++)
             results[i] = despawn(uuids[i]);
         return results;
@@ -139,23 +126,25 @@ public abstract class BotImpl extends BotAPI {
 
     @Override
     public boolean isFakePlayer(UUID uuid) {
-        synchronized (InstanceManager.getInstances()) {
-            return InstanceManager.getInstances().containsKey(uuid);
+        val instances = InstanceManager.getInstances();
+        synchronized (instances) {
+            return instances.containsKey(uuid);
         }
     }
 
     @Override
     public void despawnAll() {
-        InstanceManager.getInstances().values().forEach(FakePlayerInstance::shutdown);
-        InstanceManager.getInstances().clear();
+        val instances = InstanceManager.getInstances();
+        instances.values().forEach(ClientInstance::shutdown);
+        instances.clear();
     }
 
     @Override
     public Collection<FakePlayer> getFakePlayers() {
-        List<FakePlayer> fakePlayers = new ArrayList<>();
+        val fakePlayers = new ArrayList<FakePlayer>();
 
-        for (FakePlayerInstance instance : InstanceManager.getInstances().values())
-            fakePlayers.add(instance);
+        for (val instance : InstanceManager.getInstances().values())
+            fakePlayers.add(instance.getFakePlayer());
         return fakePlayers;
     }
 }

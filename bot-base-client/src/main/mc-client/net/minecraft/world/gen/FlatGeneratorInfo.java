@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
@@ -13,9 +15,11 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 public class FlatGeneratorInfo {
     /** List of layers on this preset. */
-    private final List flatLayers = new ArrayList();
+    @Getter
+    private final List<FlatLayerInfo> flatLayers = new ArrayList<>();
 
     /** List of world features enabled on this preset. */
+    @Getter
     private final Map worldFeatures = new HashMap();
     private int biomeToUse;
 
@@ -33,26 +37,12 @@ public class FlatGeneratorInfo {
         this.biomeToUse = p_82647_1_;
     }
 
-    /**
-     * Return the list of world features enabled on this preset.
-     */
-    public Map getWorldFeatures() {
-        return this.worldFeatures;
-    }
-
-    /**
-     * Return the list of layers on this preset.
-     */
-    public List getFlatLayers() {
-        return this.flatLayers;
-    }
-
     public void func_82645_d() {
         int var1 = 0;
         FlatLayerInfo var3;
 
-        for (Iterator var2 = this.flatLayers.iterator(); var2.hasNext(); var1 += var3.getLayerCount()) {
-            var3 = (FlatLayerInfo) var2.next();
+        for (Iterator<FlatLayerInfo> var2 = this.flatLayers.iterator(); var2.hasNext(); var1 += var3.getLayerCount()) {
+            var3 = var2.next();
             var3.setMinY(var1);
         }
     }

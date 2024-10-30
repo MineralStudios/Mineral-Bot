@@ -6,6 +6,7 @@ import com.mojang.authlib.GameProfile;
 import gg.mineral.bot.api.entity.living.player.ClientPlayer;
 import gg.mineral.bot.api.inv.Inventory;
 import gg.mineral.bot.api.inv.InventoryContainer;
+import lombok.val;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -202,11 +203,17 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
         this.fireResistance = 20;
     }
 
+    @Override
+    public String getUsername() {
+        return this.field_146106_i.getName();
+    }
+
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(1.0D);
     }
 
+    @Override
     protected void entityInit() {
         super.entityInit();
         this.dataWatcher.addObject(16, Byte.valueOf((byte) 0));
@@ -335,9 +342,8 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
         if (var3 > var7)
             this.field_71096_bN = this.field_71095_bQ = this.posY;
 
-        if (var9 < -var7) {
+        if (var9 < -var7)
             this.field_71091_bM = this.field_71094_bP = this.posX;
-        }
 
         if (var5 < -var7)
             this.field_71097_bO = this.field_71085_bR = this.posZ;
@@ -552,9 +558,8 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
 
         this.jumpMovementFactor = this.speedInAir;
 
-        if (this.isSprinting()) {
+        if (this.isSprinting())
             this.jumpMovementFactor = (float) ((double) this.jumpMovementFactor + (double) this.speedInAir * 0.3D);
-        }
 
         this.setAIMoveSpeed((float) var1.getAttributeValue());
         float var2 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
@@ -564,13 +569,11 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
             var2 = 0.1F;
         }
 
-        if (!this.onGround || this.getHealth() <= 0.0F) {
+        if (!this.onGround || this.getHealth() <= 0.0F)
             var2 = 0.0F;
-        }
 
-        if (this.onGround || this.getHealth() <= 0.0F) {
+        if (this.onGround || this.getHealth() <= 0.0F)
             var3 = 0.0F;
-        }
 
         this.cameraYaw += (var2 - this.cameraYaw) * 0.4F;
         this.cameraPitch += (var3 - this.cameraPitch) * 0.8F;
@@ -584,11 +587,11 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
                 var4 = this.boundingBox.expand(1.0D, 0.5D, 1.0D);
             }
 
-            List var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, var4);
+            val var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, var4);
 
             if (var5 != null) {
                 for (int var6 = 0; var6 < var5.size(); ++var6) {
-                    Entity var7 = (Entity) var5.get(var6);
+                    Entity var7 = var5.get(var6);
 
                     if (!var7.isDead) {
                         this.collideWithPlayer(var7);
@@ -2035,7 +2038,8 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
 
     public static enum EnumChatVisibility {
         FULL("FULL", 0, 0, "options.chat.visibility.full"), SYSTEM("SYSTEM", 1, 1,
-                "options.chat.visibility.system"), HIDDEN("HIDDEN", 2, 2, "options.chat.visibility.hidden");
+                "options.chat.visibility.system"),
+        HIDDEN("HIDDEN", 2, 2, "options.chat.visibility.hidden");
 
         private static final EntityPlayer.EnumChatVisibility[] field_151432_d = new EntityPlayer.EnumChatVisibility[values().length];
         private final int chatVisibility;
@@ -2074,10 +2078,8 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
 
     public static enum EnumStatus {
         OK("OK", 0), NOT_POSSIBLE_HERE("NOT_POSSIBLE_HERE", 1), NOT_POSSIBLE_NOW("NOT_POSSIBLE_NOW",
-                2), TOO_FAR_AWAY("TOO_FAR_AWAY", 3), OTHER_PROBLEM("OTHER_PROBLEM", 4), NOT_SAFE("NOT_SAFE", 5);
-
-        private static final EntityPlayer.EnumStatus[] $VALUES = new EntityPlayer.EnumStatus[] { OK, NOT_POSSIBLE_HERE,
-                NOT_POSSIBLE_NOW, TOO_FAR_AWAY, OTHER_PROBLEM, NOT_SAFE };
+                2),
+        TOO_FAR_AWAY("TOO_FAR_AWAY", 3), OTHER_PROBLEM("OTHER_PROBLEM", 4), NOT_SAFE("NOT_SAFE", 5);
 
         private EnumStatus(String p_i1751_1_, int p_i1751_2_) {
         }

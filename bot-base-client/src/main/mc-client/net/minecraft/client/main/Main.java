@@ -1,13 +1,5 @@
 package net.minecraft.client.main;
 
-import com.google.common.collect.HashMultimap;
-import com.google.gson.Gson;
-
-import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
-import gg.mineral.bot.base.client.tick.GameLoop;
-
 import java.io.File;
 import java.lang.reflect.ParameterizedType;
 import java.net.Authenticator;
@@ -21,10 +13,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.collect.HashMultimap;
+import com.google.gson.Gson;
+
+import gg.mineral.bot.api.configuration.BotConfiguration;
+import gg.mineral.bot.base.client.manager.InstanceManager;
+import gg.mineral.bot.base.client.player.ClientInstance;
+import gg.mineral.bot.base.client.tick.GameLoop;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.NonOptionArgumentSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 
 public class Main {
@@ -135,25 +135,27 @@ public class Main {
         File resourcePackDir = var21.has(var6) ? (File) var21.valueOf(var6) : new File(gameDir, "resourcepacks/");
         String var36 = var21.has(var12) ? (String) var12.value(var21) : (String) var11.value(var21);
         String assetIndex = var21.has(var18) ? (String) var18.value(var21) : null;
-        FakePlayerInstance minecraftInstance = new FakePlayerInstance(
-                BotConfiguration.builder().username((String) var11.value(var21)).build(), width, height,
+        val configuration = BotConfiguration.builder().username((String) var11.value(var21)).build();
+        val minecraftInstance = new ClientInstance(
+                configuration, width, height,
                 fullscreen, demo, gameDir,
                 assetsDir,
                 resourcePackDir,
                 proxy,
                 version, userProperties,
                 assetIndex);
-        String serverAddress = (String) var21.valueOf(var2);
+        val serverAddress = (String) var21.valueOf(var2);
 
-        if (serverAddress != null) {
+        if (serverAddress != null)
             minecraftInstance.setServer(serverAddress, ((Integer) var21.valueOf(portOption)).intValue());
-        }
+
+        val uuid = configuration.getUuid();
 
         Runtime.getRuntime().addShutdownHook(new Thread("Client Shutdown Thread") {
 
             @Override
             public void run() {
-                InstanceManager.getInstances().remove(minecraftInstance);
+                InstanceManager.getInstances().remove(uuid);
                 minecraftInstance.stopIntegratedServer();
             }
         });
@@ -163,7 +165,7 @@ public class Main {
 
         Thread.currentThread().setName("Client thread");
         minecraftInstance.run();
-        InstanceManager.getInstances().put(minecraftInstance.getUuid(), minecraftInstance);
+        InstanceManager.getInstances().put(uuid, minecraftInstance);
         GameLoop.start();
     }
 

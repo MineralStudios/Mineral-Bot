@@ -2,6 +2,9 @@ package net.minecraft.tileentity;
 
 import java.util.Iterator;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -41,9 +44,8 @@ public class TileEntityBeacon extends TileEntity implements IInventory {
             double var1 = (double) (this.field_146012_l * 10 + 10);
             byte var3 = 0;
 
-            if (this.field_146012_l >= 4 && this.field_146013_m == this.field_146010_n) {
+            if (this.field_146012_l >= 4 && this.field_146013_m == this.field_146010_n)
                 var3 = 1;
-            }
 
             AxisAlignedBB var4 = AxisAlignedBB
                     .getBoundingBox((double) this.field_145851_c, (double) this.field_145848_d,
@@ -363,5 +365,25 @@ public class TileEntityBeacon extends TileEntity implements IInventory {
     public int findSlot(int id) {
         Item item = Item.getItemById(id);
         return item == null ? -1 : findSlot(item);
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getHelmet() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getChestplate() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getLeggings() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getBoots() {
+        return null;
     }
 }

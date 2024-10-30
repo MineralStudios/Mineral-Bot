@@ -2,6 +2,9 @@ package net.minecraft.tileentity;
 
 import java.util.Iterator;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.entity.player.EntityPlayer;
@@ -451,5 +454,25 @@ public class TileEntityChest extends TileEntity implements IInventory {
     public int findSlot(int id) {
         Item item = Item.getItemById(id);
         return item == null ? -1 : findSlot(item);
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getHelmet() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getChestplate() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getLeggings() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getBoots() {
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package net.minecraft.inventory;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,13 +19,11 @@ public class InventoryLargeChest implements IInventory {
     public InventoryLargeChest(String p_i1559_1_, IInventory p_i1559_2_, IInventory p_i1559_3_) {
         this.name = p_i1559_1_;
 
-        if (p_i1559_2_ == null) {
+        if (p_i1559_2_ == null)
             p_i1559_2_ = p_i1559_3_;
-        }
 
-        if (p_i1559_3_ == null) {
+        if (p_i1559_3_ == null)
             p_i1559_3_ = p_i1559_2_;
-        }
 
         this.upperChest = p_i1559_2_;
         this.lowerChest = p_i1559_3_;
@@ -161,5 +161,25 @@ public class InventoryLargeChest implements IInventory {
     public int findSlot(int id) {
         Item item = Item.getItemById(id);
         return item == null ? -1 : findSlot(item);
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getHelmet() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getChestplate() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getLeggings() {
+        return null;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.@Nullable ItemStack getBoots() {
+        return null;
     }
 }

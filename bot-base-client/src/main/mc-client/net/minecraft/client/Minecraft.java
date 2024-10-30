@@ -1,6 +1,5 @@
 package net.minecraft.client;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -54,8 +52,10 @@ import gg.mineral.bot.impl.thread.ThreadManager;
 import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
@@ -359,7 +359,7 @@ public class Minecraft {
     public final TileEntityRendererChestHelper tileEntityRendererChestHelper;
 
     @Getter
-    private final Mouse mouse = new Mouse(this);
+    private final Mouse mouse = new Mouse();
     @Getter
     private final Keyboard keyboard = new Keyboard();
 
@@ -450,7 +450,7 @@ public class Minecraft {
     }
 
     private static void startTimerHackThread() {
-        Thread var1 = new Thread("Timer hack thread") {
+        val t = new Thread("Timer hack thread") {
 
             public void run() {
                 while (InstanceManager.isRunning()) {
@@ -462,8 +462,8 @@ public class Minecraft {
                 }
             }
         };
-        var1.setDaemon(true);
-        var1.start();
+        t.setDaemon(true);
+        t.start();
     }
 
     public void crashed(CrashReport p_71404_1_) {
@@ -475,8 +475,8 @@ public class Minecraft {
      * Wrapper around displayCrashReportInternal
      */
     public void displayCrashReport(CrashReport crashReport) {
-        File var2 = new File(this.mcDataDir, "crash-reports");
-        File var3 = new File(var2,
+        val crashReportsDir = new File(this.mcDataDir, "crash-reports");
+        val crashFile = new File(crashReportsDir,
                 "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
         System.out.println(crashReport.getCompleteReport(this));
 
@@ -484,8 +484,8 @@ public class Minecraft {
             System.out.println("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getFile());
             // System.exit(-1);
             this.shutdown();
-        } else if (crashReport.saveToFile(this, var3)) {
-            System.out.println("#@!@# Game crashed! Crash report saved to: #@!@# " + var3.getAbsolutePath());
+        } else if (crashReport.saveToFile(this, crashFile)) {
+            System.out.println("#@!@# Game crashed! Crash report saved to: #@!@# " + crashFile.getAbsolutePath());
             // System.exit(-1);
             this.shutdown();
         } else {
@@ -524,9 +524,8 @@ public class Minecraft {
             if (this.displayHeight <= 0)
                 this.displayHeight = 1;
 
-        } else {
+        } else
             Display.setDisplayMode(new DisplayMode(this.displayWidth, this.displayHeight));
-        }
 
         Display.setResizable(true);
         Display.setTitle("Mineral Bot Client 1.7.10");
@@ -534,18 +533,18 @@ public class Minecraft {
         if (BotGlobalConfig.isDebug())
             logger.info("LWJGL Version: " + Sys.getVersion());
 
-        Util.EnumOS var1 = Util.getOSType();
+        val osType = Util.getOSType();
 
-        DefaultResourcePack mcDefaultResourcePack = this.mcDefaultResourcePack;
-        if (var1 != Util.EnumOS.OSX && mcDefaultResourcePack != null) {
+        val mcDefaultResourcePack = this.mcDefaultResourcePack;
+        if (osType != Util.EnumOS.OSX && mcDefaultResourcePack != null) {
             try {
-                InputStream var2 = mcDefaultResourcePack
+                val icon16x = mcDefaultResourcePack
                         .func_152780_c(new ResourceLocation("icons/icon_16x16.png"));
-                InputStream var3 = mcDefaultResourcePack
+                val icon32x = mcDefaultResourcePack
                         .func_152780_c(new ResourceLocation("icons/icon_32x32.png"));
 
-                if (var2 != null && var3 != null)
-                    Display.setIcon(new ByteBuffer[] { this.func_152340_a(var2), this.func_152340_a(var3) });
+                if (icon16x != null && icon32x != null)
+                    Display.setIcon(new ByteBuffer[] { this.func_152340_a(icon16x), this.func_152340_a(icon32x) });
 
             } catch (IOException var8) {
                 logger.error("Couldn\'t set icon", var8);
@@ -630,7 +629,7 @@ public class Minecraft {
             this.mcResourceManager.registerReloadListener(new GrassColorReloadListener());
             this.mcResourceManager.registerReloadListener(new FoliageColorReloadListener());
         }
-        RenderManager renderManager = this.renderManager;
+        val renderManager = this.renderManager;
 
         if (renderManager != null)
             renderManager.itemRenderer = new ItemRenderer(this);
@@ -673,7 +672,7 @@ public class Minecraft {
             if (this.textureMapBlocks != null)
                 this.textureMapBlocks.func_147633_a(this.gameSettings.mipmapLevels);
 
-            TextureManager renderEngine = this.renderEngine;
+            val renderEngine = this.renderEngine;
             if (renderEngine != null) {
                 renderEngine.loadTextureMap(TextureMap.locationBlocksTexture, this.textureMapBlocks);
                 renderEngine.loadTextureMap(TextureMap.locationItemsTexture,
@@ -716,13 +715,10 @@ public class Minecraft {
     public void refreshResources() {
         if (BotGlobalConfig.isOptimizedGameLoop())
             return;
-        ArrayList var1 = Lists.newArrayList(this.defaultResourcePacks);
-        Iterator var2 = this.mcResourcePackRepository.getRepositoryEntries().iterator();
+        val var1 = Lists.newArrayList(this.defaultResourcePacks);
 
-        while (var2.hasNext()) {
-            ResourcePackRepository.Entry var3 = (ResourcePackRepository.Entry) var2.next();
-            var1.add(var3.getResourcePack());
-        }
+        for (val entry : this.mcResourcePackRepository.getRepositoryEntries())
+            var1.add(entry.getResourcePack());
 
         if (this.mcResourcePackRepository.func_148530_e() != null)
             var1.add(this.mcResourcePackRepository.func_148530_e());
@@ -752,55 +748,56 @@ public class Minecraft {
         this.defaultResourcePacks.add(this.mcDefaultResourcePack);
     }
 
-    private ByteBuffer func_152340_a(InputStream p_152340_1_) throws IOException {
-        BufferedImage var2 = ImageIO.read(p_152340_1_);
-        int[] var3 = var2.getRGB(0, 0, var2.getWidth(), var2.getHeight(), (int[]) null, 0, var2.getWidth());
-        ByteBuffer var4 = ByteBuffer.allocate(4 * var3.length);
-        int[] var5 = var3;
-        int var6 = var3.length;
+    private ByteBuffer func_152340_a(InputStream inputStream) throws IOException {
+        val bufferedImage = ImageIO.read(inputStream);
+        val rgb = bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null, 0,
+                bufferedImage.getWidth());
+        val byteBuf = ByteBuffer.allocate(4 * rgb.length);
+        val rgbLen = rgb.length;
 
-        for (int var7 = 0; var7 < var6; ++var7) {
-            int var8 = var5[var7];
-            var4.putInt(var8 << 8 | var8 >> 24 & 255);
+        for (int i = 0; i < rgbLen; ++i) {
+            val value = rgb[i];
+            byteBuf.putInt(value << 8 | value >> 24 & 255);
         }
 
-        var4.flip();
-        return var4;
+        byteBuf.flip();
+        return byteBuf;
     }
 
     private void updateDisplayMode() throws LWJGLException {
-        HashSet<DisplayMode> var1 = new HashSet<>();
-        Collections.addAll(var1, Display.getAvailableDisplayModes());
-        DisplayMode var2 = Display.getDesktopDisplayMode();
+        val displayModes = new ObjectOpenHashSet<DisplayMode>();
+        Collections.addAll(displayModes, Display.getAvailableDisplayModes());
+        var selectedMode = Display.getDesktopDisplayMode();
 
-        if (!var1.contains(var2) && Util.getOSType() == Util.EnumOS.OSX) {
-            Iterator<DisplayMode> var3 = macDisplayModes.iterator();
+        if (!displayModes.contains(selectedMode) && Util.getOSType() == Util.EnumOS.OSX) {
+            val macDisplayIter = macDisplayModes.iterator();
 
-            while (var3.hasNext()) {
-                DisplayMode var4 = (DisplayMode) var3.next();
+            while (macDisplayIter.hasNext()) {
+                val displayMode = macDisplayIter.next();
                 boolean var5 = true;
-                Iterator<DisplayMode> var6 = var1.iterator();
-                DisplayMode var7;
+                var displayIter = displayModes.iterator();
+                DisplayMode displayMode1;
 
-                while (var6.hasNext()) {
-                    var7 = var6.next();
+                while (displayIter.hasNext()) {
+                    displayMode1 = displayIter.next();
 
-                    if (var7.getBitsPerPixel() == 32 && var7.getWidth() == var4.getWidth()
-                            && var7.getHeight() == var4.getHeight()) {
+                    if (displayMode1.getBitsPerPixel() == 32 && displayMode1.getWidth() == displayMode.getWidth()
+                            && displayMode1.getHeight() == displayMode.getHeight()) {
                         var5 = false;
                         break;
                     }
                 }
 
                 if (!var5) {
-                    var6 = var1.iterator();
+                    displayIter = displayModes.iterator();
 
-                    while (var6.hasNext()) {
-                        var7 = var6.next();
+                    while (displayIter.hasNext()) {
+                        displayMode1 = displayIter.next();
 
-                        if (var7.getBitsPerPixel() == 32 && var7.getWidth() == var4.getWidth() / 2
-                                && var7.getHeight() == var4.getHeight() / 2) {
-                            var2 = var7;
+                        if (displayMode1.getBitsPerPixel() == 32
+                                && displayMode1.getWidth() == displayMode.getWidth() / 2
+                                && displayMode1.getHeight() == displayMode.getHeight() / 2) {
+                            selectedMode = displayMode1;
                             break;
                         }
                     }
@@ -808,22 +805,25 @@ public class Minecraft {
             }
         }
 
-        Display.setDisplayMode(var2);
-        this.displayWidth = var2.getWidth();
-        this.displayHeight = var2.getHeight();
+        Display.setDisplayMode(selectedMode);
+        this.displayWidth = selectedMode.getWidth();
+        this.displayHeight = selectedMode.getHeight();
     }
 
     /**
      * Displays a new screen.
      */
     private void loadScreen() throws LWJGLException {
-        ScaledResolution var1 = new ScaledResolution(this, this.displayWidth, this.displayHeight);
-        int var2 = var1.getScaleFactor();
-        Framebuffer var3 = new Framebuffer(this, var1.getScaledWidth() * var2, var1.getScaledHeight() * var2, true);
-        var3.bindFramebuffer(false);
+        val scaledRes = new ScaledResolution(this, this.displayWidth, this.displayHeight);
+        val scaleFactor = scaledRes.getScaleFactor();
+        val framebuffer = new Framebuffer(this, scaledRes.getScaledWidth() * scaleFactor,
+                scaledRes.getScaledHeight() * scaleFactor,
+                true);
+        framebuffer.bindFramebuffer(false);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
-        GL11.glOrtho(0.0D, (double) var1.getScaledWidth(), (double) var1.getScaledHeight(), 0.0D, 1000.0D, 3000.0D);
+        GL11.glOrtho(0.0D, (double) scaledRes.getScaledWidth(), (double) scaledRes.getScaledHeight(), 0.0D, 1000.0D,
+                3000.0D);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadIdentity();
         GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
@@ -832,8 +832,8 @@ public class Minecraft {
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-        TextureManager renderEngine = this.renderEngine;
-        TextureUtil textureUtil = this.textureUtil;
+        val renderEngine = this.renderEngine;
+        val textureUtil = this.textureUtil;
 
         if (!BotGlobalConfig.isOptimizedGameLoop() && renderEngine != null && textureUtil != null
                 && this.mcDefaultResourcePack != null) {
@@ -847,26 +847,28 @@ public class Minecraft {
             }
         }
 
-        Tessellator var4 = this.getTessellator();
-        if (var4 != null) {
-            var4.startDrawingQuads();
-            var4.setColorOpaque_I(16777215);
-            var4.addVertexWithUV(0.0D, (double) this.displayHeight, 0.0D, 0.0D, 0.0D);
-            var4.addVertexWithUV((double) this.displayWidth, (double) this.displayHeight, 0.0D, 0.0D, 0.0D);
-            var4.addVertexWithUV((double) this.displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
-            var4.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-            var4.draw();
+        val tessellator = this.getTessellator();
+        if (tessellator != null) {
+            tessellator.startDrawingQuads();
+            tessellator.setColorOpaque_I(16777215);
+            tessellator.addVertexWithUV(0.0D, (double) this.displayHeight, 0.0D, 0.0D, 0.0D);
+            tessellator.addVertexWithUV((double) this.displayWidth, (double) this.displayHeight, 0.0D, 0.0D, 0.0D);
+            tessellator.addVertexWithUV((double) this.displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
+            tessellator.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+            tessellator.draw();
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            var4.setColorOpaque_I(16777215);
+            tessellator.setColorOpaque_I(16777215);
         }
-        short var5 = 256;
-        short var6 = 256;
-        this.scaledTessellator((var1.getScaledWidth() - var5) / 2, (var1.getScaledHeight() - var6) / 2, 0, 0, var5,
-                var6);
+        short width = 256, height = 256;
+        this.scaledTessellator((scaledRes.getScaledWidth() - width) / 2, (scaledRes.getScaledHeight() - height) / 2, 0,
+                0,
+                width,
+                height);
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_FOG);
-        var3.unbindFramebuffer();
-        var3.framebufferRender(var1.getScaledWidth() * var2, var1.getScaledHeight() * var2);
+        framebuffer.unbindFramebuffer();
+        framebuffer.framebufferRender(scaledRes.getScaledWidth() * scaleFactor,
+                scaledRes.getScaledHeight() * scaleFactor);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
         GL11.glFlush();
@@ -881,21 +883,21 @@ public class Minecraft {
             int p_71392_6_) {
         float var7 = 0.00390625F;
         float var8 = 0.00390625F;
-        Tessellator var9 = this.getTessellator();
+        val tessellator = this.getTessellator();
 
-        if (var9 == null)
+        if (tessellator == null)
             return;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV((double) (p_71392_1_ + 0), (double) (p_71392_2_ + p_71392_6_), 0.0D,
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV((double) (p_71392_1_ + 0), (double) (p_71392_2_ + p_71392_6_), 0.0D,
                 (double) ((float) (p_71392_3_ + 0) * var7), (double) ((float) (p_71392_4_ + p_71392_6_) * var8));
-        var9.addVertexWithUV((double) (p_71392_1_ + p_71392_5_), (double) (p_71392_2_ + p_71392_6_), 0.0D,
+        tessellator.addVertexWithUV((double) (p_71392_1_ + p_71392_5_), (double) (p_71392_2_ + p_71392_6_), 0.0D,
                 (double) ((float) (p_71392_3_ + p_71392_5_) * var7),
                 (double) ((float) (p_71392_4_ + p_71392_6_) * var8));
-        var9.addVertexWithUV((double) (p_71392_1_ + p_71392_5_), (double) (p_71392_2_ + 0), 0.0D,
+        tessellator.addVertexWithUV((double) (p_71392_1_ + p_71392_5_), (double) (p_71392_2_ + 0), 0.0D,
                 (double) ((float) (p_71392_3_ + p_71392_5_) * var7), (double) ((float) (p_71392_4_ + 0) * var8));
-        var9.addVertexWithUV((double) (p_71392_1_ + 0), (double) (p_71392_2_ + 0), 0.0D,
+        tessellator.addVertexWithUV((double) (p_71392_1_ + 0), (double) (p_71392_2_ + 0), 0.0D,
                 (double) ((float) (p_71392_3_ + 0) * var7), (double) ((float) (p_71392_4_ + 0) * var8));
-        var9.draw();
+        tessellator.draw();
     }
 
     /**
@@ -942,13 +944,13 @@ public class Minecraft {
      * string.
      */
     private void checkGLError(String p_71361_1_) {
-        int var2 = GL11.glGetError();
+        val error = GL11.glGetError();
 
-        if (var2 != 0) {
-            String var3 = GLU.gluErrorString(var2);
+        if (error != 0) {
+            String var3 = GLU.gluErrorString(error);
             logger.error("########## GL ERROR ##########");
             logger.error("@ " + p_71361_1_);
-            logger.error(var2 + ": " + var3);
+            logger.error(error + ": " + var3);
         }
     }
 
@@ -1107,9 +1109,8 @@ public class Minecraft {
             this.toggleFullscreen();
 
         if (this.gameSettings.showDebugInfo && this.gameSettings.showDebugProfilerChart) {
-            if (!this.mcProfiler.profilingEnabled) {
+            if (!this.mcProfiler.profilingEnabled)
                 this.mcProfiler.clearProfiling();
-            }
 
             this.mcProfiler.profilingEnabled = true;
             this.displayDebugInfo(var6);
@@ -1171,13 +1172,11 @@ public class Minecraft {
             this.displayHeight = Display.getHeight();
 
             if (this.displayWidth != var1 || this.displayHeight != var2) {
-                if (this.displayWidth <= 0) {
+                if (this.displayWidth <= 0)
                     this.displayWidth = 1;
-                }
 
-                if (this.displayHeight <= 0) {
+                if (this.displayHeight <= 0)
                     this.displayHeight = 1;
-                }
 
                 this.resize(this.displayWidth, this.displayHeight);
             }
@@ -1195,7 +1194,7 @@ public class Minecraft {
     public void freeMemory() {
         try {
             memoryReserve = new byte[0];
-            RenderGlobal renderGlobal = this.renderGlobal;
+            val renderGlobal = this.renderGlobal;
 
             if (renderGlobal != null)
                 renderGlobal.deleteAllDisplayLists();
@@ -1227,30 +1226,29 @@ public class Minecraft {
      * Update debugProfilerName in response to number keys in debug screen
      */
     private void updateDebugProfilerName(int p_71383_1_) {
-        List var2 = this.mcProfiler.getProfilingData(this.debugProfilerName);
+        val profilerData = this.mcProfiler.getProfilingData(this.debugProfilerName);
 
-        if (var2 != null && !var2.isEmpty()) {
-            Profiler.Result var3 = (Profiler.Result) var2.remove(0);
+        if (profilerData != null && !profilerData.isEmpty()) {
+            val result = profilerData.remove(0);
 
             if (p_71383_1_ == 0) {
-                if (var3.field_76331_c.length() > 0) {
-                    int var4 = this.debugProfilerName.lastIndexOf(".");
+                if (result.field_76331_c.length() > 0) {
+                    val var4 = this.debugProfilerName.lastIndexOf(".");
 
-                    if (var4 >= 0) {
+                    if (var4 >= 0)
                         this.debugProfilerName = this.debugProfilerName.substring(0, var4);
-                    }
+
                 }
             } else {
                 --p_71383_1_;
 
-                if (p_71383_1_ < var2.size()
-                        && !((Profiler.Result) var2.get(p_71383_1_)).field_76331_c.equals("unspecified")) {
-                    if (this.debugProfilerName.length() > 0) {
+                if (p_71383_1_ < profilerData.size()
+                        && !profilerData.get(p_71383_1_).field_76331_c.equals("unspecified")) {
+                    if (this.debugProfilerName.length() > 0)
                         this.debugProfilerName = this.debugProfilerName + ".";
-                    }
 
                     this.debugProfilerName = this.debugProfilerName
-                            + ((Profiler.Result) var2.get(p_71383_1_)).field_76331_c;
+                            + ((Profiler.Result) profilerData.get(p_71383_1_)).field_76331_c;
                 }
             }
         }
@@ -1258,8 +1256,9 @@ public class Minecraft {
 
     private void displayDebugInfo(long p_71366_1_) {
         if (this.mcProfiler.profilingEnabled) {
-            List var3 = this.mcProfiler.getProfilingData(this.debugProfilerName);
-            Profiler.Result var4 = (Profiler.Result) var3.remove(0);
+            val profilerData = this.mcProfiler.getProfilingData(this.debugProfilerName);
+            @Nullable
+            Profiler.Result result = profilerData == null ? null : profilerData.remove(0);
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             GL11.glMatrixMode(GL11.GL_PROJECTION);
             GL11.glEnable(GL11.GL_COLOR_MATERIAL);
@@ -1290,90 +1289,96 @@ public class Minecraft {
             double var9 = 0.0D;
             int var13;
 
-            for (int var11 = 0; var11 < var3.size(); ++var11) {
-                Profiler.Result var12 = (Profiler.Result) var3.get(var11);
-                var13 = MathHelper.floor_double(var12.field_76332_a / 4.0D) + 1;
-                if (var5 != null) {
-                    var5.startDrawing(6);
-                    var5.setColorOpaque_I(var12.func_76329_a());
-                    var5.addVertex((double) var7, (double) var8, 0.0D);
-                }
-                int var14;
-                float var15;
-                float var16;
-                float var17;
-
-                for (var14 = var13; var14 >= 0; --var14) {
-                    var15 = (float) ((var9 + var12.field_76332_a * (double) var14 / (double) var13) * Math.PI * 2.0D
-                            / 100.0D);
-                    var16 = MathHelper.sin(var15) * (float) var6;
-                    var17 = MathHelper.cos(var15) * (float) var6 * 0.5F;
-                    if (var5 != null)
-                        var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17), 0.0D);
-                }
-
-                if (var5 != null) {
-                    var5.draw();
-                    var5.startDrawing(5);
-                    var5.setColorOpaque_I((var12.func_76329_a() & 16711422) >> 1);
-                }
-
-                for (var14 = var13; var14 >= 0; --var14) {
-                    var15 = (float) ((var9 + var12.field_76332_a * (double) var14 / (double) var13) * Math.PI * 2.0D
-                            / 100.0D);
-                    var16 = MathHelper.sin(var15) * (float) var6;
-                    var17 = MathHelper.cos(var15) * (float) var6 * 0.5F;
+            if (profilerData != null)
+                for (int var11 = 0; var11 < profilerData.size(); ++var11) {
+                    Profiler.Result var12 = (Profiler.Result) profilerData.get(var11);
+                    var13 = MathHelper.floor_double(var12.field_76332_a / 4.0D) + 1;
                     if (var5 != null) {
-                        var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17), 0.0D);
-                        var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17 + 10.0F), 0.0D);
+                        var5.startDrawing(6);
+                        var5.setColorOpaque_I(var12.func_76329_a());
+                        var5.addVertex((double) var7, (double) var8, 0.0D);
                     }
+                    int var14;
+                    float var15;
+                    float var16;
+                    float var17;
+
+                    for (var14 = var13; var14 >= 0; --var14) {
+                        var15 = (float) ((var9 + var12.field_76332_a * (double) var14 / (double) var13) * Math.PI * 2.0D
+                                / 100.0D);
+                        var16 = MathHelper.sin(var15) * (float) var6;
+                        var17 = MathHelper.cos(var15) * (float) var6 * 0.5F;
+                        if (var5 != null)
+                            var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17), 0.0D);
+                    }
+
+                    if (var5 != null) {
+                        var5.draw();
+                        var5.startDrawing(5);
+                        var5.setColorOpaque_I((var12.func_76329_a() & 16711422) >> 1);
+                    }
+
+                    for (var14 = var13; var14 >= 0; --var14) {
+                        var15 = (float) ((var9 + var12.field_76332_a * (double) var14 / (double) var13) * Math.PI * 2.0D
+                                / 100.0D);
+                        var16 = MathHelper.sin(var15) * (float) var6;
+                        var17 = MathHelper.cos(var15) * (float) var6 * 0.5F;
+                        if (var5 != null) {
+                            var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17), 0.0D);
+                            var5.addVertex((double) ((float) var7 + var16), (double) ((float) var8 - var17 + 10.0F),
+                                    0.0D);
+                        }
+                    }
+
+                    if (var5 != null)
+                        var5.draw();
+                    var9 += var12.field_76332_a;
                 }
 
-                if (var5 != null)
-                    var5.draw();
-                var9 += var12.field_76332_a;
-            }
-
-            DecimalFormat var18 = new DecimalFormat("##0.00");
+            val df = new DecimalFormat("##0.00");
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             String var19 = "";
 
-            if (!var4.field_76331_c.equals("unspecified"))
-                var19 = var19 + "[0] ";
+            if (result != null) {
+                if (!result.field_76331_c.equals("unspecified"))
+                    var19 = var19 + "[0] ";
 
-            if (var4.field_76331_c.length() == 0)
-                var19 = var19 + "ROOT ";
-            else
-                var19 = var19 + var4.field_76331_c + " ";
+                if (result.field_76331_c.length() == 0)
+                    var19 = var19 + "ROOT ";
+                else
+                    var19 = var19 + result.field_76331_c + " ";
+            }
 
             var13 = 16777215;
-            FontRenderer fontRenderer = this.fontRenderer;
+            val fontRenderer = this.fontRenderer;
             if (fontRenderer != null) {
                 fontRenderer.drawStringWithShadow(var19, var7 - var6, var8 - var6 / 2 - 16, var13);
-                fontRenderer.drawStringWithShadow(var19 = var18.format(var4.field_76330_b) + "%",
-                        var7 + var6 - fontRenderer.getStringWidth(var19), var8 - var6 / 2 - 16, var13);
+                if (result != null)
+                    fontRenderer.drawStringWithShadow(var19 = df.format(result.percentage) + "%",
+                            var7 + var6 - fontRenderer.getStringWidth(var19), var8 - var6 / 2 - 16, var13);
 
-                for (int var20 = 0; var20 < var3.size(); ++var20) {
-                    Profiler.Result var21 = (Profiler.Result) var3.get(var20);
-                    String var22 = "";
+                if (profilerData != null)
+                    for (int var20 = 0; var20 < profilerData.size(); ++var20) {
+                        Profiler.Result var21 = (Profiler.Result) profilerData.get(var20);
+                        String var22 = "";
 
-                    if (var21.field_76331_c.equals("unspecified"))
-                        var22 = var22 + "[?] ";
-                    else
-                        var22 = var22 + "[" + (var20 + 1) + "] ";
+                        if (var21.field_76331_c.equals("unspecified"))
+                            var22 = var22 + "[?] ";
+                        else
+                            var22 = var22 + "[" + (var20 + 1) + "] ";
 
-                    var22 = var22 + var21.field_76331_c;
+                        var22 = var22 + var21.field_76331_c;
 
-                    fontRenderer.drawStringWithShadow(var22, var7 - var6, var8 + var6 / 2 + var20 * 8 + 20,
-                            var21.func_76329_a());
-                    fontRenderer.drawStringWithShadow(var22 = var18.format(var21.field_76332_a) + "%",
-                            var7 + var6 - 50 - fontRenderer.getStringWidth(var22),
-                            var8 + var6 / 2 + var20 * 8 + 20,
-                            var21.func_76329_a());
-                    fontRenderer.drawStringWithShadow(var22 = var18.format(var21.field_76330_b) + "%",
-                            var7 + var6 - fontRenderer.getStringWidth(var22), var8 + var6 / 2 + var20 * 8 + 20,
-                            var21.func_76329_a());
-                }
+                        fontRenderer.drawStringWithShadow(var22, var7 - var6, var8 + var6 / 2 + var20 * 8 + 20,
+                                var21.func_76329_a());
+                        fontRenderer.drawStringWithShadow(var22 = df.format(var21.field_76332_a) + "%",
+                                var7 + var6 - 50 - fontRenderer.getStringWidth(var22),
+                                var8 + var6 / 2 + var20 * 8 + 20,
+                                var21.func_76329_a());
+                        fontRenderer.drawStringWithShadow(var22 = df.format(var21.percentage) + "%",
+                                var7 + var6 - fontRenderer.getStringWidth(var22), var8 + var6 / 2 + var20 * 8 + 20,
+                                var21.func_76329_a());
+                    }
             }
         }
     }
@@ -2123,7 +2128,7 @@ public class Minecraft {
                 this.effectRenderer.clearEffects(p_71353_1_);
 
             if (this.thePlayer == null) {
-                this.thePlayer = this.playerController.func_147493_a(p_71353_1_, new StatFileWriter());
+                this.thePlayer = this.playerController.createClientPlayerMP(p_71353_1_, new StatFileWriter());
                 this.playerController.flipPlayer(this.thePlayer);
             }
 
@@ -2203,7 +2208,7 @@ public class Minecraft {
         }
 
         this.renderViewEntity = null;
-        this.thePlayer = this.playerController.func_147493_a(this.theWorld,
+        this.thePlayer = this.playerController.createClientPlayerMP(this.theWorld,
                 this.thePlayer == null ? new StatFileWriter() : this.thePlayer.getStatFileWriter());
         if (this.thePlayer != null)
             this.thePlayer.dimension = p_71354_1_;
@@ -2441,11 +2446,10 @@ public class Minecraft {
     }
 
     public void stopIntegratedServer() {
-        IntegratedServer var0 = this.getIntegratedServer();
+        val integratedServer = this.getIntegratedServer();
 
-        if (var0 != null) {
-            var0.stopServer();
-        }
+        if (integratedServer != null)
+            integratedServer.stopServer();
     }
 
     /**

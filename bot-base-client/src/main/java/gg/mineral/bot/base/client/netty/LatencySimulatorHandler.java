@@ -6,7 +6,7 @@ import io.netty.channel.ChannelPromise;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import gg.mineral.bot.base.client.player.ClientInstance;
 
 @RequiredArgsConstructor
 public class LatencySimulatorHandler extends ChannelOutboundHandlerAdapter {
@@ -15,7 +15,7 @@ public class LatencySimulatorHandler extends ChannelOutboundHandlerAdapter {
     @Override
     public void write(final ChannelHandlerContext ctx, final Object msg, final ChannelPromise promise)
             throws Exception {
-        if (this.mc instanceof FakePlayerInstance instance) {
+        if (this.mc instanceof ClientInstance instance) {
             instance.scheduleTask(() -> {
                 try {
                     super.write(ctx, msg, promise);

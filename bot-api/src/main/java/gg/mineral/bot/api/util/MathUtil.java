@@ -1,13 +1,15 @@
 package gg.mineral.bot.api.util;
 
-import gg.mineral.bot.api.entity.ClientEntity;
 import gg.mineral.bot.api.entity.living.ClientLivingEntity;
+import gg.mineral.bot.api.math.Positionable;
+
+import lombok.val;
 
 public interface MathUtil {
     public static final double M_PI_4 = Math.PI * 0.25;
 
     default float angleDifference(float angle1, float angle2) {
-        float difference = angle2 - angle1;
+        var difference = angle2 - angle1;
         difference = (difference + 180) % 360;
         if (difference < 0)
             difference += 360;
@@ -33,35 +35,47 @@ public interface MathUtil {
         return angle * Math.PI / 180.0;
     }
 
+    default float toRadians(float angle) {
+        return angle * (float) Math.PI / 180.0F;
+    }
+
     default double sqrt(double x) {
         return Math.sqrt(x);
     }
 
+    default float sqrt(float x) {
+        return (float) Math.sqrt(x);
+    }
+
     default float[] computeOptimalYawAndPitch(ClientLivingEntity player,
             ClientLivingEntity entity) {
-        double y = entity.getHeadY() - player.getHeadY(), x = entity.getX() - player.getX();
-        double z = entity.getZ() - player.getZ();
+        val x = entity.getX() - player.getX();
+        val y = entity.getHeadY() - player.getHeadY();
+        val z = entity.getZ() - player.getZ();
 
-        float newPitch = y != 0 ? (float) -toDegrees(fastArcTan(y / sqrt(x * x + z * z))) : 0;
-        float newYaw = (float) toDegrees(-fastArcTan(x / z));
-
+        val newPitch = y != 0 ? (float) -toDegrees(fastArcTan(y / sqrt(x * x + z * z))) : 0;
+        float newYaw;
         if (z < 0.0D && x < 0.0D)
             newYaw = (float) (90.0D + toDegrees(fastArcTan(z / x)));
         else if (z < 0.0D && x > 0.0D)
             newYaw = (float) (-90.0D + toDegrees(fastArcTan(z / x)));
+        else
+            newYaw = (float) toDegrees(-fastArcTan(z / x));
 
         return new float[] { newPitch, newYaw };
     }
 
-    default float computeOptimalYaw(ClientLivingEntity entity, ClientEntity target) {
-        double x = target.getX() - entity.getX(), z = target.getZ() - entity.getZ();
+    default float computeOptimalYaw(ClientLivingEntity entity, Positionable target) {
+        val x = target.getX() - entity.getX();
+        val z = target.getZ() - entity.getZ();
 
-        float newYaw = (float) toDegrees(-fastArcTan(x / z));
-
+        float newYaw;
         if (z < 0.0D && x < 0.0D)
             newYaw = (float) (90.0D + toDegrees(fastArcTan(z / x)));
         else if (z < 0.0D && x > 0.0D)
             newYaw = (float) (-90.0D + toDegrees(fastArcTan(z / x)));
+        else
+            newYaw = (float) toDegrees(-fastArcTan(z / x));
 
         return newYaw;
     }
@@ -118,11 +132,19 @@ public interface MathUtil {
         return (float) Math.cos(a);
     }
 
+    default int floor(double a) {
+        return (int) Math.floor(a);
+    }
+
+    default double hypot(double a, double b) {
+        return Math.hypot(a, b);
+    }
+
     default double[] vectorForRotation(float pitch, float yaw) {
-        float f = cos(-yaw * 0.017453292F - (float) Math.PI);
-        float f1 = sin(-yaw * 0.017453292F - (float) Math.PI);
-        float f2 = -cos(-pitch * 0.017453292F);
-        float f3 = sin(-pitch * 0.017453292F);
+        val f = cos(-yaw * 0.017453292F - (float) Math.PI);
+        val f1 = sin(-yaw * 0.017453292F - (float) Math.PI);
+        val f2 = -cos(-pitch * 0.017453292F);
+        val f3 = sin(-pitch * 0.017453292F);
         return new double[] { (double) (f1 * f2), (double) f3, (double) (f * f2) };
     }
 
@@ -130,12 +152,12 @@ public interface MathUtil {
      * Combines two integers into a long.
      * 
      * @param high
-     *            The high 32 bits of the resulting long.
+     *             The high 32 bits of the resulting long.
      * @param low
-     *            The low 32 bits of the resulting long.
+     *             The low 32 bits of the resulting long.
      * @return A long containing the two input integers.
      */
-    public static long combineIntsToLong(int high, int low) {
+    default long combineIntsToLong(int high, int low) {
         return (((long) high) << 32) | (low & 0xFFFFFFFFL);
     }
 
@@ -143,10 +165,10 @@ public interface MathUtil {
      * Extracts the high 32 bits from a long as an int.
      * 
      * @param value
-     *            The long value to extract from.
+     *              The long value to extract from.
      * @return The high 32 bits of the input long as an int.
      */
-    public static int getHighInt(long value) {
+    default int highInt(long value) {
         return (int) (value >> 32);
     }
 
@@ -154,10 +176,11 @@ public interface MathUtil {
      * Extracts the low 32 bits from a long as an int.
      * 
      * @param value
-     *            The long value to extract from.
+     *              The long value to extract from.
      * @return The low 32 bits of the input long as an int.
      */
-    public static int getLowInt(long value) {
+    default int lowInt(long value) {
         return (int) value;
     }
+
 }

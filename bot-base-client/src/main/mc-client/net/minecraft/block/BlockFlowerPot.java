@@ -172,71 +172,50 @@ public class BlockFlowerPot extends BlockContainer {
      * Returns a new instance of a block's tile entity class. Called on placing the
      * block.
      */
-    public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
-        Object var3 = null;
-        byte var4 = 0;
+    public TileEntity createNewTileEntity(World world, int type) {
+        byte data = 0;
+        Block block = switch (type) {
+            case 1 -> {
+                data = 0;
+                yield Blocks.red_flower;
+            }
+            case 2 ->
+                Blocks.yellow_flower;
+            case 3 -> {
+                data = 0;
+                yield Blocks.sapling;
+            }
+            case 4 -> {
+                data = 1;
+                yield Blocks.sapling;
+            }
+            case 5 -> {
+                data = 2;
+                yield Blocks.sapling;
+            }
+            case 6 -> {
+                data = 3;
+                yield Blocks.sapling;
+            }
+            case 7 -> Blocks.red_mushroom;
+            case 8 -> Blocks.brown_mushroom;
+            case 9 -> Blocks.cactus;
+            case 10 -> Blocks.deadbush;
+            case 11 -> {
+                data = 2;
+                yield Blocks.tallgrass;
+            }
+            case 12 -> {
+                data = 4;
+                yield Blocks.sapling;
+            }
+            case 13 -> {
+                data = 5;
+                yield Blocks.sapling;
+            }
+            default -> null;
+        };
 
-        switch (p_149915_2_) {
-            case 1:
-                var3 = Blocks.red_flower;
-                var4 = 0;
-                break;
-
-            case 2:
-                var3 = Blocks.yellow_flower;
-                break;
-
-            case 3:
-                var3 = Blocks.sapling;
-                var4 = 0;
-                break;
-
-            case 4:
-                var3 = Blocks.sapling;
-                var4 = 1;
-                break;
-
-            case 5:
-                var3 = Blocks.sapling;
-                var4 = 2;
-                break;
-
-            case 6:
-                var3 = Blocks.sapling;
-                var4 = 3;
-                break;
-
-            case 7:
-                var3 = Blocks.red_mushroom;
-                break;
-
-            case 8:
-                var3 = Blocks.brown_mushroom;
-                break;
-
-            case 9:
-                var3 = Blocks.cactus;
-                break;
-
-            case 10:
-                var3 = Blocks.deadbush;
-                break;
-
-            case 11:
-                var3 = Blocks.tallgrass;
-                var4 = 2;
-                break;
-
-            case 12:
-                var3 = Blocks.sapling;
-                var4 = 4;
-                break;
-
-            case 13:
-                var3 = Blocks.sapling;
-                var4 = 5;
-        }
-
-        return new TileEntityFlowerPot(Item.getItemFromBlock((Block) var3), var4);
+        return new TileEntityFlowerPot(Item.getItemFromBlock(block), data);
     }
 }

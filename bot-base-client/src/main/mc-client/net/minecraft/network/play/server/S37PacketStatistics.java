@@ -1,15 +1,11 @@
 package net.minecraft.network.play.server;
 
-import com.google.common.collect.Maps;
-
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.INetHandler;

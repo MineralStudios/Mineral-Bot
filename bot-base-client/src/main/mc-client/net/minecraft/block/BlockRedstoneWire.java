@@ -1,9 +1,10 @@
 package net.minecraft.block;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
@@ -18,7 +19,7 @@ import net.minecraft.world.World;
 
 public class BlockRedstoneWire extends Block {
     private boolean field_150181_a = true;
-    private Set field_150179_b = new HashSet();
+    private Set<ChunkPosition> field_150179_b = new ObjectOpenHashSet<>();
     private IIcon field_150182_M;
     private IIcon field_150183_N;
     private IIcon field_150184_O;
@@ -70,12 +71,12 @@ public class BlockRedstoneWire extends Block {
 
     private void func_150177_e(World p_150177_1_, int p_150177_2_, int p_150177_3_, int p_150177_4_) {
         this.func_150175_a(p_150177_1_, p_150177_2_, p_150177_3_, p_150177_4_, p_150177_2_, p_150177_3_, p_150177_4_);
-        ArrayList var5 = new ArrayList(this.field_150179_b);
+        ArrayList<ChunkPosition> var5 = new ArrayList<>(this.field_150179_b);
         this.field_150179_b.clear();
 
         for (int var6 = 0; var6 < var5.size(); ++var6) {
             ChunkPosition var7 = (ChunkPosition) var5.get(var6);
-            p_150177_1_.notifyBlocksOfNeighborChange(var7.field_151329_a, var7.field_151327_b, var7.field_151328_c,
+            p_150177_1_.notifyBlocksOfNeighborChange(var7.x, var7.y, var7.z,
                     this);
         }
     }
@@ -138,9 +139,8 @@ public class BlockRedstoneWire extends Block {
             var15 = 0;
         }
 
-        if (var10 > var15 - 1) {
+        if (var10 > var15 - 1)
             var15 = var10;
-        }
 
         if (var8 != var15) {
             p_150175_1_.setBlockMetadataWithNotify(p_150175_2_, p_150175_3_, p_150175_4_, var15, 2);

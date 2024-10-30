@@ -420,13 +420,11 @@ public class Chunk {
         int var4 = this.heightMap[p_76615_3_ << 4 | p_76615_1_] & 255;
         int var5 = var4;
 
-        if (p_76615_2_ > var4) {
+        if (p_76615_2_ > var4)
             var5 = p_76615_2_;
-        }
 
-        while (var5 > 0 && this.getLightOpacityAt(p_76615_1_, var5 - 1, p_76615_3_) == 0) {
+        while (var5 > 0 && this.getLightOpacityAt(p_76615_1_, var5 - 1, p_76615_3_) == 0)
             --var5;
-        }
 
         if (var5 != var4) {
             this.worldObj.markBlocksDirtyVertical(p_76615_1_ + this.xPosition * 16, p_76615_3_ + this.zPosition * 16,
@@ -468,21 +466,19 @@ public class Chunk {
                     --var5;
                     var12 = this.getLightOpacityAt(p_76615_1_, var5, p_76615_3_);
 
-                    if (var12 == 0) {
+                    if (var12 == 0)
                         var12 = 1;
-                    }
 
                     var8 -= var12;
 
-                    if (var8 < 0) {
+                    if (var8 < 0)
                         var8 = 0;
-                    }
 
                     ExtendedBlockStorage var10 = this.storageArrays[var5 >> 4];
 
-                    if (var10 != null) {
+                    if (var10 != null)
                         var10.setExtSkylightValue(p_76615_1_, var5 & 15, p_76615_3_, var8);
-                    }
+
                 }
             }
 
@@ -495,9 +491,8 @@ public class Chunk {
                 var13 = var4;
             }
 
-            if (var8 < this.heightMapMinimum) {
+            if (var8 < this.heightMapMinimum)
                 this.heightMapMinimum = var8;
-            }
 
             if (!this.worldObj.provider.hasNoSky) {
                 this.updateSkylightNeighborHeight(var6 - 1, var7, var12, var13);
@@ -541,115 +536,108 @@ public class Chunk {
      * Return the metadata corresponding to the given coordinates inside a chunk.
      */
     public int getBlockMetadata(int p_76628_1_, int p_76628_2_, int p_76628_3_) {
-        if (p_76628_2_ >> 4 >= this.storageArrays.length) {
+        if (p_76628_2_ >> 4 >= this.storageArrays.length)
             return 0;
-        } else {
-            ExtendedBlockStorage var4 = this.storageArrays[p_76628_2_ >> 4];
-            return var4 != null ? var4.getExtBlockMetadata(p_76628_1_, p_76628_2_ & 15, p_76628_3_) : 0;
-        }
+
+        ExtendedBlockStorage var4 = this.storageArrays[p_76628_2_ >> 4];
+        return var4 != null ? var4.getExtBlockMetadata(p_76628_1_, p_76628_2_ & 15, p_76628_3_) : 0;
+
     }
 
     public boolean func_150807_a(int p_150807_1_, int p_150807_2_, int p_150807_3_, Block p_150807_4_,
             int p_150807_5_) {
         int var6 = p_150807_3_ << 4 | p_150807_1_;
 
-        if (p_150807_2_ >= this.precipitationHeightMap[var6] - 1) {
+        if (p_150807_2_ >= this.precipitationHeightMap[var6] - 1)
             this.precipitationHeightMap[var6] = -999;
-        }
 
         int var7 = this.heightMap[var6];
         Block var8 = this.getBlockAt(p_150807_1_, p_150807_2_, p_150807_3_);
         int var9 = this.getBlockMetadata(p_150807_1_, p_150807_2_, p_150807_3_);
 
-        if (var8 == p_150807_4_ && var9 == p_150807_5_) {
+        if (var8 == p_150807_4_ && var9 == p_150807_5_)
             return false;
-        } else {
-            ExtendedBlockStorage var10 = this.storageArrays[p_150807_2_ >> 4];
-            boolean var11 = false;
 
-            if (var10 == null) {
-                if (p_150807_4_ == Blocks.air) {
-                    return false;
-                }
+        ExtendedBlockStorage var10 = this.storageArrays[p_150807_2_ >> 4];
+        boolean var11 = false;
 
-                var10 = this.storageArrays[p_150807_2_ >> 4] = new ExtendedBlockStorage(p_150807_2_ >> 4 << 4,
-                        !this.worldObj.provider.hasNoSky);
-                var11 = p_150807_2_ >= var7;
-            }
-
-            int var12 = this.xPosition * 16 + p_150807_1_;
-            int var13 = this.zPosition * 16 + p_150807_3_;
-
-            if (!this.worldObj.isClient) {
-                var8.onBlockPreDestroy(this.worldObj, var12, p_150807_2_, var13, var9);
-            }
-
-            var10.setBlock(p_150807_1_, p_150807_2_ & 15, p_150807_3_, p_150807_4_);
-
-            if (!this.worldObj.isClient) {
-                var8.breakBlock(this.worldObj, var12, p_150807_2_, var13, var8, var9);
-            } else if (var8 instanceof ITileEntityProvider && var8 != p_150807_4_) {
-                this.worldObj.removeTileEntity(var12, p_150807_2_, var13);
-            }
-
-            if (var10.getBlockAt(p_150807_1_, p_150807_2_ & 15, p_150807_3_) != p_150807_4_) {
+        if (var10 == null) {
+            if (p_150807_4_ == Blocks.air)
                 return false;
-            } else {
-                var10.setExtBlockMetadata(p_150807_1_, p_150807_2_ & 15, p_150807_3_, p_150807_5_);
 
-                if (var11) {
-                    this.generateSkylightMap();
-                } else {
-                    int var14 = p_150807_4_.getLightOpacity();
-                    int var15 = var8.getLightOpacity();
+            var10 = this.storageArrays[p_150807_2_ >> 4] = new ExtendedBlockStorage(p_150807_2_ >> 4 << 4,
+                    !this.worldObj.provider.hasNoSky);
+            var11 = p_150807_2_ >= var7;
+        }
 
-                    if (var14 > 0) {
-                        if (p_150807_2_ >= var7) {
-                            this.relightBlock(p_150807_1_, p_150807_2_ + 1, p_150807_3_);
-                        }
-                    } else if (p_150807_2_ == var7 - 1) {
-                        this.relightBlock(p_150807_1_, p_150807_2_, p_150807_3_);
-                    }
+        int var12 = this.xPosition * 16 + p_150807_1_;
+        int var13 = this.zPosition * 16 + p_150807_3_;
 
-                    if (var14 != var15 && (var14 < var15
-                            || this.getSavedLightValue(EnumSkyBlock.Sky, p_150807_1_, p_150807_2_, p_150807_3_) > 0
-                            || this.getSavedLightValue(EnumSkyBlock.Block, p_150807_1_, p_150807_2_,
-                                    p_150807_3_) > 0)) {
-                        this.propagateSkylightOcclusion(p_150807_1_, p_150807_3_);
-                    }
-                }
+        if (!this.worldObj.isClient)
+            var8.onBlockPreDestroy(this.worldObj, var12, p_150807_2_, var13, var9);
 
-                TileEntity var16;
+        var10.setBlock(p_150807_1_, p_150807_2_ & 15, p_150807_3_, p_150807_4_);
 
-                if (var8 instanceof ITileEntityProvider) {
-                    var16 = this.func_150806_e(p_150807_1_, p_150807_2_, p_150807_3_);
+        if (!this.worldObj.isClient)
+            var8.breakBlock(this.worldObj, var12, p_150807_2_, var13, var8, var9);
+        else if (var8 instanceof ITileEntityProvider && var8 != p_150807_4_)
+            this.worldObj.removeTileEntity(var12, p_150807_2_, var13);
 
-                    if (var16 != null) {
-                        var16.updateContainingBlockInfo();
-                    }
-                }
+        if (var10.getBlockAt(p_150807_1_, p_150807_2_ & 15, p_150807_3_) != p_150807_4_)
+            return false;
 
-                if (!this.worldObj.isClient) {
-                    p_150807_4_.onBlockAdded(this.worldObj, var12, p_150807_2_, var13);
-                }
+        var10.setExtBlockMetadata(p_150807_1_, p_150807_2_ & 15, p_150807_3_, p_150807_5_);
 
-                if (p_150807_4_ instanceof ITileEntityProvider) {
-                    var16 = this.func_150806_e(p_150807_1_, p_150807_2_, p_150807_3_);
+        if (var11) {
+            this.generateSkylightMap();
+        } else {
+            int var14 = p_150807_4_.getLightOpacity();
+            int var15 = var8.getLightOpacity();
 
-                    if (var16 == null) {
-                        var16 = ((ITileEntityProvider) p_150807_4_).createNewTileEntity(this.worldObj, p_150807_5_);
-                        this.worldObj.setTileEntity(var12, p_150807_2_, var13, var16);
-                    }
+            if (var14 > 0) {
+                if (p_150807_2_ >= var7)
+                    this.relightBlock(p_150807_1_, p_150807_2_ + 1, p_150807_3_);
 
-                    if (var16 != null) {
-                        var16.updateContainingBlockInfo();
-                    }
-                }
+            } else if (p_150807_2_ == var7 - 1)
+                this.relightBlock(p_150807_1_, p_150807_2_, p_150807_3_);
 
-                this.isModified = true;
-                return true;
+            if (var14 != var15 && (var14 < var15
+                    || this.getSavedLightValue(EnumSkyBlock.Sky, p_150807_1_, p_150807_2_, p_150807_3_) > 0
+                    || this.getSavedLightValue(EnumSkyBlock.Block, p_150807_1_, p_150807_2_,
+                            p_150807_3_) > 0)) {
+                this.propagateSkylightOcclusion(p_150807_1_, p_150807_3_);
             }
         }
+
+        TileEntity var16;
+
+        if (var8 instanceof ITileEntityProvider) {
+            var16 = this.func_150806_e(p_150807_1_, p_150807_2_, p_150807_3_);
+
+            if (var16 != null)
+                var16.updateContainingBlockInfo();
+
+        }
+
+        if (!this.worldObj.isClient)
+            p_150807_4_.onBlockAdded(this.worldObj, var12, p_150807_2_, var13);
+
+        if (p_150807_4_ instanceof ITileEntityProvider) {
+            var16 = this.func_150806_e(p_150807_1_, p_150807_2_, p_150807_3_);
+
+            if (var16 == null) {
+                var16 = ((ITileEntityProvider) p_150807_4_).createNewTileEntity(this.worldObj, p_150807_5_);
+                this.worldObj.setTileEntity(var12, p_150807_2_, var13, var16);
+            }
+
+            if (var16 != null)
+                var16.updateContainingBlockInfo();
+
+        }
+
+        this.isModified = true;
+        return true;
+
     }
 
     /**

@@ -4,18 +4,19 @@ import java.io.File;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+
 import com.google.common.collect.HashMultimap;
 
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.bot.api.entity.living.player.FakePlayer;
+
 import gg.mineral.bot.api.math.ServerLocation;
 import gg.mineral.bot.base.client.BotImpl;
 import gg.mineral.bot.base.client.gui.GuiConnecting;
 import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import gg.mineral.bot.base.client.network.ClientNetHandler;
+import gg.mineral.bot.base.client.player.ClientInstance;
 import gg.mineral.bot.impl.thread.ThreadManager;
 import gg.mineral.bot.plugin.impl.player.NMSServerPlayer;
 import gg.mineral.bot.plugin.network.ClientNetworkManager;
@@ -23,8 +24,9 @@ import gg.mineral.bot.plugin.network.ServerNetworkManager;
 import gg.mineral.bot.plugin.network.packet.Client2ServerTranslator;
 import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator;
 import lombok.Getter;
+import lombok.val;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.network.NetHandlerPlayClient;
+
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.EnumDifficulty;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -35,8 +37,8 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutLogin;
 import net.minecraft.server.v1_8_R3.PacketPlayOutServerDifficulty;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnPosition;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
-import net.minecraft.server.v1_8_R3.WorldType;
 import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
+import net.minecraft.server.v1_8_R3.WorldType;
 
 public class ServerBotImpl extends BotImpl implements Listener {
 
@@ -45,17 +47,17 @@ public class ServerBotImpl extends BotImpl implements Listener {
     }
 
     @Override
-    public FakePlayer spawn(BotConfiguration configuration, ServerLocation location) {
-        long startTime = System.nanoTime() / 1000000;
-        File file = configuration.getRunDirectory();
+    public ClientInstance spawn(BotConfiguration configuration, ServerLocation location) {
+        val startTime = System.nanoTime() / 1000000;
+        val file = configuration.getRunDirectory();
 
         if (!file.exists())
             file.mkdirs();
 
-        Client2ServerTranslator c2sTranslator = new Client2ServerTranslator();
-        Server2ClientTranslator s2cTranslator = new Server2ClientTranslator();
+        val c2sTranslator = new Client2ServerTranslator();
+        val s2cTranslator = new Server2ClientTranslator();
 
-        FakePlayerInstance instance = new FakePlayerInstance(configuration, 1280, 720,
+        val instance = new ClientInstance(configuration, 1280, 720,
                 false,
                 false,
                 file,
@@ -75,9 +77,9 @@ public class ServerBotImpl extends BotImpl implements Listener {
         };
         instance.setServer("127.0.0.1", Bukkit.getServer().getPort());
 
-        String name = configuration.getFullUsername();
+        val name = configuration.getFullUsername();
 
-        NMSServerPlayer serverSide = new NMSServerPlayer(location.getWorld(),
+        val serverSide = new NMSServerPlayer(location.getWorld(),
                 configuration.getUuid(), name, configuration.getSkin().getValue(),
                 configuration.getSkin().getSignature());
 
@@ -85,16 +87,16 @@ public class ServerBotImpl extends BotImpl implements Listener {
         serverSide.setYawPitch(location.getYaw(), location.getPitch());
         serverSide.spawnInWorld(location.getWorld());
 
-        ClientNetworkManager cNetworkManager = new ClientNetworkManager(c2sTranslator,
+        val cNetworkManager = new ClientNetworkManager(c2sTranslator,
                 instance);
-        ServerNetworkManager sNetworkManager = new ServerNetworkManager(s2cTranslator, instance);
+        val sNetworkManager = new ServerNetworkManager(s2cTranslator, instance);
 
-        NetHandlerPlayClient netHandlerPlayClient = new NetHandlerPlayClient(instance, null,
+        val netHandlerPlayClient = new ClientNetHandler(instance, null,
                 cNetworkManager);
 
         s2cTranslator.setNetHandlerPlayClient(netHandlerPlayClient);
 
-        PlayerConnection playerConnection = new PlayerConnection(MinecraftServer.getServer(), sNetworkManager,
+        val playerConnection = new PlayerConnection(MinecraftServer.getServer(), sNetworkManager,
                 serverSide) {
             @Getter
             private boolean disconnected = false;
@@ -126,7 +128,7 @@ public class ServerBotImpl extends BotImpl implements Listener {
                 WorldType.getType(serverSide.getWorldTypeName()),
                 serverSide.isReducedDebugInfo()));
 
-        int[] spawn = serverSide.getWorldSpawn();
+        val spawn = serverSide.getWorldSpawn();
         serverSide.initializeGameMode();
 
         serverSide.sendSupportedChannels();
@@ -163,7 +165,7 @@ public class ServerBotImpl extends BotImpl implements Listener {
 
         ThreadManager.getAsyncExecutor().execute(() -> {
             instance.run();
-            InstanceManager.getInstances().put(instance.getUuid(), instance);
+            InstanceManager.getInstances().put(configuration.getUuid(), instance);
             MinecraftServer.getServer().postToMainThread(() -> sNetworkManager.releasePacketQueue());
         });
 
@@ -174,10 +176,10 @@ public class ServerBotImpl extends BotImpl implements Listener {
 
     @Override
     public boolean despawn(UUID uuid) {
-        boolean isBot = super.despawn(uuid);
+        val isBot = super.despawn(uuid);
 
         if (isBot) {
-            Player player = Bukkit.getPlayer(uuid);
+            val player = Bukkit.getPlayer(uuid);
             if (player != null)
                 player.kickPlayer("Despawned");
         }

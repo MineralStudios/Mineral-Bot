@@ -2,13 +2,14 @@ package net.minecraft.client.multiplayer;
 
 import javax.annotation.Nullable;
 
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
+
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityHorse;
@@ -32,7 +33,9 @@ import net.minecraft.world.WorldSettings;
 
 public class PlayerControllerMP {
     /** The Minecraft instance. */
+    @Getter
     private final Minecraft mc;
+    @Getter
     private final NetHandlerPlayClient netClientHandler;
 
     /** PosX of the current block being destroyed */
@@ -409,7 +412,7 @@ public class PlayerControllerMP {
         return true;
     }
 
-    public EntityClientPlayerMP func_147493_a(World p_147493_1_, StatFileWriter p_147493_2_) {
+    public EntityClientPlayerMP createClientPlayerMP(World p_147493_1_, StatFileWriter p_147493_2_) {
         return new EntityClientPlayerMP(this.mc, p_147493_1_, this.mc.getSession(), this.netClientHandler, p_147493_2_);
     }
 

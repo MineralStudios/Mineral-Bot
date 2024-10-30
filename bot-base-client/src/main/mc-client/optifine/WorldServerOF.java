@@ -306,7 +306,7 @@ public class WorldServerOF extends WorldServer {
 
                     for (int cx = -dist; cx <= dist; ++cx)
                         for (int cz = -dist; cz <= dist; ++cz)
-                            this.limitedChunkSet.add(MathUtil.combineIntsToLong(cx + pcx, cz + pcz));
+                            this.limitedChunkSet.add(combineIntsToLong(cx + pcx, cz + pcz));
                 }
 
                 if (this.setChunkCoordsToTickOnce.size() > 0) {
@@ -321,7 +321,7 @@ public class WorldServerOF extends WorldServer {
         int viewDistance = this.getViewDistance();
 
         if (viewDistance > 10)
-            this.setChunkCoordsToTickOnce.add(MathUtil.combineIntsToLong(cx, cz));
+            this.setChunkCoordsToTickOnce.add(combineIntsToLong(cx, cz));
     }
 
     protected void func_147456_g() {

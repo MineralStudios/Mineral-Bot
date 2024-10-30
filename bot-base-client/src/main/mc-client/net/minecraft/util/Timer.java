@@ -81,33 +81,29 @@ public class Timer {
                 this.field_74285_i = 0L;
             }
 
-            if (this.field_74285_i < 0L) {
+            if (this.field_74285_i < 0L)
                 this.lastSyncHRClock = var5;
-            }
-        } else {
+
+        } else
             this.lastHRTime = var7;
-        }
 
         this.lastSyncSysClock = var1;
         double var13 = (var7 - this.lastHRTime) * this.timeSyncAdjustment;
         this.lastHRTime = var7;
 
-        if (var13 < 0.0D) {
+        if (var13 < 0.0D)
             var13 = 0.0D;
-        }
 
-        if (var13 > 1.0D) {
+        if (var13 > 1.0D)
             var13 = 1.0D;
-        }
 
         this.elapsedPartialTicks = (float) ((double) this.elapsedPartialTicks
                 + var13 * (double) this.timerSpeed * (double) this.ticksPerSecond);
         this.elapsedTicks = (int) this.elapsedPartialTicks;
         this.elapsedPartialTicks -= (float) this.elapsedTicks;
 
-        if (this.elapsedTicks > 10) {
+        if (this.elapsedTicks > 10)
             this.elapsedTicks = 10;
-        }
 
         this.renderPartialTicks = this.elapsedPartialTicks;
     }

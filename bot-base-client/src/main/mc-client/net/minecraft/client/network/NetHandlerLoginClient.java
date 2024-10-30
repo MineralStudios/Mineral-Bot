@@ -7,6 +7,9 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.math.BigInteger;
 import java.security.PublicKey;
 import java.util.UUID;
@@ -27,17 +30,15 @@ import net.minecraft.util.IChatComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@Getter
+@RequiredArgsConstructor
 public class NetHandlerLoginClient implements INetHandlerLoginClient {
+    @Getter
     private static final Logger logger = LogManager.getLogger(NetHandlerLoginClient.class);
-    private final Minecraft mc;
-    private final GuiScreen field_147395_c;
-    private final NetworkManager networkManager;
 
-    public NetHandlerLoginClient(NetworkManager p_i45059_1_, Minecraft mc, GuiScreen p_i45059_3_) {
-        this.networkManager = p_i45059_1_;
-        this.mc = mc;
-        this.field_147395_c = p_i45059_3_;
-    }
+    private final NetworkManager networkManager;
+    private final Minecraft mc;
+    private final GuiScreen guiScreen;
 
     public void handleEncryptionRequest(S01PacketEncryptionRequest p_147389_1_) {
         final SecretKey var2 = CryptManager.createNewSharedKey();
@@ -97,7 +98,7 @@ public class NetHandlerLoginClient implements INetHandlerLoginClient {
      * reason for termination
      */
     public void onDisconnect(IChatComponent p_147231_1_) {
-        this.mc.displayGuiScreen(new GuiDisconnected(this.mc, this.field_147395_c, "connect.failed", p_147231_1_));
+        this.mc.displayGuiScreen(new GuiDisconnected(this.mc, this.guiScreen, "connect.failed", p_147231_1_));
     }
 
     /**
@@ -108,10 +109,10 @@ public class NetHandlerLoginClient implements INetHandlerLoginClient {
     public void onConnectionStateTransition(EnumConnectionState p_147232_1_, EnumConnectionState p_147232_2_) {
         logger.debug("Switching protocol from " + p_147232_1_ + " to " + p_147232_2_);
 
-        if (p_147232_2_ == EnumConnectionState.PLAY) {
+        if (p_147232_2_ == EnumConnectionState.PLAY)
             this.networkManager.setNetHandler(
-                    new NetHandlerPlayClient(this.mc, this.field_147395_c, this.networkManager));
-        }
+                    new NetHandlerPlayClient(this.mc, this.guiScreen, this.networkManager));
+
     }
 
     /**

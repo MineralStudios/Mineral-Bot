@@ -122,8 +122,9 @@ public class BlockPistonExtension extends Block {
         return 0;
     }
 
+    @Override
     public void addCollisionBoxesToList(World p_149743_1_, int p_149743_2_, int p_149743_3_, int p_149743_4_,
-            AxisAlignedBB p_149743_5_, List p_149743_6_, Entity p_149743_7_) {
+            AxisAlignedBB p_149743_5_, List<AxisAlignedBB> p_149743_6_, Entity p_149743_7_) {
         int var8 = p_149743_1_.getBlockMetadata(p_149743_2_, p_149743_3_, p_149743_4_);
         float var9 = 0.25F;
         float var10 = 0.375F;

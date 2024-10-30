@@ -2,11 +2,9 @@ package gg.mineral.bot.api.event.network;
 
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.packet.ClientboundPacket;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
-@RequiredArgsConstructor
-@Getter
+@Value
 public class ClientboundPacketEvent implements Event {
-    private final ClientboundPacket packet;
+    ClientboundPacket packet;
 }

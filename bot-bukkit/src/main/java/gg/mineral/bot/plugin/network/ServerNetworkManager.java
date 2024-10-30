@@ -3,7 +3,7 @@ package gg.mineral.bot.plugin.network;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import gg.mineral.bot.base.client.player.ClientInstance;
 import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -41,7 +41,7 @@ public class ServerNetworkManager extends NetworkManager {
             return;
         }
 
-        if (mc instanceof FakePlayerInstance instance && (!mc.isMainThread() || instance.getLatency() > 0))
+        if (mc instanceof ClientInstance instance && (!mc.isMainThread() || instance.getLatency() > 0))
             instance.scheduleTask(() -> translator.handlePacket(packet), instance.getLatency());
         else
             translator.handlePacket(packet);

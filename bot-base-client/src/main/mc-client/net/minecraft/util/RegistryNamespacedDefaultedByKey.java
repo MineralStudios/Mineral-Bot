@@ -1,39 +1,36 @@
 package net.minecraft.util;
 
-public class RegistryNamespacedDefaultedByKey extends RegistryNamespaced {
-    private final String field_148760_d;
-    private Object field_148761_e;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 
-    public RegistryNamespacedDefaultedByKey(String p_i45127_1_) {
-        this.field_148760_d = p_i45127_1_;
-    }
+@RequiredArgsConstructor
+public class RegistryNamespacedDefaultedByKey<V> extends RegistryNamespaced<V> {
+    private final String defaultKey;
+    private V defaultValue;
 
     /**
      * Adds a new object to this registry, keyed by both the given integer ID and
      * the given string.
      */
-    public void addObject(int p_148756_1_, String p_148756_2_, Object p_148756_3_) {
-        if (this.field_148760_d.equals(p_148756_2_)) {
-            this.field_148761_e = p_148756_3_;
-        }
+    @Override
+    public void addObject(int id, String key, V value) {
+        if (this.defaultKey.equals(key))
+            this.defaultValue = value;
 
-        super.addObject(p_148756_1_, p_148756_2_, p_148756_3_);
+        super.addObject(id, key, value);
     }
 
-    public Object getObject(String p_82594_1_) {
-        Object var2 = super.getObject(p_82594_1_);
-        return var2 == null ? this.field_148761_e : var2;
+    @Override
+    public V getObject(String p_82594_1_) {
+        val value = super.getObject(p_82594_1_);
+        return value == null ? this.defaultValue : value;
     }
 
     /**
      * Gets the object identified by the given ID.
      */
-    public Object getObjectForID(int p_148754_1_) {
-        Object var2 = super.getObjectForID(p_148754_1_);
-        return var2 == null ? this.field_148761_e : var2;
-    }
-
-    public Object getObject(Object p_82594_1_) {
-        return this.getObject((String) p_82594_1_);
+    public V getObjectForID(int p_148754_1_) {
+        V value = super.getObjectForID(p_148754_1_);
+        return value == null ? this.defaultValue : value;
     }
 }

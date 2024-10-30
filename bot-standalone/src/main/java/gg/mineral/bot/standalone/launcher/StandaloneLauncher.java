@@ -7,11 +7,11 @@ import java.util.UUID;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
+
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultParser;
-import org.jline.terminal.Terminal;
+
 import org.jline.terminal.TerminalBuilder;
 
 import com.google.common.collect.HashMultimap;
@@ -20,17 +20,18 @@ import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.base.client.BotImpl;
 import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import gg.mineral.bot.base.client.player.ClientInstance;
 import gg.mineral.bot.base.client.tick.GameLoop;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import gg.mineral.bot.impl.thread.ThreadManager;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.Main;
 
 public class StandaloneLauncher {
 
     public static void main(String[] args) throws IOException {
-        File file = new File("run");
+        val file = new File("run");
 
         if (!file.exists())
             file.mkdirs();
@@ -76,18 +77,18 @@ public class StandaloneLauncher {
             }
         });
 
-        Terminal terminal = TerminalBuilder.builder().build();
-        DefaultParser parser = new DefaultParser();
-        LineReader reader = LineReaderBuilder.builder()
+        val terminal = TerminalBuilder.builder().build();
+        val parser = new DefaultParser();
+        val reader = LineReaderBuilder.builder()
                 .terminal(terminal)
                 .parser(parser)
                 .build();
         consoleLoop: while (true) {
             try {
-                String line = reader.readLine("~> ");
+                val line = reader.readLine("~> ");
 
-                String[] split = line.split(" ");
-                String commandString = split[0];
+                val split = line.split(" ");
+                val commandString = split[0];
 
                 switch (commandString) {
                     case "stop":
@@ -107,15 +108,16 @@ public class StandaloneLauncher {
                             break;
                         }
 
-                        String username = split[1];
-                        String ipAddr = split[2];
-                        int port = Integer.parseInt(split[3]);
+                        val username = split[1];
+                        val ipAddr = split[2];
+                        val port = Integer.parseInt(split[3]);
                         InstanceManager.getInstances().values()
                                 .stream()
                                 .filter(mc -> mc.getSession().getUsername().equals(username)).findFirst()
                                 .ifPresentOrElse(mc -> System.out.println("Player already connected"), () -> {
-                                    FakePlayerInstance minecraftInstance = new FakePlayerInstance(
-                                            BotConfiguration.builder().username(username).build(), 1280, 720,
+                                    val configuration = BotConfiguration.builder().username(username).build();
+                                    val minecraftInstance = new ClientInstance(
+                                            configuration, 1280, 720,
                                             false,
                                             false,
                                             file,
@@ -127,7 +129,7 @@ public class StandaloneLauncher {
 
                                     minecraftInstance.setServer(ipAddr, port);
                                     minecraftInstance.run();
-                                    InstanceManager.getInstances().put(minecraftInstance.getUuid(), minecraftInstance);
+                                    InstanceManager.getInstances().put(configuration.getUuid(), minecraftInstance);
                                 });
 
                         break;
@@ -141,10 +143,10 @@ public class StandaloneLauncher {
                             break;
                         }
 
-                        String username2 = split[1];
-                        String key = split[2];
-                        Key.Type type = Key.Type.valueOf(key);
-                        int duration = Integer.parseInt(split[3]);
+                        val username2 = split[1];
+                        val key = split[2];
+                        val type = Key.Type.valueOf(key);
+                        val duration = Integer.parseInt(split[3]);
                         InstanceManager.getInstances().values()
                                 .stream()
                                 .filter(mc -> mc.getSession().getUsername().equals(username2)).findFirst()
@@ -170,7 +172,7 @@ public class StandaloneLauncher {
     }
 
     public static <T> T[] concat(T[] first, T[] second) {
-        T[] result = java.util.Arrays.copyOf(first, first.length + second.length);
+        val result = java.util.Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
     }

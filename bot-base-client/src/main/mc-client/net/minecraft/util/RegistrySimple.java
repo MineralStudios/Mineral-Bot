@@ -9,45 +9,46 @@ import org.apache.logging.log4j.Logger;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-public class RegistrySimple implements IRegistry {
+public class RegistrySimple<K, V> implements IRegistry<K, V> {
     private static final Logger logger = LogManager.getLogger(RegistrySimple.class);
 
     /** Objects registered on this registry. */
-    protected final Map<Object, Object> registryObjects = this.createUnderlyingMap();
+    protected final Map<K, V> registryObjects = this.createUnderlyingMap();
 
     /**
      * Creates the Map we will use to map keys to their registered values.
      */
-    protected Map<Object, Object> createUnderlyingMap() {
+    protected Map<K, V> createUnderlyingMap() {
         return new Object2ObjectOpenHashMap<>();
     }
 
-    public Object getObject(Object p_82594_1_) {
-        return this.registryObjects.get(p_82594_1_);
+    @Override
+    public V getObject(K key) {
+        return this.registryObjects.get(key);
     }
 
     /**
      * Register an object on this registry.
      */
-    public void putObject(Object p_82595_1_, Object p_82595_2_) {
-        if (this.registryObjects.containsKey(p_82595_1_)) {
-            logger.debug("Adding duplicate key \'" + p_82595_1_ + "\' to registry");
-        }
+    @Override
+    public void putObject(K key, V value) {
+        if (this.registryObjects.containsKey(key))
+            logger.debug("Adding duplicate key \'" + key + "\' to registry");
 
-        this.registryObjects.put(p_82595_1_, p_82595_2_);
+        this.registryObjects.put(key, value);
     }
 
     /**
      * Gets all the keys recognized by this registry.
      */
-    public Set<Object> getKeys() {
+    public Set<K> getKeys() {
         return Collections.unmodifiableSet(this.registryObjects.keySet());
     }
 
     /**
      * Does this registry contain an entry for the given key?
      */
-    public boolean containsKey(Object p_148741_1_) {
-        return this.registryObjects.containsKey(p_148741_1_);
+    public boolean containsKey(K key) {
+        return this.registryObjects.containsKey(key);
     }
 }

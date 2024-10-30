@@ -6,11 +6,11 @@ import com.mojang.util.UUIDTypeAdapter;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 import java.util.Map;
-import java.util.UUID;
 
-public class Session {
+public class Session implements gg.mineral.bot.api.instance.Session {
     @Getter
     private final String username, playerID, token;
     @Getter
@@ -29,10 +29,10 @@ public class Session {
 
     public GameProfile getGameProfile() {
         try {
-            UUID uuid = UUIDTypeAdapter.fromString(this.getPlayerID());
+            val uuid = UUIDTypeAdapter.fromString(this.getPlayerID());
             return new GameProfile(uuid, this.getUsername());
         } catch (IllegalArgumentException var2) {
-            return new GameProfile((UUID) null, this.getUsername());
+            return new GameProfile(null, this.getUsername());
         }
     }
 
@@ -48,13 +48,23 @@ public class Session {
         }
 
         static {
-            Session.Type[] values = values();
-            int length = values.length;
+            val values = values();
+            val length = values.length;
 
             for (int i = 0; i < length; ++i) {
-                Session.Type type = values[i];
+                val type = values[i];
                 stringToType.put(type.lowerCaseName, type);
             }
         }
+    }
+
+    @Override
+    public String getAccessToken() {
+        return this.token;
+    }
+
+    @Override
+    public String getSessionId() {
+        return this.getSessionID();
     }
 }

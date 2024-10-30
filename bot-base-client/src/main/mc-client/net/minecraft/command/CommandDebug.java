@@ -108,7 +108,7 @@ public class CommandDebug extends CommandBase {
                 p_147202_3_.append(" - ");
                 p_147202_3_.append(String.format("%.2f", new Object[] { Double.valueOf(var6.field_76332_a) }));
                 p_147202_3_.append("%/");
-                p_147202_3_.append(String.format("%.2f", new Object[] { Double.valueOf(var6.field_76330_b) }));
+                p_147202_3_.append(String.format("%.2f", new Object[] { Double.valueOf(var6.percentage) }));
                 p_147202_3_.append("%\n");
 
                 if (!var6.field_76331_c.equals("unspecified")) {

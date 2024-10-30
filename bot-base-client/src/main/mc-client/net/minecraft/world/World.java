@@ -53,7 +53,7 @@ import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldInfo;
 
-public abstract class World implements IBlockAccess {
+public abstract class World implements IBlockAccess, MathUtil {
     /**
      * boolean; if true updates scheduled by scheduleBlockUpdate happen immediately
      */
@@ -144,7 +144,7 @@ public abstract class World implements IBlockAccess {
 
     /** A flag indicating whether we should spawn peaceful mobs. */
     protected boolean spawnPeacefulMobs;
-    private ArrayList collidingBoundingBoxes;
+    private ArrayList<AxisAlignedBB> collidingBoundingBoxes;
     private boolean field_147481_N;
 
     /**
@@ -188,7 +188,7 @@ public abstract class World implements IBlockAccess {
         this.ambientTickCountdown = this.rand.nextInt(12000);
         this.spawnHostileMobs = true;
         this.spawnPeacefulMobs = true;
-        this.collidingBoundingBoxes = new ArrayList();
+        this.collidingBoundingBoxes = new ArrayList<>();
         this.lightUpdateBlockList = new int[32768];
         this.saveHandler = p_i45368_1_;
         this.theProfiler = p_i45368_5_;
@@ -216,7 +216,7 @@ public abstract class World implements IBlockAccess {
         this.ambientTickCountdown = this.rand.nextInt(12000);
         this.spawnHostileMobs = true;
         this.spawnPeacefulMobs = true;
-        this.collidingBoundingBoxes = new ArrayList();
+        this.collidingBoundingBoxes = new ArrayList<>();
         this.lightUpdateBlockList = new int[32768];
         this.saveHandler = p_i45369_1_;
         this.theProfiler = p_i45369_5_;
@@ -1267,7 +1267,7 @@ public abstract class World implements IBlockAccess {
      * in entity's collision. Args: entity,
      * aabb
      */
-    public List getCollidingBoundingBoxes(Entity p_72945_1_, AxisAlignedBB p_72945_2_) {
+    public List<AxisAlignedBB> getCollidingBoundingBoxes(Entity p_72945_1_, AxisAlignedBB p_72945_2_) {
         this.collidingBoundingBoxes.clear();
         int var3 = MathHelper.floor_double(p_72945_2_.minX);
         int var4 = MathHelper.floor_double(p_72945_2_.maxX + 1.0D);
@@ -1315,7 +1315,7 @@ public abstract class World implements IBlockAccess {
         return this.collidingBoundingBoxes;
     }
 
-    public List func_147461_a(AxisAlignedBB p_147461_1_) {
+    public List<AxisAlignedBB> func_147461_a(AxisAlignedBB p_147461_1_) {
         this.collidingBoundingBoxes.clear();
         int var2 = MathHelper.floor_double(p_147461_1_.minX);
         int var3 = MathHelper.floor_double(p_147461_1_.maxX + 1.0D);
@@ -1330,14 +1330,13 @@ public abstract class World implements IBlockAccess {
                     for (int var10 = var4 - 1; var10 < var5; ++var10) {
                         Block var11;
 
-                        if (var8 >= -30000000 && var8 < 30000000 && var9 >= -30000000 && var9 < 30000000) {
+                        if (var8 >= -30000000 && var8 < 30000000 && var9 >= -30000000 && var9 < 30000000)
                             var11 = this.getBlock(var8, var10, var9);
-                        } else {
+                        else
                             var11 = Blocks.bedrock;
-                        }
 
                         var11.addCollisionBoxesToList(this, var8, var10, var9, p_147461_1_, this.collidingBoundingBoxes,
-                                (Entity) null);
+                                null);
                     }
                 }
             }
@@ -1353,13 +1352,11 @@ public abstract class World implements IBlockAccess {
         float var2 = this.getCelestialAngle(p_72967_1_);
         float var3 = 1.0F - (MathHelper.cos(var2 * (float) Math.PI * 2.0F) * 2.0F + 0.5F);
 
-        if (var3 < 0.0F) {
+        if (var3 < 0.0F)
             var3 = 0.0F;
-        }
 
-        if (var3 > 1.0F) {
+        if (var3 > 1.0F)
             var3 = 1.0F;
-        }
 
         var3 = 1.0F - var3;
         var3 = (float) ((double) var3 * (1.0D - (double) (this.getRainStrength(p_72967_1_) * 5.0F) / 16.0D));
@@ -2477,7 +2474,7 @@ public abstract class World implements IBlockAccess {
                 int chunkX = var3 + dx;
                 for (int dz = -var5; dz <= var5; ++dz) {
                     int chunkZ = var4 + dz;
-                    this.activeChunkSet.add(MathUtil.combineIntsToLong(chunkX, chunkZ));
+                    this.activeChunkSet.add(combineIntsToLong(chunkX, chunkZ));
                 }
             }
         }
@@ -2819,26 +2816,23 @@ public abstract class World implements IBlockAccess {
      * Will get all entities within the specified AABB excluding the one passed into
      * it. Args: entityToExclude, aabb
      */
-    public List getEntitiesWithinAABBExcludingEntity(Entity p_72839_1_, AxisAlignedBB p_72839_2_) {
+    public List<Entity> getEntitiesWithinAABBExcludingEntity(Entity p_72839_1_, AxisAlignedBB p_72839_2_) {
         return this.getEntitiesWithinAABBExcludingEntity(p_72839_1_, p_72839_2_, (IEntitySelector) null);
     }
 
-    public List getEntitiesWithinAABBExcludingEntity(Entity p_94576_1_, AxisAlignedBB p_94576_2_,
+    public List<Entity> getEntitiesWithinAABBExcludingEntity(Entity p_94576_1_, AxisAlignedBB p_94576_2_,
             IEntitySelector p_94576_3_) {
-        ArrayList var4 = new ArrayList();
+        ArrayList<Entity> var4 = new ArrayList<>();
         int var5 = MathHelper.floor_double((p_94576_2_.minX - 2.0D) / 16.0D);
         int var6 = MathHelper.floor_double((p_94576_2_.maxX + 2.0D) / 16.0D);
         int var7 = MathHelper.floor_double((p_94576_2_.minZ - 2.0D) / 16.0D);
         int var8 = MathHelper.floor_double((p_94576_2_.maxZ + 2.0D) / 16.0D);
 
-        for (int var9 = var5; var9 <= var6; ++var9) {
-            for (int var10 = var7; var10 <= var8; ++var10) {
-                if (this.chunkExists(var9, var10)) {
+        for (int var9 = var5; var9 <= var6; ++var9)
+            for (int var10 = var7; var10 <= var8; ++var10)
+                if (this.chunkExists(var9, var10))
                     this.getChunkFromChunkCoords(var9, var10).getEntitiesWithinAABBForEntity(p_94576_1_, p_94576_2_,
                             var4, p_94576_3_);
-                }
-            }
-        }
 
         return var4;
     }

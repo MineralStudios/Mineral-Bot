@@ -7,7 +7,8 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
 import io.netty.buffer.Unpooled;
 import lombok.Setter;
-import net.minecraft.entity.player.EntityPlayer;
+import lombok.val;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.EnumConnectionState;
@@ -76,8 +77,8 @@ public class Client2ServerTranslator
 
     @Override
     public void onDisconnect(IChatComponent p_147231_1_) {
-        String text = IChatComponent.Serializer.toJson(p_147231_1_);
-        IChatBaseComponent chatComponent = IChatBaseComponent.ChatSerializer.a(text);
+        val text = IChatComponent.Serializer.toJson(p_147231_1_);
+        val chatComponent = IChatBaseComponent.ChatSerializer.a(text);
         playerConnection.a(chatComponent);
     }
 
@@ -93,26 +94,26 @@ public class Client2ServerTranslator
 
     @Override
     public void processAnimation(C0APacketAnimation p_147350_1_) {
-        PacketPlayInArmAnimation packet = new PacketPlayInArmAnimation();
+        val packet = new PacketPlayInArmAnimation();
         packet.timestamp = System.currentTimeMillis();
         playerConnection.a(packet);
     }
 
     @Override
     public void processChatMessage(C01PacketChatMessage p_147354_1_) {
-        PacketPlayInChat packet = new PacketPlayInChat(p_147354_1_.getMessage());
+        val packet = new PacketPlayInChat(p_147354_1_.getMessage());
         playerConnection.a(packet);
     }
 
     @Override
     public void processTabComplete(C14PacketTabComplete p_147341_1_) {
-        PacketPlayInTabComplete packet = new PacketPlayInTabComplete(p_147341_1_.getMessage());
+        val packet = new PacketPlayInTabComplete(p_147341_1_.getMessage());
         playerConnection.a(packet);
     }
 
     @Override
     public void processClientStatus(C16PacketClientStatus p_147342_1_) {
-        PacketPlayInClientCommand packet = new PacketPlayInClientCommand(
+        val packet = new PacketPlayInClientCommand(
                 net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand.values()[p_147342_1_.getState()
                         .ordinal()]);
         playerConnection.a(packet);
@@ -120,41 +121,41 @@ public class Client2ServerTranslator
 
     @Override
     public void processClientSettings(C15PacketClientSettings p_147352_1_) {
-        String locale = p_147352_1_.getLocale();
-        int viewDistance = p_147352_1_.getViewDistance();
-        EntityPlayer.EnumChatVisibility chatFlags = p_147352_1_.getChatFlags();
-        boolean chatColors = p_147352_1_.isChatColors();
-        boolean showCape = p_147352_1_.isShowCape();
+        val locale = p_147352_1_.getLocale();
+        val viewDistance = p_147352_1_.getViewDistance();
+        val chatFlags = p_147352_1_.getChatFlags();
+        val chatColors = p_147352_1_.isChatColors();
+        val showCape = p_147352_1_.isShowCape();
 
-        net.minecraft.server.v1_8_R3.EntityHuman.EnumChatVisibility chatFlagsObj = net.minecraft.server.v1_8_R3.EntityHuman.EnumChatVisibility
+        val chatFlagsNMS = net.minecraft.server.v1_8_R3.EntityHuman.EnumChatVisibility
                 .a(chatFlags.getChatVisibility());
         byte clothingByte = 0;
 
         if (showCape)
             clothingByte |= 0x01;
 
-        PacketPlayInSettings packet = new PacketPlayInSettings(locale, viewDistance, chatFlagsObj, chatColors,
+        val packet = new PacketPlayInSettings(locale, viewDistance, chatFlagsNMS, chatColors,
                 clothingByte);
         playerConnection.a(packet);
     }
 
     @Override
     public void processConfirmTransaction(C0FPacketConfirmTransaction p_147339_1_) {
-        PacketPlayInTransaction packet = new PacketPlayInTransaction(p_147339_1_.getWindowId(),
+        val packet = new PacketPlayInTransaction(p_147339_1_.getWindowId(),
                 p_147339_1_.getActionNumber(), p_147339_1_.isAccepted());
         playerConnection.a(packet);
     }
 
     @Override
     public void processEnchantItem(C11PacketEnchantItem p_147338_1_) {
-        PacketPlayInEnchantItem packet = new PacketPlayInEnchantItem(p_147338_1_.getWindowId(),
+        val packet = new PacketPlayInEnchantItem(p_147338_1_.getWindowId(),
                 p_147338_1_.getEnchantment());
         playerConnection.a(packet);
     }
 
     public static Material getMaterial(Item item) {
         @SuppressWarnings("deprecation")
-        Material material = Material.getMaterial(Item.getIdFromItem(item));
+        val material = Material.getMaterial(Item.getIdFromItem(item));
         return material == null ? Material.AIR : material;
     }
 
@@ -162,7 +163,7 @@ public class Client2ServerTranslator
         if (original == null)
             return new org.bukkit.inventory.ItemStack(Material.AIR);
 
-        org.bukkit.inventory.ItemStack stack = new org.bukkit.inventory.ItemStack(getMaterial(original.getItem()),
+        val stack = new org.bukkit.inventory.ItemStack(getMaterial(original.getItem()),
                 original.stackSize,
                 (short) original.getDurability());
         // TODO: if (hasItemMeta(original))
@@ -176,7 +177,7 @@ public class Client2ServerTranslator
         if (itemNMC == null)
             return null;
 
-        org.bukkit.inventory.ItemStack itemStack = asBukkitCopy(itemNMC);
+        val itemStack = asBukkitCopy(itemNMC);
 
         return itemStack == null ? null : CraftItemStack.asNMSCopy(itemStack);
     }
@@ -187,8 +188,8 @@ public class Client2ServerTranslator
 
     @Override
     public void processClickWindow(C0EPacketClickWindow p_147351_1_) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = fromNMC(p_147351_1_.getClickedItem());
-        PacketPlayInWindowClick packet = new PacketPlayInWindowClick(p_147351_1_.getWindowId(),
+        val nmsItem = fromNMC(p_147351_1_.getClickedItem());
+        val packet = new PacketPlayInWindowClick(p_147351_1_.getWindowId(),
                 p_147351_1_.getSlot(),
                 p_147351_1_.getButton(), p_147351_1_.getActionNumber(), nmsItem,
                 p_147351_1_.getMode());
@@ -197,20 +198,20 @@ public class Client2ServerTranslator
 
     @Override
     public void processCloseWindow(C0DPacketCloseWindow p_147356_1_) {
-        PacketPlayInCloseWindow packet = new PacketPlayInCloseWindow(p_147356_1_.getWindowId());
+        val packet = new PacketPlayInCloseWindow(p_147356_1_.getWindowId());
         playerConnection.a(packet);
     }
 
     @Override
     public void processVanilla250Packet(C17PacketCustomPayload p_147349_1_) {
-        PacketPlayInCustomPayload packet = new PacketPlayInCustomPayload(p_147349_1_.getChannel(),
+        val packet = new PacketPlayInCustomPayload(p_147349_1_.getChannel(),
                 new PacketDataSerializer(Unpooled.wrappedBuffer(p_147349_1_.getData())));
         playerConnection.a(packet);
     }
 
     @Override
     public void processUseEntity(C02PacketUseEntity p_147340_1_) {
-        PacketPlayInUseEntity packet = new PacketPlayInUseEntity(p_147340_1_.getEntityId(),
+        val packet = new PacketPlayInUseEntity(p_147340_1_.getEntityId(),
                 net.minecraft.server.v1_8_R3.PacketPlayInUseEntity.EnumEntityUseAction
                         .values()[p_147340_1_.getAction().ordinal() % C02PacketUseEntity.Action.values().length]);
 
@@ -219,7 +220,7 @@ public class Client2ServerTranslator
 
     @Override
     public void processKeepAlive(C00PacketKeepAlive p_147353_1_) {
-        PacketPlayInKeepAlive packet = new PacketPlayInKeepAlive(p_147353_1_.getId());
+        val packet = new PacketPlayInKeepAlive(p_147353_1_.getId());
         playerConnection.a(packet);
     }
 
@@ -227,25 +228,24 @@ public class Client2ServerTranslator
     public void processPlayer(C03PacketPlayer p_147347_1_) {
         PacketPlayInFlying packet;
 
-        if (p_147347_1_.isHasPos() && p_147347_1_.isHasLook()) {
+        if (p_147347_1_.isHasPos() && p_147347_1_.isHasLook())
             packet = new PacketPlayInFlying.PacketPlayInPositionLook(p_147347_1_.getX(), p_147347_1_.getY(),
                     p_147347_1_.getZ(), p_147347_1_.getYaw(), p_147347_1_.getPitch(), p_147347_1_.isOnGround());
-        } else if (p_147347_1_.isHasPos()) {
+        else if (p_147347_1_.isHasPos())
             packet = new PacketPlayInFlying.PacketPlayInPosition(p_147347_1_.getX(), p_147347_1_.getY(),
                     p_147347_1_.getZ(), p_147347_1_.isOnGround());
-        } else if (p_147347_1_.isHasLook()) {
+        else if (p_147347_1_.isHasLook())
             packet = new PacketPlayInFlying.PacketPlayInLook(p_147347_1_.getYaw(), p_147347_1_.getPitch(),
                     p_147347_1_.isOnGround());
-        } else {
+        else
             packet = new PacketPlayInFlying(p_147347_1_.isOnGround());
-        }
 
         playerConnection.a(packet);
     }
 
     @Override
     public void processPlayerAbilities(C13PacketPlayerAbilities p_147348_1_) {
-        PacketPlayInAbilities packet = new PacketPlayInAbilities(p_147348_1_.isDisableDamage(),
+        val packet = new PacketPlayInAbilities(p_147348_1_.isDisableDamage(),
                 p_147348_1_.isFlying(), p_147348_1_.isAllowFlying(), p_147348_1_.isCreativeMode(),
                 p_147348_1_.getFlySpeed(), p_147348_1_.getWalkSpeed());
         playerConnection.a(packet);
@@ -253,7 +253,7 @@ public class Client2ServerTranslator
 
     @Override
     public void processPlayerDigging(C07PacketPlayerDigging p_147345_1_) {
-        PacketPlayInBlockDig packet = new PacketPlayInBlockDig(
+        val packet = new PacketPlayInBlockDig(
                 new BlockPosition(p_147345_1_.getX(), p_147345_1_.getY(), p_147345_1_.getZ()),
                 net.minecraft.server.v1_8_R3.EnumDirection.fromType1(p_147345_1_.getFace()),
                 net.minecraft.server.v1_8_R3.PacketPlayInBlockDig.EnumPlayerDigType.values()[p_147345_1_.getStatus()]);
@@ -263,11 +263,11 @@ public class Client2ServerTranslator
 
     @Override
     public void processEntityAction(C0BPacketEntityAction p_147357_1_) {
-        net.minecraft.server.v1_8_R3.PacketPlayInEntityAction.EnumPlayerAction nmsAction = net.minecraft.server.v1_8_R3.PacketPlayInEntityAction.EnumPlayerAction
+        val nmsAction = net.minecraft.server.v1_8_R3.PacketPlayInEntityAction.EnumPlayerAction
                 .values()[p_147357_1_
                         .getActionId() - 1];
 
-        PacketPlayInEntityAction packet = new PacketPlayInEntityAction(p_147357_1_.getEntityId(),
+        val packet = new PacketPlayInEntityAction(p_147357_1_.getEntityId(),
                 nmsAction,
                 p_147357_1_.getJumpBoost());
 
@@ -276,45 +276,45 @@ public class Client2ServerTranslator
 
     @Override
     public void processInput(C0CPacketInput p_147358_1_) {
-        PacketPlayInSteerVehicle packet = new PacketPlayInSteerVehicle(p_147358_1_.getSideways(),
+        val packet = new PacketPlayInSteerVehicle(p_147358_1_.getSideways(),
                 p_147358_1_.getForward(), p_147358_1_.isJump(), p_147358_1_.isUnmount());
         playerConnection.a(packet);
     }
 
     @Override
     public void processHeldItemChange(C09PacketHeldItemChange p_147355_1_) {
-        PacketPlayInHeldItemSlot packet = new PacketPlayInHeldItemSlot(p_147355_1_.getSlot());
+        val packet = new PacketPlayInHeldItemSlot(p_147355_1_.getSlot());
         playerConnection.a(packet);
     }
 
     @Override
     public void processCreativeInventoryAction(C10PacketCreativeInventoryAction p_147344_1_) {
-        ItemStack clickedItem = p_147344_1_.getClickedItem();
+        val clickedItem = p_147344_1_.getClickedItem();
 
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = fromNMC(clickedItem);
-        PacketPlayInSetCreativeSlot packet = new PacketPlayInSetCreativeSlot(p_147344_1_.getSlot(),
+        val nmsItem = fromNMC(clickedItem);
+        val packet = new PacketPlayInSetCreativeSlot(p_147344_1_.getSlot(),
                 nmsItem);
         playerConnection.a(packet);
     }
 
     @Override
     public void processUpdateSign(C12PacketUpdateSign p_147343_1_) {
-        IChatBaseComponent[] lines = new IChatBaseComponent[4];
+        val lines = new IChatBaseComponent[4];
 
         for (int i = 0; i < 4; i++)
             lines[i] = IChatBaseComponent.ChatSerializer.a(p_147343_1_.getLines()[i]);
 
-        PacketPlayInUpdateSign packet = new PacketPlayInUpdateSign(new BlockPosition(p_147343_1_.getX(),
+        val packet = new PacketPlayInUpdateSign(new BlockPosition(p_147343_1_.getX(),
                 p_147343_1_.getY(), p_147343_1_.getZ()), lines);
         playerConnection.a(packet);
     }
 
     @Override
     public void processPlayerBlockPlacement(C08PacketPlayerBlockPlacement p_147346_1_) {
-        ItemStack clickedItem = p_147346_1_.getHeldItem();
+        val clickedItem = p_147346_1_.getHeldItem();
 
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = fromNMC(clickedItem);
-        PacketPlayInBlockPlace packet = new PacketPlayInBlockPlace(new BlockPosition(p_147346_1_.getX(),
+        val nmsItem = fromNMC(clickedItem);
+        val packet = new PacketPlayInBlockPlace(new BlockPosition(p_147346_1_.getX(),
                 p_147346_1_.getY(), p_147346_1_.getZ()), p_147346_1_.getDirection(),
                 nmsItem,
                 p_147346_1_.getCursorX(), p_147346_1_.getCursorY(), p_147346_1_.getCursorZ());

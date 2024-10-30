@@ -6,6 +6,8 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.bot.api.math.BoundingBox;
 import gg.mineral.bot.api.math.Positionable;
+import gg.mineral.bot.api.world.ClientWorld;
+import java.util.Random;
 
 public interface ClientEntity extends Positionable {
     /**
@@ -92,4 +94,19 @@ public interface ClientEntity extends Positionable {
      * @return the entity's last Z position
      */
     double getLastZ();
+
+    /**
+     * Gets the entity's world.
+     * 
+     * @return the entity's world
+     */
+    @Nullable
+    ClientWorld getWorld();
+
+    /**
+     * Gets the entity's random.
+     * 
+     * @return the entity's random
+     */
+    Random getRandom();
 }

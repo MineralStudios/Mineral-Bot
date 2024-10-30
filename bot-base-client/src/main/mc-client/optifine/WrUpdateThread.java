@@ -11,8 +11,8 @@ import org.lwjgl.opengl.Pbuffer;
 public class WrUpdateThread extends Thread {
     private Pbuffer pbuffer = null;
     private Object lock = new Object();
-    private List updateList = new LinkedList();
-    private List updatedList = new LinkedList();
+    private List<WorldRenderer> updateList = new LinkedList<>();
+    private List<WorldRenderer> updatedList = new LinkedList<>();
     private int updateCount = 0;
     private Tessellator mainTessellator;
     private Tessellator threadTessellator;

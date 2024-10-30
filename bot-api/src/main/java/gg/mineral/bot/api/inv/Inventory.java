@@ -5,6 +5,7 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.bot.api.inv.item.Item;
+import gg.mineral.bot.api.inv.item.Item.Type;
 import gg.mineral.bot.api.inv.item.ItemStack;
 import gg.mineral.bot.api.inv.potion.Potion;
 
@@ -21,17 +22,49 @@ public interface Inventory {
      * Get the item stack at the specified slot.
      * 
      * @param slot
-     *            the slot
+     *             the slot
      * @return the item stack at the specified slot
      */
     @Nullable
     ItemStack getItemStackAt(int slot);
 
     /**
+     * Get the helmet.
+     * 
+     * @return the helmet
+     */
+    @Nullable
+    ItemStack getHelmet();
+
+    /**
+     * Get the chestplate.
+     * 
+     * @return the chestplate
+     */
+    @Nullable
+    ItemStack getChestplate();
+
+    /**
+     * Get the leggings.
+     * 
+     * @return the leggings
+     */
+    @Nullable
+    ItemStack getLeggings();
+
+    /**
+     * Get the boots.
+     * 
+     * @return the boots
+     */
+    @Nullable
+    ItemStack getBoots();
+
+    /**
      * Find the slot of the specified item.
      * 
      * @param item
-     *            the item
+     *             the item
      * @return the slot of the specified item
      */
     int findSlot(Item item);
@@ -40,7 +73,7 @@ public interface Inventory {
      * Checks if the inventory contains the specified item.
      *
      * @param item
-     *            the item to check for
+     *             the item to check for
      * @return true if the item is found in the inventory, false otherwise
      */
     default boolean contains(Item item) {
@@ -51,7 +84,7 @@ public interface Inventory {
      * Find the slot of the specified item.
      * 
      * @param id
-     *            the id of the item
+     *           the id of the item
      * @return the slot of the specified item
      */
     int findSlot(int id);
@@ -60,7 +93,7 @@ public interface Inventory {
      * Checks if the inventory contains an item with the specified ID.
      *
      * @param id
-     *            the ID of the item to check
+     *           the ID of the item to check
      * @return true if the inventory contains an item with the specified ID, false
      *         otherwise
      */
@@ -72,7 +105,7 @@ public interface Inventory {
      * Checks if the inventory contains a potion that matches the specified filter.
      *
      * @param filter
-     *            the filter to apply
+     *               the filter to apply
      * @return true if the inventory contains a potion that matches the filter,
      *         false
      *         otherwise
@@ -88,6 +121,27 @@ public interface Inventory {
                 if (filter.apply(potion))
                     return true;
             }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the inventory contains an item that matches the specified type.
+     * 
+     * @param type
+     *             the type to check for
+     * @return true if the inventory contains an item that matches the specified
+     *         type,
+     *         false otherwise
+     */
+    default boolean contains(Type type) {
+        for (int i = 0; i < 36; i++) {
+            ItemStack itemStack = getItemStackAt(i);
+            if (itemStack == null)
+                continue;
+            Item item = itemStack.getItem();
+            if (item != null && type.isType(item.getId()))
+                return true;
         }
         return false;
     }

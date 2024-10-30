@@ -9,7 +9,7 @@ import java.util.UUID;
 import gg.mineral.bot.api.entity.ClientEntity;
 import gg.mineral.bot.api.entity.living.ClientLivingEntity;
 import gg.mineral.bot.api.event.entity.EntityHurtEvent;
-import gg.mineral.bot.base.client.player.FakePlayerInstance;
+import gg.mineral.bot.base.client.player.ClientInstance;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.block.Block;
@@ -1166,7 +1166,7 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
 
             // Mineral : Call PlayerAttackEntityEvent
             if (this.worldObj instanceof WorldClient clientWorld)
-                if (clientWorld.mc instanceof FakePlayerInstance instance)
+                if (clientWorld.mc instanceof ClientInstance instance)
                     instance.callEvent(new EntityHurtEvent(EntityLivingBase.this));
 
             this.attackEntityFrom(DamageSource.generic, 0.0F);

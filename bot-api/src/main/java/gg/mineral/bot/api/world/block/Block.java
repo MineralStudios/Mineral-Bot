@@ -1,5 +1,11 @@
 package gg.mineral.bot.api.world.block;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+
+import gg.mineral.bot.api.math.BoundingBox;
+import gg.mineral.bot.api.world.ClientWorld;
+
 public interface Block {
     public static final int AIR = 0,
             STONE = 1,
@@ -176,5 +182,28 @@ public interface Block {
             COAL_BLOCK = 173,
             PACKED_ICE = 174,
             DOUBLE_PLANT = 175;
+
+    /**
+     * Returns the id of the block.
+     *
+     * @return the id of the block
+     */
+    public int getId();
+
+    /**
+     * Returns the bounding box of the block at the specified coordinates.
+     * 
+     * @param world
+     *              the world
+     * @param xTile
+     *              the x-coordinate of the block
+     * @param yTile
+     *              the y-coordinate of the block
+     * @param zTile
+     *              the z-coordinate of the block
+     * @return the bounding box of the block at the specified coordinates
+     */
+    @Nullable
+    public BoundingBox getCollisionBoundingBox(@NonNull ClientWorld world, int xTile, int yTile, int zTile);
 
 }

@@ -5,11 +5,14 @@ import java.net.UnknownHostException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.bot.impl.thread.ThreadManager;
 import net.minecraft.client.Minecraft;
 import io.netty.util.concurrent.GenericFutureListener;
+import lombok.Getter;
 import lombok.Setter;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDisconnected;
 import net.minecraft.client.gui.GuiScreen;
@@ -26,8 +29,11 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 
 public class GuiConnecting extends GuiScreen {
+    @Getter
     private static final Logger logger = LogManager.getLogger(GuiConnecting.class);
+    @Nullable
     public NetworkManager networkManager;
+    @Getter
     protected boolean cancelled;
     public final GuiScreen previousScreen;
     private final String ip;
@@ -78,7 +84,7 @@ public class GuiConnecting extends GuiScreen {
                         return;
 
                     GuiConnecting.logger.error("Couldn\'t connect to server", e);
-                    String errorMessage = e.toString();
+                    var errorMessage = e.toString();
 
                     if (iNetAddress != null)
                         errorMessage = errorMessage.replaceAll(iNetAddress.toString() + ":" + port, "");
@@ -139,7 +145,7 @@ public class GuiConnecting extends GuiScreen {
                         return;
 
                     GuiConnecting.logger.error("Couldn\'t connect to server", e);
-                    String errorMessage = e.toString();
+                    var errorMessage = e.toString();
 
                     if (iNetAddress != null)
                         errorMessage = errorMessage.replaceAll(iNetAddress.toString() + ":" + port, "");
@@ -194,9 +200,8 @@ public class GuiConnecting extends GuiScreen {
         if (button.id == 0) {
             this.cancelled = true;
 
-            if (this.networkManager != null) {
+            if (this.networkManager != null)
                 this.networkManager.closeChannel(new ChatComponentText("Aborted"));
-            }
 
             this.mc.displayGuiScreen(this.previousScreen);
         }

@@ -3,24 +3,16 @@ package gg.mineral.bot.api.controls;
 /**
  * Represents a mouse with methods to interact with buttons and manage events.
  */
-public interface Mouse {
-
-  /**
-   * Gets a mouse button by its type.
-   *
-   * @param type
-   *          The type of the mouse button to retrieve.
-   * @return The mouse button of the specified type, or null if not found.
-   */
-  MouseButton getButton(MouseButton.Type type);
+public interface Mouse extends MouseState {
 
   /**
    * Presses a button for a specified duration.
    * 
    * @param durationMillis
-   *          The duration in milliseconds the button is to be pressed.
+   *                       The duration in milliseconds the button is to be
+   *                       pressed.
    * @param type
-   *          The type of the button to press.
+   *                       The type of the button to press.
    */
   void pressButton(int durationMillis, MouseButton.Type... type);
 
@@ -28,7 +20,7 @@ public interface Mouse {
    * Presses a button indefinitely.
    * 
    * @param type
-   *          The type of the button to press.
+   *             The type of the button to press.
    */
   default void pressButton(MouseButton.Type... type) {
     pressButton(Integer.MAX_VALUE, type);
@@ -38,9 +30,10 @@ public interface Mouse {
    * Unpresses a button.
    * 
    * @param type
-   *          The type of the button to unpress.
+   *                       The type of the button to unpress.
    * @param durationMillis
-   *          The duration in milliseconds the button is to be unpressed.
+   *                       The duration in milliseconds the button is to be
+   *                       unpressed.
    */
   void unpressButton(int durationMillis, MouseButton.Type... type);
 
@@ -48,74 +41,26 @@ public interface Mouse {
    * Unpresses a button indefinitely.
    * 
    * @param type
-   *          The type of the button to unpress.
+   *             The type of the button to unpress.
    */
   default void unpressButton(MouseButton.Type... type) {
     unpressButton(Integer.MAX_VALUE, type);
   }
 
   /**
-   * Advances to the next log event.
-   *
-   * @return True if there is a next log event, false otherwise.
-   */
-  boolean next();
-
-  /**
-   * Gets the type of the current event button.
-   *
-   * @return The type of the current event button, or null if not found.
-   */
-  MouseButton.Type getEventButtonType();
-
-  /**
-   * Gets the button code of the current event button.
-   *
-   * @return The button code of the current event button, or -1 if not
-   *         found.
-   */
-  int getEventButton();
-
-  /**
-   * Gets the delta wheel of the current event.
+   * Gets the current mouse state.
    * 
-   * @return The delta wheel of the current event.
+   * @return the current mouse state
    */
-  int getDWheel();
+  MouseState getState();
 
   /**
-   * Sets the delta wheel of the current event.
+   * Sets the current mouse state.
    * 
-   * @param dWheel
-   *          The delta wheel of the current event.
+   * @param state
+   *              The state to set.
    */
-  void setDWheel(int dWheel);
-
-  /**
-   * @return The x position of the mouse.
-   */
-  int getX();
-
-  /**
-   * @return The y position of the mouse.
-   */
-  int getY();
-
-  /**
-   * Sets the x position of the mouse.
-   * 
-   * @param x
-   *          The x position of the mouse.
-   */
-  void setX(int x);
-
-  /**
-   * Sets the y position of the mouse.
-   * 
-   * @param y
-   *          The y position of the mouse.
-   */
-  void setY(int y);
+  void setState(MouseState state);
 
   /**
    * Updates the mouse position to change the yaw by a specified amount.
@@ -130,48 +75,6 @@ public interface Mouse {
    * @param dPitch
    */
   void changePitch(float dPitch);
-
-  /**
-   * Sets the yaw of the mouse.
-   * 
-   * @param yaw
-   *          The yaw of the mouse.
-   */
-  void setYaw(float yaw);
-
-  /**
-   * Sets the pitch of the mouse.
-   * 
-   * @param pitch
-   *          The pitch of the mouse.
-   */
-  void setPitch(float pitch);
-
-  /**
-   * @return The delta x position of the mouse.
-   */
-  int getDX();
-
-  /**
-   * @return The delta y position of the mouse.
-   */
-  int getDY();
-
-  /**
-   * Sets the delta x position of the mouse.
-   * 
-   * @param dx
-   *          The delta x position of the mouse.
-   */
-  void setDX(int dx);
-
-  /**
-   * Sets the delta y position of the mouse.
-   * 
-   * @param dy
-   *          The delta y position of the mouse.
-   */
-  void setDY(int dy);
 
   /**
    * Stops all mouse actions.

@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Lists;
 
-import gg.mineral.bot.api.util.MathUtil;
+import gg.mineral.bot.api.world.ServerWorld;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEventData;
@@ -62,7 +62,7 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.feature.WorldGeneratorBonusChest;
 import net.minecraft.world.storage.ISaveHandler;
 
-public class WorldServer extends World {
+public class WorldServer extends World implements ServerWorld<WorldServer> {
     private static final Logger logger = LogManager.getLogger();
     private final MinecraftServer mcServer;
     private final EntityTracker theEntityTracker;
@@ -299,8 +299,8 @@ public class WorldServer extends World {
 
         while (var3.hasNext()) {
             long var4 = var3.nextLong();
-            int chunkXPos = MathUtil.getHighInt(var4);
-            int chunkZPos = MathUtil.getLowInt(var4);
+            int chunkXPos = highInt(var4);
+            int chunkZPos = lowInt(var4);
             int var5 = chunkXPos * 16;
             int var6 = chunkZPos * 16;
             this.theProfiler.startSection("getChunk");
@@ -669,8 +669,8 @@ public class WorldServer extends World {
             int var8 = 0;
 
             if (var5 != null) {
-                var6 = var5.field_151329_a;
-                var8 = var5.field_151328_c;
+                var6 = var5.x;
+                var8 = var5.z;
             } else {
                 logger.warn("Unable to find spawn biome");
             }
@@ -989,5 +989,10 @@ public class WorldServer extends World {
         ServerBlockEventList(Object p_i1521_1_) {
             this();
         }
+    }
+
+    @Override
+    public WorldServer getHandle() {
+        return this;
     }
 }

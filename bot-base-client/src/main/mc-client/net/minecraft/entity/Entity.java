@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import gg.mineral.bot.api.entity.ClientEntity;
+import gg.mineral.bot.api.world.ClientWorld;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.block.Block;
@@ -113,6 +114,11 @@ public abstract class Entity implements ClientEntity {
     @Override
     public double getLastZ() {
         return this.prevPosZ;
+    }
+
+    @Override
+    public ClientWorld getWorld() {
+        return this.worldObj instanceof ClientWorld clientWorld ? clientWorld : null;
     }
 
     /** Axis aligned bounding box. */
@@ -262,6 +268,10 @@ public abstract class Entity implements ClientEntity {
 
     public UUID getUuid() {
         return this.getUniqueID();
+    }
+
+    public Random getRandom() {
+        return this.rand;
     }
 
     public Entity(World p_i1582_1_) {
@@ -2218,7 +2228,8 @@ public abstract class Entity implements ClientEntity {
 
     public static enum EnumEntitySize {
         SIZE_1("SIZE_1", 0), SIZE_2("SIZE_2", 1), SIZE_3("SIZE_3", 2), SIZE_4("SIZE_4", 3), SIZE_5("SIZE_5",
-                4), SIZE_6("SIZE_6", 5);
+                4),
+        SIZE_6("SIZE_6", 5);
 
         private static final Entity.EnumEntitySize[] $VALUES = new Entity.EnumEntitySize[] { SIZE_1, SIZE_2, SIZE_3,
                 SIZE_4, SIZE_5, SIZE_6 };

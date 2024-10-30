@@ -80,8 +80,8 @@ public class MapGenStronghold extends MapGenStructure {
                         (var11 << 4) + 8, 112, this.field_151546_e, var3);
 
                 if (var12 != null) {
-                    var10 = var12.field_151329_a >> 4;
-                    var11 = var12.field_151328_c >> 4;
+                    var10 = var12.x >> 4;
+                    var11 = var12.z >> 4;
                 }
 
                 this.structureCoords[var7] = new ChunkCoordIntPair(var10, var11);

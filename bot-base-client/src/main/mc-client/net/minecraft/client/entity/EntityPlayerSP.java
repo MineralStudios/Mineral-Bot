@@ -2,6 +2,7 @@ package net.minecraft.client.entity;
 
 import javax.annotation.Nullable;
 
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
@@ -139,7 +140,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
                 if (this.mc.currentScreen != null)
                     this.mc.displayGuiScreen((GuiScreen) null);
 
-                SoundHandler soundHandler = this.mc.getSoundHandler();
+                val soundHandler = this.mc.getSoundHandler();
 
                 if (soundHandler != null && this.timeInPortal == 0.0F)
                     soundHandler.playSound(PositionedSoundRecord.func_147674_a(
@@ -170,7 +171,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             if (this.timeUntilPortal > 0)
                 --this.timeUntilPortal;
 
-            MovementInput movementInput = this.movementInput;
+            val movementInput = this.movementInput;
 
             boolean isJump = movementInput != null ? movementInput.jump : null;
             float var2 = 0.8F;
@@ -275,27 +276,24 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     public float getFOVMultiplier() {
         float var1 = 1.0F;
 
-        if (this.capabilities.isFlying) {
+        if (this.capabilities.isFlying)
             var1 *= 1.1F;
-        }
 
         IAttributeInstance var2 = this.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
         var1 = (float) ((double) var1
                 * ((var2.getAttributeValue() / (double) this.capabilities.getWalkSpeed() + 1.0D) / 2.0D));
 
-        if (this.capabilities.getWalkSpeed() == 0.0F || Float.isNaN(var1) || Float.isInfinite(var1)) {
+        if (this.capabilities.getWalkSpeed() == 0.0F || Float.isNaN(var1) || Float.isInfinite(var1))
             var1 = 1.0F;
-        }
 
         if (this.isUsingItem() && this.getItemInUse().getItem() == Items.bow) {
             int var3 = this.getItemInUseDuration();
             float var4 = (float) var3 / 20.0F;
 
-            if (var4 > 1.0F) {
+            if (var4 > 1.0F)
                 var4 = 1.0F;
-            } else {
+            else
                 var4 *= var4;
-            }
 
             var1 *= 1.0F - var4 * 0.15F;
         }

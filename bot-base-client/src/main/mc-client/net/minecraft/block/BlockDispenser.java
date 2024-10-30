@@ -14,6 +14,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -25,7 +26,8 @@ import net.minecraft.util.RegistryDefaulted;
 import net.minecraft.world.World;
 
 public class BlockDispenser extends BlockContainer {
-    public static final IRegistry dispenseBehaviorRegistry = new RegistryDefaulted(new BehaviorDefaultDispenseItem());
+    public static final IRegistry<Item, IBehaviorDispenseItem> dispenseBehaviorRegistry = new RegistryDefaulted<>(
+            new BehaviorDefaultDispenseItem());
     protected Random field_149942_b = new Random();
     protected IIcon field_149944_M;
     protected IIcon field_149945_N;
@@ -132,7 +134,7 @@ public class BlockDispenser extends BlockContainer {
     }
 
     protected IBehaviorDispenseItem func_149940_a(ItemStack p_149940_1_) {
-        return (IBehaviorDispenseItem) dispenseBehaviorRegistry.getObject(p_149940_1_.getItem());
+        return dispenseBehaviorRegistry.getObject(p_149940_1_.getItem());
     }
 
     public void onNeighborBlockChange(World p_149695_1_, int p_149695_2_, int p_149695_3_, int p_149695_4_,

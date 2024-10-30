@@ -181,9 +181,9 @@ public class Explosion {
 
             while (var2.hasNext()) {
                 var3 = (ChunkPosition) var2.next();
-                var4 = var3.field_151329_a;
-                var5 = var3.field_151327_b;
-                var6 = var3.field_151328_c;
+                var4 = var3.x;
+                var5 = var3.y;
+                var6 = var3.z;
                 var7 = this.worldObj.getBlock(var4, var5, var6);
 
                 if (p_77279_1_) {
@@ -225,9 +225,9 @@ public class Explosion {
 
             while (var2.hasNext()) {
                 var3 = (ChunkPosition) var2.next();
-                var4 = var3.field_151329_a;
-                var5 = var3.field_151327_b;
-                var6 = var3.field_151328_c;
+                var4 = var3.x;
+                var5 = var3.y;
+                var6 = var3.z;
                 var7 = this.worldObj.getBlock(var4, var5, var6);
                 Block var24 = this.worldObj.getBlock(var4, var5 - 1, var6);
 

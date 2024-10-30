@@ -1,15 +1,15 @@
 package net.minecraft.client.settings;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 
-public class KeyBinding implements Comparable {
+public class KeyBinding implements Comparable<KeyBinding> {
 
     private static final Set<String> keybindSet = new ObjectOpenHashSet<>();
     @Getter
@@ -43,7 +43,7 @@ public class KeyBinding implements Comparable {
     }
 
     public static void unPressAllKeys(Minecraft mc) {
-        Iterator var0 = mc.getKeybindArray().iterator();
+        val var0 = mc.getKeybindArray().iterator();
 
         while (var0.hasNext()) {
             KeyBinding var1 = (KeyBinding) var0.next();
@@ -53,7 +53,7 @@ public class KeyBinding implements Comparable {
 
     public static void resetKeyBindingArrayAndHash(Minecraft mc) {
         mc.getKeyBindHash().clear();
-        Iterator var0 = mc.getKeybindArray().iterator();
+        val var0 = mc.getKeybindArray().iterator();
 
         while (var0.hasNext()) {
             KeyBinding var1 = (KeyBinding) var0.next();
@@ -61,7 +61,7 @@ public class KeyBinding implements Comparable {
         }
     }
 
-    public static Set func_151467_c() {
+    public static Set<String> func_151467_c() {
         return keybindSet;
     }
 
@@ -112,7 +112,4 @@ public class KeyBinding implements Comparable {
         return var2;
     }
 
-    public int compareTo(Object p_compareTo_1_) {
-        return this.compareTo((KeyBinding) p_compareTo_1_);
-    }
 }

@@ -7,7 +7,9 @@ import java.util.UUID;
 
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
+import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.math.ServerLocation;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -15,15 +17,11 @@ public abstract class BotAPI {
 
     public static BotAPI INSTANCE = null;
 
-    public abstract FakePlayer spawn(BotConfiguration configuration, String serverIp, int serverPort);
+    public abstract ClientInstance spawn(BotConfiguration configuration, String serverIp, int serverPort);
 
-    public abstract FakePlayer spawn(BotConfiguration configuration, ServerLocation location);
-
-    public abstract boolean[] despawn(FakePlayer... players);
+    public abstract ClientInstance spawn(BotConfiguration configuration, ServerLocation location);
 
     public abstract boolean[] despawn(UUID... uuids);
-
-    public abstract boolean despawn(FakePlayer player);
 
     public abstract boolean despawn(UUID uuid);
 
@@ -33,7 +31,7 @@ public abstract class BotAPI {
 
     public abstract Collection<FakePlayer> getFakePlayers();
 
-    protected final List<SpawnRecord> spawnRecords = new ArrayList<>();
+    protected final List<SpawnRecord> spawnRecords = new ArrayList<SpawnRecord>();
 
     public record SpawnRecord(String name, long time) {
     }
