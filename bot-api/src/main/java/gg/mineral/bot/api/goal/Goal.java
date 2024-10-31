@@ -9,23 +9,27 @@ import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.Keyboard;
 import gg.mineral.bot.api.controls.Mouse;
 import gg.mineral.bot.api.controls.MouseButton;
+import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.instance.ClientInstance;
+import gg.mineral.bot.api.util.MathUtil;
 import lombok.Getter;
 import lombok.val;
 
 @Getter
-public abstract class Goal {
+public abstract class Goal implements MathUtil {
     @NonNull
     protected final ClientInstance clientInstance;
+    @NonNull
+    protected final FakePlayer fakePlayer;
     private Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
-    private Mouse mouse;
-    private Keyboard keyboard;
 
     public Goal(ClientInstance clientInstance) {
         this.clientInstance = clientInstance;
-        this.mouse = clientInstance.newMouse();
-        this.keyboard = clientInstance.newKeyboard();
+        val fakePlayer = clientInstance.getFakePlayer();
+        if (fakePlayer == null)
+            throw new IllegalStateException("Fake player is null");
+        this.fakePlayer = fakePlayer;
     }
 
     protected static long timeMillis() {
@@ -55,6 +59,14 @@ public abstract class Goal {
         return false;
     }
 
+    private Mouse getMouse() {
+        return clientInstance.getMouse();
+    }
+
+    private Keyboard getKeyboard() {
+        return clientInstance.getKeyboard();
+    }
+
     public int getMouseX() {
         return getMouse().getX();
     }
@@ -77,7 +89,7 @@ public abstract class Goal {
         if (fakePlayer == null)
             return;
         val rotYaw = fakePlayer.getYaw();
-        getMouse().changeYaw(yaw - rotYaw);
+        getMouse().changeYaw(angleDifference(rotYaw, yaw));
     }
 
     public void setMousePitch(float pitch) {
@@ -86,7 +98,7 @@ public abstract class Goal {
         if (fakePlayer == null)
             return;
         val rotPitch = fakePlayer.getPitch();
-        getMouse().changePitch(pitch - rotPitch);
+        getMouse().changePitch(angleDifference(rotPitch, pitch));
     }
 
     public MouseButton getButton(MouseButton.Type type) {
@@ -137,11 +149,5 @@ public abstract class Goal {
 
             break;
         }
-
-        val mouseState = getMouse().getState();
-        val keyboardState = getKeyboard().getState();
-
-        clientInstance.getMouse().setState(mouseState);
-        clientInstance.getKeyboard().setState(keyboardState);
     }
 }

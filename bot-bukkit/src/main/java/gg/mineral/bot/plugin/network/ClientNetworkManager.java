@@ -2,7 +2,7 @@ package gg.mineral.bot.plugin.network;
 
 import javax.crypto.SecretKey;
 
-import gg.mineral.bot.base.client.player.ClientInstance;
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.plugin.network.packet.Client2ServerTranslator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.GenericFutureListener;

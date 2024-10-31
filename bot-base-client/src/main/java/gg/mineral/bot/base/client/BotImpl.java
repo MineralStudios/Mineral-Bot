@@ -86,7 +86,7 @@ public abstract class BotImpl extends BotAPI {
         if (!file.exists())
             file.mkdirs();
 
-        val instance = new gg.mineral.bot.base.client.player.ClientInstance(configuration, 1280, 720,
+        val instance = new gg.mineral.bot.base.client.instance.ClientInstance(configuration, 1280, 720,
                 false,
                 false,
                 file,

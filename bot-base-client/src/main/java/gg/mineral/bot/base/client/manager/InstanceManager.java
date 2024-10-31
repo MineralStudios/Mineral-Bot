@@ -1,10 +1,10 @@
 package gg.mineral.bot.base.client.manager;
 
 import java.util.UUID;
-
-import gg.mineral.bot.base.client.player.ClientInstance;
-import lombok.Getter;
 import java.util.concurrent.ConcurrentHashMap;
+
+import gg.mineral.bot.base.client.instance.ClientInstance;
+import lombok.Getter;
 
 public class InstanceManager {
     @Getter

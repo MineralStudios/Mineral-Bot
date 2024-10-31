@@ -49,9 +49,9 @@ public interface MathUtil {
 
     default float[] computeOptimalYawAndPitch(ClientLivingEntity player,
             ClientLivingEntity entity) {
-        val x = entity.getX() - player.getX();
-        val y = entity.getHeadY() - player.getHeadY();
-        val z = entity.getZ() - player.getZ();
+        double x = entity.getX() - player.getX();
+        double y = entity.getHeadY() - player.getHeadY();
+        double z = entity.getZ() - player.getZ();
 
         val newPitch = y != 0 ? (float) -toDegrees(fastArcTan(y / sqrt(x * x + z * z))) : 0;
         float newYaw;
@@ -60,14 +60,14 @@ public interface MathUtil {
         else if (z < 0.0D && x > 0.0D)
             newYaw = (float) (-90.0D + toDegrees(fastArcTan(z / x)));
         else
-            newYaw = (float) toDegrees(-fastArcTan(z / x));
+            newYaw = (float) toDegrees(-fastArcTan(x / z));
 
         return new float[] { newPitch, newYaw };
     }
 
     default float computeOptimalYaw(ClientLivingEntity entity, Positionable target) {
-        val x = target.getX() - entity.getX();
-        val z = target.getZ() - entity.getZ();
+        double x = target.getX() - entity.getX();
+        double z = target.getZ() - entity.getZ();
 
         float newYaw;
         if (z < 0.0D && x < 0.0D)
@@ -75,7 +75,7 @@ public interface MathUtil {
         else if (z < 0.0D && x > 0.0D)
             newYaw = (float) (-90.0D + toDegrees(fastArcTan(z / x)));
         else
-            newYaw = (float) toDegrees(-fastArcTan(z / x));
+            newYaw = (float) toDegrees(-fastArcTan(x / z));
 
         return newYaw;
     }

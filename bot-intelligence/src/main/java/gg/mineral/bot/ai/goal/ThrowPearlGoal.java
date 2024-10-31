@@ -19,7 +19,7 @@ import gg.mineral.bot.api.world.block.Block;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-public class ThrowPearlGoal extends Goal implements MathUtil {
+public class ThrowPearlGoal extends Goal {
 
     private int lastPearledTick = 0;
     private boolean inventoryOpen = false;
@@ -61,10 +61,6 @@ public class ThrowPearlGoal extends Goal implements MathUtil {
     }
 
     private void switchToPearl() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         var pearlSlot = -1;
         val inventory = fakePlayer.getInventory();
 
@@ -147,11 +143,6 @@ public class ThrowPearlGoal extends Goal implements MathUtil {
         if (clientInstance.getCurrentTick() - lastPearledTick < 20 || !canSeeEnemy())
             return false;
 
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
-
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null || !inventory.contains(Item.ENDER_PEARL))
@@ -173,10 +164,6 @@ public class ThrowPearlGoal extends Goal implements MathUtil {
     }
 
     private boolean canSeeEnemy() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
         val world = fakePlayer.getWorld();
         return world == null ? false
                 : world.getEntities().stream()
@@ -185,11 +172,6 @@ public class ThrowPearlGoal extends Goal implements MathUtil {
 
     @Override
     public void onTick() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
-
         val world = fakePlayer.getWorld();
 
         if (world == null)

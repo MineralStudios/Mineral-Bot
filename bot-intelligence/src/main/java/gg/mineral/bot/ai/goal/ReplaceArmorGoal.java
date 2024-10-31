@@ -9,22 +9,17 @@ import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
 
 import gg.mineral.bot.api.screen.type.ContainerScreen;
-import gg.mineral.bot.api.util.MathUtil;
 
 import lombok.Getter;
 import lombok.val;
 
 @Getter
-public class ReplaceArmorGoal extends Goal implements MathUtil {
+public class ReplaceArmorGoal extends Goal {
 
     private boolean inventoryOpen = false;
 
     @Override
     public boolean shouldExecute() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
 
         val inventory = fakePlayer.getInventory();
 
@@ -41,10 +36,6 @@ public class ReplaceArmorGoal extends Goal implements MathUtil {
     }
 
     private Item.Type missingArmorPiece() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return Item.Type.NONE;
         val inventory = fakePlayer.getInventory();
         if (inventory == null)
             return Item.Type.NONE;
@@ -65,10 +56,6 @@ public class ReplaceArmorGoal extends Goal implements MathUtil {
     }
 
     private boolean canSeeEnemy() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
         val world = fakePlayer.getWorld();
         return world == null ? false
                 : world.getEntities().stream()
@@ -80,10 +67,6 @@ public class ReplaceArmorGoal extends Goal implements MathUtil {
     }
 
     private void switchToArmor() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         var armorSlot = -1;
         val inventory = fakePlayer.getInventory();
 
@@ -164,11 +147,6 @@ public class ReplaceArmorGoal extends Goal implements MathUtil {
 
     @Override
     public void onTick() {
-
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null)

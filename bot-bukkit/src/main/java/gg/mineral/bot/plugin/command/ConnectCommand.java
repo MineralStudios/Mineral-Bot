@@ -1,16 +1,17 @@
 package gg.mineral.bot.plugin.command;
 
+import java.io.File;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.google.common.collect.HashMultimap;
-import java.io.File;
 
 import gg.mineral.bot.api.configuration.BotConfiguration;
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.base.client.player.ClientInstance;
 import lombok.val;
 
 public class ConnectCommand implements CommandExecutor {

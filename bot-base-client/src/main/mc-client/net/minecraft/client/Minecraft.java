@@ -359,9 +359,9 @@ public class Minecraft {
     public final TileEntityRendererChestHelper tileEntityRendererChestHelper;
 
     @Getter
-    private final Mouse mouse = new Mouse();
+    protected final Mouse mouse = new Mouse();
     @Getter
-    private final Keyboard keyboard = new Keyboard();
+    protected final Keyboard keyboard = new Keyboard();
 
     @Getter
     private final List<KeyBinding> keybindArray = new ArrayList<>();

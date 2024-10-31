@@ -10,12 +10,11 @@ import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
 
 import gg.mineral.bot.api.screen.type.ContainerScreen;
-import gg.mineral.bot.api.util.MathUtil;
 import lombok.Getter;
 import lombok.val;
 
 @Getter
-public class DrinkPotionGoal extends Goal implements MathUtil {
+public class DrinkPotionGoal extends Goal {
 
     private boolean inventoryOpen = false, drinking = false;
 
@@ -29,19 +28,11 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
     }
 
     private boolean hasDrinkablePotion() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
         val inventory = fakePlayer.getInventory();
         return inventory == null ? false : inventory.containsPotion(potion -> !potion.isSplash());
     }
 
     private boolean canSeeEnemy() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
         val world = fakePlayer.getWorld();
         return world == null ? false
                 : world.getEntities().stream()
@@ -54,10 +45,6 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
     }
 
     private void switchToDrinkablePotion() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         var potionSlot = -1;
         val inventory = fakePlayer.getInventory();
 
@@ -141,10 +128,6 @@ public class DrinkPotionGoal extends Goal implements MathUtil {
 
     @Override
     public void onTick() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
 
         val inventory = fakePlayer.getInventory();
 

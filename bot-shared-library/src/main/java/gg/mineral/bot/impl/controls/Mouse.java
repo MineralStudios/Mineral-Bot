@@ -1,34 +1,55 @@
 package gg.mineral.bot.impl.controls;
 
-import gg.mineral.bot.api.controls.MouseButton.Type;
-import gg.mineral.bot.impl.controls.MouseState.Log;
-import lombok.Getter;
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+import gg.mineral.bot.api.controls.MouseButton.Type;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 
-@Getter
 public class Mouse implements gg.mineral.bot.api.controls.Mouse {
-    private MouseState state = new MouseState();
+
+    private final MouseButton[] mouseButtons;
+    @Getter
+    @Setter
+    private int dWheel;
+    @Getter
+    private int x, y;
+    @Setter
+    private int dX, dY;
+    private final Queue<Log> logs = new ConcurrentLinkedQueue<>();
+    private Log eventLog = null, currentLog = null;
+    private Iterator<Log> iterator = null;
+
+    private final Object2LongOpenHashMap<Runnable> scheduledTasks = new Object2LongOpenHashMap<>();
+
+    public Mouse() {
+        mouseButtons = new MouseButton[MouseButton.Type.values().length];
+
+        for (val type : MouseButton.Type.values())
+            mouseButtons[type.ordinal()] = new MouseButton(type);
+    }
 
     public void onGameLoop(long time) {
-        val iter = state.getScheduledTasks().object2LongEntrySet().fastIterator();
-
-        while (iter.hasNext()) {
-            val entry = iter.next();
-            if (time >= entry.getLongValue()) {
-                entry.getKey().run();
-                iter.remove();
+        scheduledTasks.keySet().removeIf(runnable -> {
+            if (time >= scheduledTasks.getLong(runnable)) {
+                runnable.run();
+                return true;
             }
-        }
+            return false;
+        });
     }
 
     public void schedule(Runnable runnable, long delay) {
-        state.getScheduledTasks().put(runnable, (System.nanoTime() / 1000000) + delay);
+        scheduledTasks.put(runnable, (System.nanoTime() / 1000000) + delay);
     }
 
     @Override
     public MouseButton getButton(MouseButton.Type type) {
-        return state.getButton(type);
+        return mouseButtons[type.ordinal()];
     }
 
     @Override
@@ -40,11 +61,10 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse {
                 return;
 
             button.setPressed(true);
-            val currentLog = state.getCurrentLog();
             if (currentLog != null)
-                state.getLogs().add(currentLog);
-            state.setCurrentLog(new Log(type, true, state.x, state.y, state.dX, state.dY,
-                    state.dWheel));
+                logs.add(currentLog);
+            currentLog = new Log(type, true, x, y, dX, dY,
+                    dWheel);
             if (durationMillis > 0 && durationMillis < Integer.MAX_VALUE)
                 schedule(() -> unpressButton(type), durationMillis);
         }
@@ -59,21 +79,47 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse {
                 return;
 
             button.setPressed(false);
-            val currentLog = state.getCurrentLog();
             if (currentLog != null)
-                state.getLogs().add(currentLog);
-            state.setCurrentLog(new Log(type, false, state.x, state.y, state.dX, state.dY, state.dWheel));
+                logs.add(currentLog);
+            currentLog = new Log(type, false, x, y, dX, dY, dWheel);
         }
     }
 
     @Override
     public boolean next() {
-        return state.next();
+        if (currentLog != null) {
+            this.logs.add(currentLog);
+            currentLog = null;
+        }
+
+        if (iterator == null) {
+            buttonsLoop: for (val button : mouseButtons) {
+                if (button.isPressed()) {
+                    for (val log : logs)
+                        if (log.type == button.getType())
+                            continue buttonsLoop;
+
+                    logs.add(new Log(button.getType(), true, x, y, dX, dY, dWheel));
+                }
+            }
+
+            iterator = logs.iterator();
+        }
+
+        if (iterator.hasNext()) {
+            eventLog = iterator.next();
+            iterator.remove();
+            return true;
+        }
+
+        iterator = null;
+
+        return false;
     }
 
     @Override
     public MouseButton.Type getEventButtonType() {
-        return state.getEventButtonType();
+        return eventLog != null ? eventLog.type : null;
     }
 
     public boolean isButtonDown(int i) {
@@ -89,105 +135,71 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse {
 
     @Override
     public int getEventButton() {
-        return state.getEventButton();
+        return eventLog != null ? eventLog.type.getKeyCode() : -1;
+    }
+
+    public record Log(MouseButton.Type type, boolean pressed, int x, int y, int dX, int dY,
+            int dWheel) {
     }
 
     @Override
     public void setX(int x) {
-        state.dX = x - state.x;
-        state.x = x;
-        val currentLog = state.getCurrentLog();
+        this.dX = x - this.x;
+        this.x = x;
         if (currentLog != null)
-            state.setCurrentLog(new Log(currentLog.type(), currentLog.pressed(), state.x, state.y, state.dX,
-                    state.dY, state.dWheel));
+            currentLog = new Log(currentLog.type, currentLog.pressed, x, y, dX, dY, dWheel);
         else
-            state.setCurrentLog(new Log(Type.UNKNOWN, false, state.x, state.y, state.dX, state.dY, state.dWheel));
+            currentLog = new Log(Type.UNKNOWN, false, x, y, dX, dY, dWheel);
     }
 
     @Override
     public void setY(int y) {
-        state.dY = y - state.y;
-        state.y = y;
-        val currentLog = state.getCurrentLog();
+        this.dY = y - this.y;
+        this.y = y;
         if (currentLog != null)
-            state.setCurrentLog(new Log(currentLog.type(), currentLog.pressed(), state.x, state.y, state.dX,
-                    state.dY, state.dWheel));
+            currentLog = new Log(currentLog.type, currentLog.pressed, x, y, dX, dY, dWheel);
         else
-            state.setCurrentLog(new Log(Type.UNKNOWN, false, state.x, state.y, state.dX, state.dY, state.dWheel));
+            currentLog = new Log(Type.UNKNOWN, false, x, y, dX, dY, dWheel);
     }
 
     @Override
     public int getDX() {
         try {
-            return state.dX;
+            return dX;
         } finally {
-            state.dX = 0;
+            dX = 0;
         }
     }
 
     @Override
     public int getDY() {
         try {
-            return state.dY;
+            return dY;
         } finally {
-            state.dY = 0;
+            dY = 0;
         }
     }
 
     public int getEventDWheel() {
-        val eventLog = state.getEventLog();
-        return eventLog != null ? eventLog.dWheel() : 0;
+        return eventLog != null ? eventLog.dWheel : 0;
     }
 
     public int getEventX() {
-        val eventLog = state.getEventLog();
-        return eventLog != null ? eventLog.x() : state.x;
+        return eventLog != null ? eventLog.x : x;
     }
 
     public int getEventY() {
-        val eventLog = state.getEventLog();
-        return eventLog != null ? eventLog.y() : state.y;
+        return eventLog != null ? eventLog.y : y;
     }
 
     public boolean getEventButtonState() {
-        val eventLog = state.getEventLog();
-        return eventLog != null && eventLog.pressed();
+        return eventLog != null && eventLog.pressed;
     }
 
     @Override
     public void stopAll() {
         unpressButton(MouseButton.Type.values());
-        state.getScheduledTasks().clear();
-    }
-
-    @Override
-    public int getDWheel() {
-        return state.dWheel;
-    }
-
-    @Override
-    public void setDWheel(int dWheel) {
-        state.dWheel = dWheel;
-    }
-
-    @Override
-    public int getX() {
-        return state.x;
-    }
-
-    @Override
-    public int getY() {
-        return state.y;
-    }
-
-    @Override
-    public void setDX(int dx) {
-        state.dX = dx;
-    }
-
-    @Override
-    public void setDY(int dy) {
-        state.dY = dy;
+        scheduledTasks.clear();
     }
 
     @Override
@@ -208,11 +220,4 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse {
         );
         this.setDY((int) (deltaY / 0.15));
     }
-
-    @Override
-    public void setState(gg.mineral.bot.api.controls.MouseState state) {
-        if (state instanceof MouseState newState)
-            this.state = newState;
-    }
-
 }

@@ -15,14 +15,13 @@ import gg.mineral.bot.api.goal.Goal;
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
 import gg.mineral.bot.api.inv.item.ItemStack;
-import gg.mineral.bot.api.util.MathUtil;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 
 @Getter
-public class MeleeCombatGoal extends Goal implements MathUtil {
+public class MeleeCombatGoal extends Goal {
     @Nullable
     private ClientLivingEntity target;
 
@@ -43,10 +42,6 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
 
     // TODO: move from inventory to hotbar
     private void switchToBestMeleeWeapon() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         var bestMeleeWeaponSlot = 0;
         var damage = 0.0D;
         val inventory = fakePlayer.getInventory();
@@ -66,10 +61,6 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
     }
 
     private void findTarget() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         val targetSearchRange = clientInstance.getConfiguration().getTargetSearchRange();
 
         val world = fakePlayer.getWorld();
@@ -105,19 +96,11 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
     }
 
     private boolean isTargetValid(ClientLivingEntity entity, float range) {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
         return !fakePlayer.getFriendlyEntityUUIDs().contains(entity.getUuid())
                 && fakePlayer.distance3DTo(entity) <= range && entity instanceof ClientPlayer;
     }
 
     public float getRotationTarget(float current, float target, float turnSpeed, float accuracy, float erraticness) {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return 0;
         val difference = angleDifference(current, target);
 
         if (abs(difference) > turnSpeed)
@@ -144,11 +127,6 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
         val target = this.target;
 
         if (target == null)
-            return;
-
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
             return;
 
         val optimalAngles = computeOptimalYawAndPitch(fakePlayer, target);
@@ -213,10 +191,6 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
     private long nextClick = 0;
 
     private void attackTarget() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         nextClick = (long) (timeMillis() + fakePlayer.getRandom().nextGaussian(meanDelay, deviation));
         pressButton(25, MouseButton.Type.LEFT_CLICK);
     }
@@ -227,10 +201,6 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
     private byte strafeDirection = 0;
 
     private void strafe() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         val target = this.target;
 
         if (target == null)
@@ -251,10 +221,6 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
     }
 
     private byte strafeDirection(ClientEntity target) {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return 1;
         val toPlayer = new double[] { fakePlayer.getX() - target.getX(),
                 fakePlayer.getY() - target.getY(),
                 fakePlayer.getZ() - target.getZ() };
@@ -277,11 +243,6 @@ public class MeleeCombatGoal extends Goal implements MathUtil {
         val target = this.target;
 
         if (target == null)
-            return;
-
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
             return;
 
         val meanX = (fakePlayer.getX() + target.getX()) / 2;

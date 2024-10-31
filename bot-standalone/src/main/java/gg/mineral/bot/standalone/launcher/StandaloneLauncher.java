@@ -7,11 +7,9 @@ import java.util.UUID;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.jline.reader.EndOfFileException;
-
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultParser;
-
 import org.jline.terminal.TerminalBuilder;
 
 import com.google.common.collect.HashMultimap;
@@ -19,8 +17,8 @@ import com.google.common.collect.HashMultimap;
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.base.client.BotImpl;
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.base.client.player.ClientInstance;
 import gg.mineral.bot.base.client.tick.GameLoop;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import gg.mineral.bot.impl.thread.ThreadManager;

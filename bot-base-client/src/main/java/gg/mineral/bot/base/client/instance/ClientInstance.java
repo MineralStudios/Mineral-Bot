@@ -1,4 +1,4 @@
-package gg.mineral.bot.base.client.player;
+package gg.mineral.bot.base.client.instance;
 
 import java.io.File;
 import java.net.Proxy;
@@ -21,30 +21,20 @@ import gg.mineral.bot.api.goal.Goal;
 
 import gg.mineral.bot.api.screen.Screen;
 
-import gg.mineral.bot.base.client.gui.GuiConnecting;
+import gg.mineral.bot.base.client.gui.GuiConnecting.ConnectFunction;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import gg.mineral.bot.impl.thread.ThreadManager;
-import io.netty.util.concurrent.GenericFutureListener;
+
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 
 import lombok.Getter;
 import lombok.val;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiDisconnected;
-import net.minecraft.client.gui.GuiScreen;
+
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.network.NetHandlerLoginClient;
 
-import net.minecraft.network.EnumConnectionState;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.handshake.client.C00Handshake;
-import net.minecraft.network.login.client.C00PacketLoginStart;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.Session;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class ClientInstance extends Minecraft implements gg.mineral.bot.api.instance.ClientInstance {
 
@@ -86,65 +76,18 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
         this.configuration = configuration;
     }
 
-    @Override
-    public boolean isMainThread() {
-        return Thread.currentThread() == this.mainThread;
+    public ClientInstance(BotConfiguration configuration, int width, int height,
+            boolean fullscreen,
+            boolean demo, File gameDir, File assetsDir, File resourcePackDir, Proxy proxy, String version,
+            @SuppressWarnings("rawtypes") Multimap userProperties, String assetIndex, ConnectFunction connectFunction) {
+        this(configuration, width, height, fullscreen, demo, gameDir, assetsDir, resourcePackDir, proxy, version,
+                userProperties, assetIndex);
+
     }
 
     @Override
-    public void displayGuiScreen(GuiScreen guiScreen) {
-        if (guiScreen instanceof GuiConnecting connecting)
-            connecting.setConnectFunction((ip, port) -> {
-                logger.info("Connecting to " + ip + ", " + port);
-                ThreadManager.getAsyncExecutor().execute(() -> {
-                    InetAddress iNetAddress = null;
-
-                    try {
-                        if (connecting.isCancelled())
-                            return;
-
-                        iNetAddress = InetAddress.getByName(ip);
-                        connecting.networkManager = NetworkManager.provideLanClient(ClientInstance.this, iNetAddress,
-                                port);
-                        connecting.networkManager
-                                .setNetHandler(new NetHandlerLoginClient(connecting.networkManager,
-                                        ClientInstance.this, connecting.previousScreen));
-                        connecting.networkManager.scheduleOutboundPacket(
-                                new C00Handshake(5, ip, port, EnumConnectionState.LOGIN),
-                                new GenericFutureListener[0]);
-                        connecting.networkManager.scheduleOutboundPacket(
-                                new C00PacketLoginStart(ClientInstance.this.getSession().getGameProfile()),
-                                new GenericFutureListener[0]);
-                    } catch (UnknownHostException var5) {
-                        if (connecting.isCancelled())
-                            return;
-
-                        GuiConnecting.getLogger().error("Couldn\'t connect to server", var5);
-                        ClientInstance.this.displayGuiScreen(new GuiDisconnected(ClientInstance.this,
-                                connecting.previousScreen,
-                                "connect.failed",
-                                new ChatComponentTranslation("disconnect.genericReason",
-                                        new Object[] { "Unknown host" })));
-                    } catch (Exception e) {
-                        if (connecting.isCancelled())
-                            return;
-
-                        GuiConnecting.getLogger().error("Couldn\'t connect to server", e);
-                        var errorMessage = e.toString();
-
-                        if (iNetAddress != null)
-                            errorMessage = errorMessage.replaceAll(iNetAddress.toString() + ":" + port, "");
-
-                        ClientInstance.this
-                                .displayGuiScreen(new GuiDisconnected(ClientInstance.this,
-                                        connecting.previousScreen, "connect.failed",
-                                        new ChatComponentTranslation("disconnect.genericReason",
-                                                new Object[] { errorMessage })));
-                    }
-                });
-            });
-
-        super.displayGuiScreen(guiScreen);
+    public boolean isMainThread() {
+        return Thread.currentThread() == this.mainThread;
     }
 
     @Override
@@ -162,6 +105,12 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
         if (this.mainThread == null)
             this.mainThread = Thread.currentThread();
 
+        for (val goal : goals)
+            if (goal.shouldExecute()) {
+                goal.callGameLoop();
+                break;
+            }
+
         while (!delayedTasks.isEmpty()) {
             val task = delayedTasks.peek();
             if (task.canSend()) {
@@ -173,16 +122,17 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
             break;
         }
 
-        for (val goal : goals)
-            if (goal.shouldExecute()) {
-                goal.callGameLoop();
-                break;
-            }
-
-        this.getKeyboard().onGameLoop(getSystemTime());
-        this.getMouse().onGameLoop(getSystemTime());
+        this.keyboard.onGameLoop(getSystemTime());
+        this.mouse.onGameLoop(getSystemTime());
 
         super.runGameLoop();
+    }
+
+    public void ensureMainThread(Runnable runnable) {
+        if (isMainThread())
+            runnable.run();
+        else
+            this.scheduleTask(runnable, 0);
     }
 
     @Override
@@ -226,10 +176,10 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
     @Override
     public void startGoals(Goal... goals) {
-        for (val goal : goals) {
+        goalsLoop: for (val goal : goals) {
             for (val g : this.goals)
                 if (g.getClass() == goal.getClass())
-                    continue;
+                    continue goalsLoop;
             this.goals.add(goal);
         }
     }
@@ -278,11 +228,11 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
     @Override
     public Mouse newMouse() {
-        return new gg.mineral.bot.impl.controls.Mouse();
+        return new gg.mineral.bot.base.lwjgl.input.Mouse();
     }
 
     @Override
     public Keyboard newKeyboard() {
-        return new gg.mineral.bot.impl.controls.Keyboard();
+        return new gg.mineral.bot.base.lwjgl.input.Keyboard();
     }
 }

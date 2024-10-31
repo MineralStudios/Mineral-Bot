@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +17,7 @@ import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
 
 import gg.mineral.bot.api.event.network.ClientboundPacketEvent;
-import gg.mineral.bot.base.client.player.ClientInstance;
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.concurrent.GenericFutureListener;

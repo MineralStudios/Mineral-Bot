@@ -3,14 +3,17 @@ package gg.mineral.bot.plugin.network;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import gg.mineral.bot.base.client.player.ClientInstance;
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.client.Minecraft;
+
+import net.minecraft.server.v1_8_R3.EnumProtocol;
 import net.minecraft.server.v1_8_R3.EnumProtocolDirection;
 import net.minecraft.server.v1_8_R3.NetworkManager;
 import net.minecraft.server.v1_8_R3.Packet;
+import net.minecraft.server.v1_8_R3.PacketPlayOutLogin;
 
 public class ServerNetworkManager extends NetworkManager {
 
@@ -38,6 +41,11 @@ public class ServerNetworkManager extends NetworkManager {
     public void handle(@SuppressWarnings("rawtypes") Packet packet) {
         if (!started) {
             packetQueue.add(packet);
+            return;
+        }
+
+        if (packet instanceof PacketPlayOutLogin || protocol != EnumProtocol.PLAY) {
+            translator.handlePacket(packet);
             return;
         }
 

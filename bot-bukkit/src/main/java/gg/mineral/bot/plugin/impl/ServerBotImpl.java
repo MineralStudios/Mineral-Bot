@@ -10,13 +10,12 @@ import com.google.common.collect.HashMultimap;
 
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-
 import gg.mineral.bot.api.math.ServerLocation;
 import gg.mineral.bot.base.client.BotImpl;
 import gg.mineral.bot.base.client.gui.GuiConnecting;
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.client.network.ClientNetHandler;
-import gg.mineral.bot.base.client.player.ClientInstance;
 import gg.mineral.bot.impl.thread.ThreadManager;
 import gg.mineral.bot.plugin.impl.player.NMSServerPlayer;
 import gg.mineral.bot.plugin.network.ClientNetworkManager;
@@ -26,7 +25,6 @@ import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator;
 import lombok.Getter;
 import lombok.val;
 import net.minecraft.client.gui.GuiScreen;
-
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.EnumDifficulty;
 import net.minecraft.server.v1_8_R3.MinecraftServer;

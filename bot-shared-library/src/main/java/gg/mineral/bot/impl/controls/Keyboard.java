@@ -1,33 +1,45 @@
 package gg.mineral.bot.impl.controls;
 
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import gg.mineral.bot.api.controls.Key.Type;
-import gg.mineral.bot.impl.controls.KeyboardState.Log;
-import lombok.Getter;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.val;
 
-@Getter
 public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
-    private KeyboardState state = new KeyboardState();
+    private final Key[] keys;
+    private final Queue<Log> logs = new ConcurrentLinkedQueue<>();
+    private Log eventLog = null, currentLog = null;
+    private Iterator<Log> iterator = null;
+
+    private final Object2LongOpenHashMap<Runnable> scheduledTasks = new Object2LongOpenHashMap<>();
 
     public void onGameLoop(long time) {
-        val iter = state.getScheduledTasks().object2LongEntrySet().fastIterator();
-
-        while (iter.hasNext()) {
-            val entry = iter.next();
-            if (time >= entry.getLongValue()) {
-                entry.getKey().run();
-                iter.remove();
+        scheduledTasks.keySet().removeIf(runnable -> {
+            if (time >= scheduledTasks.getLong(runnable)) {
+                runnable.run();
+                return true;
             }
-        }
+            return false;
+        });
     }
 
     public void schedule(Runnable runnable, long delay) {
-        state.getScheduledTasks().put(runnable, (System.nanoTime() / 1000000) + delay);
+        scheduledTasks.put(runnable, (System.nanoTime() / 1000000) + delay);
+    }
+
+    public Keyboard() {
+        keys = new Key[Key.Type.values().length];
+
+        for (val type : Key.Type.values())
+            keys[type.ordinal()] = new Key(type);
     }
 
     @Override
     public Key getKey(Key.Type type) {
-        return state.getKey(type);
+        return keys[type.ordinal()];
     }
 
     @Override
@@ -39,10 +51,9 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
                 return;
 
             key.setPressed(true);
-            val currentLog = state.getCurrentLog();
             if (currentLog != null)
-                state.getLogs().add(currentLog);
-            state.setCurrentLog(new Log(type, true));
+                logs.add(currentLog);
+            currentLog = new Log(type, true);
             if (durationMillis > 0 && durationMillis < Integer.MAX_VALUE)
                 schedule(() -> unpressKey(type), durationMillis);
         }
@@ -57,10 +68,9 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
                 return;
 
             key.setPressed(false);
-            val currentLog = state.getCurrentLog();
             if (currentLog != null)
-                state.getLogs().add(currentLog);
-            state.setCurrentLog(new Log(type, false));
+                logs.add(currentLog);
+            currentLog = new Log(type, false);
 
             if (durationMillis > 0 && durationMillis < Integer.MAX_VALUE)
                 schedule(() -> pressKey(type), durationMillis);
@@ -69,41 +79,62 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
 
     @Override
     public boolean next() {
-        return state.next();
+        if (currentLog != null) {
+            this.logs.add(currentLog);
+            currentLog = null;
+        }
+
+        if (iterator == null) {
+            keysLoop: for (val key : keys) {
+                if (key.isPressed()) {
+                    for (val log : logs)
+                        if (log.type == key.getType())
+                            continue keysLoop;
+                    logs.add(new Log(key.getType(), true));
+                }
+            }
+
+            iterator = logs.iterator();
+        }
+
+        if (iterator.hasNext()) {
+            eventLog = iterator.next();
+            iterator.remove();
+            return true;
+        }
+
+        iterator = null;
+
+        return false;
     }
 
     @Override
     public int getEventKey() {
-        return state.getEventKey();
+        return eventLog != null ? eventLog.type.getKeyCode() : -1;
     }
 
     @Override
     public Type getEventKeyType() {
-        return state.getEventKeyType();
+        return eventLog != null ? eventLog.type : null;
     }
 
     @Override
     public boolean isKeyDown(Key.Type type) {
-        val key = getKey(type);
+        Key key = getKey(type);
         return key != null && key.isPressed();
     }
 
     @Override
     public boolean getEventKeyState() {
-        val eventLog = state.getEventLog();
-        return eventLog != null && eventLog.pressed();
+        return eventLog != null && eventLog.pressed;
     }
 
     @Override
     public void stopAll() {
         unpressKey(Key.Type.values());
-        state.getScheduledTasks().clear();
+        scheduledTasks.clear();
     }
 
-    @Override
-    public void setState(gg.mineral.bot.api.controls.KeyboardState state) {
-        if (state instanceof KeyboardState newState)
-            this.state = newState;
+    public record Log(Key.Type type, boolean pressed) {
     }
-
 }

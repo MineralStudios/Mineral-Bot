@@ -3,7 +3,16 @@ package gg.mineral.bot.api.controls;
 /**
  * Represents a keyboard with methods to interact with keys and manage events.
  */
-public interface Keyboard extends KeyboardState {
+public interface Keyboard {
+
+  /**
+   * Gets a key by its type.
+   *
+   * @param type
+   *             The type of the key to retrieve.
+   * @return The key of the specified type, or null if not found.
+   */
+  Key getKey(Key.Type type);
 
   /**
    * Presses a key for a specified duration.
@@ -47,19 +56,41 @@ public interface Keyboard extends KeyboardState {
   }
 
   /**
-   * Gets the current keyboard state.
-   * 
-   * @return The current keyboard state.
+   * Advances to the next log event.
+   *
+   * @return True if there is a next log event, false otherwise.
    */
-  KeyboardState getState();
+  boolean next();
 
   /**
-   * Sets the current keyboard state.
-   * 
-   * @param state
-   *              The new keyboard state.
+   * Gets the type of the current event key.
+   *
+   * @return The type of the current event key, or null if not found.
    */
-  void setState(KeyboardState state);
+  Key.Type getEventKeyType();
+
+  /**
+   * Gets the key code of the current event key.
+   *
+   * @return The key code of the current event key, or -1 if not found.
+   */
+  int getEventKey();
+
+  /**
+   * Checks if a key is currently held down.
+   *
+   * @param type
+   *             The type of the key to check.
+   * @return True if the key is held down, false otherwise.
+   */
+  boolean isKeyDown(Key.Type type);
+
+  /**
+   * Checks if the event key state is currently active.
+   *
+   * @return True if the event key is currently active, false otherwise.
+   */
+  boolean getEventKeyState();
 
   /**
    * Stops all keyboard actions.

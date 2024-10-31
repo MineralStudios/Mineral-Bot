@@ -17,8 +17,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.gson.Gson;
 
 import gg.mineral.bot.api.configuration.BotConfiguration;
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.base.client.player.ClientInstance;
 import gg.mineral.bot.base.client.tick.GameLoop;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.NonOptionArgumentSpec;

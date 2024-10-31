@@ -12,22 +12,17 @@ import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
 
 import gg.mineral.bot.api.screen.type.ContainerScreen;
-import gg.mineral.bot.api.util.MathUtil;
 
 import lombok.Getter;
 import lombok.val;
 
 @Getter
-public class EatGappleGoal extends Goal implements MathUtil {
+public class EatGappleGoal extends Goal {
 
     private boolean inventoryOpen = false, eating = false;
 
     @Override
     public boolean shouldExecute() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
         var hasRegen = false;
         val regenId = PotionEffectType.REGENERATION.getId();
         val activeIds = fakePlayer.getActivePotionEffectIds();
@@ -44,19 +39,11 @@ public class EatGappleGoal extends Goal implements MathUtil {
     }
 
     private boolean hasGapple() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
         val inventory = fakePlayer.getInventory();
         return inventory == null ? false : inventory.contains(Item.GOLDEN_APPLE);
     }
 
     private boolean canSeeEnemy() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
         val world = fakePlayer.getWorld();
         return world == null ? false
                 : world.getEntities().stream()
@@ -69,10 +56,6 @@ public class EatGappleGoal extends Goal implements MathUtil {
     }
 
     private void switchToGapple() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         var gappleSlot = -1;
         val inventory = fakePlayer.getInventory();
 
@@ -151,10 +134,6 @@ public class EatGappleGoal extends Goal implements MathUtil {
 
     @Override
     public void onTick() {
-        val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
 
         val inventory = fakePlayer.getInventory();
 

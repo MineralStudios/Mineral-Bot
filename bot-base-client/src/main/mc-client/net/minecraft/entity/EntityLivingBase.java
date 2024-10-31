@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import gg.mineral.bot.api.entity.ClientEntity;
 import gg.mineral.bot.api.entity.living.ClientLivingEntity;
 import gg.mineral.bot.api.event.entity.EntityHurtEvent;
-import gg.mineral.bot.base.client.player.ClientInstance;
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.block.Block;

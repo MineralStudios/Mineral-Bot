@@ -1,12 +1,11 @@
 package gg.mineral.bot.base.client.netty;
 
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
-
-import gg.mineral.bot.base.client.player.ClientInstance;
 
 @RequiredArgsConstructor
 public class LatencySimulatorHandler extends ChannelOutboundHandlerAdapter {
