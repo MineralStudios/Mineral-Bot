@@ -9,11 +9,9 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.client.Minecraft;
 
-import net.minecraft.server.v1_8_R3.EnumProtocol;
 import net.minecraft.server.v1_8_R3.EnumProtocolDirection;
 import net.minecraft.server.v1_8_R3.NetworkManager;
 import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayOutLogin;
 
 public class ServerNetworkManager extends NetworkManager {
 
@@ -44,13 +42,9 @@ public class ServerNetworkManager extends NetworkManager {
             return;
         }
 
-        if (packet instanceof PacketPlayOutLogin || protocol != EnumProtocol.PLAY) {
-            translator.handlePacket(packet);
-            return;
-        }
-
         if (mc instanceof ClientInstance instance && (!mc.isMainThread() || instance.getLatency() > 0))
-            instance.scheduleTask(() -> translator.handlePacket(packet), instance.getLatency());
+            instance.scheduleTask(() -> translator.handlePacket(packet),
+                    instance.getLatency());
         else
             translator.handlePacket(packet);
 

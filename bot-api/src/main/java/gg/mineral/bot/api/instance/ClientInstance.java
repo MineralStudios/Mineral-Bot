@@ -1,8 +1,6 @@
 package gg.mineral.bot.api.instance;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.controls.Keyboard;
 import gg.mineral.bot.api.controls.Mouse;
@@ -71,7 +69,6 @@ public interface ClientInstance extends EventHandler {
      * 
      * @return the fake player
      */
-    @Nullable
     FakePlayer getFakePlayer();
 
     /**

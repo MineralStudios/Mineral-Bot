@@ -5,10 +5,11 @@ import java.net.Proxy;
 import java.util.Queue;
 
 import java.util.Set;
-
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Multimap;
 
@@ -29,6 +30,7 @@ import gg.mineral.bot.impl.thread.ThreadManager;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 
@@ -47,6 +49,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     private Thread mainThread = null;
     @Getter
     private int latency = 0, currentTick;
+    private CompletableFuture<FakePlayer> fakePlayerFuture = new CompletableFuture<>();
 
     record DelayedTask(Runnable runnable, long sendTime) {
         public boolean canSend() {
@@ -126,6 +129,11 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
         this.mouse.onGameLoop(getSystemTime());
 
         super.runGameLoop();
+
+        val fakePlayer = getFakePlayer();
+
+        if (fakePlayer != null && !fakePlayerFuture.isDone())
+            fakePlayerFuture.complete(fakePlayer);
     }
 
     public void ensureMainThread(Runnable runnable) {
@@ -222,8 +230,14 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     }
 
     @Override
+    @SneakyThrows
     public FakePlayer getFakePlayer() {
-        return this.thePlayer instanceof FakePlayer fakePlayer ? fakePlayer : null;
+        if (this.thePlayer instanceof FakePlayer fakePlayer)
+            return fakePlayer;
+        else if (!isMainThread())
+            return fakePlayerFuture.get(10, TimeUnit.SECONDS);
+        else
+            return null;
     }
 
     @Override

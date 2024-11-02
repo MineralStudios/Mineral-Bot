@@ -388,9 +388,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.smoothCamPitch = 0.0F;
         }
 
-        if (this.mc.renderViewEntity == null) {
+        if (this.mc.thePlayer == null)
+            return;
+
+        if (this.mc.renderViewEntity == null)
             this.mc.renderViewEntity = this.mc.thePlayer;
-        }
 
         var1 = this.mc.theWorld != null
                 ? this.mc.theWorld.getLightBrightness(MathHelper.floor_double(this.mc.renderViewEntity.posX),
