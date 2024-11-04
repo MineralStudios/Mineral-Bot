@@ -76,14 +76,14 @@ public class Client2ServerTranslator
     private PlayerConnection playerConnection;
 
     @Override
-    public void onDisconnect(IChatComponent p_147231_1_) {
-        val text = IChatComponent.Serializer.toJson(p_147231_1_);
+    public void onDisconnect(IChatComponent clientPacket) {
+        val text = IChatComponent.Serializer.toJson(clientPacket);
         val chatComponent = IChatBaseComponent.ChatSerializer.a(text);
         playerConnection.a(chatComponent);
     }
 
     @Override
-    public void onConnectionStateTransition(EnumConnectionState p_147232_1_, EnumConnectionState p_147232_2_) {
+    public void onConnectionStateTransition(EnumConnectionState clientPacket, EnumConnectionState p_147232_2_) {
         // TODO: Implement
     }
 
@@ -93,39 +93,40 @@ public class Client2ServerTranslator
     }
 
     @Override
-    public void processAnimation(C0APacketAnimation p_147350_1_) {
+    public void processAnimation(C0APacketAnimation clientPacket) {
         val packet = new PacketPlayInArmAnimation();
         packet.timestamp = System.currentTimeMillis();
         playerConnection.a(packet);
     }
 
     @Override
-    public void processChatMessage(C01PacketChatMessage p_147354_1_) {
-        val packet = new PacketPlayInChat(p_147354_1_.getMessage());
+    public void processChatMessage(C01PacketChatMessage clientPacket) {
+        val packet = new PacketPlayInChat(clientPacket.getMessage());
         playerConnection.a(packet);
     }
 
     @Override
-    public void processTabComplete(C14PacketTabComplete p_147341_1_) {
-        val packet = new PacketPlayInTabComplete(p_147341_1_.getMessage());
+    public void processTabComplete(C14PacketTabComplete clientPacket) {
+        val packet = new PacketPlayInTabComplete(clientPacket.getMessage());
         playerConnection.a(packet);
     }
 
     @Override
-    public void processClientStatus(C16PacketClientStatus p_147342_1_) {
+    public void processClientStatus(C16PacketClientStatus clientPacket) {
         val packet = new PacketPlayInClientCommand(
-                net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand.values()[p_147342_1_.getState()
+                net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand.values()[clientPacket
+                        .getState()
                         .ordinal()]);
         playerConnection.a(packet);
     }
 
     @Override
-    public void processClientSettings(C15PacketClientSettings p_147352_1_) {
-        val locale = p_147352_1_.getLocale();
-        val viewDistance = p_147352_1_.getViewDistance();
-        val chatFlags = p_147352_1_.getChatFlags();
-        val chatColors = p_147352_1_.isChatColors();
-        val showCape = p_147352_1_.isShowCape();
+    public void processClientSettings(C15PacketClientSettings clientPacket) {
+        val locale = clientPacket.getLocale();
+        val viewDistance = clientPacket.getViewDistance();
+        val chatFlags = clientPacket.getChatFlags();
+        val chatColors = clientPacket.isChatColors();
+        val showCape = clientPacket.isShowCape();
 
         val chatFlagsNMS = net.minecraft.server.v1_8_R3.EntityHuman.EnumChatVisibility
                 .a(chatFlags.getChatVisibility());
@@ -140,16 +141,16 @@ public class Client2ServerTranslator
     }
 
     @Override
-    public void processConfirmTransaction(C0FPacketConfirmTransaction p_147339_1_) {
-        val packet = new PacketPlayInTransaction(p_147339_1_.getWindowId(),
-                p_147339_1_.getActionNumber(), p_147339_1_.isAccepted());
+    public void processConfirmTransaction(C0FPacketConfirmTransaction clientPacket) {
+        val packet = new PacketPlayInTransaction(clientPacket.getWindowId(),
+                clientPacket.getActionNumber(), clientPacket.isAccepted());
         playerConnection.a(packet);
     }
 
     @Override
-    public void processEnchantItem(C11PacketEnchantItem p_147338_1_) {
-        val packet = new PacketPlayInEnchantItem(p_147338_1_.getWindowId(),
-                p_147338_1_.getEnchantment());
+    public void processEnchantItem(C11PacketEnchantItem clientPacket) {
+        val packet = new PacketPlayInEnchantItem(clientPacket.getWindowId(),
+                clientPacket.getEnchantment());
         playerConnection.a(packet);
     }
 
@@ -187,166 +188,166 @@ public class Client2ServerTranslator
     }
 
     @Override
-    public void processClickWindow(C0EPacketClickWindow p_147351_1_) {
-        val nmsItem = fromNMC(p_147351_1_.getClickedItem());
-        val packet = new PacketPlayInWindowClick(p_147351_1_.getWindowId(),
-                p_147351_1_.getSlot(),
-                p_147351_1_.getButton(), p_147351_1_.getActionNumber(), nmsItem,
-                p_147351_1_.getMode());
+    public void processClickWindow(C0EPacketClickWindow clientPacket) {
+        val nmsItem = fromNMC(clientPacket.getClickedItem());
+        val packet = new PacketPlayInWindowClick(clientPacket.getWindowId(),
+                clientPacket.getSlot(),
+                clientPacket.getButton(), clientPacket.getActionNumber(), nmsItem,
+                clientPacket.getMode());
         playerConnection.a(packet);
     }
 
     @Override
-    public void processCloseWindow(C0DPacketCloseWindow p_147356_1_) {
-        val packet = new PacketPlayInCloseWindow(p_147356_1_.getWindowId());
+    public void processCloseWindow(C0DPacketCloseWindow clientPacket) {
+        val packet = new PacketPlayInCloseWindow(clientPacket.getWindowId());
         playerConnection.a(packet);
     }
 
     @Override
-    public void processVanilla250Packet(C17PacketCustomPayload p_147349_1_) {
-        val packet = new PacketPlayInCustomPayload(p_147349_1_.getChannel(),
-                new PacketDataSerializer(Unpooled.wrappedBuffer(p_147349_1_.getData())));
+    public void processVanilla250Packet(C17PacketCustomPayload clientPacket) {
+        val packet = new PacketPlayInCustomPayload(clientPacket.getChannel(),
+                new PacketDataSerializer(Unpooled.wrappedBuffer(clientPacket.getData())));
         playerConnection.a(packet);
     }
 
     @Override
-    public void processUseEntity(C02PacketUseEntity p_147340_1_) {
-        val packet = new PacketPlayInUseEntity(p_147340_1_.getEntityId(),
+    public void processUseEntity(C02PacketUseEntity clientPacket) {
+        val packet = new PacketPlayInUseEntity(clientPacket.getEntityId(),
                 net.minecraft.server.v1_8_R3.PacketPlayInUseEntity.EnumEntityUseAction
-                        .values()[p_147340_1_.getAction().ordinal() % C02PacketUseEntity.Action.values().length]);
+                        .values()[clientPacket.getAction().ordinal() % C02PacketUseEntity.Action.values().length]);
 
         playerConnection.a(packet);
     }
 
     @Override
-    public void processKeepAlive(C00PacketKeepAlive p_147353_1_) {
-        val packet = new PacketPlayInKeepAlive(p_147353_1_.getId());
+    public void processKeepAlive(C00PacketKeepAlive clientPacket) {
+        val packet = new PacketPlayInKeepAlive(clientPacket.getId());
         playerConnection.a(packet);
     }
 
     @Override
-    public void processPlayer(C03PacketPlayer p_147347_1_) {
+    public void processPlayer(C03PacketPlayer clientPacket) {
         PacketPlayInFlying packet;
 
-        if (p_147347_1_.isHasPos() && p_147347_1_.isHasLook())
-            packet = new PacketPlayInFlying.PacketPlayInPositionLook(p_147347_1_.getX(), p_147347_1_.getY(),
-                    p_147347_1_.getZ(), p_147347_1_.getYaw(), p_147347_1_.getPitch(), p_147347_1_.isOnGround());
-        else if (p_147347_1_.isHasPos())
-            packet = new PacketPlayInFlying.PacketPlayInPosition(p_147347_1_.getX(), p_147347_1_.getY(),
-                    p_147347_1_.getZ(), p_147347_1_.isOnGround());
-        else if (p_147347_1_.isHasLook())
-            packet = new PacketPlayInFlying.PacketPlayInLook(p_147347_1_.getYaw(), p_147347_1_.getPitch(),
-                    p_147347_1_.isOnGround());
+        if (clientPacket.isHasPos() && clientPacket.isHasLook())
+            packet = new PacketPlayInFlying.PacketPlayInPositionLook(clientPacket.getX(), clientPacket.getY(),
+                    clientPacket.getZ(), clientPacket.getYaw(), clientPacket.getPitch(), clientPacket.isOnGround());
+        else if (clientPacket.isHasPos())
+            packet = new PacketPlayInFlying.PacketPlayInPosition(clientPacket.getX(), clientPacket.getY(),
+                    clientPacket.getZ(), clientPacket.isOnGround());
+        else if (clientPacket.isHasLook())
+            packet = new PacketPlayInFlying.PacketPlayInLook(clientPacket.getYaw(), clientPacket.getPitch(),
+                    clientPacket.isOnGround());
         else
-            packet = new PacketPlayInFlying(p_147347_1_.isOnGround());
+            packet = new PacketPlayInFlying(clientPacket.isOnGround());
 
         playerConnection.a(packet);
     }
 
     @Override
-    public void processPlayerAbilities(C13PacketPlayerAbilities p_147348_1_) {
-        val packet = new PacketPlayInAbilities(p_147348_1_.isDisableDamage(),
-                p_147348_1_.isFlying(), p_147348_1_.isAllowFlying(), p_147348_1_.isCreativeMode(),
-                p_147348_1_.getFlySpeed(), p_147348_1_.getWalkSpeed());
+    public void processPlayerAbilities(C13PacketPlayerAbilities clientPacket) {
+        val packet = new PacketPlayInAbilities(clientPacket.isDisableDamage(),
+                clientPacket.isFlying(), clientPacket.isAllowFlying(), clientPacket.isCreativeMode(),
+                clientPacket.getFlySpeed(), clientPacket.getWalkSpeed());
         playerConnection.a(packet);
     }
 
     @Override
-    public void processPlayerDigging(C07PacketPlayerDigging p_147345_1_) {
+    public void processPlayerDigging(C07PacketPlayerDigging clientPacket) {
         val packet = new PacketPlayInBlockDig(
-                new BlockPosition(p_147345_1_.getX(), p_147345_1_.getY(), p_147345_1_.getZ()),
-                net.minecraft.server.v1_8_R3.EnumDirection.fromType1(p_147345_1_.getFace()),
-                net.minecraft.server.v1_8_R3.PacketPlayInBlockDig.EnumPlayerDigType.values()[p_147345_1_.getStatus()]);
+                new BlockPosition(clientPacket.getX(), clientPacket.getY(), clientPacket.getZ()),
+                net.minecraft.server.v1_8_R3.EnumDirection.fromType1(clientPacket.getFace()),
+                net.minecraft.server.v1_8_R3.PacketPlayInBlockDig.EnumPlayerDigType.values()[clientPacket.getStatus()]);
 
         playerConnection.a(packet);
     }
 
     @Override
-    public void processEntityAction(C0BPacketEntityAction p_147357_1_) {
+    public void processEntityAction(C0BPacketEntityAction clientPacket) {
         val nmsAction = net.minecraft.server.v1_8_R3.PacketPlayInEntityAction.EnumPlayerAction
-                .values()[p_147357_1_
+                .values()[clientPacket
                         .getActionId() - 1];
 
-        val packet = new PacketPlayInEntityAction(p_147357_1_.getEntityId(),
+        val packet = new PacketPlayInEntityAction(clientPacket.getEntityId(),
                 nmsAction,
-                p_147357_1_.getJumpBoost());
+                clientPacket.getJumpBoost());
 
         playerConnection.a(packet);
     }
 
     @Override
-    public void processInput(C0CPacketInput p_147358_1_) {
-        val packet = new PacketPlayInSteerVehicle(p_147358_1_.getSideways(),
-                p_147358_1_.getForward(), p_147358_1_.isJump(), p_147358_1_.isUnmount());
+    public void processInput(C0CPacketInput clientPacket) {
+        val packet = new PacketPlayInSteerVehicle(clientPacket.getSideways(),
+                clientPacket.getForward(), clientPacket.isJump(), clientPacket.isUnmount());
         playerConnection.a(packet);
     }
 
     @Override
-    public void processHeldItemChange(C09PacketHeldItemChange p_147355_1_) {
-        val packet = new PacketPlayInHeldItemSlot(p_147355_1_.getSlot());
+    public void processHeldItemChange(C09PacketHeldItemChange clientPacket) {
+        val packet = new PacketPlayInHeldItemSlot(clientPacket.getSlot());
         playerConnection.a(packet);
     }
 
     @Override
-    public void processCreativeInventoryAction(C10PacketCreativeInventoryAction p_147344_1_) {
-        val clickedItem = p_147344_1_.getClickedItem();
+    public void processCreativeInventoryAction(C10PacketCreativeInventoryAction clientPacket) {
+        val clickedItem = clientPacket.getClickedItem();
 
         val nmsItem = fromNMC(clickedItem);
-        val packet = new PacketPlayInSetCreativeSlot(p_147344_1_.getSlot(),
+        val packet = new PacketPlayInSetCreativeSlot(clientPacket.getSlot(),
                 nmsItem);
         playerConnection.a(packet);
     }
 
     @Override
-    public void processUpdateSign(C12PacketUpdateSign p_147343_1_) {
+    public void processUpdateSign(C12PacketUpdateSign clientPacket) {
         val lines = new IChatBaseComponent[4];
 
         for (int i = 0; i < 4; i++)
-            lines[i] = IChatBaseComponent.ChatSerializer.a(p_147343_1_.getLines()[i]);
+            lines[i] = IChatBaseComponent.ChatSerializer.a(clientPacket.getLines()[i]);
 
-        val packet = new PacketPlayInUpdateSign(new BlockPosition(p_147343_1_.getX(),
-                p_147343_1_.getY(), p_147343_1_.getZ()), lines);
+        val packet = new PacketPlayInUpdateSign(new BlockPosition(clientPacket.getX(),
+                clientPacket.getY(), clientPacket.getZ()), lines);
         playerConnection.a(packet);
     }
 
     @Override
-    public void processPlayerBlockPlacement(C08PacketPlayerBlockPlacement p_147346_1_) {
-        val clickedItem = p_147346_1_.getHeldItem();
+    public void processPlayerBlockPlacement(C08PacketPlayerBlockPlacement clientPacket) {
+        val clickedItem = clientPacket.getHeldItem();
 
         val nmsItem = fromNMC(clickedItem);
-        val packet = new PacketPlayInBlockPlace(new BlockPosition(p_147346_1_.getX(),
-                p_147346_1_.getY(), p_147346_1_.getZ()), p_147346_1_.getDirection(),
+        val packet = new PacketPlayInBlockPlace(new BlockPosition(clientPacket.getX(),
+                clientPacket.getY(), clientPacket.getZ()), clientPacket.getDirection(),
                 nmsItem,
-                p_147346_1_.getCursorX(), p_147346_1_.getCursorY(), p_147346_1_.getCursorZ());
+                clientPacket.getCursorX(), clientPacket.getCursorY(), clientPacket.getCursorZ());
         playerConnection.a(packet);
     }
 
     @Override
-    public void processHandshake(C00Handshake p_147383_1_) {
+    public void processHandshake(C00Handshake clientPacket) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'processHandshake'");
     }
 
     @Override
-    public void processLoginStart(C00PacketLoginStart p_147316_1_) {
+    public void processLoginStart(C00PacketLoginStart clientPacket) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'processLoginStart'");
     }
 
     @Override
-    public void processEncryptionResponse(C01PacketEncryptionResponse p_147315_1_) {
+    public void processEncryptionResponse(C01PacketEncryptionResponse clientPacket) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'processEncryptionResponse'");
     }
 
     @Override
-    public void processPing(C01PacketPing p_147311_1_) {
+    public void processPing(C01PacketPing clientPacket) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'processPing'");
     }
 
     @Override
-    public void processServerQuery(C00PacketServerQuery p_147312_1_) {
+    public void processServerQuery(C00PacketServerQuery clientPacket) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'processServerQuery'");
     }
