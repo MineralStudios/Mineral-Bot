@@ -5,6 +5,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gg.mineral.bot.api.controls.MouseButton.Type;
+import gg.mineral.bot.api.event.EventHandler;
+import gg.mineral.bot.api.event.peripherals.MouseButtonEvent;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,10 +25,12 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse {
     private final Queue<Log> logs = new ConcurrentLinkedQueue<>();
     private Log eventLog = null, currentLog = null;
     private Iterator<Log> iterator = null;
+    private final EventHandler eventHandler;
 
     private final Object2LongOpenHashMap<Runnable> scheduledTasks = new Object2LongOpenHashMap<>();
 
-    public Mouse() {
+    public Mouse(EventHandler eventHandler) {
+        this.eventHandler = eventHandler;
         mouseButtons = new MouseButton[MouseButton.Type.values().length];
 
         for (val type : MouseButton.Type.values())
@@ -60,6 +64,11 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse {
             if (button == null || button.isPressed())
                 return;
 
+            val event = new MouseButtonEvent(type, true);
+
+            if (eventHandler.callEvent(event))
+                return;
+
             button.setPressed(true);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -76,6 +85,11 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse {
             val button = getButton(type);
 
             if (button == null || !button.isPressed())
+                return;
+
+            val event = new MouseButtonEvent(type, false);
+
+            if (eventHandler.callEvent(event))
                 return;
 
             button.setPressed(false);

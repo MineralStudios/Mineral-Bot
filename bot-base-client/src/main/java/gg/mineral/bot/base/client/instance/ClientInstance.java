@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.Proxy;
 import java.util.Queue;
 
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -26,8 +25,7 @@ import gg.mineral.bot.base.client.gui.GuiConnecting.ConnectFunction;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import gg.mineral.bot.impl.thread.ThreadManager;
-
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -43,7 +41,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     @Getter
     private final BotConfiguration configuration;
 
-    private Set<Goal> goals = new ObjectLinkedOpenHashSet<>();
+    private Object2ObjectOpenHashMap<Class<? extends Goal>, Goal> goals = new Object2ObjectOpenHashMap<>();
 
     private Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
     private Thread mainThread = null;
@@ -108,7 +106,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
         if (this.mainThread == null)
             this.mainThread = Thread.currentThread();
 
-        for (val goal : goals)
+        for (val goal : goals.values())
             if (goal.shouldExecute()) {
                 goal.callGameLoop();
                 break;
@@ -152,7 +150,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     public <T extends Event> boolean callEvent(T event) {
         var cancelled = false;
 
-        for (val goal : goals)
+        for (val goal : goals.values())
             if (goal.shouldExecute()) {
                 cancelled = goal.onEvent(event);
                 break;
@@ -175,7 +173,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
         latency = (int) fakePlayer.getRandom().nextGaussian(getConfiguration().getLatency(),
                 getConfiguration().getLatencyDeviation());
 
-        for (val goal : goals)
+        for (val goal : goals.values())
             if (goal.shouldExecute()) {
                 goal.onTick();
                 break;
@@ -184,12 +182,8 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
     @Override
     public void startGoals(Goal... goals) {
-        goalsLoop: for (val goal : goals) {
-            for (val g : this.goals)
-                if (g.getClass() == goal.getClass())
-                    continue goalsLoop;
-            this.goals.add(goal);
-        }
+        for (val goal : goals)
+            this.goals.put(goal.getClass(), goal);
     }
 
     @Override
@@ -242,11 +236,11 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
     @Override
     public Mouse newMouse() {
-        return new gg.mineral.bot.base.lwjgl.input.Mouse();
+        return new gg.mineral.bot.base.lwjgl.input.Mouse(this);
     }
 
     @Override
     public Keyboard newKeyboard() {
-        return new gg.mineral.bot.base.lwjgl.input.Keyboard();
+        return new gg.mineral.bot.base.lwjgl.input.Keyboard(this);
     }
 }

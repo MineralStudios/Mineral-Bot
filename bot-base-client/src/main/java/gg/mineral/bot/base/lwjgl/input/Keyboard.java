@@ -2,12 +2,17 @@ package gg.mineral.bot.base.lwjgl.input;
 
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.Key.Type;
+import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import lombok.val;
 
 public class Keyboard extends gg.mineral.bot.impl.controls.Keyboard {
 
-    boolean repeatEvents = false;
+    public Keyboard(EventHandler eventHandler) {
+        super(eventHandler);
+    }
+
+    private boolean repeatEvents = false;
 
     @Override
     public boolean next() {
@@ -25,7 +30,7 @@ public class Keyboard extends gg.mineral.bot.impl.controls.Keyboard {
     }
 
     public boolean isKeyDown(int keyCode) {
-        Key.Type type = Key.Type.fromKeyCode(keyCode);
+        val type = Key.Type.fromKeyCode(keyCode);
         if (type == null)
             return false;
         return isKeyDown(type);

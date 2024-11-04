@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jdt.annotation.NonNull;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.OpenGLException;
@@ -40,6 +41,8 @@ import com.google.common.util.concurrent.ListenableFutureTask;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 
+import gg.mineral.bot.api.event.Event;
+import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.base.client.gui.GuiConnecting;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.lwjgl.Sys;
@@ -359,9 +362,9 @@ public class Minecraft {
     public final TileEntityRendererChestHelper tileEntityRendererChestHelper;
 
     @Getter
-    protected final Mouse mouse = new Mouse();
+    protected final Mouse mouse;
     @Getter
-    protected final Keyboard keyboard = new Keyboard();
+    protected final Keyboard keyboard;
 
     @Getter
     private final List<KeyBinding> keybindArray = new ArrayList<>();
@@ -389,6 +392,25 @@ public class Minecraft {
     public Minecraft(Session p_i1103_1_, int p_i1103_2_, int p_i1103_3_, boolean p_i1103_4_, boolean p_i1103_5_,
             File p_i1103_6_, File p_i1103_7_, File p_i1103_8_, Proxy p_i1103_9_, String p_i1103_10_,
             Multimap p_i1103_11_, String p_i1103_12_) {
+        if (this instanceof EventHandler eventHandler) {
+            this.keyboard = new Keyboard(eventHandler);
+            this.mouse = new Mouse(eventHandler);
+        } else {
+            this.keyboard = new Keyboard(new EventHandler() {
+                @Override
+                public <T extends Event> boolean callEvent(@NonNull T event) {
+                    return false;
+                }
+            });
+
+            this.mouse = new Mouse(new EventHandler() {
+                @Override
+                public <T extends Event> boolean callEvent(@NonNull T event) {
+                    return false;
+                }
+            });
+        }
+
         this.mcDataDir = p_i1103_6_;
         this.fileAssets = p_i1103_7_;
         this.renderManager = !BotGlobalConfig.isOptimizedGameLoop() ? new RenderManager(this) : null;

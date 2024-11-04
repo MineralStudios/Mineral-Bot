@@ -1,10 +1,14 @@
 package gg.mineral.bot.base.lwjgl.input;
 
 import gg.mineral.bot.api.controls.MouseButton.Type;
-
+import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 
 public class Mouse extends gg.mineral.bot.impl.controls.Mouse {
+
+    public Mouse(EventHandler eventHandler) {
+        super(eventHandler);
+    }
 
     @Override
     public boolean next() {

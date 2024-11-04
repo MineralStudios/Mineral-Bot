@@ -6,7 +6,7 @@ import gg.mineral.bot.api.entity.effect.PotionEffectType;
 import gg.mineral.bot.api.entity.living.player.ClientPlayer;
 
 import gg.mineral.bot.api.event.Event;
-
+import gg.mineral.bot.api.event.peripherals.MouseButtonEvent;
 import gg.mineral.bot.api.goal.Goal;
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
@@ -175,6 +175,9 @@ public class EatGappleGoal extends Goal {
 
     @Override
     public boolean onEvent(Event event) {
+        if (event instanceof MouseButtonEvent mouseButtonEvent)
+            if (eating && mouseButtonEvent.getType() == MouseButton.Type.RIGHT_CLICK && !mouseButtonEvent.isPressed())
+                return true;
         return false;
     }
 

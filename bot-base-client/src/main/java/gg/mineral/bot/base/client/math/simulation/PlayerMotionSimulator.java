@@ -1,7 +1,11 @@
 package gg.mineral.bot.base.client.math.simulation;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.entity.living.player.ClientPlayer;
+import gg.mineral.bot.api.event.Event;
+import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.base.lwjgl.input.Keyboard;
 import gg.mineral.bot.base.lwjgl.input.Mouse;
 import lombok.Getter;
@@ -19,10 +23,19 @@ public class PlayerMotionSimulator extends EntityPlayerSP
 
     private int millis;
 
+    private static EventHandler EMPTY_EVENT_HANDLER = new EventHandler() {
+
+        @Override
+        public <T extends Event> boolean callEvent(@NonNull T event) {
+            return false;
+        }
+
+    };
+
     @Getter
-    private final Keyboard keyboard = new Keyboard();
+    private final Keyboard keyboard = new Keyboard(EMPTY_EVENT_HANDLER);
     @Getter
-    private final Mouse mouse = new Mouse();
+    private final Mouse mouse = new Mouse(EMPTY_EVENT_HANDLER);
 
     public PlayerMotionSimulator(Minecraft mc, ClientPlayer player) {
         super(mc, (World) player.getWorld(), new Session(player.getUsername(), player.getUuid().toString(),

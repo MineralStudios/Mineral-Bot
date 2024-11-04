@@ -5,6 +5,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gg.mineral.bot.api.controls.Key.Type;
+import gg.mineral.bot.api.event.EventHandler;
+import gg.mineral.bot.api.event.peripherals.KeyboardKeyEvent;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.val;
 
@@ -13,6 +15,7 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
     private final Queue<Log> logs = new ConcurrentLinkedQueue<>();
     private Log eventLog = null, currentLog = null;
     private Iterator<Log> iterator = null;
+    private final EventHandler eventHandler;
 
     private final Object2LongOpenHashMap<Runnable> scheduledTasks = new Object2LongOpenHashMap<>();
 
@@ -30,7 +33,8 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
         scheduledTasks.put(runnable, (System.nanoTime() / 1000000) + delay);
     }
 
-    public Keyboard() {
+    public Keyboard(EventHandler eventHandler) {
+        this.eventHandler = eventHandler;
         keys = new Key[Key.Type.values().length];
 
         for (val type : Key.Type.values())
@@ -50,6 +54,11 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
             if (key == null || key.isPressed())
                 return;
 
+            val event = new KeyboardKeyEvent(type, true);
+
+            if (eventHandler.callEvent(event))
+                return;
+
             key.setPressed(true);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -65,6 +74,11 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
             val key = getKey(type);
 
             if (key == null || !key.isPressed())
+                return;
+
+            val event = new KeyboardKeyEvent(type, false);
+
+            if (eventHandler.callEvent(event))
                 return;
 
             key.setPressed(false);
