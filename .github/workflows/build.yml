@@ -24,3 +24,6 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+        env:
+          USERNAME: ${{ secrets.REPOSILITE_USERNAME }}
+          TOKEN: ${{ secrets.REPOSILITE_PASSWORD }}
