@@ -210,7 +210,7 @@ public class ThrowPearlGoal extends Goal {
                                 else if (z < 0.0D && x > 0.0D)
                                     yaw = (float) (-90.0D + toDegrees(fastArcTan(z / x)));
                                 else
-                                    yaw = (float) toDegrees(-fastArcTan(z / x));
+                                    yaw = (float) toDegrees(-fastArcTan(x / z));
 
                                 val optimizer = world
                                         .univariateOptimizer(EnderPearlTrajectory.class,
@@ -235,7 +235,7 @@ public class ThrowPearlGoal extends Goal {
                                         .var(-180, 180)
                                         .var(-90, 90).val(collisionFunction).build();
 
-                                Number[] result = optimizer.maximize();
+                                val result = optimizer.maximize();
                                 float yaw = result[0].floatValue();
                                 float pitch = result[1].floatValue();
 
@@ -252,7 +252,7 @@ public class ThrowPearlGoal extends Goal {
                                         .var(-180, 180)
                                         .var(-90, 90).val(collisionFunction).build();
 
-                                Number[] result = optimizer.minimize();
+                                val result = optimizer.minimize();
                                 float yaw = result[0].floatValue();
                                 float pitch = result[1].floatValue();
 
