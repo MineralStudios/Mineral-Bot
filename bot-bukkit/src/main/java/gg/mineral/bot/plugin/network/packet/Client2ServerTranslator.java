@@ -76,14 +76,14 @@ public class Client2ServerTranslator
     private PlayerConnection playerConnection;
 
     @Override
-    public void onDisconnect(IChatComponent clientPacket) {
-        val text = IChatComponent.Serializer.toJson(clientPacket);
+    public void onDisconnect(IChatComponent chatComp) {
+        val text = IChatComponent.Serializer.toJson(chatComp);
         val chatComponent = IChatBaseComponent.ChatSerializer.a(text);
         playerConnection.a(chatComponent);
     }
 
     @Override
-    public void onConnectionStateTransition(EnumConnectionState clientPacket, EnumConnectionState p_147232_2_) {
+    public void onConnectionStateTransition(EnumConnectionState state, EnumConnectionState newState) {
         // TODO: Implement
     }
 
