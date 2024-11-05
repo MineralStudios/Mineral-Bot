@@ -5,12 +5,14 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gg.mineral.bot.api.controls.Key.Type;
+import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.api.event.peripherals.KeyboardKeyEvent;
+import gg.mineral.bot.api.instance.ClientInstance;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.val;
 
-public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
+public class Keyboard implements gg.mineral.bot.api.controls.Keyboard, Logger {
     private final Key[] keys;
     private final Queue<Log> logs = new ConcurrentLinkedQueue<>();
     private Log eventLog = null, currentLog = null;
@@ -59,6 +61,7 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
             if (eventHandler.callEvent(event))
                 return;
 
+            info("Pressing key: " + type + " for " + durationMillis + "ms");
             key.setPressed(true);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -81,6 +84,7 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
             if (eventHandler.callEvent(event))
                 return;
 
+            info("Unpressing key: " + type + " for " + durationMillis + "ms");
             key.setPressed(false);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -150,5 +154,11 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
     }
 
     public record Log(Key.Type type, boolean pressed) {
+    }
+
+    @Override
+    public boolean isLoggingEnabled() {
+        return eventHandler instanceof ClientInstance instance && instance.getConfiguration() != null
+                && instance.getConfiguration().isDebug();
     }
 }

@@ -5,14 +5,16 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gg.mineral.bot.api.controls.MouseButton.Type;
+import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent;
+import gg.mineral.bot.api.instance.ClientInstance;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 
-public class Mouse implements gg.mineral.bot.api.controls.Mouse {
+public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
 
     private final MouseButton[] mouseButtons;
     @Getter
@@ -69,6 +71,7 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse {
             if (eventHandler.callEvent(event))
                 return;
 
+            info("Pressing button: " + type);
             button.setPressed(true);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -92,6 +95,7 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse {
             if (eventHandler.callEvent(event))
                 return;
 
+            info("Unpressing button: " + type);
             button.setPressed(false);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -233,5 +237,11 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse {
         val deltaY = -dPitch / (sensitivity * sensitivity * sensitivity * 8.0F /* * inverted */
         );
         this.setDY((int) (deltaY / 0.15));
+    }
+
+    @Override
+    public boolean isLoggingEnabled() {
+        return eventHandler instanceof ClientInstance instance && instance.getConfiguration() != null
+                && instance.getConfiguration().isDebug();
     }
 }
