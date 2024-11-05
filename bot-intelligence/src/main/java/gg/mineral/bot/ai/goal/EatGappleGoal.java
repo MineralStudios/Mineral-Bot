@@ -8,7 +8,7 @@ import gg.mineral.bot.api.entity.living.player.ClientPlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent;
 import gg.mineral.bot.api.goal.Goal;
-import gg.mineral.bot.api.goal.GoalInfo;
+
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
 
@@ -18,7 +18,6 @@ import lombok.Getter;
 import lombok.val;
 
 @Getter
-@GoalInfo(name = "EatGappleGoal")
 public class EatGappleGoal extends Goal {
 
     private boolean inventoryOpen = false, eating = false;

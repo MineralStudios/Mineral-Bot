@@ -7,7 +7,7 @@ import gg.mineral.bot.api.entity.living.player.ClientPlayer;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.goal.Goal;
-import gg.mineral.bot.api.goal.GoalInfo;
+
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
 
@@ -20,7 +20,6 @@ import gg.mineral.bot.api.world.block.Block;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-@GoalInfo(name = "ThrowHealthPotGoal")
 public class ThrowPearlGoal extends Goal {
 
     private int lastPearledTick = 0;

@@ -5,7 +5,7 @@ import gg.mineral.bot.api.controls.MouseButton;
 
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.goal.Goal;
-import gg.mineral.bot.api.goal.GoalInfo;
+
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
 
@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.val;
 
 @Getter
-@GoalInfo(name = "ReplaceArmorGoal")
 public class ReplaceArmorGoal extends Goal {
 
     private boolean inventoryOpen = false;

@@ -24,8 +24,7 @@ import gg.mineral.bot.base.client.gui.GuiConnecting.ConnectFunction;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import gg.mineral.bot.impl.thread.ThreadManager;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -40,7 +39,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     @Getter
     private final BotConfiguration configuration;
 
-    private Object2ObjectOpenHashMap<String, Goal> goals = new Object2ObjectOpenHashMap<>();
+    private ObjectOpenHashSet<Goal> goals = new ObjectOpenHashSet<>();
 
     private Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
     private Thread mainThread = null;
@@ -105,7 +104,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
         if (this.mainThread == null)
             this.mainThread = Thread.currentThread();
 
-        for (val goal : goals.values())
+        for (val goal : goals)
             if (goal.shouldExecute()) {
                 goal.callGameLoop();
                 break;
@@ -149,7 +148,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     public <T extends Event> boolean callEvent(T event) {
         var cancelled = false;
 
-        for (val goal : goals.values())
+        for (val goal : goals)
             if (goal.shouldExecute()) {
                 cancelled = goal.onEvent(event);
                 break;
@@ -172,7 +171,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
         latency = (int) fakePlayer.getRandom().nextGaussian(getConfiguration().getLatency(),
                 getConfiguration().getLatencyDeviation());
 
-        for (val goal : goals.values())
+        for (val goal : goals)
             if (goal.shouldExecute()) {
                 goal.onTick();
                 break;
@@ -181,15 +180,8 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
     @Override
     public void startGoals(Goal... goals) {
-        for (val goal : goals) {
-            val goalInfo = goal.getInfo();
-
-            if (goalInfo == null)
-                throw new IllegalArgumentException("GoalInfo annotation is missing");
-
-            if (this.goals.put(goalInfo.name(), goal) != null)
-                throw new IllegalArgumentException("Goal with name " + goalInfo.name() + " already exists");
-        }
+        for (val goal : goals)
+            this.goals.add(goal);
     }
 
     @Override
