@@ -54,12 +54,12 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard, Logger {
             val key = getKey(type);
 
             if (key == null || key.isPressed())
-                return;
+                continue;
 
             val event = new KeyboardKeyEvent(type, true);
 
             if (eventHandler.callEvent(event))
-                return;
+                continue;
 
             info("Pressing key: " + type + " for " + durationMillis + "ms");
             key.setPressed(true);
@@ -77,12 +77,12 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard, Logger {
             val key = getKey(type);
 
             if (key == null || !key.isPressed())
-                return;
+                continue;
 
             val event = new KeyboardKeyEvent(type, false);
 
             if (eventHandler.callEvent(event))
-                return;
+                continue;
 
             info("Unpressing key: " + type + " for " + durationMillis + "ms");
             key.setPressed(false);

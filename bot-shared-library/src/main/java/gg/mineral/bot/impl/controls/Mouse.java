@@ -64,12 +64,12 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
             val button = getButton(type);
 
             if (button == null || button.isPressed())
-                return;
+                continue;
 
             val event = new MouseButtonEvent(type, true);
 
             if (eventHandler.callEvent(event))
-                return;
+                continue;
 
             info("Pressing button: " + type);
             button.setPressed(true);
@@ -88,12 +88,12 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
             val button = getButton(type);
 
             if (button == null || !button.isPressed())
-                return;
+                continue;
 
             val event = new MouseButtonEvent(type, false);
 
             if (eventHandler.callEvent(event))
-                return;
+                continue;
 
             info("Unpressing button: " + type);
             button.setPressed(false);
