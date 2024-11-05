@@ -10,11 +10,12 @@ import org.bukkit.command.CommandSender;
 import com.google.common.collect.HashMultimap;
 
 import gg.mineral.bot.api.configuration.BotConfiguration;
+import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import lombok.val;
 
-public class ConnectCommand implements CommandExecutor {
+public class ConnectCommand implements CommandExecutor, Logger {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -24,7 +25,7 @@ public class ConnectCommand implements CommandExecutor {
         if (!file.exists())
             file.mkdirs();
         if (args.length < 1) {
-            System.out.println("Usage: connect <username>");
+            println("Usage: connect <username>");
             return false;
         }
 
@@ -32,7 +33,7 @@ public class ConnectCommand implements CommandExecutor {
         InstanceManager.getInstances().values()
                 .stream()
                 .filter(mc -> mc.getSession().getUsername().equals(username)).findFirst()
-                .ifPresentOrElse(mc -> System.out.println("Player already connected"), () -> {
+                .ifPresentOrElse(mc -> println("Player already connected"), () -> {
                     val configuration = BotConfiguration.builder().username(username).build();
                     val minecraftInstance = new ClientInstance(
                             configuration, 1280, 720,
@@ -50,6 +51,11 @@ public class ConnectCommand implements CommandExecutor {
                     InstanceManager.getInstances().put(configuration.getUuid(), minecraftInstance);
                 });
 
+        return true;
+    }
+
+    @Override
+    public boolean isLoggingEnabled() {
         return true;
     }
 

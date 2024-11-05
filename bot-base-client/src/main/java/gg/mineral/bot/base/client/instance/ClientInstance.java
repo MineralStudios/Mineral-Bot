@@ -22,9 +22,8 @@ import gg.mineral.bot.api.screen.Screen;
 
 import gg.mineral.bot.base.client.gui.GuiConnecting.ConnectFunction;
 import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.impl.config.BotGlobalConfig;
 import gg.mineral.bot.impl.thread.ThreadManager;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -39,7 +38,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     @Getter
     private final BotConfiguration configuration;
 
-    private ObjectOpenHashSet<Goal> goals = new ObjectOpenHashSet<>();
+    private ObjectLinkedOpenHashSet<Goal> goals = new ObjectLinkedOpenHashSet<>();
 
     private Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
     private Thread mainThread = null;
@@ -180,8 +179,12 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
     @Override
     public <T extends Goal> void startGoals(@SuppressWarnings("unchecked") T... goals) {
-        for (val goal : goals)
-            this.goals.add(goal);
+        for (val goal : goals) {
+            if (this.goals.add(goal))
+                info("Added goal: " + goal.getClass().getSimpleName());
+            else
+                info("Failed to add goal: " + goal.getClass().getSimpleName());
+        }
     }
 
     @Override
@@ -193,8 +196,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
         this.running = false;
 
-        if (BotGlobalConfig.isDebug())
-            logger.info("Stopping!");
+        info("Stopping!");
 
         try {
             this.loadWorld((WorldClient) null);

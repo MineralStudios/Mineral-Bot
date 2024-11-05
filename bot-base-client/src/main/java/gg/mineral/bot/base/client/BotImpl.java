@@ -10,6 +10,7 @@ import com.google.common.collect.HashMultimap;
 
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.configuration.BotConfiguration;
+import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.math.ServerLocation;
@@ -20,7 +21,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.val;
 
-public abstract class BotImpl extends BotAPI {
+public abstract class BotImpl extends BotAPI implements Logger {
 
     private long lastSpawnInfo = 0;
 
@@ -60,13 +61,17 @@ public abstract class BotImpl extends BotAPI {
             sb.append("• " + name + " x" + count);
         }
 
-        System.out.println(ChatColor.WHITE + ChatColor.UNDERLINE + "Recent Spawn Info:" + ChatColor.RESET);
-        System.out.println(ChatColor.WHITE + "Amount: " + ChatColor.CYAN + amount + ChatColor.RESET);
-        System.out
-                .println(ChatColor.WHITE + "Total Spawn Time: " + ChatColor.CYAN + totalTime + "ms" + ChatColor.RESET);
-        System.out.println(ChatColor.WHITE + "Average Spawn Time: " + ChatColor.CYAN + (totalTime / amount) + "ms"
+        println(ChatColor.WHITE + ChatColor.UNDERLINE + "Recent Spawn Info:" + ChatColor.RESET);
+        println(ChatColor.WHITE + "Amount: " + ChatColor.CYAN + amount + ChatColor.RESET);
+        println(ChatColor.WHITE + "Total Spawn Time: " + ChatColor.CYAN + totalTime + "ms" + ChatColor.RESET);
+        println(ChatColor.WHITE + "Average Spawn Time: " + ChatColor.CYAN + (totalTime / amount) + "ms"
                 + ChatColor.RESET);
-        System.out.println(ChatColor.WHITE + "Names: " + sb.toString() + ChatColor.RESET);
+        println(ChatColor.WHITE + "Names: " + sb.toString() + ChatColor.RESET);
+    }
+
+    @Override
+    public boolean isLoggingEnabled() {
+        return true;
     }
 
     public static void init() {

@@ -44,6 +44,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.base.client.gui.GuiConnecting;
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.lwjgl.Sys;
 import gg.mineral.bot.base.lwjgl.input.Keyboard;
@@ -170,7 +171,7 @@ import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 
-public class Minecraft {
+public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     public static final Logger logger = LogManager.getLogger(Minecraft.class);
     private static final ResourceLocation locationMojangPng = new ResourceLocation("textures/gui/title/mojang.png");
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
@@ -435,10 +436,8 @@ public class Minecraft {
                 : (new YggdrasilAuthenticationService(p_i1103_9_, UUID.randomUUID().toString()))
                         .createMinecraftSessionService();
         this.session = p_i1103_1_;
-        if (BotGlobalConfig.isDebug())
-            logger.info("Setting user: " + p_i1103_1_.getUsername());
-        if (BotGlobalConfig.isDebug())
-            logger.info("(Session ID is " + p_i1103_1_.getSessionID() + ")");
+        info("Setting user: " + p_i1103_1_.getUsername());
+        info("(Session ID is " + p_i1103_1_.getSessionID() + ")");
         this.isDemo = p_i1103_5_;
         this.displayWidth = p_i1103_2_;
         this.displayHeight = p_i1103_3_;
@@ -552,8 +551,7 @@ public class Minecraft {
         Display.setResizable(true);
         Display.setTitle("Mineral Bot Client 1.7.10");
 
-        if (BotGlobalConfig.isDebug())
-            logger.info("LWJGL Version: " + Sys.getVersion());
+        info("LWJGL Version: " + Sys.getVersion());
 
         val osType = Util.getOSType();
 
@@ -726,8 +724,7 @@ public class Minecraft {
             this.gameSettings.saveOptions();
         }
 
-        if (BotGlobalConfig.isDebug())
-            System.out.println("Game has been started successfully!");
+        info("Game has been started successfully!");
     }
 
     public boolean func_152349_b() {
@@ -984,8 +981,7 @@ public class Minecraft {
     public void shutdownMinecraftApplet() {
         ThreadManager.shutdown();
         try {
-            if (BotGlobalConfig.isDebug())
-                logger.info("Stopping!");
+            info("Stopping!");
 
             try {
                 this.loadWorld((WorldClient) null);
@@ -2585,5 +2581,10 @@ public class Minecraft {
 
     public boolean isMainThread() {
         return Thread.currentThread() == this.mainThread;
+    }
+
+    @Override
+    public boolean isLoggingEnabled() {
+        return this instanceof ClientInstance instance && instance.getConfiguration().isDebug();
     }
 }

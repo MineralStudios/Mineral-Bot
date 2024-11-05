@@ -33,6 +33,8 @@ public class BotConfiguration {
     private int pearlCooldown = 15;
     @Builder.Default
     private Skins skin = Skins.MINERAL_DEFAULT;
+    @Builder.Default
+    private boolean debug = false;
 
     public String getFullUsername() {
         return usernamePrefix + username + usernameSuffix;
