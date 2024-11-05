@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,8 +22,7 @@ import org.apache.logging.log4j.MarkerManager;
 @RequiredArgsConstructor
 public class MessageDeserializer extends ByteToMessageDecoder {
     private static final Logger logger = LogManager.getLogger();
-    private static final Marker marker = MarkerManager.getMarker("PACKET_RECEIVED")
-            .addParents(NetworkManager.logMarkerPackets);
+    private static final Marker marker = MarkerManager.getMarker("PACKET_RECEIVED", NetworkManager.logMarkerPackets);
     private final NetworkStatistics netStats;
     private final Minecraft mc;
 
@@ -32,9 +32,9 @@ public class MessageDeserializer extends ByteToMessageDecoder {
         int readableBytes = byteBuf.readableBytes();
 
         if (readableBytes != 0) {
-            PacketBuffer buf = new PacketBuffer(byteBuf);
+            val buf = new PacketBuffer(byteBuf);
             int packetId = buf.readVarIntFromBuffer();
-            Packet packet = Packet
+            val packet = Packet
                     .generatePacket(ctx.channel().attr(NetworkManager.attrKeyReceivable).get(),
                             packetId);
 
