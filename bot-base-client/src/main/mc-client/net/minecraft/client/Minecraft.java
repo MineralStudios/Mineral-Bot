@@ -2585,6 +2585,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
 
     @Override
     public boolean isLoggingEnabled() {
-        return this instanceof ClientInstance instance && instance.getConfiguration().isDebug();
+        return this instanceof ClientInstance instance && instance.getConfiguration() != null
+                && instance.getConfiguration().isDebug();
     }
 }
