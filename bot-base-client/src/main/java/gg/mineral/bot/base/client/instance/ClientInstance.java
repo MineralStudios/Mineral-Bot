@@ -179,7 +179,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     }
 
     @Override
-    public void startGoals(Goal... goals) {
+    public <T extends Goal> void startGoals(@SuppressWarnings("unchecked") T... goals) {
         for (val goal : goals)
             this.goals.add(goal);
     }
