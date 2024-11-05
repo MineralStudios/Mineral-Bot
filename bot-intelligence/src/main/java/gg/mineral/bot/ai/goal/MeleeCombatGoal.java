@@ -12,6 +12,7 @@ import gg.mineral.bot.api.entity.living.player.ClientPlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.event.entity.EntityHurtEvent;
 import gg.mineral.bot.api.goal.Goal;
+import gg.mineral.bot.api.goal.GoalInfo;
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
 import gg.mineral.bot.api.inv.item.ItemStack;
@@ -21,6 +22,7 @@ import lombok.Setter;
 import lombok.val;
 
 @Getter
+@GoalInfo(name = "MeleeCombatGoal")
 public class MeleeCombatGoal extends Goal {
     @Nullable
     private ClientLivingEntity target;

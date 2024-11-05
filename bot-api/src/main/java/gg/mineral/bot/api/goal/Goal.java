@@ -4,6 +4,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.Keyboard;
@@ -149,5 +150,10 @@ public abstract class Goal implements MathUtil {
 
             break;
         }
+    }
+
+    @Nullable
+    public GoalInfo getInfo() {
+        return this.getClass().getAnnotation(GoalInfo.class);
     }
 }

@@ -18,7 +18,6 @@ import gg.mineral.bot.api.controls.Mouse;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.goal.Goal;
-
 import gg.mineral.bot.api.screen.Screen;
 
 import gg.mineral.bot.base.client.gui.GuiConnecting.ConnectFunction;
@@ -41,7 +40,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     @Getter
     private final BotConfiguration configuration;
 
-    private Object2ObjectOpenHashMap<Class<? extends Goal>, Goal> goals = new Object2ObjectOpenHashMap<>();
+    private Object2ObjectOpenHashMap<String, Goal> goals = new Object2ObjectOpenHashMap<>();
 
     private Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
     private Thread mainThread = null;
@@ -182,8 +181,15 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
     @Override
     public void startGoals(Goal... goals) {
-        for (val goal : goals)
-            this.goals.put(goal.getClass(), goal);
+        for (val goal : goals) {
+            val goalInfo = goal.getInfo();
+
+            if (goalInfo == null)
+                throw new IllegalArgumentException("GoalInfo annotation is missing");
+
+            if (this.goals.put(goalInfo.name(), goal) != null)
+                throw new IllegalArgumentException("Goal with name " + goalInfo.name() + " already exists");
+        }
     }
 
     @Override
