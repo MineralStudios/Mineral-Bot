@@ -27,7 +27,7 @@ public class MeleeCombatGoal extends Goal {
 
     private final long meanDelay, deviation;
 
-    private int lastTargetSwitchTick = 0;
+    private int lastTargetSwitchTick = 0, lastHitTick = 0;
 
     @Override
     public boolean shouldExecute() {
@@ -342,6 +342,10 @@ public class MeleeCombatGoal extends Goal {
     }
 
     public boolean onEntityHurt(EntityHurtEvent event) {
+        if (clientInstance.getCurrentTick() - lastHitTick < 9)
+            return false;
+
+        lastHitTick = clientInstance.getCurrentTick();
         val entity = event.getAttackedEntity();
 
         if (entity == null)
