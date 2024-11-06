@@ -348,7 +348,7 @@ public class MeleeCombatGoal extends Goal {
         lastHitTick = clientInstance.getCurrentTick();
         val entity = event.getAttackedEntity();
 
-        if (entity == null)
+        if (entity == null || entity.getY() - fakePlayer.getY() > 1.5)
             return false;
 
         val target = this.target;
