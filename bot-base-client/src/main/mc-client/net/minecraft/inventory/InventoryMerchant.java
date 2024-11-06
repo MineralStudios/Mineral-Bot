@@ -217,6 +217,11 @@ public class InventoryMerchant implements IInventory {
     }
 
     @Override
+    public int getHeldSlot() {
+        return 0;
+    }
+
+    @Override
     public gg.mineral.bot.api.inv.item.ItemStack getItemStackAt(int slot) {
         return getStackInSlot(slot);
     }

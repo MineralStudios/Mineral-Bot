@@ -8,6 +8,7 @@ import gg.mineral.bot.api.inv.item.Item;
 import gg.mineral.bot.api.inv.item.Item.Type;
 import gg.mineral.bot.api.inv.item.ItemStack;
 import gg.mineral.bot.api.inv.potion.Potion;
+import lombok.val;
 
 public interface Inventory {
     /**
@@ -17,6 +18,13 @@ public interface Inventory {
      */
     @Nullable
     ItemStack getHeldItemStack();
+
+    /**
+     * Get the slot that the player is currently holding.
+     * 
+     * @return the slot that the player is currently holding
+     */
+    int getHeldSlot();
 
     /**
      * Get the item stack at the specified slot.
@@ -112,12 +120,12 @@ public interface Inventory {
      */
     default boolean containsPotion(Function<Potion, Boolean> filter) {
         for (int i = 0; i < 36; i++) {
-            ItemStack itemStack = getItemStackAt(i);
+            val itemStack = getItemStackAt(i);
             if (itemStack == null)
                 continue;
-            Item item = itemStack.getItem();
+            val item = itemStack.getItem();
             if (item.getId() == Item.POTION) {
-                Potion potion = itemStack.getPotion();
+                val potion = itemStack.getPotion();
                 if (filter.apply(potion))
                     return true;
             }
@@ -136,10 +144,10 @@ public interface Inventory {
      */
     default boolean contains(Type type) {
         for (int i = 0; i < 36; i++) {
-            ItemStack itemStack = getItemStackAt(i);
+            val itemStack = getItemStackAt(i);
             if (itemStack == null)
                 continue;
-            Item item = itemStack.getItem();
+            val item = itemStack.getItem();
             if (item != null && type.isType(item.getId()))
                 return true;
         }

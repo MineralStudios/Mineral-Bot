@@ -137,6 +137,19 @@ public abstract class Goal implements MathUtil {
         getMouse().unpressButton(types);
     }
 
+    public void stopAll() {
+        getMouse().stopAll();
+        getKeyboard().stopAll();
+    }
+
+    public void mouseStopAll() {
+        getMouse().stopAll();
+    }
+
+    public void keyboardStopAll() {
+        getKeyboard().stopAll();
+    }
+
     public void callGameLoop() {
         this.onGameLoop();
         while (!delayedTasks.isEmpty()) {

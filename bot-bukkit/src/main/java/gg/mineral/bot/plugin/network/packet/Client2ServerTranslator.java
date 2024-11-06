@@ -180,7 +180,15 @@ public class Client2ServerTranslator
 
         val itemStack = asBukkitCopy(itemNMC);
 
-        return itemStack == null ? null : CraftItemStack.asNMSCopy(itemStack);
+        if (itemStack == null)
+            throw new IllegalArgumentException("Bukkit ItemStack is null");
+
+        val nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+
+        if (nmsItemStack == null)
+            throw new IllegalArgumentException("NMS ItemStack is null");
+
+        return nmsItemStack;
     }
 
     static boolean hasItemMeta(ItemStack item) {

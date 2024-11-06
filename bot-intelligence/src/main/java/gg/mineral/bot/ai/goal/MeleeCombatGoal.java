@@ -15,7 +15,6 @@ import gg.mineral.bot.api.goal.Goal;
 
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
-import gg.mineral.bot.api.inv.item.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -50,7 +49,7 @@ public class MeleeCombatGoal extends Goal {
         if (inventory == null)
             return;
         for (int i = 0; i < 8; i++) {
-            ItemStack itemStack = inventory.getItemStackAt(i);
+            val itemStack = inventory.getItemStackAt(i);
             double attackDamage = itemStack != null ? itemStack.getAttackDamage() : 0;
             if (itemStack != null && attackDamage > damage) {
                 bestMeleeWeaponSlot = i;
@@ -58,7 +57,8 @@ public class MeleeCombatGoal extends Goal {
             }
         }
 
-        pressKey(10, Key.Type.valueOf("KEY_" + (bestMeleeWeaponSlot + 1)));
+        if (inventory.getHeldSlot() != bestMeleeWeaponSlot)
+            pressKey(10, Key.Type.valueOf("KEY_" + (bestMeleeWeaponSlot + 1)));
     }
 
     private void findTarget() {

@@ -692,6 +692,11 @@ public class InventoryPlayer implements IInventory {
     }
 
     @Override
+    public int getHeldSlot() {
+        return currentItem;
+    }
+
+    @Override
     public gg.mineral.bot.api.inv.item.ItemStack getItemStackAt(int slot) {
         return getStackInSlot(slot);
     }

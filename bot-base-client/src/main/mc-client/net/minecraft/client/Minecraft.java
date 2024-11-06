@@ -1516,7 +1516,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     private void func_147121_ag() {
         this.rightClickDelayTimer = 4;
         boolean var1 = true;
-        EntityClientPlayerMP thePlayer = this.thePlayer;
+        val thePlayer = this.thePlayer;
 
         @Nullable
         ItemStack var2 = thePlayer != null ? thePlayer.inventory.getCurrentItem() : null;
@@ -1583,25 +1583,23 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
                 this.displayWidth = Display.getDisplayMode().getWidth();
                 this.displayHeight = Display.getDisplayMode().getHeight();
 
-                if (this.displayWidth <= 0) {
+                if (this.displayWidth <= 0)
                     this.displayWidth = 1;
-                }
 
-                if (this.displayHeight <= 0) {
+                if (this.displayHeight <= 0)
                     this.displayHeight = 1;
-                }
+
             } else {
                 Display.setDisplayMode(new DisplayMode(this.tempDisplayWidth, this.tempDisplayHeight));
                 this.displayWidth = this.tempDisplayWidth;
                 this.displayHeight = this.tempDisplayHeight;
 
-                if (this.displayWidth <= 0) {
+                if (this.displayWidth <= 0)
                     this.displayWidth = 1;
-                }
 
-                if (this.displayHeight <= 0) {
+                if (this.displayHeight <= 0)
                     this.displayHeight = 1;
-                }
+
             }
 
             if (this.currentScreen != null) {
