@@ -155,7 +155,9 @@ public class ReplaceArmorGoal extends Goal {
 
         val itemStack = inventory.getHeldItemStack();
 
-        if (itemStack != null && itemStack.getItem().getId() == Item.GOLDEN_APPLE)
+        val missingArmorPiece = missingArmorPiece();
+
+        if (itemStack != null && missingArmorPiece.isType(itemStack.getItem().getId()))
             applyArmor();
         else
             switchToArmor();
