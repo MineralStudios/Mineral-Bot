@@ -100,6 +100,8 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
     @Override
     public void runGameLoop() {
+        if (!this.running)
+            return;
         if (this.mainThread == null)
             this.mainThread = Thread.currentThread();
 
