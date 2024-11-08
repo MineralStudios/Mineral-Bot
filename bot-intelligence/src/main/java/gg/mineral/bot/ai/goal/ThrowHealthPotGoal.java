@@ -63,6 +63,7 @@ public class ThrowHealthPotGoal extends Goal {
 
     private void switchToPearl() {
         var pearlSlot = -1;
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null)
@@ -144,6 +145,7 @@ public class ThrowHealthPotGoal extends Goal {
         if (clientInstance.getCurrentTick() - lastPearledTick < 20 || !canSeeEnemy())
             return false;
 
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null || !inventory.contains(Item.ENDER_PEARL))
@@ -156,7 +158,7 @@ public class ThrowHealthPotGoal extends Goal {
 
         for (val entity : world.getEntities())
             if (entity instanceof ClientPlayer enemy
-                    && !fakePlayer.getFriendlyEntityUUIDs().contains(entity.getUuid()))
+                    && !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid()))
                 for (val t : Type.values())
                     if (t.test(fakePlayer, enemy))
                         return true;
@@ -165,15 +167,17 @@ public class ThrowHealthPotGoal extends Goal {
     }
 
     private boolean canSeeEnemy() {
+        val fakePlayer = clientInstance.getFakePlayer();
         val world = fakePlayer.getWorld();
         return world == null ? false
                 : world.getEntities().stream()
-                        .anyMatch(entity -> !fakePlayer.getFriendlyEntityUUIDs().contains(entity.getUuid()));
+                        .anyMatch(entity -> !clientInstance.getConfiguration().getFriendlyUUIDs()
+                                .contains(entity.getUuid()));
     }
 
     @Override
     public void onTick() {
-
+        val fakePlayer = clientInstance.getFakePlayer();
         val world = fakePlayer.getWorld();
 
         if (world == null)
@@ -186,7 +190,7 @@ public class ThrowHealthPotGoal extends Goal {
 
         for (val entity : world.getEntities()) {
             if (entity instanceof ClientPlayer enemy
-                    && !fakePlayer.getFriendlyEntityUUIDs().contains(entity.getUuid())) {
+                    && !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid())) {
                 for (val type : Type.values()) {
                     if (type.test(fakePlayer, enemy)) {
                         val targetX = enemy.getX();

@@ -1,6 +1,7 @@
 package gg.mineral.bot.api.configuration;
 
 import java.io.File;
+import java.util.Set;
 import java.util.UUID;
 
 import gg.mineral.bot.api.entity.living.player.skin.Skins;
@@ -35,6 +36,8 @@ public class BotConfiguration {
     private Skins skin = Skins.MINERAL_DEFAULT;
     @Builder.Default
     private boolean debug = false;
+    @Builder.Default
+    Set<UUID> friendlyUUIDs = Set.of();
 
     public String getFullUsername() {
         return usernamePrefix + username + usernameSuffix;

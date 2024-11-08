@@ -26,6 +26,7 @@ public class EatGappleGoal extends Goal {
     public boolean shouldExecute() {
         var hasRegen = false;
         val regenId = PotionEffectType.REGENERATION.getId();
+        val fakePlayer = clientInstance.getFakePlayer();
         val activeIds = fakePlayer.getActivePotionEffectIds();
 
         for (int i = 0; i < activeIds.length; i++)
@@ -40,16 +41,18 @@ public class EatGappleGoal extends Goal {
     }
 
     private boolean hasGapple() {
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
         return inventory == null ? false : inventory.contains(Item.GOLDEN_APPLE);
     }
 
     private boolean canSeeEnemy() {
+        val fakePlayer = clientInstance.getFakePlayer();
         val world = fakePlayer.getWorld();
         return world == null ? false
                 : world.getEntities().stream()
                         .anyMatch(entity -> entity instanceof ClientPlayer
-                                && !fakePlayer.getFriendlyEntityUUIDs().contains(entity.getUuid()));
+                                && !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid()));
     }
 
     private void eatGapple() {
@@ -58,6 +61,7 @@ public class EatGappleGoal extends Goal {
 
     private void switchToGapple() {
         var gappleSlot = -1;
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null)
@@ -136,6 +140,7 @@ public class EatGappleGoal extends Goal {
     @Override
     public void onTick() {
 
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null)

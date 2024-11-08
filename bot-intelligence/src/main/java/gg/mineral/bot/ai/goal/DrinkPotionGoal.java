@@ -30,16 +30,21 @@ public class DrinkPotionGoal extends Goal {
     }
 
     private boolean hasDrinkablePotion() {
+        val fakePlayer = clientInstance.getFakePlayer();
+
+        if (fakePlayer == null)
+            return false;
         val inventory = fakePlayer.getInventory();
         return inventory == null ? false : inventory.containsPotion(potion -> !potion.isSplash());
     }
 
     private boolean canSeeEnemy() {
+        val fakePlayer = clientInstance.getFakePlayer();
         val world = fakePlayer.getWorld();
         return world == null ? false
                 : world.getEntities().stream()
                         .anyMatch(entity -> entity instanceof ClientPlayer
-                                && !fakePlayer.getFriendlyEntityUUIDs().contains(entity.getUuid()));
+                                && !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid()));
     }
 
     private void drinkPotion() {
@@ -48,6 +53,7 @@ public class DrinkPotionGoal extends Goal {
 
     private void switchToDrinkablePotion() {
         var potionSlot = -1;
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null)
@@ -131,6 +137,7 @@ public class DrinkPotionGoal extends Goal {
     @Override
     public void onTick() {
 
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null)

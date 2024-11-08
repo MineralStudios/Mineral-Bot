@@ -44,6 +44,7 @@ public class MeleeCombatGoal extends Goal {
     private void switchToBestMeleeWeapon() {
         var bestMeleeWeaponSlot = 0;
         var damage = 0.0D;
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null)
@@ -64,6 +65,7 @@ public class MeleeCombatGoal extends Goal {
     private void findTarget() {
         val targetSearchRange = clientInstance.getConfiguration().getTargetSearchRange();
 
+        val fakePlayer = clientInstance.getFakePlayer();
         val world = fakePlayer.getWorld();
 
         if (world == null)
@@ -97,7 +99,11 @@ public class MeleeCombatGoal extends Goal {
     }
 
     private boolean isTargetValid(ClientLivingEntity entity, float range) {
-        return !fakePlayer.getFriendlyEntityUUIDs().contains(entity.getUuid())
+        val fakePlayer = clientInstance.getFakePlayer();
+
+        if (fakePlayer == null)
+            return false;
+        return !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid())
                 && fakePlayer.distance3DTo(entity) <= range && entity instanceof ClientPlayer;
     }
 
@@ -113,6 +119,7 @@ public class MeleeCombatGoal extends Goal {
         accuracy = max(0.01f, accuracy);
 
         val deviation = 3f / accuracy;
+        val fakePlayer = clientInstance.getFakePlayer();
         val newTarget = (float) fakePlayer.getRandom().nextGaussian(target, deviation);
         val newDifference = angleDifference(current, newTarget);
 
@@ -130,6 +137,7 @@ public class MeleeCombatGoal extends Goal {
         if (target == null)
             return;
 
+        val fakePlayer = clientInstance.getFakePlayer();
         val optimalAngles = computeOptimalYawAndPitch(fakePlayer, target);
 
         if (fakePlayer.distance3DTo(target) > 6.0f) {
@@ -192,6 +200,7 @@ public class MeleeCombatGoal extends Goal {
     private long nextClick = 0;
 
     private void attackTarget() {
+        val fakePlayer = clientInstance.getFakePlayer();
         nextClick = (long) (timeMillis() + fakePlayer.getRandom().nextGaussian(meanDelay, deviation));
         pressButton(25, MouseButton.Type.LEFT_CLICK);
     }
@@ -207,6 +216,7 @@ public class MeleeCombatGoal extends Goal {
         if (target == null)
             return;
 
+        val fakePlayer = clientInstance.getFakePlayer();
         val distance = fakePlayer.distance2DTo(target.getX(), target.getZ());
         if (!fakePlayer.isOnGround() || distance > 2.85 /*
                                                          * || timeMillis() - fakePlayer.getLastHitSelected()
@@ -222,6 +232,7 @@ public class MeleeCombatGoal extends Goal {
     }
 
     private byte strafeDirection(ClientEntity target) {
+        val fakePlayer = clientInstance.getFakePlayer();
         val toPlayer = new double[] { fakePlayer.getX() - target.getX(),
                 fakePlayer.getY() - target.getY(),
                 fakePlayer.getZ() - target.getZ() };
@@ -246,6 +257,7 @@ public class MeleeCombatGoal extends Goal {
         if (target == null)
             return;
 
+        val fakePlayer = clientInstance.getFakePlayer();
         val meanX = (fakePlayer.getX() + target.getX()) / 2;
         val meanY = (fakePlayer.getY() + target.getY()) / 2;
         val meanZ = (fakePlayer.getZ() + target.getZ()) / 2;
@@ -348,6 +360,7 @@ public class MeleeCombatGoal extends Goal {
         lastHitTick = clientInstance.getCurrentTick();
         val entity = event.getAttackedEntity();
 
+        val fakePlayer = clientInstance.getFakePlayer();
         if (entity == null || entity.getY() - fakePlayer.getY() > 1.5)
             return false;
 

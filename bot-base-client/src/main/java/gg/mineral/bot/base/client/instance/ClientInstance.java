@@ -3,10 +3,13 @@ package gg.mineral.bot.base.client.instance;
 import java.io.File;
 import java.net.Proxy;
 import java.util.Queue;
-
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.common.collect.Multimap;
 
@@ -16,8 +19,11 @@ import gg.mineral.bot.api.controls.Mouse;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.goal.Goal;
+import gg.mineral.bot.api.inv.Inventory;
+import gg.mineral.bot.api.inv.InventoryContainer;
+import gg.mineral.bot.api.math.BoundingBox;
 import gg.mineral.bot.api.screen.Screen;
-
+import gg.mineral.bot.api.world.ClientWorld;
 import gg.mineral.bot.base.client.gui.GuiConnecting.ConnectFunction;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.impl.thread.ThreadManager;
@@ -222,16 +228,130 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     public FakePlayer getFakePlayer() {
         if (this.thePlayer instanceof FakePlayer fakePlayer)
             return fakePlayer;
-        else if (!isMainThread()) {
-            while (this.thePlayer == null)
-                Thread.sleep(1);
+        else
+            return new FakePlayer() {
 
-            if (this.thePlayer instanceof FakePlayer fakePlayer)
-                return fakePlayer;
-            else
-                return null;
-        } else
-            return null;
+                @Override
+                public double getLastReportedX() {
+                    return 0;
+                }
+
+                @Override
+                public double getLastReportedY() {
+                    return 0;
+                }
+
+                @Override
+                public double getLastReportedZ() {
+                    return 0;
+                }
+
+                @Override
+                public @Nullable Inventory getInventory() {
+                    return null;
+                }
+
+                @Override
+                public @Nullable InventoryContainer getInventoryContainer() {
+                    return null;
+                }
+
+                @Override
+                public float getEyeHeight() {
+                    return 0;
+                }
+
+                @Override
+                public String getUsername() {
+                    return configuration.getFullUsername();
+                }
+
+                @Override
+                public double getHeadY() {
+                    return 0;
+                }
+
+                @Override
+                public int[] getActivePotionEffectIds() {
+                    return new int[0];
+                }
+
+                @Override
+                public UUID getUuid() {
+                    return configuration.getUuid();
+                }
+
+                @Override
+                public @Nullable BoundingBox getBoundingBox() {
+                    return null;
+                }
+
+                @Override
+                public int getEntityId() {
+                    return 0;
+                }
+
+                @Override
+                public double getX() {
+                    return 0;
+                }
+
+                @Override
+                public double getY() {
+                    return 0;
+                }
+
+                @Override
+                public double getZ() {
+                    return 0;
+                }
+
+                @Override
+                public float getYaw() {
+                    return 0;
+                }
+
+                @Override
+                public float getPitch() {
+                    return 0;
+                }
+
+                @Override
+                public boolean isOnGround() {
+                    return false;
+                }
+
+                @Override
+                public double getLastX() {
+                    return 0;
+                }
+
+                @Override
+                public double getLastY() {
+                    return 0;
+                }
+
+                @Override
+                public double getLastZ() {
+                    return 0;
+                }
+
+                @Override
+                public @Nullable ClientWorld getWorld() {
+                    return null;
+                }
+
+                @Override
+                public Random getRandom() {
+                    return new Random();
+                }
+
+                @Override
+                public gg.mineral.bot.api.instance.ClientInstance getClientInstance() {
+                    return ClientInstance.this;
+                }
+
+            };
     }
 
     @Override

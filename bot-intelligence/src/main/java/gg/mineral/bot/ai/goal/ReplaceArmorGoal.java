@@ -22,6 +22,7 @@ public class ReplaceArmorGoal extends Goal {
     @Override
     public boolean shouldExecute() {
 
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null)
@@ -37,6 +38,7 @@ public class ReplaceArmorGoal extends Goal {
     }
 
     private Item.Type missingArmorPiece() {
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
         if (inventory == null)
             return Item.Type.NONE;
@@ -57,10 +59,12 @@ public class ReplaceArmorGoal extends Goal {
     }
 
     private boolean canSeeEnemy() {
+        val fakePlayer = clientInstance.getFakePlayer();
         val world = fakePlayer.getWorld();
         return world == null ? false
                 : world.getEntities().stream()
-                        .anyMatch(entity -> !fakePlayer.getFriendlyEntityUUIDs().contains(entity.getUuid()));
+                        .anyMatch(entity -> !clientInstance.getConfiguration().getFriendlyUUIDs()
+                                .contains(entity.getUuid()));
     }
 
     private void applyArmor() {
@@ -69,6 +73,7 @@ public class ReplaceArmorGoal extends Goal {
 
     private void switchToArmor() {
         var armorSlot = -1;
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null)
@@ -148,6 +153,7 @@ public class ReplaceArmorGoal extends Goal {
 
     @Override
     public void onTick() {
+        val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
         if (inventory == null)
