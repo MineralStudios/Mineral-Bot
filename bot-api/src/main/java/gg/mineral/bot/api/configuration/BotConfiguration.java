@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Set;
 import java.util.UUID;
 
+import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.entity.living.player.skin.Skins;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,7 +38,7 @@ public class BotConfiguration {
     @Builder.Default
     private boolean debug = false;
     @Builder.Default
-    Set<UUID> friendlyUUIDs = Set.of();
+    Set<UUID> friendlyUUIDs = BotAPI.INSTANCE.collections().newSet();
 
     public String getFullUsername() {
         return usernamePrefix + username + usernameSuffix;

@@ -4,11 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
 import java.util.UUID;
 
 import com.google.common.collect.HashMultimap;
 
 import gg.mineral.bot.api.BotAPI;
+import gg.mineral.bot.api.collections.OptimizedCollections;
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
@@ -81,6 +83,11 @@ public abstract class BotImpl extends BotAPI implements Logger {
                 return spawn(configuration, "localhost", 25565);
             }
         };
+    }
+
+    @Override
+    public OptimizedCollections collections() {
+        return new gg.mineral.bot.base.client.collections.OptimizedCollections();
     }
 
     @Override

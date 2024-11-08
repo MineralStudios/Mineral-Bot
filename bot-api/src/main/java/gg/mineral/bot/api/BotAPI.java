@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import gg.mineral.bot.api.collections.OptimizedCollections;
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.instance.ClientInstance;
@@ -32,6 +33,8 @@ public abstract class BotAPI {
     public abstract Collection<FakePlayer> getFakePlayers();
 
     protected final List<SpawnRecord> spawnRecords = new ArrayList<SpawnRecord>();
+
+    public abstract OptimizedCollections collections();
 
     public record SpawnRecord(String name, long time) {
     }
