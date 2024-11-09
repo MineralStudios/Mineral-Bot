@@ -170,13 +170,15 @@ public class EatGappleGoal extends Goal {
         if (eating || hasRegen)
             return;
         // TODO: lookaway
+        if (!delayedTasks.isEmpty())
+            return;
 
         val itemStack = inventory.getHeldItemStack();
 
         if (itemStack != null && itemStack.getItem().getId() == Item.GOLDEN_APPLE)
-            eatGapple();
+            schedule(() -> eatGapple(), 100);
         else
-            switchToGapple();
+            schedule(() -> switchToGapple(), 100);
     }
 
     @Override

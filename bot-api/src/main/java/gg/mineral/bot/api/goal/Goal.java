@@ -21,7 +21,7 @@ import lombok.val;
 public abstract class Goal implements MathUtil {
     @NonNull
     protected final ClientInstance clientInstance;
-    private Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
+    protected Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
 
     protected static long timeMillis() {
         return System.nanoTime() / 1000000;

@@ -159,11 +159,13 @@ public class DrinkPotionGoal extends Goal {
         if (drinking)
             return;
 
+        if (!delayedTasks.isEmpty())
+            return;
         // TODO: lookaway
         if (itemStack != null && itemStack.getItem().getId() == Item.POTION)
-            drinkPotion();
+            schedule(() -> drinkPotion(), 100);
         else
-            switchToDrinkablePotion();
+            schedule(() -> switchToDrinkablePotion(), 100);
 
     }
 

@@ -163,10 +163,13 @@ public class ReplaceArmorGoal extends Goal {
 
         val missingArmorPiece = missingArmorPiece();
 
+        if (!delayedTasks.isEmpty())
+            return;
+
         if (itemStack != null && missingArmorPiece.isType(itemStack.getItem().getId()))
-            applyArmor();
+            schedule(() -> applyArmor(), 100);
         else
-            switchToArmor();
+            schedule(() -> switchToArmor(), 100);
     }
 
     @Override
