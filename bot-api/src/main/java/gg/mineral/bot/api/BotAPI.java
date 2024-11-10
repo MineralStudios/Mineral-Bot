@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 import gg.mineral.bot.api.collections.OptimizedCollections;
 import gg.mineral.bot.api.configuration.BotConfiguration;
@@ -35,6 +36,10 @@ public abstract class BotAPI {
     protected final List<SpawnRecord> spawnRecords = new ArrayList<SpawnRecord>();
 
     public abstract OptimizedCollections collections();
+
+    public abstract ExecutorService getGameLoopExecutor();
+
+    public abstract ExecutorService getAsyncExecutor();
 
     public record SpawnRecord(String name, long time) {
     }

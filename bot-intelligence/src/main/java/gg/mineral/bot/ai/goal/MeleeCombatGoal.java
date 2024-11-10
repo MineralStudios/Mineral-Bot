@@ -100,9 +100,6 @@ public class MeleeCombatGoal extends Goal {
 
     private boolean isTargetValid(ClientLivingEntity entity, float range) {
         val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return false;
         return !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid())
                 && fakePlayer.distance3DTo(entity) <= range && entity instanceof ClientPlayer;
     }

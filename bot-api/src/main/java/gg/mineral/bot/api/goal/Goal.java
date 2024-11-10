@@ -1,6 +1,7 @@
 package gg.mineral.bot.api.goal;
 
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -9,6 +10,7 @@ import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.Keyboard;
 import gg.mineral.bot.api.controls.Mouse;
 import gg.mineral.bot.api.controls.MouseButton;
+import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.util.MathUtil;
@@ -18,7 +20,7 @@ import lombok.val;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class Goal implements MathUtil {
+public abstract class Goal implements MathUtil, Logger {
     @NonNull
     protected final ClientInstance clientInstance;
     protected Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
@@ -76,18 +78,12 @@ public abstract class Goal implements MathUtil {
 
     public void setMouseYaw(float yaw) {
         val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         val rotYaw = fakePlayer.getYaw();
         getMouse().changeYaw(angleDifference(rotYaw, yaw));
     }
 
     public void setMousePitch(float pitch) {
         val fakePlayer = clientInstance.getFakePlayer();
-
-        if (fakePlayer == null)
-            return;
         val rotPitch = fakePlayer.getPitch();
         getMouse().changePitch(angleDifference(rotPitch, pitch));
     }
@@ -153,5 +149,10 @@ public abstract class Goal implements MathUtil {
 
             break;
         }
+    }
+
+    @Override
+    public UUID getIdentifier() {
+        return clientInstance.getConfiguration().getUuid();
     }
 }

@@ -1,15 +1,16 @@
 package net.minecraft.scoreboard;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
+
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class ScorePlayerTeam extends Team {
     private final Scoreboard theScoreboard;
     private final String field_96675_b;
 
     /** A set of all team member usernames. */
-    private final Set membershipSet = new HashSet();
+    private final Set<String> membershipSet = new ObjectOpenHashSet<>();
     private String teamNameSPT;
     private String namePrefixSPT = "";
     private String colorSuffix = "";
@@ -42,7 +43,7 @@ public class ScorePlayerTeam extends Team {
         }
     }
 
-    public Collection getMembershipCollection() {
+    public Collection<String> getMembershipCollection() {
         return this.membershipSet;
     }
 
@@ -54,12 +55,11 @@ public class ScorePlayerTeam extends Team {
     }
 
     public void setNamePrefix(String p_96666_1_) {
-        if (p_96666_1_ == null) {
+        if (p_96666_1_ == null)
             throw new IllegalArgumentException("Prefix cannot be null");
-        } else {
-            this.namePrefixSPT = p_96666_1_;
-            this.theScoreboard.func_96538_b(this);
-        }
+
+        this.namePrefixSPT = p_96666_1_;
+        this.theScoreboard.func_96538_b(this);
     }
 
     /**
@@ -70,12 +70,11 @@ public class ScorePlayerTeam extends Team {
     }
 
     public void setNameSuffix(String p_96662_1_) {
-        if (p_96662_1_ == null) {
+        if (p_96662_1_ == null)
             throw new IllegalArgumentException("Suffix cannot be null");
-        } else {
-            this.colorSuffix = p_96662_1_;
-            this.theScoreboard.func_96538_b(this);
-        }
+
+        this.colorSuffix = p_96662_1_;
+        this.theScoreboard.func_96538_b(this);
     }
 
     public String func_142053_d(String p_142053_1_) {

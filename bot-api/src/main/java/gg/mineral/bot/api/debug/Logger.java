@@ -1,32 +1,60 @@
 package gg.mineral.bot.api.debug;
 
-import gg.mineral.bot.api.message.ChatColor;
+import java.util.Date;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
+
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
+import lombok.val;
 
 public interface Logger {
-    boolean isLoggingEnabled();
 
-    default void info(String message) {
-        if (!isLoggingEnabled())
-            return;
-        System.out.println("[Mineral-Bot ~ INFO] " + message);
+    public static Cache<UUID, ConcurrentLinkedQueue<Log>> logCache = Caffeine.newBuilder()
+            .maximumSize(10000)
+            .expireAfterWrite(15, TimeUnit.MINUTES)
+            .build();
+
+    UUID getIdentifier();
+
+    public record Log(LogLevel level, long timeNanos, String message, Object obj, String threadName) {
+        public Date getTime() {
+            return new Date(timeNanos / 1000000);
+        }
     }
 
-    default void warn(String message) {
-        if (!isLoggingEnabled())
-            return;
-        System.out.println(ChatColor.YELLOW + "[Mineral-Bot ~ WARN] " + message);
+    public enum LogLevel {
+        INFO, WARN, ERROR, SUCCESS
     }
 
-    default void error(String message) {
-        if (!isLoggingEnabled())
-            return;
-        System.out.println(ChatColor.RED + "[Mineral-Bot ~ ERROR] " + message);
+    default void info(Object obj, String message) {
+        val thread = Thread.currentThread();
+        val identifier = getIdentifier();
+        val log = new Log(LogLevel.INFO, System.nanoTime(), message, obj, thread.getName());
+        logCache.get(identifier, k -> new ConcurrentLinkedQueue<>()).add(log);
     }
 
-    default void success(String message) {
-        if (!isLoggingEnabled())
-            return;
-        System.out.println(ChatColor.GREEN + "[Mineral-Bot ~ SUCCESS] " + message);
+    default void warn(Object obj, String message) {
+        val thread = Thread.currentThread();
+        val identifier = getIdentifier();
+        val log = new Log(LogLevel.WARN, System.nanoTime(), message, obj, thread.getName());
+        logCache.get(identifier, k -> new ConcurrentLinkedQueue<>()).add(log);
+    }
+
+    default void error(Object obj, String message) {
+        val thread = Thread.currentThread();
+        val identifier = getIdentifier();
+        val log = new Log(LogLevel.ERROR, System.nanoTime(), message, obj, thread.getName());
+        logCache.get(identifier, k -> new ConcurrentLinkedQueue<>()).add(log);
+    }
+
+    default void success(Object obj, String message) {
+        val thread = Thread.currentThread();
+        val identifier = getIdentifier();
+        val log = new Log(LogLevel.SUCCESS, System.nanoTime(), message, obj, thread.getName());
+        logCache.get(identifier, k -> new ConcurrentLinkedQueue<>()).add(log);
     }
 
     default void println(String message) {

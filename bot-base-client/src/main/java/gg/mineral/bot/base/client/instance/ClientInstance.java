@@ -162,9 +162,6 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
         val fakePlayer = getFakePlayer();
 
-        if (fakePlayer == null)
-            return;
-
         currentTick++;
 
         latency = (int) fakePlayer.getRandom().nextGaussian(getConfiguration().getLatency(),
@@ -181,9 +178,9 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     public <T extends Goal> void startGoals(@SuppressWarnings("unchecked") T... goals) {
         for (val goal : goals) {
             if (this.goals.add(goal))
-                info("Added goal: " + goal.getClass().getSimpleName());
+                info(this, "Added goal: " + goal.getClass().getSimpleName());
             else
-                info("Failed to add goal: " + goal.getClass().getSimpleName());
+                info(this, "Failed to add goal: " + goal.getClass().getSimpleName());
         }
     }
 
@@ -196,7 +193,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
         this.running = false;
 
-        info("Stopping!");
+        info(this, "Stopping!");
 
         try {
             this.loadWorld((WorldClient) null);

@@ -4,15 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 import com.google.common.collect.HashMultimap;
 
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.collections.OptimizedCollections;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.bot.api.debug.Logger;
+
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.math.ServerLocation;
@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.val;
 
-public abstract class BotImpl extends BotAPI implements Logger {
+public abstract class BotImpl extends BotAPI {
 
     private long lastSpawnInfo = 0;
 
@@ -71,9 +71,8 @@ public abstract class BotImpl extends BotAPI implements Logger {
         println(ChatColor.WHITE + "Names: " + sb.toString() + ChatColor.RESET);
     }
 
-    @Override
-    public boolean isLoggingEnabled() {
-        return true;
+    private void println(String message) {
+        System.out.println(message);
     }
 
     public static void init() {
@@ -83,6 +82,16 @@ public abstract class BotImpl extends BotAPI implements Logger {
                 return spawn(configuration, "localhost", 25565);
             }
         };
+    }
+
+    @Override
+    public ExecutorService getGameLoopExecutor() {
+        return ThreadManager.getGameLoopExecutor();
+    }
+
+    @Override
+    public ExecutorService getAsyncExecutor() {
+        return ThreadManager.getAsyncExecutor();
     }
 
     @Override

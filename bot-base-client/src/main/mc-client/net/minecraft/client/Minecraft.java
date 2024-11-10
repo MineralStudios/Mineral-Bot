@@ -436,8 +436,8 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
                 : (new YggdrasilAuthenticationService(p_i1103_9_, UUID.randomUUID().toString()))
                         .createMinecraftSessionService();
         this.session = p_i1103_1_;
-        info("Setting user: " + p_i1103_1_.getUsername());
-        info("(Session ID is " + p_i1103_1_.getSessionID() + ")");
+        info(this, "Setting user: " + p_i1103_1_.getUsername());
+        info(this, "(Session ID is " + p_i1103_1_.getSessionID() + ")");
         this.isDemo = p_i1103_5_;
         this.displayWidth = p_i1103_2_;
         this.displayHeight = p_i1103_3_;
@@ -551,7 +551,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
         Display.setResizable(true);
         Display.setTitle("Mineral Bot Client 1.7.10");
 
-        info("LWJGL Version: " + Sys.getVersion());
+        info(this, "LWJGL Version: " + Sys.getVersion());
 
         val osType = Util.getOSType();
 
@@ -724,7 +724,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
             this.gameSettings.saveOptions();
         }
 
-        info("Game has been started successfully!");
+        info(this, "Game has been started successfully!");
     }
 
     public boolean func_152349_b() {
@@ -981,7 +981,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     public void shutdownMinecraftApplet() {
         ThreadManager.shutdown();
         try {
-            info("Stopping!");
+            info(this, "Stopping!");
 
             try {
                 this.loadWorld((WorldClient) null);
@@ -2582,8 +2582,9 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     }
 
     @Override
-    public boolean isLoggingEnabled() {
-        return this instanceof ClientInstance instance && instance.getConfiguration() != null
-                && instance.getConfiguration().isDebug();
+    public UUID getIdentifier() {
+        if (this instanceof ClientInstance clientInstance)
+            return clientInstance.getConfiguration().getUuid();
+        return UUID.randomUUID();
     }
 }

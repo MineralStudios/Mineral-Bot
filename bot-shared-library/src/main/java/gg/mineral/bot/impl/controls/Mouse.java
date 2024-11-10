@@ -2,6 +2,7 @@ package gg.mineral.bot.impl.controls;
 
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gg.mineral.bot.api.controls.MouseButton.Type;
@@ -71,7 +72,7 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
             if (eventHandler.callEvent(event))
                 continue;
 
-            info("Pressing button: " + type);
+            info(this, "Pressing button: " + type);
             button.setPressed(true);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -95,7 +96,7 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
             if (eventHandler.callEvent(event))
                 continue;
 
-            info("Unpressing button: " + type);
+            info(this, "Unpressing button: " + type);
             button.setPressed(false);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -240,8 +241,9 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
     }
 
     @Override
-    public boolean isLoggingEnabled() {
-        return eventHandler instanceof ClientInstance instance && instance.getConfiguration() != null
-                && instance.getConfiguration().isDebug();
+    public UUID getIdentifier() {
+        if (eventHandler instanceof ClientInstance clientInstance)
+            return clientInstance.getConfiguration().getUuid();
+        return UUID.randomUUID();
     }
 }

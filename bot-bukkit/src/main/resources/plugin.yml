@@ -6,6 +6,6 @@ description: Mineral Bot Plugin
 api: '1.8.9'
 
 commands:
-  connect:
-    description: Connect to the bot
-    usage: /connect <username>
+  mineralbot:
+    description: Mineral Bot Command
+    usage: /mineralbot

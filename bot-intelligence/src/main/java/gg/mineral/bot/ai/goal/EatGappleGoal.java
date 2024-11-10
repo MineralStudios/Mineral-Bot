@@ -33,41 +33,63 @@ public class EatGappleGoal extends Goal {
             if (activeIds[i] == regenId)
                 hasRegen = true;
 
-        return eating || canSeeEnemy() && hasGapple() && !hasRegen;
+        boolean shouldExecute = eating || canSeeEnemy() && hasGapple() && !hasRegen;
+        info(this, "Checking shouldExecute: " + shouldExecute);
+        return shouldExecute;
     }
 
     public EatGappleGoal(ClientInstance clientInstance) {
         super(clientInstance);
+        info(this, "EatGappleGoal initialized");
     }
 
     private boolean hasGapple() {
         val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
-        return inventory == null ? false : inventory.contains(Item.GOLDEN_APPLE);
+
+        if (inventory == null) {
+            warn(this, "Inventory is null");
+            return false;
+        }
+
+        boolean hasGapple = inventory.contains(Item.GOLDEN_APPLE);
+        info(this, "Has golden apple: " + hasGapple);
+        return hasGapple;
     }
 
     private boolean canSeeEnemy() {
         val fakePlayer = clientInstance.getFakePlayer();
         val world = fakePlayer.getWorld();
-        return world == null ? false
-                : world.getEntities().stream()
-                        .anyMatch(entity -> entity instanceof ClientPlayer
-                                && !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid()));
+
+        if (world == null) {
+            warn(this, "World is null");
+            return false;
+        }
+
+        boolean canSeeEnemy = world.getEntities().stream()
+                .anyMatch(entity -> entity instanceof ClientPlayer
+                        && !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid()));
+        info(this, "Checking canSeeEnemy: " + canSeeEnemy);
+        return canSeeEnemy;
     }
 
     private void eatGapple() {
         this.eating = true;
+        success(this, "Started eating golden apple");
     }
 
     private void switchToGapple() {
+        eating = false;
+        info(this, "Switching to golden apple");
         var gappleSlot = -1;
         val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
-        if (inventory == null)
+        if (inventory == null) {
+            warn(this, "Inventory is null");
             return;
+        }
 
-        // Search hotbar
         for (int i = 0; i < 36; i++) {
             val itemStack = inventory.getItemStackAt(i);
             if (itemStack == null)
@@ -83,6 +105,7 @@ public class EatGappleGoal extends Goal {
             if (!inventoryOpen) {
                 inventoryOpen = true;
                 pressKey(10, Key.Type.KEY_E);
+                info(this, "Opened inventory to access golden apple");
                 return;
             }
 
@@ -90,13 +113,15 @@ public class EatGappleGoal extends Goal {
 
             if (screen == null) {
                 inventoryOpen = false;
+                warn(this, "Screen is null; closing inventory");
                 return;
             }
-            // Move mouse
+
             val inventoryContainer = fakePlayer.getInventoryContainer();
 
             if (inventoryContainer == null) {
                 inventoryOpen = false;
+                warn(this, "Inventory container is null; closing inventory");
                 return;
             }
 
@@ -105,6 +130,7 @@ public class EatGappleGoal extends Goal {
             if (slot == null) {
                 inventoryOpen = false;
                 pressKey(10, Key.Type.KEY_ESCAPE);
+                warn(this, "Golden apple slot is null; closing inventory");
                 return;
             }
 
@@ -118,33 +144,35 @@ public class EatGappleGoal extends Goal {
                 if (currX != x || currY != y) {
                     setMouseX(x);
                     setMouseY(y);
+                    info(this, "Moving mouse to golden apple slot at x: " + x + ", y: " + y);
                 } else {
-                    // Move to end slot
                     pressKey(10, Key.Type.KEY_8);
+                    success(this, "Moved to end slot for golden apple");
                 }
-
             }
-
             return;
         }
 
         if (inventoryOpen) {
             inventoryOpen = false;
             pressKey(10, Key.Type.KEY_ESCAPE);
+            info(this, "Closing inventory after switching to golden apple");
             return;
         }
 
         pressKey(10, Key.Type.valueOf("KEY_" + (gappleSlot + 1)));
+        success(this, "Switched to golden apple slot: " + (gappleSlot + 1));
     }
 
     @Override
     public void onTick() {
-
         val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 
-        if (inventory == null)
+        if (inventory == null) {
+            warn(this, "Inventory is null on tick");
             return;
+        }
 
         var hasRegen = false;
         val regenId = PotionEffectType.REGENERATION.getId();
@@ -156,36 +184,48 @@ public class EatGappleGoal extends Goal {
                 break;
             }
 
-        if (eating && hasRegen)
+        if (eating && hasRegen) {
             eating = false;
+            info(this, "Stopped eating as regeneration is active");
+        }
 
         val rmbHeld = getButton(MouseButton.Type.RIGHT_CLICK).isPressed();
 
-        if (eating && !rmbHeld)
-            pressButton(MouseButton.Type.RIGHT_CLICK);
-
-        if (!eating && rmbHeld)
+        if (!eating && rmbHeld) {
             unpressButton(MouseButton.Type.RIGHT_CLICK);
+            info(this, "Unpressed RIGHT_CLICK as eating stopped");
+        }
 
-        if (eating || hasRegen)
+        if (hasRegen)
             return;
-        // TODO: lookaway
+
+        if (eating && !rmbHeld) {
+            pressButton(MouseButton.Type.RIGHT_CLICK);
+            info(this, "Pressed RIGHT_CLICK for eating golden apple");
+        }
+
         if (!delayedTasks.isEmpty())
             return;
 
         val itemStack = inventory.getHeldItemStack();
 
-        if (itemStack != null && itemStack.getItem().getId() == Item.GOLDEN_APPLE)
+        if (itemStack != null && itemStack.getItem().getId() == Item.GOLDEN_APPLE) {
             schedule(() -> eatGapple(), 100);
-        else
+            info(this, "Scheduled eatGapple task");
+        } else {
             schedule(() -> switchToGapple(), 100);
+            info(this, "Scheduled switchToGapple task");
+        }
     }
 
     @Override
     public boolean onEvent(Event event) {
-        if (event instanceof MouseButtonEvent mouseButtonEvent)
-            if (eating && mouseButtonEvent.getType() == MouseButton.Type.RIGHT_CLICK && !mouseButtonEvent.isPressed())
+        if (event instanceof MouseButtonEvent mouseButtonEvent) {
+            if (eating && mouseButtonEvent.getType() == MouseButton.Type.RIGHT_CLICK && !mouseButtonEvent.isPressed()) {
+                info(this, "Ignoring RIGHT_CLICK release event while eating");
                 return true;
+            }
+        }
         return false;
     }
 
