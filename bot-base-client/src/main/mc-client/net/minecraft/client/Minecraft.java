@@ -2583,8 +2583,11 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
 
     @Override
     public UUID getIdentifier() {
-        if (this instanceof ClientInstance clientInstance)
-            return clientInstance.getConfiguration().getUuid();
-        return UUID.randomUUID();
+        if (this instanceof ClientInstance clientInstance) {
+            val configuration = clientInstance.getConfiguration();
+            if (configuration != null)
+                return configuration.getUuid();
+        }
+        return this.getSession().getGameProfile().getId();
     }
 }
