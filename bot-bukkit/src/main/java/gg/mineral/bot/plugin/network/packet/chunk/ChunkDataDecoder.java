@@ -11,8 +11,8 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
 public class ChunkDataDecoder {
     private static Cache<ChunkParams, ChunkFillData> chunkCache = Caffeine.newBuilder()
-            .maximumSize(1000)
-            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .maximumSize(100)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
             .build();
 
     public static ChunkFillData decode(byte[] data, int primaryBitMask, boolean groundUpContinuous) {

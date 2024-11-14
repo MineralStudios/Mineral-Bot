@@ -22,6 +22,8 @@ public class ReplaceArmorGoal extends Goal {
     @Override
     public boolean shouldExecute() {
 
+        // TODO: don't replace armor if eating gapple or drinking potion
+
         val fakePlayer = clientInstance.getFakePlayer();
         val inventory = fakePlayer.getInventory();
 

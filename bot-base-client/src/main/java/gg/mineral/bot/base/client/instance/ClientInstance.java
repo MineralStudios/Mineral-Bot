@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.common.collect.Multimap;
@@ -64,7 +65,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
         return false;
     }
 
-    public ClientInstance(BotConfiguration configuration, int width, int height,
+    public ClientInstance(@NonNull BotConfiguration configuration, int width, int height,
             boolean fullscreen,
             boolean demo, File gameDir, File assetsDir, File resourcePackDir, Proxy proxy, String version,
             @SuppressWarnings("rawtypes") Multimap userProperties, String assetIndex) {
