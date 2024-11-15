@@ -1,7 +1,6 @@
 package net.minecraft.client.multiplayer;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
@@ -17,6 +16,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -60,7 +60,7 @@ public class WorldClient extends World implements ClientWorld {
     private Int2ObjectOpenHashMap<ClientEntity> entityHashSet = new Int2ObjectOpenHashMap<>();
 
     /** Contains all entities for this client, both spawned and non-spawned. */
-    private Set entityList = new HashSet();
+    private Set<Entity> entityList = new ObjectOpenHashSet<>();
 
     /**
      * Contains all entities for this client that were not spawned due to a
@@ -68,7 +68,7 @@ public class WorldClient extends World implements ClientWorld {
      * spawn up to 10 pending entities with each subsequent tick until the spawn
      * queue is empty.
      */
-    private Set entitySpawnQueue = new HashSet();
+    private Set<Entity> entitySpawnQueue = new ObjectOpenHashSet<>();
     public final Minecraft mc;
     private final LongSet previousActiveChunkSet = new LongOpenHashSet();
 
