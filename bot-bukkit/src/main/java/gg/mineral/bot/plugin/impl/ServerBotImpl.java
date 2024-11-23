@@ -162,9 +162,13 @@ public class ServerBotImpl extends BotImpl implements Listener {
         serverSide.syncInventory();
 
         ThreadManager.getAsyncExecutor().execute(() -> {
-            instance.run();
-            InstanceManager.getInstances().put(configuration.getUuid(), instance);
-            MinecraftServer.getServer().postToMainThread(() -> sNetworkManager.releasePacketQueue());
+            try {
+                instance.run();
+                InstanceManager.getInstances().put(configuration.getUuid(), instance);
+                MinecraftServer.getServer().postToMainThread(() -> sNetworkManager.releasePacketQueue());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
 
         spawnRecords.add(new SpawnRecord(configuration.getUsername(), (System.nanoTime() / 1000000) - startTime));
