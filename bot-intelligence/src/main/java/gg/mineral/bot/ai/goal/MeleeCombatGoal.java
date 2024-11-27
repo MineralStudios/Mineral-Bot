@@ -15,7 +15,7 @@ import gg.mineral.bot.api.goal.Goal;
 
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.inv.item.Item;
-
+import gg.mineral.bot.api.world.block.Block;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -26,6 +26,7 @@ public class MeleeCombatGoal extends Goal {
     private ClientLivingEntity target;
 
     private final long meanDelay, deviation;
+    private long lastBounceTime;
 
     private int lastTargetSwitchTick = 0, lastSprintResetTick = 0;
 
@@ -188,6 +189,104 @@ public class MeleeCombatGoal extends Goal {
                 + (yawDiffFactor * diffFactorEquation);
     }
 
+    private boolean isCollidingWithWall() {
+        val fakePlayer = clientInstance.getFakePlayer();
+        val world = fakePlayer.getWorld();
+        if (world == null)
+            return false;
+
+        double posX = fakePlayer.getX();
+        double posY = fakePlayer.getY() + fakePlayer.getEyeHeight();
+        double posZ = fakePlayer.getZ();
+        float yaw = fakePlayer.getYaw();
+        float pitch = 0;
+
+        double checkDistance = 1.0;
+
+        // Check for collision in the direction the bot is facing
+        double[] dir = vectorForRotation(pitch, yaw);
+        double checkX = posX + dir[0] * checkDistance;
+        double checkY = posY + dir[1] * checkDistance;
+        double checkZ = posZ + dir[2] * checkDistance;
+
+        val block = world.getBlockAt(checkX, checkY, checkZ);
+        return block != null && block.getId() != Block.AIR;
+    }
+
+    private double[] getCollisionNormal() {
+        val fakePlayer = clientInstance.getFakePlayer();
+        val world = fakePlayer.getWorld();
+        if (world == null)
+            return null;
+
+        double posX = fakePlayer.getX();
+        double posY = fakePlayer.getY() + fakePlayer.getEyeHeight();
+
+        // Sampling multiple points around the bot
+        int sampleCount = 8;
+        double checkDistance = 0.5;
+        double[] normal = new double[] { 0, 0, 0 };
+
+        for (int i = 0; i < sampleCount; i++) {
+            float angle = fakePlayer.getYaw() + (float) (360.0 / sampleCount * i);
+            double[] dir = vectorForRotation(0, angle);
+
+            double checkX = posX + dir[0] * checkDistance;
+            double checkY = posY;
+            double checkZ = fakePlayer.getZ() + dir[2] * checkDistance;
+
+            val block = world.getBlockAt(checkX, checkY, checkZ);
+            if (block != null && block.getId() != Block.AIR) {
+                // Add the opposite of the direction to the normal
+                normal[0] += -dir[0];
+                normal[1] += 0; // We ignore Y for horizontal normal
+                normal[2] += -dir[2];
+            }
+        }
+
+        double length = sqrt(normal[0] * normal[0] + normal[2] * normal[2]);
+        if (length == 0)
+            return null;
+
+        // Normalize the normal vector
+        normal[0] /= length;
+        normal[2] /= length;
+
+        return normal;
+    }
+
+    private void reflectOffWall() {
+        val fakePlayer = clientInstance.getFakePlayer();
+        double[] normal = getCollisionNormal();
+        if (normal == null)
+            return;
+
+        // Normalize the normal vector (should already be normalized)
+        double normX = normal[0];
+        double normZ = normal[2];
+
+        // Get direction vector
+        float yaw = fakePlayer.getYaw();
+
+        // Convert yaw to radians
+        double yawRad = Math.toRadians(yaw);
+
+        // Direction vector in x and z
+        double dirX = -Math.sin(yawRad);
+        double dirZ = Math.cos(yawRad);
+
+        // Perform reflection R = V - 2(V ⋅ N)N
+        double dot = dirX * normX + dirZ * normZ; // Only x and z components
+        double reflectedX = dirX - 2 * dot * normX;
+        double reflectedZ = dirZ - 2 * dot * normZ;
+
+        float newYaw = (float) toDegrees(fastArcTan2(-reflectedX, reflectedZ));
+
+        setMouseYaw(newYaw);
+
+        this.lastBounceTime = timeMillis();
+    }
+
     public double calculateVerticalAimSpeed(double pitchDiff) {
         val pitchDiffFactor = 1;
         val diffFactorEquation = 2 * pitchDiff / 5;
@@ -215,17 +314,26 @@ public class MeleeCombatGoal extends Goal {
 
         val fakePlayer = clientInstance.getFakePlayer();
         val distance = fakePlayer.distance2DTo(target.getX(), target.getZ());
-        if (!fakePlayer.isOnGround() || distance > 2.85 /*
+        if (!fakePlayer.isOnGround() || distance > 2.95 /*
                                                          * || timeMillis() - fakePlayer.getLastHitSelected()
                                                          * < 1000
-                                                         */)
+                                                         */) {
+            unpressKey(Key.Type.KEY_D, Key.Type.KEY_A);
             return;
+        }
 
         strafeDirection = strafeDirection(target);
-        if (strafeDirection == 1)
-            pressKey(50, Key.Type.KEY_A);
-        else if (strafeDirection == 2)
-            pressKey(50, Key.Type.KEY_D);
+
+        switch (strafeDirection) {
+            case 1:
+                unpressKey(Key.Type.KEY_D);
+                pressKey(Key.Type.KEY_A);
+                break;
+            case 2:
+                unpressKey(Key.Type.KEY_A);
+                pressKey(Key.Type.KEY_D);
+                break;
+        }
     }
 
     private byte strafeDirection(ClientEntity target) {
@@ -339,7 +447,10 @@ public class MeleeCombatGoal extends Goal {
         findTarget();
         switchToBestMeleeWeapon();
         aimAtTarget();
-        strafe();
+
+        if (this.target == null && timeMillis() - lastBounceTime > 1000)
+            if (isCollidingWithWall())
+                reflectOffWall();
     }
 
     @Override
@@ -372,6 +483,7 @@ public class MeleeCombatGoal extends Goal {
 
     @Override
     public void onGameLoop() {
+        strafe();
         if (timeMillis() >= nextClick)
             attackTarget();
     }

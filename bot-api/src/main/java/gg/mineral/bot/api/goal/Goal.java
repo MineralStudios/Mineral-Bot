@@ -92,6 +92,10 @@ public abstract class Goal implements MathUtil, Logger {
         return getMouse().getButton(type);
     }
 
+    public Key getKey(Key.Type type) {
+        return getKeyboard().getKey(type);
+    }
+
     public void pressKey(int durationMillis, Key.Type... types) {
         getKeyboard().pressKey(durationMillis, types);
     }

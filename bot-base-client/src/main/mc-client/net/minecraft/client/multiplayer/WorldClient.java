@@ -495,4 +495,9 @@ public class WorldClient extends World implements ClientWorld {
 
         };
     }
+
+    @Override
+    public gg.mineral.bot.api.world.block.Block getBlockAt(double x, double y, double z) {
+        return getBlock((int) x, (int) y, (int) z);
+    }
 }
