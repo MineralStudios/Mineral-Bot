@@ -317,14 +317,23 @@ public class MeleeCombatGoal extends Goal {
         if (!fakePlayer.isOnGround() || distance > 2.95 /*
                                                          * || timeMillis() - fakePlayer.getLastHitSelected()
                                                          * < 1000
-                                                         */)
+                                                         */) {
+            unpressKey(Key.Type.KEY_D, Key.Type.KEY_A);
             return;
+        }
 
         strafeDirection = strafeDirection(target);
-        if (strafeDirection == 1)
-            pressKey(50, Key.Type.KEY_A);
-        else if (strafeDirection == 2)
-            pressKey(50, Key.Type.KEY_D);
+
+        switch (strafeDirection) {
+            case 1:
+                unpressKey(Key.Type.KEY_D);
+                pressKey(Key.Type.KEY_A);
+                break;
+            case 2:
+                unpressKey(Key.Type.KEY_A);
+                pressKey(Key.Type.KEY_D);
+                break;
+        }
     }
 
     private byte strafeDirection(ClientEntity target) {
@@ -438,7 +447,6 @@ public class MeleeCombatGoal extends Goal {
         findTarget();
         switchToBestMeleeWeapon();
         aimAtTarget();
-        strafe();
 
         if (this.target == null && timeMillis() - lastBounceTime > 1000)
             if (isCollidingWithWall())
@@ -475,6 +483,7 @@ public class MeleeCombatGoal extends Goal {
 
     @Override
     public void onGameLoop() {
+        strafe();
         if (timeMillis() >= nextClick)
             attackTarget();
     }
