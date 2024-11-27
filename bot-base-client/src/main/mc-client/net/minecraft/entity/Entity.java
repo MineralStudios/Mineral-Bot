@@ -3,7 +3,6 @@ package net.minecraft.entity;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import gg.mineral.bot.api.entity.ClientEntity;
 import gg.mineral.bot.api.world.ClientWorld;

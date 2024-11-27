@@ -27,6 +27,43 @@ public interface MathUtil {
                 * (0.2447 + 0.0663 * abs(a));
     }
 
+    default double fastArcTan2(final double y, final double x) {
+        if (x == 0.0) {
+            if (y > 0.0)
+                return Math.PI / 2;
+            else if (y < 0.0)
+                return -Math.PI / 2;
+            else
+                return 0.0; // Undefined, return 0 or handle as needed
+        }
+
+        double angle;
+        if (Math.abs(x) > Math.abs(y)) {
+            // Use y/x if x has a greater magnitude
+            double a = y / x;
+            angle = fastArcTan(a);
+
+            // Adjust angle based on the quadrant
+            if (x < 0.0) {
+                if (y >= 0.0)
+                    angle += Math.PI;
+                else
+                    angle -= Math.PI;
+            }
+        } else {
+            // Use x/y if y has a greater magnitude
+            double a = x / y;
+            angle = fastArcTan(a);
+
+            // Adjust angle based on the sign of y
+            if (y > 0.0)
+                angle = Math.PI / 2 - angle;
+            else
+                angle = -Math.PI / 2 - angle;
+        }
+        return angle;
+    }
+
     default double toDegrees(double angle) {
         return angle * 180.0 / Math.PI;
     }
