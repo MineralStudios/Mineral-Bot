@@ -314,10 +314,13 @@ public class MeleeCombatGoal extends Goal {
 
         val fakePlayer = clientInstance.getFakePlayer();
         val distance = fakePlayer.distance2DTo(target.getX(), target.getZ());
-        if (!fakePlayer.isOnGround() || distance > 2.95 /*
-                                                         * || timeMillis() - fakePlayer.getLastHitSelected()
-                                                         * < 1000
-                                                         */) {
+        if (!fakePlayer.isOnGround() || distance > 2.95 || target.getY() - fakePlayer.getY() > 1.0 /*
+                                                                                                    * || timeMillis() -
+                                                                                                    * fakePlayer.
+                                                                                                    * getLastHitSelected
+                                                                                                    * ()
+                                                                                                    * < 1000
+                                                                                                    */) {
             unpressKey(Key.Type.KEY_D, Key.Type.KEY_A);
             return;
         }
