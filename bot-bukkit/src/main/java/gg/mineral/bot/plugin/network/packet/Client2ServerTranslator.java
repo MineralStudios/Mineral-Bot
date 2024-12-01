@@ -7,6 +7,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
 import io.netty.buffer.Unpooled;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.val;
 
 import net.minecraft.item.Item;
@@ -93,34 +94,39 @@ public class Client2ServerTranslator
     }
 
     @Override
+    @SneakyThrows
     public void processAnimation(C0APacketAnimation clientPacket) {
         val packet = new PacketPlayInArmAnimation();
         packet.timestamp = System.currentTimeMillis();
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processChatMessage(C01PacketChatMessage clientPacket) {
         val packet = new PacketPlayInChat(clientPacket.getMessage());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processTabComplete(C14PacketTabComplete clientPacket) {
         val packet = new PacketPlayInTabComplete(clientPacket.getMessage());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processClientStatus(C16PacketClientStatus clientPacket) {
         val packet = new PacketPlayInClientCommand(
                 net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand.values()[clientPacket
                         .getState()
                         .ordinal()]);
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processClientSettings(C15PacketClientSettings clientPacket) {
         val locale = clientPacket.getLocale();
         val viewDistance = clientPacket.getViewDistance();
@@ -137,21 +143,23 @@ public class Client2ServerTranslator
 
         val packet = new PacketPlayInSettings(locale, viewDistance, chatFlagsNMS, chatColors,
                 clothingByte);
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processConfirmTransaction(C0FPacketConfirmTransaction clientPacket) {
         val packet = new PacketPlayInTransaction(clientPacket.getWindowId(),
                 clientPacket.getActionNumber(), clientPacket.isAccepted());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processEnchantItem(C11PacketEnchantItem clientPacket) {
         val packet = new PacketPlayInEnchantItem(clientPacket.getWindowId(),
                 clientPacket.getEnchantment());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     public static Material getMaterial(Item item) {
@@ -196,44 +204,50 @@ public class Client2ServerTranslator
     }
 
     @Override
+    @SneakyThrows
     public void processClickWindow(C0EPacketClickWindow clientPacket) {
         val nmsItem = fromNMC(clientPacket.getClickedItem());
         val packet = new PacketPlayInWindowClick(clientPacket.getWindowId(),
                 clientPacket.getSlot(),
                 clientPacket.getButton(), clientPacket.getActionNumber(), nmsItem,
                 clientPacket.getMode());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processCloseWindow(C0DPacketCloseWindow clientPacket) {
         val packet = new PacketPlayInCloseWindow(clientPacket.getWindowId());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processVanilla250Packet(C17PacketCustomPayload clientPacket) {
         val packet = new PacketPlayInCustomPayload(clientPacket.getChannel(),
                 new PacketDataSerializer(Unpooled.wrappedBuffer(clientPacket.getData())));
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processUseEntity(C02PacketUseEntity clientPacket) {
         val packet = new PacketPlayInUseEntity(clientPacket.getEntityId(),
                 net.minecraft.server.v1_8_R3.PacketPlayInUseEntity.EnumEntityUseAction
                         .values()[clientPacket.getAction().ordinal() % C02PacketUseEntity.Action.values().length]);
 
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processKeepAlive(C00PacketKeepAlive clientPacket) {
         val packet = new PacketPlayInKeepAlive(clientPacket.getId());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processPlayer(C03PacketPlayer clientPacket) {
         PacketPlayInFlying packet;
 
@@ -249,28 +263,31 @@ public class Client2ServerTranslator
         else
             packet = new PacketPlayInFlying(clientPacket.isOnGround());
 
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processPlayerAbilities(C13PacketPlayerAbilities clientPacket) {
         val packet = new PacketPlayInAbilities(clientPacket.isDisableDamage(),
                 clientPacket.isFlying(), clientPacket.isAllowFlying(), clientPacket.isCreativeMode(),
                 clientPacket.getFlySpeed(), clientPacket.getWalkSpeed());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processPlayerDigging(C07PacketPlayerDigging clientPacket) {
         val packet = new PacketPlayInBlockDig(
                 new BlockPosition(clientPacket.getX(), clientPacket.getY(), clientPacket.getZ()),
                 net.minecraft.server.v1_8_R3.EnumDirection.fromType1(clientPacket.getFace()),
                 net.minecraft.server.v1_8_R3.PacketPlayInBlockDig.EnumPlayerDigType.values()[clientPacket.getStatus()]);
 
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processEntityAction(C0BPacketEntityAction clientPacket) {
         val nmsAction = net.minecraft.server.v1_8_R3.PacketPlayInEntityAction.EnumPlayerAction
                 .values()[clientPacket
@@ -280,33 +297,37 @@ public class Client2ServerTranslator
                 nmsAction,
                 clientPacket.getJumpBoost());
 
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processInput(C0CPacketInput clientPacket) {
         val packet = new PacketPlayInSteerVehicle(clientPacket.getSideways(),
                 clientPacket.getForward(), clientPacket.isJump(), clientPacket.isUnmount());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processHeldItemChange(C09PacketHeldItemChange clientPacket) {
         val packet = new PacketPlayInHeldItemSlot(clientPacket.getSlot());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processCreativeInventoryAction(C10PacketCreativeInventoryAction clientPacket) {
         val clickedItem = clientPacket.getClickedItem();
 
         val nmsItem = fromNMC(clickedItem);
         val packet = new PacketPlayInSetCreativeSlot(clientPacket.getSlot(),
                 nmsItem);
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processUpdateSign(C12PacketUpdateSign clientPacket) {
         val lines = new IChatBaseComponent[4];
 
@@ -315,10 +336,11 @@ public class Client2ServerTranslator
 
         val packet = new PacketPlayInUpdateSign(new BlockPosition(clientPacket.getX(),
                 clientPacket.getY(), clientPacket.getZ()), lines);
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
+    @SneakyThrows
     public void processPlayerBlockPlacement(C08PacketPlayerBlockPlacement clientPacket) {
         val clickedItem = clientPacket.getHeldItem();
 
@@ -327,7 +349,7 @@ public class Client2ServerTranslator
                 clientPacket.getY(), clientPacket.getZ()), clientPacket.getDirection(),
                 nmsItem,
                 clientPacket.getCursorX(), clientPacket.getCursorY(), clientPacket.getCursorZ());
-        playerConnection.a(packet);
+        playerConnection.networkManager.a(null, packet);
     }
 
     @Override
