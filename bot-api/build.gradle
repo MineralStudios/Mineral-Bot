@@ -3,8 +3,8 @@ dependencies {
     compileOnly 'com.github.ben-manes.caffeine:caffeine:3.1.8'
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
-    implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
-    annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
+    implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
+    annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
 }
 
 jar {

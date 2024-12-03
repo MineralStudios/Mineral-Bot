@@ -3,8 +3,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
     compileOnly 'it.unimi.dsi:fastutil:8.5.15'
-    implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
-    annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
+    implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
+    annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
     compileOnly project(':bot-api')
 }
 
