@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 import javax.annotation.Nullable;
 
@@ -17,6 +16,7 @@ import org.lwjgl.util.glu.GLU;
 
 import com.google.gson.JsonSyntaxException;
 
+import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.base.lwjgl.opengl.Display;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GLContext;
@@ -444,16 +444,18 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 var2 = 6.0D;
                 var4 = 6.0D;
             } else {
-                if (var2 > 3.0D) {
+
+                if (this.mc instanceof ClientInstance instance) {
+                    if (var2 > instance.getConfiguration().getReach())
+                        var4 = instance.getConfiguration().getReach();
+                } else if (var2 > 3.0D)
                     var4 = 3.0D;
-                }
 
                 var2 = var4;
             }
 
-            if (this.mc.objectMouseOver != null) {
+            if (this.mc.objectMouseOver != null)
                 var4 = this.mc.objectMouseOver.hitVec.distanceTo(var6);
-            }
 
             Vec3 var7 = this.mc.renderViewEntity.getLook(par1);
             Vec3 var8 = var6.addVector(var7.xCoord * var2, var7.yCoord * var2, var7.zCoord * var2);

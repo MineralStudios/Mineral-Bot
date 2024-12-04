@@ -25,8 +25,9 @@ public class BotConfiguration {
     @Builder.Default
     private int targetSearchRange = 32;
     @Builder.Default
-    float horizontalAimSpeed = 0.5F, verticalAimSpeed = 0.5F, horizontalAimAccuracy = 0.5F, verticalAimAccuracy = 0.5F,
-            horizontalErraticness = 0.5F, verticalErraticness = 0.5F;
+    private float horizontalAimSpeed = 0.5F, verticalAimSpeed = 0.5F, horizontalAimAccuracy = 0.5F,
+            verticalAimAccuracy = 0.5F,
+            horizontalErraticness = 0.5F, verticalErraticness = 0.5F, reach = 3.0F;
     @Builder.Default
     private float sprintResetAccuracy = 0.5f, hitSelectAccuracy = 0.5f;
     @Builder.Default
@@ -38,7 +39,7 @@ public class BotConfiguration {
     @Builder.Default
     private boolean debug = false;
     @Builder.Default
-    Set<UUID> friendlyUUIDs = BotAPI.INSTANCE.collections().newSet();
+    private Set<UUID> friendlyUUIDs = BotAPI.INSTANCE.collections().newSet();
 
     public String getFullUsername() {
         return usernamePrefix + username + usernameSuffix;
