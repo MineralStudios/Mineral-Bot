@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20241201-19.25.22'
+    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20241231-17.44.57'
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
     implementation project(':bot-base-client')
