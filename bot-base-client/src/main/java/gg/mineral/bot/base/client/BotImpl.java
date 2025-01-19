@@ -118,7 +118,7 @@ public abstract class BotImpl extends BotAPI {
                 "1.7.10");
 
         instance.setServer(serverIp, serverPort);
-        ThreadManager.getGameLoopExecutor().execute(() -> {
+        ThreadManager.getAsyncExecutor().execute(() -> {
             instance.run();
             InstanceManager.getInstances().put(configuration.getUuid(), instance);
         });
