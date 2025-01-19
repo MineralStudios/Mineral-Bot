@@ -13,6 +13,7 @@ import gg.mineral.bot.api.util.MathUtil;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHopper;
 import net.minecraft.block.BlockLiquid;
@@ -48,6 +49,7 @@ import net.minecraft.village.VillageSiege;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.MapStorage;
@@ -1820,8 +1822,8 @@ public abstract class World implements IBlockAccess, MathUtil {
                 p_72866_1_.posZ = p_72866_1_.lastTickPosZ;
             }
 
-            if (Double.isNaN((double) p_72866_1_.rotationPitch)
-                    || Double.isInfinite((double) p_72866_1_.rotationPitch)) {
+            if (Double.isNaN(p_72866_1_.rotationPitch)
+                    || Double.isInfinite(p_72866_1_.rotationPitch)) {
                 p_72866_1_.rotationPitch = p_72866_1_.prevRotationPitch;
             }
 
@@ -1835,14 +1837,15 @@ public abstract class World implements IBlockAccess, MathUtil {
 
             if (!p_72866_1_.addedToChunk || p_72866_1_.chunkCoordX != var6 || p_72866_1_.chunkCoordY != var7
                     || p_72866_1_.chunkCoordZ != var8) {
-                if (p_72866_1_.addedToChunk && this.chunkExists(p_72866_1_.chunkCoordX, p_72866_1_.chunkCoordZ)) {
-                    this.getChunkFromChunkCoords(p_72866_1_.chunkCoordX, p_72866_1_.chunkCoordZ)
-                            .removeEntityAtIndex(p_72866_1_, p_72866_1_.chunkCoordY);
+                var chunk = this.getChunkFromChunkCoords(p_72866_1_.chunkCoordX, p_72866_1_.chunkCoordZ);
+                if (p_72866_1_.addedToChunk && !(chunk instanceof EmptyChunk)) {
+                    chunk.removeEntityAtIndex(p_72866_1_, p_72866_1_.chunkCoordY);
                 }
 
-                if (this.chunkExists(var6, var8)) {
+                chunk = this.getChunkFromChunkCoords(var6, var8);
+                if (!(chunk instanceof EmptyChunk)) {
                     p_72866_1_.addedToChunk = true;
-                    this.getChunkFromChunkCoords(var6, var8).addEntity(p_72866_1_);
+                    chunk.addEntity(p_72866_1_);
                 } else {
                     p_72866_1_.addedToChunk = false;
                 }

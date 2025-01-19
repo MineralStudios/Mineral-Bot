@@ -3,6 +3,10 @@ package net.minecraft.client.multiplayer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import gg.mineral.bot.impl.config.BotGlobalConfig;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import lombok.val;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.util.LongHashMap;
@@ -29,7 +33,7 @@ public class ChunkProviderClient implements IChunkProvider {
      * The mapping between ChunkCoordinates and Chunks that ChunkProviderClient
      * maintains.
      */
-    private LongHashMap chunkMapping = new LongHashMap();
+    private Long2ObjectOpenHashMap<Chunk> chunkMapping = new Long2ObjectOpenHashMap<>();
 
     /**
      * This may have been intended to be an iterable version of all currently loaded
@@ -75,7 +79,7 @@ public class ChunkProviderClient implements IChunkProvider {
      */
     public Chunk loadChunk(int p_73158_1_, int p_73158_2_) {
         Chunk var3 = new Chunk(this.worldObj, p_73158_1_, p_73158_2_);
-        this.chunkMapping.add(ChunkCoordIntPair.chunkXZ2Int(p_73158_1_, p_73158_2_), var3);
+        this.chunkMapping.put(ChunkCoordIntPair.chunkXZ2Int(p_73158_1_, p_73158_2_), var3);
         this.chunkListing.add(var3);
         var3.isChunkLoaded = true;
         return var3;
@@ -87,8 +91,7 @@ public class ChunkProviderClient implements IChunkProvider {
      * specified chunk from the map seed and chunk seed
      */
     public Chunk provideChunk(int p_73154_1_, int p_73154_2_) {
-        Chunk var3 = (Chunk) this.chunkMapping.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(p_73154_1_, p_73154_2_));
-        return var3 == null ? this.blankChunk : var3;
+        return this.chunkMapping.getOrDefault(ChunkCoordIntPair.chunkXZ2Int(p_73154_1_, p_73154_2_),this.blankChunk);
     }
 
     /**
@@ -119,6 +122,9 @@ public class ChunkProviderClient implements IChunkProvider {
         while (var3.hasNext()) {
             Chunk var4 = (Chunk) var3.next();
             var4.func_150804_b(System.currentTimeMillis() - var1 > 5L);
+
+            if (BotGlobalConfig.isOptimizedGameLoop())
+                break;
         }
 
         if (System.currentTimeMillis() - var1 > 100L) {
@@ -146,7 +152,7 @@ public class ChunkProviderClient implements IChunkProvider {
      * Converts the instance data to a readable string.
      */
     public String makeString() {
-        return "MultiplayerChunkCache: " + this.chunkMapping.getNumHashElements() + ", " + this.chunkListing.size();
+        return "MultiplayerChunkCache: " + /*this.chunkMapping.getNumHashElements() +*/ ", " + this.chunkListing.size();
     }
 
     /**
