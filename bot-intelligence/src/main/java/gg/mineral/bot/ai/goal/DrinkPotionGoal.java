@@ -104,7 +104,7 @@ public class DrinkPotionGoal extends Goal {
             val screen = clientInstance.getCurrentScreen();
 
             if (screen == null) {
-                inventoryOpen = false;
+                // inventoryOpen = false;
                 warn(this, "Screen is null; closing inventory");
                 return;
             }
@@ -127,11 +127,14 @@ public class DrinkPotionGoal extends Goal {
             }
 
             if (screen instanceof ContainerScreen containerScreen) {
-                val x = containerScreen.getSlotX(slot);
-                val y = containerScreen.getSlotY(slot);
+                int x = containerScreen.getSlotX(slot);
+                int y = containerScreen.getSlotY(slot);
 
-                val currX = getMouseX();
-                val currY = getMouseY();
+                int currX = getMouseX();
+                int currY = getMouseY();
+
+                println("currX: " + currX + ", currY: " + currY);
+                println("x: " + x + ", y: " + y);
 
                 if (currX != x || currY != y) {
                     setMouseX(x);
@@ -145,7 +148,7 @@ public class DrinkPotionGoal extends Goal {
             return;
         }
 
-        if (inventoryOpen) {
+        if (false && inventoryOpen) {
             inventoryOpen = false;
             pressKey(10, Key.Type.KEY_ESCAPE);
             info(this, "Closing inventory after switching potion");
@@ -190,10 +193,10 @@ public class DrinkPotionGoal extends Goal {
         }
 
         if (itemStack != null && itemStack.getItem().getId() == Item.POTION) {
-            schedule(() -> drinkPotion(), 100);
+            schedule(this::drinkPotion, 100);
             info(this, "Scheduled drinkPotion task");
         } else {
-            schedule(() -> switchToDrinkablePotion(), 100);
+            schedule(this::switchToDrinkablePotion, 100);
             info(this, "Scheduled switchToDrinkablePotion task");
         }
     }

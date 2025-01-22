@@ -18,6 +18,18 @@ public class InstanceManager {
         }
     };
 
+    @Getter
+    private static final ConcurrentHashMap<UUID, ClientInstance> pendingInstances = new ConcurrentHashMap<>() {
+
+        @Override
+        public ClientInstance put(UUID key, ClientInstance value) {
+            if (containsKey(key))
+                throw new IllegalArgumentException("Instance with UUID " + key + " already exists");
+            return super.put(key, value);
+        }
+    };
+
+
     public static boolean isRunning() {
         return !instances.isEmpty();
     }

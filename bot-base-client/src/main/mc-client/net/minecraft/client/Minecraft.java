@@ -219,6 +219,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
      */
     public EntityLivingBase renderViewEntity;
     public Entity pointedEntity;
+    @Nullable
     public EffectRenderer effectRenderer;
     @Getter
     private final Session session;
@@ -700,7 +701,8 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
             }
         }
         GL11.glViewport(0, 0, this.displayWidth, this.displayHeight);
-        this.effectRenderer = new EffectRenderer(this, this.theWorld, this.renderEngine);
+        if (!BotGlobalConfig.isOptimizedGameLoop())
+            this.effectRenderer = new EffectRenderer(this, this.theWorld, this.renderEngine);
         this.checkGLError("Post startup");
         this.ingameGUI = new GuiIngame(this);
 
@@ -1468,7 +1470,8 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
                     EntityClientPlayerMP thePlayer = this.thePlayer;
 
                     if (thePlayer != null && thePlayer.isCurrentToolAdventureModeExempt(var2, var3, var4)) {
-                        this.effectRenderer.addBlockHitEffects(var2, var3, var4, this.objectMouseOver.sideHit);
+                        if (this.effectRenderer != null)
+                            this.effectRenderer.addBlockHitEffects(var2, var3, var4, this.objectMouseOver.sideHit);
                         thePlayer.swingItem();
                     }
                 }
@@ -2014,7 +2017,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
 
             this.mcProfiler.endStartSection("particles");
 
-            if (!this.isGamePaused)
+            if (!this.isGamePaused && this.effectRenderer != null)
                 this.effectRenderer.updateEffects();
 
         } else if (this.myNetworkManager != null) {
@@ -2199,7 +2202,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
      * A String of how many entities are in the world
      */
     public String debugInfoEntities() {
-        return "P: " + this.effectRenderer.getStatistics() + ". T: "
+        return "P: " + (this.effectRenderer != null ? this.effectRenderer.getStatistics() : "") + ". T: "
                 + (this.theWorld != null ? this.theWorld.getDebugLoadedEntities() : "N/A");
     }
 

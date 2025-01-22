@@ -780,9 +780,10 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                         ((this.avRandomizer.nextFloat() - this.avRandomizer.nextFloat()) * 0.7F + 1.0F) * 2.0F);
             }
 
-            this.gameController.effectRenderer
-                    .addEffect(new EntityPickupFX(this.gameController, this.gameController.theWorld, var2,
-                            (Entity) var3, -0.5F));
+            if (this.gameController.effectRenderer != null)
+                this.gameController.effectRenderer
+                        .addEffect(new EntityPickupFX(this.gameController, this.gameController.theWorld, var2,
+                                (Entity) var3, -0.5F));
             this.clientWorldController.removeEntityFromWorld(p_147246_1_.func_149354_c());
         }
     }
@@ -812,10 +813,12 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                 EntityPlayer var4 = (EntityPlayer) var2;
                 var4.wakeUpPlayer(false, false, false);
             } else if (p_147279_1_.func_148977_d() == 4) {
-                this.gameController.effectRenderer.addEffect(new EntityCrit2FX(this.gameController.theWorld, var2));
+                if (this.gameController.effectRenderer != null)
+                    this.gameController.effectRenderer.addEffect(new EntityCrit2FX(this.gameController.theWorld, var2));
             } else if (p_147279_1_.func_148977_d() == 5) {
                 EntityCrit2FX var5 = new EntityCrit2FX(this.gameController.theWorld, var2, "magicCrit");
-                this.gameController.effectRenderer.addEffect(var5);
+                if (this.gameController.effectRenderer != null)
+                    this.gameController.effectRenderer.addEffect(var5);
             }
         }
     }

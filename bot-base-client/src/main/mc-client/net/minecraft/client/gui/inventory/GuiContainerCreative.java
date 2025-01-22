@@ -227,7 +227,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
             this.buttonList.clear();
             this.mc.getKeyboard().enableRepeatEvents(true);
             this.field_147062_A = new GuiTextField(this.mc, this.fontRendererObj, this.xShift + 82,
-                    this.yShift + 6, 89, this.fontRendererObj.FONT_HEIGHT);
+                    this.yShift + 6, 89, this.fontRendererObj != null ? this.fontRendererObj.FONT_HEIGHT : 9);
             this.field_147062_A.func_146203_f(15);
             this.field_147062_A.func_146185_a(false);
             this.field_147062_A.func_146189_e(false);
@@ -342,7 +342,9 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
         if (var3.drawInForegroundOfTab()) {
             GL11.glDisable(GL11.GL_BLEND);
-            this.fontRendererObj.drawString(I18n.format(var3.getTranslatedTabLabel(), new Object[0]), 8, 6, 4210752);
+            if (this.fontRendererObj != null)
+                this.fontRendererObj.drawString(I18n.format(var3.getTranslatedTabLabel(), new Object[0]), 8, 6,
+                        4210752);
         }
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
-
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -278,8 +278,11 @@ public class GuiFlatPresets extends GuiScreen {
                 Tessellator p_148126_5_, int p_148126_6_, int p_148126_7_) {
             GuiFlatPresets.LayerItem var8 = (GuiFlatPresets.LayerItem) GuiFlatPresets.field_146431_f.get(p_148126_1_);
             this.func_148172_a(p_148126_2_, p_148126_3_, var8.field_148234_a);
-            GuiFlatPresets.this.fontRendererObj.drawString(var8.field_148232_b, p_148126_2_ + 18 + 5, p_148126_3_ + 6,
-                    16777215);
+            val fontRendererObj = GuiFlatPresets.this.fontRendererObj;
+            if (fontRendererObj != null)
+                fontRendererObj.drawString(var8.field_148232_b, p_148126_2_ + 18 + 5,
+                        p_148126_3_ + 6,
+                        16777215);
         }
     }
 }

@@ -49,7 +49,8 @@ public class GuiInventory extends InventoryEffectRenderer implements InventorySc
     }
 
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {
-        this.fontRendererObj.drawString(I18n.format("container.crafting", new Object[0]), 86, 16, 4210752);
+        if (this.fontRendererObj != null)
+            this.fontRendererObj.drawString(I18n.format("container.crafting", new Object[0]), 86, 16, 4210752);
     }
 
     /**
@@ -98,8 +99,10 @@ public class GuiInventory extends InventoryEffectRenderer implements InventorySc
         p_147046_5_.rotationYawHead = p_147046_5_.rotationYaw;
         p_147046_5_.prevRotationYawHead = p_147046_5_.rotationYaw;
         GL11.glTranslatef(0.0F, p_147046_5_.yOffset, 0.0F);
-        instance.playerViewY = 180.0F;
-        instance.func_147940_a(p_147046_5_, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+        if (instance != null) {
+            instance.playerViewY = 180.0F;
+            instance.func_147940_a(p_147046_5_, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+        }
         p_147046_5_.renderYawOffset = var6;
         p_147046_5_.rotationYaw = var7;
         p_147046_5_.rotationPitch = var8;

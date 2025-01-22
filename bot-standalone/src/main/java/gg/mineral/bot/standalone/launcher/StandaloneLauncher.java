@@ -126,7 +126,9 @@ public class StandaloneLauncher {
                                             "1.7.10");
 
                                     minecraftInstance.setServer(ipAddr, port);
+                                    InstanceManager.getPendingInstances().put(configuration.getUuid(), minecraftInstance);
                                     minecraftInstance.run();
+                                    InstanceManager.getPendingInstances().remove(configuration.getUuid());
                                     InstanceManager.getInstances().put(configuration.getUuid(), minecraftInstance);
                                 });
 

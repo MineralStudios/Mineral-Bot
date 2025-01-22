@@ -428,8 +428,10 @@ public class WorldClient extends World implements ClientWorld {
 
     public void makeFireworks(double p_92088_1_, double p_92088_3_, double p_92088_5_, double p_92088_7_,
             double p_92088_9_, double p_92088_11_, NBTTagCompound p_92088_13_) {
-        this.mc.effectRenderer.addEffect(new EntityFireworkStarterFX(this.mc, this, p_92088_1_, p_92088_3_, p_92088_5_,
-                p_92088_7_, p_92088_9_, p_92088_11_, this.mc.effectRenderer, p_92088_13_));
+        if (this.mc.effectRenderer != null)
+            this.mc.effectRenderer
+                    .addEffect(new EntityFireworkStarterFX(this.mc, this, p_92088_1_, p_92088_3_, p_92088_5_,
+                            p_92088_7_, p_92088_9_, p_92088_11_, this.mc.effectRenderer, p_92088_13_));
     }
 
     public void setWorldScoreboard(Scoreboard p_96443_1_) {

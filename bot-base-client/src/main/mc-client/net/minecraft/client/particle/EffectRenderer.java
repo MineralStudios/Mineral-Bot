@@ -3,7 +3,6 @@ package net.minecraft.client.particle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -19,13 +18,14 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import lombok.val;
 
 public class EffectRenderer {
     private static final ResourceLocation particleTextures = new ResourceLocation("textures/particle/particles.png");
 
     /** Reference to the World object. */
     protected World worldObj;
-    private List[] fxLayers = new List[4];
+    private List<EntityFX>[] fxLayers = new List[4];
     private TextureManager renderer;
 
     /** RNG. */
@@ -41,7 +41,7 @@ public class EffectRenderer {
         this.renderer = p_i1220_2_;
 
         for (int var3 = 0; var3 < 4; ++var3) {
-            this.fxLayers[var3] = new ArrayList();
+            this.fxLayers[var3] = new ArrayList<>();
         }
     }
 
@@ -163,7 +163,7 @@ public class EffectRenderer {
         float var7 = var4 * MathHelper.sin(p_78872_1_.rotationPitch * 0.017453292F);
         float var8 = MathHelper.cos(p_78872_1_.rotationPitch * 0.017453292F);
         byte var9 = 3;
-        List var10 = this.fxLayers[var9];
+        val var10 = this.fxLayers[var9];
 
         if (!var10.isEmpty()) {
             Tessellator var11 = this.mc.getTessellator();
@@ -198,7 +198,7 @@ public class EffectRenderer {
                         this.addEffect((new EntityDiggingFX(this.worldObj, var10, var12, var14,
                                 var10 - (double) p_147215_1_ - 0.5D, var12 - (double) p_147215_2_ - 0.5D,
                                 var14 - (double) p_147215_3_ - 0.5D, p_147215_4_, p_147215_5_))
-                                        .applyColourMultiplier(p_147215_1_, p_147215_2_, p_147215_3_));
+                                .applyColourMultiplier(p_147215_1_, p_147215_2_, p_147215_3_));
                     }
                 }
             }
@@ -252,8 +252,8 @@ public class EffectRenderer {
 
             this.addEffect((new EntityDiggingFX(this.worldObj, var7, var9, var11, 0.0D, 0.0D, 0.0D, var5,
                     this.worldObj.getBlockMetadata(p_78867_1_, p_78867_2_, p_78867_3_)))
-                            .applyColourMultiplier(p_78867_1_, p_78867_2_, p_78867_3_).multiplyVelocity(0.2F)
-                            .multipleParticleScaleBy(0.6F));
+                    .applyColourMultiplier(p_78867_1_, p_78867_2_, p_78867_3_).multiplyVelocity(0.2F)
+                    .multipleParticleScaleBy(0.6F));
         }
     }
 

@@ -1,7 +1,6 @@
 package net.minecraft.client.renderer.entity;
 
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -346,6 +345,8 @@ public class RenderItem extends Render {
      */
     public void renderItemIntoGUI(FontRenderer p_77015_1_, TextureManager p_77015_2_, ItemStack p_77015_3_,
             int p_77015_4_, int p_77015_5_) {
+        if (p_77015_1_ == null)
+            return;
         int var6 = p_77015_3_.getItemDamage();
         Object var7 = p_77015_3_.getIconIndex();
         int var9;
@@ -474,6 +475,8 @@ public class RenderItem extends Render {
      */
     public void renderItemAndEffectIntoGUI(FontRenderer p_82406_1_, TextureManager p_82406_2_,
             final ItemStack p_82406_3_, int p_82406_4_, int p_82406_5_) {
+        if (p_82406_1_ == null)
+            return;
         if (p_82406_3_ != null) {
             this.zLevel += 50.0F;
 
@@ -553,6 +556,8 @@ public class RenderItem extends Render {
 
     public void renderItemOverlayIntoGUI(FontRenderer p_94148_1_, TextureManager p_94148_2_, ItemStack p_94148_3_,
             int p_94148_4_, int p_94148_5_, String p_94148_6_) {
+        if (p_94148_1_ == null)
+            return;
         if (p_94148_3_ != null) {
             if (p_94148_3_.stackSize > 1 || p_94148_6_ != null) {
                 String var7 = p_94148_6_ == null ? String.valueOf(p_94148_3_.stackSize) : p_94148_6_;
@@ -598,6 +603,8 @@ public class RenderItem extends Render {
      */
     private void renderQuad(Tessellator p_77017_1_, int p_77017_2_, int p_77017_3_, int p_77017_4_, int p_77017_5_,
             int p_77017_6_) {
+        if (p_77017_1_ == null)
+            return;
         p_77017_1_.startDrawingQuads();
         p_77017_1_.setColorOpaque_I(p_77017_6_);
         p_77017_1_.addVertex((double) (p_77017_2_ + 0), (double) (p_77017_3_ + 0), 0.0D);

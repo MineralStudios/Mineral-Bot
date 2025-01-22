@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.inventory;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
@@ -21,10 +22,14 @@ public class GuiFurnace extends GuiContainer {
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {
         String var3 = this.field_147086_v.isInventoryNameLocalized() ? this.field_147086_v.getInventoryName()
                 : I18n.format(this.field_147086_v.getInventoryName(), new Object[0]);
-        this.fontRendererObj.drawString(var3, this.field_146999_f / 2 - this.fontRendererObj.getStringWidth(var3) / 2,
-                6, 4210752);
-        this.fontRendererObj.drawString(I18n.format("container.inventory", new Object[0]), 8,
-                this.field_147000_g - 96 + 2, 4210752);
+        val fontRendererObj = this.fontRendererObj;
+
+        if (fontRendererObj != null) {
+            fontRendererObj.drawString(var3, this.field_146999_f / 2 - fontRendererObj.getStringWidth(var3) / 2,
+                    6, 4210752);
+            fontRendererObj.drawString(I18n.format("container.inventory", new Object[0]), 8,
+                    this.field_147000_g - 96 + 2, 4210752);
+        }
     }
 
     protected void func_146976_a(float p_146976_1_, int p_146976_2_, int p_146976_3_) {

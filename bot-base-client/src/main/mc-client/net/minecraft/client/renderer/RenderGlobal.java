@@ -2461,17 +2461,21 @@ public class RenderGlobal implements IWorldAccess {
 
             if (par1Str.equals("hugeexplosion")) {
                 if (Config.isAnimatedExplosion()) {
-                    this.mc.effectRenderer.addEffect((EntityFX) (var21 = new EntityHugeExplodeFX(this.theWorld, par2,
-                            par4, par6, par8, par10, par12)));
+                    if (this.mc.effectRenderer != null)
+                        this.mc.effectRenderer
+                                .addEffect((EntityFX) (var21 = new EntityHugeExplodeFX(this.theWorld, par2,
+                                        par4, par6, par8, par10, par12)));
                 }
             } else if (par1Str.equals("largeexplode")) {
                 if (Config.isAnimatedExplosion()) {
-                    this.mc.effectRenderer.addEffect((EntityFX) (var21 = new EntityLargeExplodeFX(this.renderEngine,
-                            this.theWorld, par2, par4, par6, par8, par10, par12)));
+                    if (this.mc.effectRenderer != null)
+                        this.mc.effectRenderer.addEffect((EntityFX) (var21 = new EntityLargeExplodeFX(this.renderEngine,
+                                this.theWorld, par2, par4, par6, par8, par10, par12)));
                 }
             } else if (par1Str.equals("fireworksSpark")) {
-                this.mc.effectRenderer.addEffect((EntityFX) (var21 = new EntityFireworkSparkFX(this.theWorld, par2,
-                        par4, par6, par8, par10, par12, this.mc.effectRenderer)));
+                if (this.mc.effectRenderer != null)
+                    this.mc.effectRenderer.addEffect((EntityFX) (var21 = new EntityFireworkSparkFX(this.theWorld, par2,
+                            par4, par6, par8, par10, par12, this.mc.effectRenderer)));
             }
 
             if (var21 != null) {
@@ -2639,7 +2643,7 @@ public class RenderGlobal implements IWorldAccess {
                         }
                     }
 
-                    if (var21 != null)
+                    if (var21 != null && this.mc.effectRenderer != null)
                         this.mc.effectRenderer.addEffect((EntityFX) var21);
 
                     return (EntityFX) var21;
@@ -2870,7 +2874,8 @@ public class RenderGlobal implements IWorldAccess {
                                         (float) par5 + 0.5F));
                 }
 
-                this.mc.effectRenderer.func_147215_a(par3, par4, par5, var8, par6 >> 12 & 255);
+                if (this.mc.effectRenderer != null)
+                    this.mc.effectRenderer.func_147215_a(par3, par4, par5, var8, par6 >> 12 & 255);
                 break;
 
             case 2002:

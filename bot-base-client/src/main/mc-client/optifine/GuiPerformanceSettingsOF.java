@@ -119,7 +119,8 @@ public class GuiPerformanceSettingsOF extends GuiScreen {
                             col = 16719904;
                         }
 
-                        this.fontRendererObj.drawStringWithShadow(line, x1 + 5, y1 + 5 + i * 11, col);
+                        if (this.fontRendererObj != null)
+                            this.fontRendererObj.drawStringWithShadow(line, x1 + 5, y1 + 5 + i * 11, col);
                     }
                 }
             }

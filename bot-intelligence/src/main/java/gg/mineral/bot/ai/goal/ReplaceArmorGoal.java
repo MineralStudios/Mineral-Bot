@@ -169,9 +169,9 @@ public class ReplaceArmorGoal extends Goal {
             return;
 
         if (itemStack != null && missingArmorPiece.isType(itemStack.getItem().getId()))
-            schedule(() -> applyArmor(), 100);
+            schedule(this::applyArmor, 100);
         else
-            schedule(() -> switchToArmor(), 100);
+            schedule(this::switchToArmor, 100);
     }
 
     @Override

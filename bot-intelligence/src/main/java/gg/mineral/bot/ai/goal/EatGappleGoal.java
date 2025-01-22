@@ -210,10 +210,10 @@ public class EatGappleGoal extends Goal {
         val itemStack = inventory.getHeldItemStack();
 
         if (itemStack != null && itemStack.getItem().getId() == Item.GOLDEN_APPLE) {
-            schedule(() -> eatGapple(), 100);
+            schedule(this::eatGapple, 100);
             info(this, "Scheduled eatGapple task");
         } else {
-            schedule(() -> switchToGapple(), 100);
+            schedule(this::switchToGapple, 100);
             info(this, "Scheduled switchToGapple task");
         }
     }

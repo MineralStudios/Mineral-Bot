@@ -26,13 +26,15 @@ public class GuiScreenHorseInventory extends GuiContainer {
     }
 
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {
-        this.fontRendererObj
-                .drawString(this.field_147029_w.isInventoryNameLocalized() ? this.field_147029_w.getInventoryName()
-                        : I18n.format(this.field_147029_w.getInventoryName(), new Object[0]), 8, 6, 4210752);
-        this.fontRendererObj.drawString(
-                this.field_147030_v.isInventoryNameLocalized() ? this.field_147030_v.getInventoryName()
-                        : I18n.format(this.field_147030_v.getInventoryName(), new Object[0]),
-                8, this.field_147000_g - 96 + 2, 4210752);
+        if (this.fontRendererObj != null)
+            this.fontRendererObj
+                    .drawString(this.field_147029_w.isInventoryNameLocalized() ? this.field_147029_w.getInventoryName()
+                            : I18n.format(this.field_147029_w.getInventoryName(), new Object[0]), 8, 6, 4210752);
+        if (this.fontRendererObj != null)
+            this.fontRendererObj.drawString(
+                    this.field_147030_v.isInventoryNameLocalized() ? this.field_147030_v.getInventoryName()
+                            : I18n.format(this.field_147030_v.getInventoryName(), new Object[0]),
+                    8, this.field_147000_g - 96 + 2, 4210752);
     }
 
     protected void func_146976_a(float p_146976_1_, int p_146976_2_, int p_146976_3_) {

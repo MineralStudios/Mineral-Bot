@@ -1,6 +1,10 @@
 package net.minecraft.client.gui.achievement;
 
 import java.util.Random;
+
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionButton;
@@ -20,9 +24,6 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
 
 public class GuiAchievements extends GuiScreen implements IProgressMeter {
     private static final int field_146572_y = AchievementList.minDisplayColumn * 24 - 112;
@@ -99,9 +100,12 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
             this.drawDefaultBackground();
             this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.downloadingStats", new Object[0]),
                     this.width / 2, this.height / 2, 16777215);
-            this.drawCenteredString(this.fontRendererObj,
-                    field_146510_b_[(int) (Minecraft.getSystemTime() / 150L % (long) field_146510_b_.length)],
-                    this.width / 2, this.height / 2 + this.fontRendererObj.FONT_HEIGHT * 2, 16777215);
+            val fontRendererObj = this.fontRendererObj;
+
+            if (fontRendererObj != null)
+                this.drawCenteredString(fontRendererObj,
+                        field_146510_b_[(int) (Minecraft.getSystemTime() / 150L % (long) field_146510_b_.length)],
+                        this.width / 2, this.height / 2 + fontRendererObj.FONT_HEIGHT * 2, 16777215);
         } else {
             int var4;
 
@@ -209,7 +213,9 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
     protected void func_146553_h() {
         int var1 = (this.width - this.field_146555_f) / 2;
         int var2 = (this.height - this.field_146557_g) / 2;
-        this.fontRendererObj.drawString(I18n.format("gui.achievements", new Object[0]), var1 + 15, var2 + 5, 4210752);
+        if (this.fontRendererObj != null)
+            this.fontRendererObj.drawString(I18n.format("gui.achievements", new Object[0]), var1 + 15, var2 + 5,
+                    4210752);
     }
 
     protected void func_146552_b(int p_146552_1_, int p_146552_2_, float p_146552_3_) {

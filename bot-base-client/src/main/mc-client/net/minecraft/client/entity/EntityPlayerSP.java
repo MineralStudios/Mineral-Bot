@@ -401,12 +401,14 @@ public class EntityPlayerSP extends AbstractClientPlayer {
      * that was hit critically
      */
     public void onCriticalHit(Entity p_71009_1_) {
-        this.mc.effectRenderer.addEffect(new EntityCrit2FX(this.mc.theWorld, p_71009_1_));
+        if (this.mc.effectRenderer != null)
+            this.mc.effectRenderer.addEffect(new EntityCrit2FX(this.mc.theWorld, p_71009_1_));
     }
 
     public void onEnchantmentCritical(Entity p_71047_1_) {
         EntityCrit2FX var2 = new EntityCrit2FX(this.mc.theWorld, p_71047_1_, "magicCrit");
-        this.mc.effectRenderer.addEffect(var2);
+        if (this.mc.effectRenderer != null)
+            this.mc.effectRenderer.addEffect(var2);
     }
 
     /**
@@ -414,7 +416,8 @@ public class EntityPlayerSP extends AbstractClientPlayer {
      * pickedUpEntity, stackSize
      */
     public void onItemPickup(Entity p_71001_1_, int p_71001_2_) {
-        this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc, this.mc.theWorld, p_71001_1_, this, -0.5F));
+        if (this.mc.effectRenderer != null)
+            this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc, this.mc.theWorld, p_71001_1_, this, -0.5F));
     }
 
     /**

@@ -1,6 +1,5 @@
 package net.minecraft.client.renderer;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import javax.annotation.Nullable;
@@ -14,6 +13,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import gg.mineral.bot.api.screen.type.InvEffectRendererScreen;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import lombok.val;
 
 public abstract class InventoryEffectRenderer extends GuiContainer implements InvEffectRendererScreen {
     private boolean field_147045_u;
@@ -50,7 +50,7 @@ public abstract class InventoryEffectRenderer extends GuiContainer implements In
         int var2 = this.yShift;
         boolean var3 = true;
         @Nullable
-        Collection var4 = this.mc.thePlayer != null ? this.mc.thePlayer.getActivePotionEffects() : null;
+        val var4 = this.mc.thePlayer != null ? this.mc.thePlayer.getActivePotionEffects() : null;
 
         if (var4 != null && !var4.isEmpty()) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -61,7 +61,7 @@ public abstract class InventoryEffectRenderer extends GuiContainer implements In
                 var5 = 132 / (var4.size() - 1);
 
             if (this.mc.thePlayer != null)
-                for (Iterator var6 = this.mc.thePlayer.getActivePotionEffects().iterator(); var6
+                for (Iterator<PotionEffect> var6 = this.mc.thePlayer.getActivePotionEffects().iterator(); var6
                         .hasNext(); var2 += var5) {
                     PotionEffect var7 = (PotionEffect) var6.next();
                     Potion var8 = Potion.potionTypes[var7.getPotionID()];
@@ -87,9 +87,11 @@ public abstract class InventoryEffectRenderer extends GuiContainer implements In
                     else if (var7.getAmplifier() == 3)
                         var11 = var11 + " " + I18n.format("enchantment.level.4", new Object[0]);
 
-                    this.fontRendererObj.drawStringWithShadow(var11, var1 + 10 + 18, var2 + 6, 16777215);
+                    if (this.fontRendererObj != null)
+                        this.fontRendererObj.drawStringWithShadow(var11, var1 + 10 + 18, var2 + 6, 16777215);
                     String var10 = Potion.getDurationString(var7);
-                    this.fontRendererObj.drawStringWithShadow(var10, var1 + 10 + 18, var2 + 6 + 10, 8355711);
+                    if (this.fontRendererObj != null)
+                        this.fontRendererObj.drawStringWithShadow(var10, var1 + 10 + 18, var2 + 6 + 10, 8355711);
                 }
         }
     }

@@ -439,7 +439,7 @@ public class MeleeCombatGoal extends Goal {
         return sqrt(kbX * kbX + kbY * kbY + kbZ * kbZ);
     }
 
-    static enum ResetType {
+    enum ResetType {
         EXTRA_OFFENSIVE, OFFENSIVE, DEFENSIVE, EXTRA_DEFENSIVE;
     }
 

@@ -18,19 +18,19 @@ public interface Logger {
     }
 
     default void info(Object obj, String message) {
-
+        // System.out.println("[" + obj.getClass().getSimpleName() + "] " + message);
     }
 
     default void warn(Object obj, String message) {
-
+        System.out.println("[" + obj.getClass().getSimpleName() + "] " + message);
     }
 
     default void error(Object obj, String message) {
-
+        System.out.println("[" + obj.getClass().getSimpleName() + "] " + message);
     }
 
     default void success(Object obj, String message) {
-
+        System.out.println("[" + obj.getClass().getSimpleName() + "] " + message);
     }
 
     default void println(String message) {

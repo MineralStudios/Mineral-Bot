@@ -183,7 +183,8 @@ public class GuiScreen extends Gui implements Screen {
 
             for (int var12 = 0; var12 < p_146283_1_.size(); ++var12) {
                 String var13 = (String) p_146283_1_.get(var12);
-                this.fontRendererObj.drawStringWithShadow(var13, var14, var15, -1);
+                if (this.fontRendererObj != null)
+                    this.fontRendererObj.drawStringWithShadow(var13, var14, var15, -1);
 
                 if (var12 == 0) {
                     var15 += 2;

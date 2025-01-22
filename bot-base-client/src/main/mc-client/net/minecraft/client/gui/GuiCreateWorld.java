@@ -366,10 +366,11 @@ public class GuiCreateWorld extends GuiScreen {
             this.field_146335_h.drawTextBox();
 
             if (WorldType.worldTypes[this.field_146331_K].func_151357_h()) {
-                this.fontRendererObj.drawSplitString(
-                        I18n.format(WorldType.worldTypes[this.field_146331_K].func_151359_c(), new Object[0]),
-                        this.field_146320_D.field_146128_h + 2, this.field_146320_D.field_146129_i + 22,
-                        this.field_146320_D.func_146117_b(), 10526880);
+                if (this.fontRendererObj != null)
+                    this.fontRendererObj.drawSplitString(
+                            I18n.format(WorldType.worldTypes[this.field_146331_K].func_151359_c(), new Object[0]),
+                            this.field_146320_D.field_146128_h + 2, this.field_146320_D.field_146129_i + 22,
+                            this.field_146320_D.func_146117_b(), 10526880);
             }
         } else {
             this.drawString(this.fontRendererObj, I18n.format("selectWorld.enterName", new Object[0]),

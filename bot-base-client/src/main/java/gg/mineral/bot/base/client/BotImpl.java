@@ -118,8 +118,10 @@ public abstract class BotImpl extends BotAPI {
                 "1.7.10");
 
         instance.setServer(serverIp, serverPort);
-        ThreadManager.getAsyncExecutor().execute(() -> {
+        InstanceManager.getPendingInstances().put(configuration.getUuid(), instance);
+        ThreadManager.getGameLoopExecutor().execute(() -> {
             instance.run();
+            InstanceManager.getPendingInstances().remove(configuration.getUuid());
             InstanceManager.getInstances().put(configuration.getUuid(), instance);
         });
 
@@ -148,8 +150,9 @@ public abstract class BotImpl extends BotAPI {
     @Override
     public boolean isFakePlayer(UUID uuid) {
         val instances = InstanceManager.getInstances();
+        val pendingInstances = InstanceManager.getPendingInstances();
         synchronized (instances) {
-            return instances.containsKey(uuid);
+            return instances.containsKey(uuid) || pendingInstances.containsKey(uuid);
         }
     }
 

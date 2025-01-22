@@ -169,10 +169,9 @@ public class ThrowPearlGoal extends Goal {
     private boolean canSeeEnemy() {
         val fakePlayer = clientInstance.getFakePlayer();
         val world = fakePlayer.getWorld();
-        return world == null ? false
-                : world.getEntities().stream()
-                        .anyMatch(entity -> !clientInstance.getConfiguration().getFriendlyUUIDs()
-                                .contains(entity.getUuid()));
+        return world != null && world.getEntities().stream()
+                .anyMatch(entity -> !clientInstance.getConfiguration().getFriendlyUUIDs()
+                        .contains(entity.getUuid()));
     }
 
     @Override
@@ -296,8 +295,7 @@ public class ThrowPearlGoal extends Goal {
                     xTile,
                     yTile, zTile);
 
-            if (collisionBoundingBox != null && collisionBoundingBox.isVecInside(x, y, z))
-                return true;
+            return collisionBoundingBox != null && collisionBoundingBox.isVecInside(x, y, z);
         }
 
         return false;

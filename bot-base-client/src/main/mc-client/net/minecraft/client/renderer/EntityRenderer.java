@@ -1188,7 +1188,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
         this.mc.mcProfiler.endSection();
 
-        if (!this.mc.skipRenderWorld && !BotGlobalConfig.isOptimizedGameLoop()) {
+        if (!this.mc.skipRenderWorld) {
             anaglyphEnable = this.mc.gameSettings.anaglyph;
             final ScaledResolution var133 = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
             int var142 = var133.getScaledWidth();
@@ -1329,6 +1329,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         this.getMouseOver(par1);
         EntityLivingBase var4 = this.mc.renderViewEntity;
         RenderGlobal var5 = this.mc.renderGlobal;
+        @Nullable
         EffectRenderer var6 = this.mc.effectRenderer;
         double var7 = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double) par1;
         double var9 = var4.lastTickPosY + (var4.posY - var4.lastTickPosY) * (double) par1;
@@ -1484,11 +1485,13 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             if (this.debugViewDirection == 0) {
                 this.enableLightmap((double) par1);
                 this.mc.mcProfiler.endStartSection("litParticles");
-                var6.renderLitParticles(var4, par1);
+                if (var6 != null)
+                    var6.renderLitParticles(var4, par1);
                 RenderHelper.disableStandardItemLighting();
                 this.setupFog(0, par1);
                 this.mc.mcProfiler.endStartSection("particles");
-                var6.renderParticles(var4, par1);
+                if (var6 != null)
+                    var6.renderParticles(var4, par1);
                 this.disableLightmap((double) par1);
             }
 
@@ -1590,7 +1593,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
      * Render clouds if enabled
      */
     private void renderCloudsCheck(RenderGlobal par1RenderGlobal, float par2) {
-        if (this.mc.gameSettings.shouldRenderClouds()) {
+        if (this.mc.gameSettings.shouldRenderClouds() && par1RenderGlobal != null) {
             this.mc.mcProfiler.endStartSection("clouds");
             GL11.glPushMatrix();
             this.setupFog(0, par2);
@@ -1642,9 +1645,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     float var23 = this.random.nextFloat();
 
                     if (var20 != null && var20.getMaterial() == Material.lava) {
-                        this.mc.effectRenderer.addEffect(new EntitySmokeFX(var3, (double) ((float) var17 + var22),
-                                (double) ((float) var19 + 0.1F) - var20.getBlockBoundsMinY(),
-                                (double) ((float) var18 + var23), 0.0D, 0.0D, 0.0D));
+                        if (this.mc.effectRenderer != null)
+                            this.mc.effectRenderer.addEffect(new EntitySmokeFX(var3, (double) ((float) var17 + var22),
+                                    (double) ((float) var19 + 0.1F) - var20.getBlockBoundsMinY(),
+                                    (double) ((float) var18 + var23), 0.0D, 0.0D, 0.0D));
                     } else if (var20 != null && var20.getMaterial() != Material.air) {
                         ++var14;
 
@@ -1658,7 +1662,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                                 (double) ((float) var19 + 0.1F) - var20.getBlockBoundsMinY(),
                                 (double) ((float) var18 + var23));
                         CustomColorizer.updateWaterFX(fx, var3);
-                        this.mc.effectRenderer.addEffect(fx);
+                        if (this.mc.effectRenderer != null)
+                            this.mc.effectRenderer.addEffect(fx);
                     }
                 }
             }

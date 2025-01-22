@@ -164,7 +164,9 @@ public class Main {
             System.out.println("Completely ignored arguments: " + var22);
 
         Thread.currentThread().setName("Client thread");
+        InstanceManager.getPendingInstances().put(uuid, minecraftInstance);
         minecraftInstance.run();
+        InstanceManager.getPendingInstances().remove(uuid);
         InstanceManager.getInstances().put(uuid, minecraftInstance);
         GameLoop.start();
     }
