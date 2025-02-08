@@ -1,0 +1,53 @@
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.0.21'
+    id "com.gradleup.shadow" version "8.3.6"
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
+repositories {
+    maven {
+        url 'https://libraries.minecraft.net/'
+    }
+    maven {
+        name "mineralDevPrivate"
+        url "https://repo.mineral.gg/private"
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
+        }
+    }
+}
+
+dependencies {
+    compileOnly 'io.netty:netty-all:4.1.116.Final'
+    compileOnly "gg.mineral.engine:api:20250205-04.26.43"
+    implementation project(':bot-base-client')
+    compileOnly project(':bot-shared-library')
+    compileOnly project(':bot-api')
+}
+
+// Disable the default jar task.
+jar {
+    enabled = false
+}
+
+// Configure shadowJar as your final jar.
+shadowJar {
+    mergeServiceFiles()
+    manifest {
+        attributes 'Multi-Release': 'true'
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(sourceSets.main.resources.srcDirs) {
+        into('/')
+    }
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
+}
+
+// Optionally, make sure that assembling your project depends on the shadowJar task.
+assemble.dependsOn shadowJar
