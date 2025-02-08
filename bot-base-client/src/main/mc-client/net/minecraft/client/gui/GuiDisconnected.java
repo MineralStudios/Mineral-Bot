@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,8 +37,8 @@ public class GuiDisconnected extends GuiScreen {
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(this.mc, 0, this.width / 2 - 100, this.height / 4 + 120 + 12,
                 I18n.format("gui.toMenu", new Object[0])));
-        this.field_146305_g = this.fontRendererObj.listFormattedStringToWidth(this.field_146304_f.getFormattedText(),
-                this.width - 50);
+        this.field_146305_g =  this.fontRendererObj != null? this.fontRendererObj.listFormattedStringToWidth(this.field_146304_f.getFormattedText(),
+                this.width - 50) : new ArrayList<>();
     }
 
     protected void actionPerformed(GuiButton p_146284_1_) {

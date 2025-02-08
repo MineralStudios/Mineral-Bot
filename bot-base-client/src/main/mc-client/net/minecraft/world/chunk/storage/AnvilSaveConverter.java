@@ -27,7 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class AnvilSaveConverter extends SaveFormatOld {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(AnvilSaveConverter.class);
 
     public AnvilSaveConverter(File p_i2144_1_) {
         super(p_i2144_1_);

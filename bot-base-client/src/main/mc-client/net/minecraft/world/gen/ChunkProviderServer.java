@@ -28,7 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ChunkProviderServer implements IChunkProvider {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(ChunkProviderServer.class);
 
     /**
      * used by unload100OldestChunks to iterate the loadedChunkHashMap for unload

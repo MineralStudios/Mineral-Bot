@@ -28,7 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(AnvilChunkLoader.class);
     private List chunksToRemove = new ArrayList();
     private Set pendingAnvilChunksCoordinates = new HashSet();
     private Object syncLockObject = new Object();

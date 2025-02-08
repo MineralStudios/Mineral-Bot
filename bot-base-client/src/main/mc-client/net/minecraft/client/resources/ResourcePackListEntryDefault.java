@@ -19,7 +19,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
 public class ResourcePackListEntryDefault extends ResourcePackListEntry {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(ResourcePackListEntryDefault.class);
     private final IResourcePack field_148320_d;
     @Nullable
     private final ResourceLocation field_148321_e;

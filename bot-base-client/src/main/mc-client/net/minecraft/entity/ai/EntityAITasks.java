@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class EntityAITasks {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(EntityAITasks.class);
 
     /** A list of EntityAITaskEntrys in EntityAITasks. */
     private List taskEntries = new ArrayList();

@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 public class MessageSerializer extends MessageToByteEncoder {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(MessageSerializer.class);
     private static final Marker field_150797_b = MarkerManager.getMarker("PACKET_SENT",
             NetworkManager.logMarkerPackets);
     private final NetworkStatistics field_152500_c;

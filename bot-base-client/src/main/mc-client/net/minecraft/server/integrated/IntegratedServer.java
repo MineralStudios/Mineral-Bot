@@ -26,7 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class IntegratedServer extends MinecraftServer {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(IntegratedServer.class);
 
     /** The Minecraft instance. */
     private final Minecraft mc;

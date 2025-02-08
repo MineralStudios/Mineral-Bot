@@ -22,7 +22,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringUtils;
 
 public class PreYggdrasilConverter {
-    private static final Logger field_152732_e = LogManager.getLogger();
+    private static final Logger field_152732_e = LogManager.getLogger(PreYggdrasilConverter.class);
     public static final File field_152728_a = new File("banned-ips.txt");
     public static final File field_152729_b = new File("banned-players.txt");
     public static final File field_152730_c = new File("ops.txt");

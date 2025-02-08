@@ -39,7 +39,7 @@ public class WorldServerOF extends WorldServer {
     private boolean allChunksTicked = false;
     public LongSet setChunkCoordsToTickOnce = new LongOpenHashSet();
     private LongSet limitedChunkSet = new LongOpenHashSet();
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(WorldServerOF.class);
 
     public WorldServerOF(Minecraft mc, MinecraftServer par1MinecraftServer, ISaveHandler par2iSaveHandler,
             String par3Str, int par4, WorldSettings par5WorldSettings, Profiler par6Profiler) {

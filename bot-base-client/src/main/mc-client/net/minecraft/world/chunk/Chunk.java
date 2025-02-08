@@ -33,7 +33,7 @@ import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
 public class Chunk {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Chunk.class);
 
     /**
      * Determines if the chunk is lit or not at a light value greater than 0.

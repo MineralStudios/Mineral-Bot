@@ -51,7 +51,7 @@ import net.minecraft.util.MessageSerializer;
 import net.minecraft.util.MessageSerializer2;
 
 public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(NetworkManager.class);
     public static final Marker logMarkerNetwork = MarkerManager.getMarker("NETWORK");
     public static final Marker logMarkerPackets = MarkerManager.getMarker("NETWORK_PACKETS", logMarkerNetwork);
     public static final Marker field_152461_c = MarkerManager.getMarker("NETWORK_STAT", logMarkerNetwork);
@@ -209,16 +209,13 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
             this.channel.writeAndFlush(p_150732_1_).addListeners(p_150732_2_)
                     .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
         } else {
-            this.channel.eventLoop().execute(new Runnable() {
-
-                public void run() {
-                    if (var3 != var4) {
-                        NetworkManager.this.setConnectionState(var3);
-                    }
-
-                    NetworkManager.this.channel.writeAndFlush(p_150732_1_).addListeners(p_150732_2_)
-                            .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+            this.channel.eventLoop().execute(() -> {
+                if (var3 != var4) {
+                    NetworkManager.this.setConnectionState(var3);
                 }
+
+                NetworkManager.this.channel.writeAndFlush(p_150732_1_).addListeners(p_150732_2_)
+                        .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
             });
         }
     }

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 public class NetworkStatistics {
-    private static final Logger field_152478_a = LogManager.getLogger();
+    private static final Logger field_152478_a = LogManager.getLogger(NetworkStatistics.class);
     private static final Marker field_152479_b = MarkerManager.getMarker("NETSTAT_MARKER",
             NetworkManager.field_152461_c);
     private NetworkStatistics.Tracker field_152480_c = new NetworkStatistics.Tracker();

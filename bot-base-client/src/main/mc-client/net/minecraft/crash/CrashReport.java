@@ -23,7 +23,7 @@ import net.minecraft.world.gen.layer.IntCache;
 import optifine.Reflector;
 
 public class CrashReport {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(CrashReport.class);
 
     /** Description of the crash report. */
     private final String description;

@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 public class NetHandlerLoginServer implements INetHandlerLoginServer {
     private static final AtomicInteger field_147331_b = new AtomicInteger(0);
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(NetHandlerLoginServer.class);
     private static final Random field_147329_d = new Random();
     private final byte[] field_147330_e = new byte[4];
     private final MinecraftServer field_147327_f;

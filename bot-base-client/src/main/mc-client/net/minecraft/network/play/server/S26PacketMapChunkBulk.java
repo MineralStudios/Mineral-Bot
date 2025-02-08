@@ -309,6 +309,7 @@ public class S26PacketMapChunkBulk extends Packet {
 
         if (buffer.length < this.compressedSize) {
             mc.setReadBuffer(new byte[this.compressedSize]);
+            buffer = mc.getReadBuffer();
         }
 
         p_148837_1_.readBytes(buffer, 0, this.compressedSize);

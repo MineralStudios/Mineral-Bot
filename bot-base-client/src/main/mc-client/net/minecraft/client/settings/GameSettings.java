@@ -49,7 +49,7 @@ import optifine.WrUpdaterThreaded;
 import optifine.WrUpdates;
 
 public class GameSettings {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(GameSettings.class);
     private static final Gson gson = new Gson();
     private static final ParameterizedType typeListString = new ParameterizedType() {
 

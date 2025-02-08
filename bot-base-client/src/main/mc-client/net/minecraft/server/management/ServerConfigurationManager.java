@@ -64,7 +64,7 @@ public abstract class ServerConfigurationManager {
     public static final File field_152614_b = new File("banned-ips.json");
     public static final File field_152615_c = new File("ops.json");
     public static final File field_152616_d = new File("whitelist.json");
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(ServerConfigurationManager.class);
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd \'at\' HH:mm:ss z");
 
     /** Reference to the MinecraftServer object. */

@@ -28,7 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PlayerManager {
-    private static final Logger field_152627_a = LogManager.getLogger();
+    private static final Logger field_152627_a = LogManager.getLogger(PlayerManager.class);
     private final WorldServer theWorldServer;
 
     /** players in the current instance */

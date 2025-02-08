@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class JsonToNBT {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(JsonToNBT.class);
 
     public static NBTBase func_150315_a(String p_150315_0_) throws NBTException {
         p_150315_0_ = p_150315_0_.trim();

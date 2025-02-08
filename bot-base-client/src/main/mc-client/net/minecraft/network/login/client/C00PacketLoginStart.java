@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.IOException;
 import java.util.UUID;
 
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;

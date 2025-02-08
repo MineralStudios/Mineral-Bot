@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ShaderLinkHelper {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(ShaderLinkHelper.class);
     private static ShaderLinkHelper staticShaderLinkHelper;
 
     public static void setNewStaticShaderLinkHelper() {

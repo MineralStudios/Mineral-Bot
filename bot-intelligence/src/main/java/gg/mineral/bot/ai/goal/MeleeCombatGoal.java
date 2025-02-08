@@ -72,6 +72,7 @@ public class MeleeCombatGoal extends Goal {
         if (world == null)
             return;
 
+
         val entities = world.getEntities();
 
         if (clientInstance.getCurrentTick() - lastTargetSwitchTick < 20 && target != null && entities.contains(target)

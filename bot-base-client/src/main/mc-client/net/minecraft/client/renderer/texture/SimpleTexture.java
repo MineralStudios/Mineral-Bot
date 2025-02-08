@@ -16,7 +16,7 @@ import net.minecraft.client.resources.data.TextureMetadataSection;
 import net.minecraft.util.ResourceLocation;
 
 public class SimpleTexture extends AbstractTexture {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(SimpleTexture.class);
     protected final ResourceLocation textureLocation;
     protected final Minecraft mc;
 

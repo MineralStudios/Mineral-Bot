@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
 
 public class ShaderUniform {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(ShaderUniform.class);
     private int field_148102_b;
     private final int field_148103_c;
     private final int field_148100_d;

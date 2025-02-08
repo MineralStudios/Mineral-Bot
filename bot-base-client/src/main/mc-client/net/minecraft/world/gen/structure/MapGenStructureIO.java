@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class MapGenStructureIO {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(MapGenStructureIO.class);
     private static Map field_143040_a = new HashMap();
     private static Map field_143038_b = new HashMap();
     private static Map field_143039_c = new HashMap();

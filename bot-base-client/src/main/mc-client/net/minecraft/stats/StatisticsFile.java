@@ -30,7 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class StatisticsFile extends StatFileWriter {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(StatisticsFile.class);
     private final MinecraftServer field_150890_c;
     private final File field_150887_d;
     private final Set field_150888_e = Sets.newHashSet();

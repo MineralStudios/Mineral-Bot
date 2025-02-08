@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 
 public class TextureManager implements ITickable, IResourceManagerReloadListener {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(TextureManager.class);
     private final Map<ResourceLocation, Object> mapTextureObjects = Maps.newHashMap();
     private final Map mapResourceLocations = Maps.newHashMap();
     private final List listTickables = Lists.newArrayList();

@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class AbstractResourcePack implements IResourcePack {
-    private static final Logger resourceLog = LogManager.getLogger();
+    private static final Logger resourceLog = LogManager.getLogger(AbstractResourcePack.class);
     public final File resourcePackFile;
 
     public AbstractResourcePack(File p_i1287_1_) {

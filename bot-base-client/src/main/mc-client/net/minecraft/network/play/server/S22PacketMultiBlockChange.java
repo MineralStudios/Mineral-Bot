@@ -18,7 +18,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class S22PacketMultiBlockChange extends Packet {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(S22PacketMultiBlockChange.class);
     private ChunkCoordIntPair field_148925_b;
     private byte[] field_148926_c;
     private int field_148924_d;

@@ -27,7 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class UserList {
-    protected static final Logger field_152693_a = LogManager.getLogger();
+    protected static final Logger field_152693_a = LogManager.getLogger(UserList.class);
     protected final Gson field_152694_b;
     private final File field_152695_c;
     private final Map field_152696_d = Maps.newHashMap();

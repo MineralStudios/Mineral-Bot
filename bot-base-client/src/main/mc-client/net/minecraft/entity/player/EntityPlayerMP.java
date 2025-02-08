@@ -105,7 +105,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 
 public class EntityPlayerMP extends EntityPlayer implements ICrafting {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(EntityPlayerMP.class);
     private String translator = "en_US";
 
     /**

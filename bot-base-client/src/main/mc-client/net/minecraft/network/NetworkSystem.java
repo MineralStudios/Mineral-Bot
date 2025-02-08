@@ -50,7 +50,7 @@ import net.minecraft.util.MessageSerializer2;
 import net.minecraft.util.ReportedException;
 
 public class NetworkSystem {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(NetworkSystem.class);
     private static final EventLoopGroup eventLoops = Epoll.isAvailable()
             ? new EpollEventLoopGroup(0,
                     (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll #%d").setDaemon(true).build())

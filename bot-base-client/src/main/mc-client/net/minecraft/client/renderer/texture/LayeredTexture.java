@@ -16,7 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LayeredTexture extends AbstractTexture {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(LayeredTexture.class);
     public final List layeredTextureNames;
     private final Minecraft mc;
 

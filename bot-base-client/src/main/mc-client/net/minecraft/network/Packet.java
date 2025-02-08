@@ -11,7 +11,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 
 public abstract class Packet {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Packet.class);
 
     /**
      * Returns a packet instance, given the params: BiMap<int, (Packet) Class> and

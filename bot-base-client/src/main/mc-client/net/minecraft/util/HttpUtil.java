@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 public class HttpUtil {
     /** The number of download threads that we have started so far. */
     private static final AtomicInteger downloadThreadsStarted = new AtomicInteger(0);
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(HttpUtil.class);
 
     /**
      * Builds an encoded HTTP POST content string from a string map

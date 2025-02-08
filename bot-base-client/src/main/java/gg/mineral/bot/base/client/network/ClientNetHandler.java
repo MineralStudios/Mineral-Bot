@@ -1,9 +1,7 @@
 package gg.mineral.bot.base.client.network;
 
 import com.google.common.base.Charsets;
-
 import gg.mineral.bot.base.client.player.controller.BotController;
-import io.netty.util.concurrent.GenericFutureListener;
 import lombok.val;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -48,8 +46,8 @@ public class ClientNetHandler extends NetHandlerPlayClient {
         val netManager = this.getNetworkManager();
         netManager.scheduleOutboundPacket(
                 new C17PacketCustomPayload("MC|Brand",
-                        ClientBrandRetriever.getClientModName().getBytes(Charsets.UTF_8)),
-                new GenericFutureListener[0]);
+                        ClientBrandRetriever.getClientModName().getBytes(Charsets.UTF_8))
+        );
     }
 
 }

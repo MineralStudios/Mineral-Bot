@@ -68,7 +68,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class MinecraftServer implements ICommandSender, Runnable {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(MinecraftServer.class);
     public static final File field_152367_a = new File("usercache.json");
 
     /** Instance of Minecraft Server. */

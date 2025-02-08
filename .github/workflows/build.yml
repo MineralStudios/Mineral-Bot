@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'  # You can change this to the JDK distribution you prefer
-          java-version: '17'  # Set this to the Java version you need
+          java-version: '21'  # Set this to the Java version you need
 
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x gradlew
