@@ -16,6 +16,16 @@ repositories {
     }
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact(tasks.shadowJar) {
+                classifier = ""
+            }
+        }
+    }
+}
+
 dependencies {
     compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20241201-19.25.22'
     compileOnly 'org.projectlombok:lombok:1.18.36'
@@ -26,7 +36,7 @@ dependencies {
 }
 
 shadowJar {
-    relocate('net.minecraft', 'gg.mineral.minecraft') { 
+    relocate('net.minecraft', 'gg.mineral.minecraft') {
         exclude 'net.minecraft.server.v1_8_R3.**'
     }
 
