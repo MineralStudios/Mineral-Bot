@@ -1,494 +1,468 @@
-package gg.mineral.bot.ai.goal;
+package gg.mineral.bot.ai.goal
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
+import gg.mineral.bot.ai.goal.type.InventoryGoal
+import gg.mineral.bot.api.controls.Key
+import gg.mineral.bot.api.controls.MouseButton
+import gg.mineral.bot.api.entity.ClientEntity
+import gg.mineral.bot.api.entity.living.ClientLivingEntity
+import gg.mineral.bot.api.entity.living.player.ClientPlayer
+import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.event.entity.EntityHurtEvent
+import gg.mineral.bot.api.instance.ClientInstance
+import gg.mineral.bot.api.inv.item.Item
+import gg.mineral.bot.api.world.block.Block
 
-import gg.mineral.bot.api.controls.Key;
-import gg.mineral.bot.api.controls.MouseButton;
-import gg.mineral.bot.api.entity.ClientEntity;
-import gg.mineral.bot.api.entity.living.ClientLivingEntity;
-import gg.mineral.bot.api.entity.living.player.ClientPlayer;
+class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+    private var target: ClientLivingEntity? = null
 
-import gg.mineral.bot.api.event.Event;
-import gg.mineral.bot.api.event.entity.EntityHurtEvent;
-import gg.mineral.bot.api.goal.Goal;
+    private val meanDelay = (1000 / clientInstance.configuration.averageCps).toLong()
+    private val deviation =
+        kotlin.math.abs(((1000 / (clientInstance.configuration.averageCps + 1)).toLong() - meanDelay).toDouble())
+            .toLong()
+    private var lastBounceTime: Long = 0
+    private var lastTargetSwitchTick = 0
+    private var lastSprintResetTick = 0
 
-import gg.mineral.bot.api.instance.ClientInstance;
-import gg.mineral.bot.api.inv.item.Item;
-import gg.mineral.bot.api.world.block.Block;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.val;
+    override fun shouldExecute() = true
 
-@Getter
-public class MeleeCombatGoal extends Goal {
-    @Nullable
-    private ClientLivingEntity target;
+    private fun switchToBestMeleeWeapon() {
+        var bestMeleeWeaponSlot = 0
+        var damage = 0.0
+        val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory ?: return
 
-    private final long meanDelay, deviation;
-    private long lastBounceTime;
 
-    private int lastTargetSwitchTick = 0, lastSprintResetTick = 0;
-
-    @Override
-    public boolean shouldExecute() {
-        return true;
-    }
-
-    public MeleeCombatGoal(ClientInstance clientInstance) {
-        super(clientInstance);
-        this.meanDelay = (long) (1000 / clientInstance.getConfiguration().getAverageCps());
-        this.deviation = Math.abs((long) (1000 / (clientInstance.getConfiguration().getAverageCps() + 1)) - meanDelay);
-    }
-
-    // TODO: move from inventory to hotbar
-    private void switchToBestMeleeWeapon() {
-        var bestMeleeWeaponSlot = 0;
-        var damage = 0.0D;
-        val fakePlayer = clientInstance.getFakePlayer();
-        val inventory = fakePlayer.getInventory();
-
-        if (inventory == null)
-            return;
-        for (int i = 0; i < 8; i++) {
-            val itemStack = inventory.getItemStackAt(i);
-            double attackDamage = itemStack != null ? itemStack.getAttackDamage() : 0;
-            if (itemStack != null && attackDamage > damage) {
-                bestMeleeWeaponSlot = i;
-                damage = attackDamage;
+        // Look for a non-splash potion in one of the 36 slots
+        invLoop@ for (i in 0..35) {
+            val itemStack = inventory.getItemStackAt(i) ?: continue
+            val attackDamage = itemStack.attackDamage
+            if (attackDamage > damage) {
+                bestMeleeWeaponSlot = i
+                damage = attackDamage
             }
         }
 
-        if (inventory.getHeldSlot() != bestMeleeWeaponSlot)
-            pressKey(10, Key.Type.valueOf("KEY_" + (bestMeleeWeaponSlot + 1)));
+        // If the potion is not in the hotbar (slots 0-8)
+        if (bestMeleeWeaponSlot > 8) return moveItemToHotbar(bestMeleeWeaponSlot, inventory)
+
+        if (inventory.heldSlot != bestMeleeWeaponSlot) pressKey(
+            10,
+            Key.Type.valueOf("KEY_" + (bestMeleeWeaponSlot + 1))
+        )
     }
 
-    private void findTarget() {
-        val targetSearchRange = clientInstance.getConfiguration().getTargetSearchRange();
+    private fun findTarget() {
+        val targetSearchRange = clientInstance.configuration.targetSearchRange
 
-        val fakePlayer = clientInstance.getFakePlayer();
-        val world = fakePlayer.getWorld();
+        val fakePlayer = clientInstance.fakePlayer
+        val world = fakePlayer.world ?: return
 
-        if (world == null)
-            return;
+        val entities = world.entities
 
+        if (clientInstance.currentTick - lastTargetSwitchTick < 20 && target != null && entities.contains(target)
+            && isTargetValid(target!!, targetSearchRange.toFloat())
+        ) return
 
-        val entities = world.getEntities();
+        var closestTarget: ClientPlayer? = null
+        var closestDistance = Double.MAX_VALUE
 
-        if (clientInstance.getCurrentTick() - lastTargetSwitchTick < 20 && target != null && entities.contains(target)
-                && isTargetValid(target, targetSearchRange))
-            return;
-
-        ClientPlayer closestTarget = null;
-        var closestDistance = Double.MAX_VALUE;
-
-        for (val entity : entities) {
-            if (entity instanceof ClientPlayer living) {
-                if (isTargetValid(living, targetSearchRange)) {
-                    double distance = fakePlayer.distance3DTo(living);
+        for (entity in entities) {
+            if (entity is ClientPlayer) {
+                if (isTargetValid(entity, targetSearchRange.toFloat())) {
+                    val distance = fakePlayer.distance3DTo(entity)
                     if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestTarget = living;
+                        closestDistance = distance
+                        closestTarget = entity
                     }
                 }
             }
         }
 
-        if (closestTarget != this.target) {
-            lastTargetSwitchTick = clientInstance.getCurrentTick();
-            this.target = closestTarget;
+        if (closestTarget !== this.target) {
+            lastTargetSwitchTick = clientInstance.currentTick
+            this.target = closestTarget
         }
     }
 
-    private boolean isTargetValid(ClientLivingEntity entity, float range) {
-        val fakePlayer = clientInstance.getFakePlayer();
-        return !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid())
-                && fakePlayer.distance3DTo(entity) <= range && entity instanceof ClientPlayer;
+    private fun isTargetValid(entity: ClientLivingEntity, range: Float): Boolean {
+        val fakePlayer = clientInstance.fakePlayer
+        return !clientInstance.configuration.friendlyUUIDs.contains(entity.uuid) && fakePlayer.distance3DTo(entity) <= range && entity is ClientPlayer
     }
 
-    public float getRotationTarget(float current, float target, float turnSpeed, float accuracy, float erraticness) {
-        val difference = angleDifference(current, target);
+    private fun getRotationTarget(
+        current: Float,
+        target: Float,
+        turnSpeed: Float,
+        accuracy: Float,
+        erraticness: Float
+    ): Float {
+        val difference = angleDifference(current, target)
 
-        if (abs(difference) > turnSpeed)
-            return current + signum(difference) * turnSpeed;
+        if (abs(difference.toDouble()) > turnSpeed) return current + signum(difference) * turnSpeed
 
-        if (accuracy >= 1)
-            return target;
+        if (accuracy >= 1) return target
 
-        accuracy = max(0.01f, accuracy);
+        val deviation = 3f / max(0.01f, accuracy)
+        val fakePlayer = clientInstance.fakePlayer
+        val newTarget = fakePlayer.random.nextGaussian(target.toDouble(), deviation.toDouble()).toFloat()
+        val newDifference = angleDifference(current, newTarget)
 
-        val deviation = 3f / accuracy;
-        val fakePlayer = clientInstance.getFakePlayer();
-        val newTarget = (float) fakePlayer.getRandom().nextGaussian(target, deviation);
-        val newDifference = angleDifference(current, newTarget);
+        val erraticnessFactor = min(180 * erraticness, turnSpeed)
 
-        val erraticnessFactor = min(180 * erraticness, turnSpeed);
-
-        if (abs(newDifference) > erraticnessFactor)
-            return current + signum(newDifference) * erraticnessFactor;
-        return newTarget;
+        if (abs(newDifference.toDouble()) > erraticnessFactor) return current + signum(newDifference) * erraticnessFactor
+        return newTarget
     }
 
-    private void aimAtTarget() {
+    private fun aimAtTarget() {
+        val target = this.target ?: return
 
-        val target = this.target;
-
-        if (target == null)
-            return;
-
-        val fakePlayer = clientInstance.getFakePlayer();
-        val optimalAngles = computeOptimalYawAndPitch(fakePlayer, target);
+        val fakePlayer = clientInstance.fakePlayer
+        val optimalAngles = computeOptimalYawAndPitch(fakePlayer, target)
 
         if (fakePlayer.distance3DTo(target) > 6.0f) {
-            setMouseYaw(optimalAngles[1]);
-            setMousePitch(optimalAngles[0]);
-            return;
+            setMouseYaw(optimalAngles[1])
+            setMousePitch(optimalAngles[0])
+            return
         }
 
-        val yawDiff = abs(angleDifference(fakePlayer.getYaw(),
-                optimalAngles[1]));
+        val yawDiff = abs(
+            angleDifference(
+                fakePlayer.yaw,
+                optimalAngles[1]
+            ).toDouble()
+        )
         val pitchDiff = abs(
-                angleDifference(fakePlayer.getPitch(),
-                        optimalAngles[0]));
+            angleDifference(
+                fakePlayer.pitch,
+                optimalAngles[0]
+            ).toDouble()
+        )
 
-        val distX = abs(fakePlayer.getX() - target.getX());
-        val distZ = abs(fakePlayer.getZ() - target.getZ());
+        val distX = abs(fakePlayer.x - target.x)
+        val distZ = abs(fakePlayer.z - target.z)
 
-        val yawSpeed = calculateHorizontalAimSpeed(sqrt(distX * distX + distZ * distZ), yawDiff);
-        val pitchSpeed = calculateVerticalAimSpeed(pitchDiff);
+        val yawSpeed = calculateHorizontalAimSpeed(sqrt(distX * distX + distZ * distZ), yawDiff)
+        val pitchSpeed = calculateVerticalAimSpeed(pitchDiff)
 
-        val config = clientInstance.getConfiguration();
+        val config = clientInstance.configuration
 
-        setMouseYaw(getRotationTarget(fakePlayer.getYaw(), optimalAngles[1],
-                (float) abs(yawSpeed
-                        * config.getHorizontalAimSpeed() * 2d),
-                config.getHorizontalAimAccuracy(),
-                config.getHorizontalErraticness()));
+        setMouseYaw(
+            getRotationTarget(
+                fakePlayer.yaw, optimalAngles[1],
+                abs(
+                    (yawSpeed
+                            * config.horizontalAimSpeed * 2.0)
+                ).toFloat(),
+                config.horizontalAimAccuracy,
+                config.horizontalErraticness
+            )
+        )
 
         // Give it a higher chance of aiming down
-        val verAccuracy = max(0.01f, config.getVerticalAimAccuracy());
-        float deviation = verAccuracy >= 1 ? 0 : 3f / verAccuracy;
+        val verAccuracy = max(0.01f, config.verticalAimAccuracy)
+        val deviation = if (verAccuracy >= 1) 0f else 3f / verAccuracy
 
-        setMousePitch(getRotationTarget(fakePlayer.getPitch(),
+        setMousePitch(
+            getRotationTarget(
+                fakePlayer.pitch,
                 optimalAngles[0] + deviation,
-                (float) abs(pitchSpeed
-                        * config.getVerticalAimSpeed() * 2d),
+                abs(
+                    (pitchSpeed
+                            * config.verticalAimSpeed * 2.0)
+                ).toFloat(),
                 verAccuracy,
-                config.getVerticalErraticness()));
+                config.verticalErraticness
+            )
+        )
     }
 
-    public double calculateHorizontalAimSpeed(double distHorizontal, double yawDiff) {
-        val yawDiffFactor = 1;
-        val distHorizontalFactor = 1;
+    private fun calculateHorizontalAimSpeed(distHorizontal: Double, yawDiff: Double): Double {
+        val yawDiffFactor = 1
+        val distHorizontalFactor = 1
 
-        if (distHorizontal <= 0.2)
-            distHorizontal = 0.21;
-
-        val distanceFactorEquation = (10 / ((5 * distHorizontal) - 1)) + 2;
-        val diffFactorEquation = yawDiff / 5;
-        return (distHorizontalFactor * distanceFactorEquation)
-                + (yawDiffFactor * diffFactorEquation);
+        val distanceFactorEquation = (10 / ((5 * distHorizontal.coerceAtLeast(0.2)) - 1)) + 2
+        val diffFactorEquation = yawDiff / 5
+        return ((distHorizontalFactor * distanceFactorEquation)
+                + (yawDiffFactor * diffFactorEquation))
     }
 
-    private boolean isCollidingWithWall() {
-        val fakePlayer = clientInstance.getFakePlayer();
-        val world = fakePlayer.getWorld();
-        if (world == null)
-            return false;
+    private val isCollidingWithWall: Boolean
+        get() {
+            val fakePlayer = clientInstance.fakePlayer
+            val world = fakePlayer.world ?: return false
 
-        double posX = fakePlayer.getX();
-        double posY = fakePlayer.getY() + fakePlayer.getEyeHeight();
-        double posZ = fakePlayer.getZ();
-        float yaw = fakePlayer.getYaw();
-        float pitch = 0;
+            val posX = fakePlayer.x
+            val posY = fakePlayer.y + fakePlayer.eyeHeight
+            val posZ = fakePlayer.z
+            val yaw = fakePlayer.yaw
+            val pitch = 0f
 
-        double checkDistance = 1.0;
+            val checkDistance = 1.0
 
-        // Check for collision in the direction the bot is facing
-        double[] dir = vectorForRotation(pitch, yaw);
-        double checkX = posX + dir[0] * checkDistance;
-        double checkY = posY + dir[1] * checkDistance;
-        double checkZ = posZ + dir[2] * checkDistance;
+            // Check for collision in the direction the bot is facing
+            val dir = vectorForRotation(pitch, yaw)
+            val checkX = posX + dir[0] * checkDistance
+            val checkY = posY + dir[1] * checkDistance
+            val checkZ = posZ + dir[2] * checkDistance
 
-        val block = world.getBlockAt(checkX, checkY, checkZ);
-        return block != null && block.getId() != Block.AIR;
-    }
-
-    private double[] getCollisionNormal() {
-        val fakePlayer = clientInstance.getFakePlayer();
-        val world = fakePlayer.getWorld();
-        if (world == null)
-            return null;
-
-        double posX = fakePlayer.getX();
-        double posY = fakePlayer.getY() + fakePlayer.getEyeHeight();
-
-        // Sampling multiple points around the bot
-        int sampleCount = 8;
-        double checkDistance = 0.5;
-        double[] normal = new double[] { 0, 0, 0 };
-
-        for (int i = 0; i < sampleCount; i++) {
-            float angle = fakePlayer.getYaw() + (float) (360.0 / sampleCount * i);
-            double[] dir = vectorForRotation(0, angle);
-
-            double checkX = posX + dir[0] * checkDistance;
-            double checkY = posY;
-            double checkZ = fakePlayer.getZ() + dir[2] * checkDistance;
-
-            val block = world.getBlockAt(checkX, checkY, checkZ);
-            if (block != null && block.getId() != Block.AIR) {
-                // Add the opposite of the direction to the normal
-                normal[0] += -dir[0];
-                normal[1] += 0; // We ignore Y for horizontal normal
-                normal[2] += -dir[2];
-            }
+            val block = world.getBlockAt(checkX, checkY, checkZ)
+            return block != null && block.id != Block.AIR
         }
 
-        double length = sqrt(normal[0] * normal[0] + normal[2] * normal[2]);
-        if (length == 0)
-            return null;
+    private val collisionNormal: DoubleArray?
+        get() {
+            val fakePlayer = clientInstance.fakePlayer
+            val world = fakePlayer.world ?: return null
 
-        // Normalize the normal vector
-        normal[0] /= length;
-        normal[2] /= length;
+            val posX = fakePlayer.x
+            val posY = fakePlayer.y + fakePlayer.eyeHeight
 
-        return normal;
-    }
+            // Sampling multiple points around the bot
+            val sampleCount = 8
+            val checkDistance = 0.5
+            val normal = doubleArrayOf(0.0, 0.0, 0.0)
 
-    private void reflectOffWall() {
-        val fakePlayer = clientInstance.getFakePlayer();
-        double[] normal = getCollisionNormal();
-        if (normal == null)
-            return;
+            for (i in 0..<sampleCount) {
+                val angle = fakePlayer.yaw + (360.0 / sampleCount * i).toFloat()
+                val dir = vectorForRotation(0f, angle)
+
+                val checkX = posX + dir[0] * checkDistance
+                val checkZ = fakePlayer.z + dir[2] * checkDistance
+
+                val block = world.getBlockAt(checkX, posY, checkZ)
+                if (block != null && block.id != Block.AIR) {
+                    // Add the opposite of the direction to the normal
+                    normal[0] += -dir[0]
+                    normal[1] += 0.0 // We ignore Y for horizontal normal
+                    normal[2] += -dir[2]
+                }
+            }
+
+            val length = sqrt(normal[0] * normal[0] + normal[2] * normal[2])
+            if (length == 0.0) return null
+
+            // Normalize the normal vector
+            normal[0] /= length
+            normal[2] /= length
+
+            return normal
+        }
+
+    private fun reflectOffWall() {
+        val fakePlayer = clientInstance.fakePlayer
+        val normal = collisionNormal ?: return
 
         // Normalize the normal vector (should already be normalized)
-        double normX = normal[0];
-        double normZ = normal[2];
+        val normX = normal[0]
+        val normZ = normal[2]
 
         // Get direction vector
-        float yaw = fakePlayer.getYaw();
+        val yaw = fakePlayer.yaw
 
         // Convert yaw to radians
-        double yawRad = Math.toRadians(yaw);
+        val yawRad = Math.toRadians(yaw.toDouble())
 
         // Direction vector in x and z
-        double dirX = -Math.sin(yawRad);
-        double dirZ = Math.cos(yawRad);
+        val dirX = -kotlin.math.sin(yawRad)
+        val dirZ = kotlin.math.cos(yawRad)
 
         // Perform reflection R = V - 2(V ⋅ N)N
-        double dot = dirX * normX + dirZ * normZ; // Only x and z components
-        double reflectedX = dirX - 2 * dot * normX;
-        double reflectedZ = dirZ - 2 * dot * normZ;
+        val dot = dirX * normX + dirZ * normZ // Only x and z components
+        val reflectedX = dirX - 2 * dot * normX
+        val reflectedZ = dirZ - 2 * dot * normZ
 
-        float newYaw = (float) toDegrees(fastArcTan2(-reflectedX, reflectedZ));
+        val newYaw = toDegrees(fastArcTan2(-reflectedX, reflectedZ)).toFloat()
 
-        setMouseYaw(newYaw);
+        setMouseYaw(newYaw)
 
-        this.lastBounceTime = timeMillis();
+        this.lastBounceTime = timeMillis()
     }
 
-    public double calculateVerticalAimSpeed(double pitchDiff) {
-        val pitchDiffFactor = 1;
-        val diffFactorEquation = 2 * pitchDiff / 5;
-        return pitchDiffFactor * diffFactorEquation;
+    private fun calculateVerticalAimSpeed(pitchDiff: Double): Double {
+        val pitchDiffFactor = 1
+        val diffFactorEquation = 2 * pitchDiff / 5
+        return pitchDiffFactor * diffFactorEquation
     }
 
-    private long nextClick = 0;
+    private var nextClick: Long = 0
 
-    private void attackTarget() {
-        val fakePlayer = clientInstance.getFakePlayer();
-        nextClick = (long) (timeMillis() + fakePlayer.getRandom().nextGaussian(meanDelay, deviation));
-        pressButton(25, MouseButton.Type.LEFT_CLICK);
+    private fun attackTarget() {
+        val fakePlayer = clientInstance.fakePlayer
+        nextClick = (timeMillis() + fakePlayer.random.nextGaussian(meanDelay.toDouble(), deviation.toDouble())).toLong()
+        pressButton(25, MouseButton.Type.LEFT_CLICK)
     }
 
-    @Setter
-    private ResetType resetType = ResetType.OFFENSIVE, lastResetType = ResetType.OFFENSIVE;
-    @Setter
-    private byte strafeDirection = 0;
+    private var resetType = ResetType.OFFENSIVE
+    private val lastResetType = ResetType.OFFENSIVE
+    private var strafeDirection: Byte = 0
 
-    private void strafe() {
-        val target = this.target;
+    private fun strafe() {
+        val target = this.target ?: return
 
-        if (target == null)
-            return;
-
-        val fakePlayer = clientInstance.getFakePlayer();
-        val distance = fakePlayer.distance3DTo(target);
-        if (!fakePlayer.isOnGround() || distance > 2.95 /*
+        val fakePlayer = clientInstance.fakePlayer
+        val distance = fakePlayer.distance3DTo(target)
+        if (!fakePlayer.isOnGround || distance > 2.95 /*
                                                          * || timeMillis() -
                                                          * fakePlayer.
                                                          * getLastHitSelected
                                                          * ()
                                                          * < 1000
                                                          */) {
-            unpressKey(Key.Type.KEY_D, Key.Type.KEY_A);
-            return;
+            unpressKey(Key.Type.KEY_D, Key.Type.KEY_A)
+            return
         }
 
-        strafeDirection = strafeDirection(target);
+        strafeDirection = strafeDirection(target)
 
-        switch (strafeDirection) {
-            case 1:
-                unpressKey(Key.Type.KEY_D);
-                pressKey(Key.Type.KEY_A);
-                break;
-            case 2:
-                unpressKey(Key.Type.KEY_A);
-                pressKey(Key.Type.KEY_D);
-                break;
+        when (strafeDirection.toInt()) {
+            1 -> {
+                unpressKey(Key.Type.KEY_D)
+                pressKey(Key.Type.KEY_A)
+            }
+
+            2 -> {
+                unpressKey(Key.Type.KEY_A)
+                pressKey(Key.Type.KEY_D)
+            }
         }
     }
 
-    private byte strafeDirection(ClientEntity target) {
-        val fakePlayer = clientInstance.getFakePlayer();
-        val toPlayer = new double[] { fakePlayer.getX() - target.getX(),
-                fakePlayer.getY() - target.getY(),
-                fakePlayer.getZ() - target.getZ() };
-        val aimVector = vectorForRotation(target.getPitch(),
-                target.getYaw());
+    private fun strafeDirection(target: ClientEntity): Byte {
+        val fakePlayer = clientInstance.fakePlayer
+        val toPlayer = doubleArrayOf(
+            fakePlayer.x - target.x,
+            fakePlayer.y - target.y,
+            fakePlayer.z - target.z
+        )
+        val aimVector = vectorForRotation(
+            target.pitch,
+            target.yaw
+        )
 
-        val crossProduct = crossProduct2D(toPlayer, aimVector);
+        val crossProduct = crossProduct2D(toPlayer, aimVector)
 
         // If cross product is positive, player is to the right of the aim direction
         // If cross product is negative, player is to the left of the aim direction
-        return crossProduct > 0 ? (byte) 2 : 1;
+        return if (crossProduct > 0) 2.toByte() else 1
     }
 
-    public float crossProduct2D(double[] vec, double[] other) {
-        return (float) (vec[0] * other[2] - vec[2] * other[0]);
+    private fun crossProduct2D(vec: DoubleArray, other: DoubleArray): Float {
+        return (vec[0] * other[2] - vec[2] * other[0]).toFloat()
     }
 
-    private void sprintReset() {
+    private fun sprintReset() {
+        val target = this.target ?: return
 
-        val target = this.target;
-
-        if (target == null)
-            return;
-
-        val fakePlayer = clientInstance.getFakePlayer();
-        val meanX = (fakePlayer.getX() + target.getX()) / 2;
-        val meanY = (fakePlayer.getY() + target.getY()) / 2;
-        val meanZ = (fakePlayer.getZ() + target.getZ()) / 2;
+        val fakePlayer = clientInstance.fakePlayer
+        val meanX = (fakePlayer.x + target.x) / 2
+        val meanY = (fakePlayer.y + target.y) / 2
+        val meanZ = (fakePlayer.z + target.z) / 2
 
         // Offensive if dealing more kb to the target
-        val kb = getKB(fakePlayer, meanX, meanY, meanZ);
-        val targetKB = getKB(target, meanX, meanY, meanZ);
+        val kb = getKB(fakePlayer, meanX, meanY, meanZ)
+        val targetKB = getKB(target, meanX, meanY, meanZ)
 
-        val dist = fakePlayer.distance3DTo(target);
+        val dist = fakePlayer.distance3DTo(target)
 
-        val inventory = fakePlayer.getInventory();
-        val itemStack = inventory != null ? inventory.getHeldItemStack() : null;
+        val inventory = fakePlayer.inventory
+        val itemStack = inventory?.heldItemStack
 
-        if (kb < targetKB)
-            setResetType(
-                    dist < 2 && fakePlayer.isOnGround()
-                            ? ResetType.EXTRA_OFFENSIVE
-                            : ResetType.OFFENSIVE);
-        else if (lastResetType == ResetType.DEFENSIVE
-                && itemStack != null && itemStack.getItem().getId() == Item.DIAMOND_SWORD)
-            setResetType(ResetType.EXTRA_DEFENSIVE);
-        else
-            setResetType(ResetType.DEFENSIVE);
+        resetType =
+            if (kb < targetKB) if (dist < 2 && fakePlayer.isOnGround) ResetType.EXTRA_OFFENSIVE else ResetType.OFFENSIVE
+            else if (lastResetType == ResetType.DEFENSIVE && itemStack != null && itemStack.item.id == Item.DIAMOND_SWORD) ResetType.EXTRA_DEFENSIVE
+            else ResetType.DEFENSIVE
 
-        val config = clientInstance.getConfiguration();
+        val config = clientInstance.configuration
 
-        Runnable runnable = () -> {
-            switch (resetType) {
-                case EXTRA_OFFENSIVE:
-                    if (config.getSprintResetAccuracy() >= 1
-                            || fakePlayer.getRandom().nextFloat() < config
-                                    .getSprintResetAccuracy())
-                        pressKey(150, Key.Type.KEY_S);
-                case DEFENSIVE:
-                case OFFENSIVE:
-                    if (config.getSprintResetAccuracy() >= 1
-                            || fakePlayer.getRandom().nextFloat() < config
-                                    .getSprintResetAccuracy())
-                        unpressKey(150, Key.Type.KEY_W);
-                    break;
-                case EXTRA_DEFENSIVE:
-                    if (config.getSprintResetAccuracy() >= 1
-                            || fakePlayer.getRandom().nextFloat() < config
-                                    .getSprintResetAccuracy())
-                        pressButton(75, MouseButton.Type.RIGHT_CLICK);
-                    break;
+        val runnable = Runnable {
+            when (resetType) {
+                ResetType.EXTRA_OFFENSIVE -> {
+                    if (config.sprintResetAccuracy >= 1
+                        || fakePlayer.random.nextFloat() < config
+                            .sprintResetAccuracy
+                    ) pressKey(150, Key.Type.KEY_S)
+                    if (config.sprintResetAccuracy >= 1
+                        || fakePlayer.random.nextFloat() < config
+                            .sprintResetAccuracy
+                    ) unpressKey(150, Key.Type.KEY_W)
+                }
+
+                ResetType.DEFENSIVE, ResetType.OFFENSIVE -> if (config.sprintResetAccuracy >= 1
+                    || fakePlayer.random.nextFloat() < config
+                        .sprintResetAccuracy
+                ) unpressKey(150, Key.Type.KEY_W)
+
+                ResetType.EXTRA_DEFENSIVE -> if (config.sprintResetAccuracy >= 1
+                    || fakePlayer.random.nextFloat() < config
+                        .sprintResetAccuracy
+                ) pressButton(75, MouseButton.Type.RIGHT_CLICK)
             }
-        };
+        }
 
         if (resetType == ResetType.OFFENSIVE || resetType == ResetType.EXTRA_OFFENSIVE) {
-            runnable.run();
-            return;
+            runnable.run()
+            return
         }
 
-        schedule(runnable, 350);
+        schedule(runnable, 350)
     }
 
-    private double getKB(@NonNull ClientLivingEntity entity, double meanX, double meanY, double meanZ) {
-        val motX = entity.getX() - entity.getLastX();
-        val motY = entity.getY() - entity.getLastY();
-        val motZ = entity.getZ() - entity.getLastZ();
+    private fun getKB(entity: ClientLivingEntity, meanX: Double, meanY: Double, meanZ: Double): Double {
+        val motX = entity.x - entity.lastX
+        val motY = entity.y - entity.lastY
+        val motZ = entity.z - entity.lastZ
 
-        val newX = entity.getX() + motX;
-        val newY = entity.getY() + motY;
-        val newZ = entity.getZ() + motZ;
+        val newX = entity.x + motX
+        val newY = entity.y + motY
+        val newZ = entity.z + motZ
 
-        val kbX = newX - meanX;
-        val kbY = newY - meanY;
-        val kbZ = newZ - meanZ;
+        val kbX = newX - meanX
+        val kbY = newY - meanY
+        val kbZ = newZ - meanZ
 
-        return sqrt(kbX * kbX + kbY * kbY + kbZ * kbZ);
+        return sqrt(kbX * kbX + kbY * kbY + kbZ * kbZ)
     }
 
-    enum ResetType {
-        EXTRA_OFFENSIVE, OFFENSIVE, DEFENSIVE, EXTRA_DEFENSIVE;
+    internal enum class ResetType {
+        EXTRA_OFFENSIVE, OFFENSIVE, DEFENSIVE, EXTRA_DEFENSIVE
     }
 
-    @Override
-    public void onTick() {
-        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL);
+    override fun onTick() {
+        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
 
-        findTarget();
-        switchToBestMeleeWeapon();
-        aimAtTarget();
+        findTarget()
+        switchToBestMeleeWeapon()
+        aimAtTarget()
 
-        if (this.target == null && timeMillis() - lastBounceTime > 1000)
-            if (isCollidingWithWall())
-                reflectOffWall();
+        if (this.target == null && timeMillis() - lastBounceTime > 1000) if (isCollidingWithWall) reflectOffWall()
     }
 
-    @Override
-    public boolean onEvent(Event event) {
-        if (event instanceof EntityHurtEvent hurt)
-            return onEntityHurt(hurt);
+    override fun onEvent(event: Event): Boolean {
+        if (event is EntityHurtEvent) return onEntityHurt(event)
 
-        return false;
+        return false
     }
 
-    public boolean onEntityHurt(EntityHurtEvent event) {
-        if (clientInstance.getCurrentTick() - lastSprintResetTick < 9)
-            return false;
+    fun onEntityHurt(event: EntityHurtEvent): Boolean {
+        if (clientInstance.currentTick - lastSprintResetTick < 9) return false
 
-        val entity = event.getAttackedEntity();
+        val entity = event.attackedEntity
 
-        val fakePlayer = clientInstance.getFakePlayer();
-        if (entity == null || entity.getY() - fakePlayer.getY() > 1.5)
-            return false;
+        val fakePlayer = clientInstance.fakePlayer
+        if (entity == null || entity.y - fakePlayer.y > 1.5) return false
 
-        val target = this.target;
+        val target = this.target
 
-        if (target != null && entity.getUuid().equals(target.getUuid())) {
-            sprintReset();
-            lastSprintResetTick = clientInstance.getCurrentTick();
+        if (target != null && entity.uuid == target.uuid) {
+            sprintReset()
+            lastSprintResetTick = clientInstance.currentTick
         }
 
-        return false;
+        return false
     }
 
-    @Override
-    public void onGameLoop() {
-        strafe();
-        if (timeMillis() >= nextClick)
-            attackTarget();
+    public override fun onGameLoop() {
+        strafe()
+        if (timeMillis() >= nextClick) attackTarget()
     }
 }

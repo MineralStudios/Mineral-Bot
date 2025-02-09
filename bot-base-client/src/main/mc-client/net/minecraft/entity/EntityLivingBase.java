@@ -1,11 +1,5 @@
 package net.minecraft.entity;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
 import gg.mineral.bot.api.entity.living.ClientLivingEntity;
 import gg.mineral.bot.api.event.entity.EntityHurtEvent;
 import gg.mineral.bot.base.client.instance.ClientInstance;
@@ -15,11 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.BaseAttributeMap;
-import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.ai.attributes.ServersideAttributeMap;
+import net.minecraft.entity.ai.attributes.*;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityZombie;
@@ -31,11 +21,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagShort;
+import net.minecraft.nbt.*;
 import net.minecraft.network.play.server.S04PacketEntityEquipment;
 import net.minecraft.network.play.server.S0BPacketAnimation;
 import net.minecraft.network.play.server.S0DPacketCollectItem;
@@ -43,15 +29,11 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.CombatTracker;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
+import java.util.*;
 
 public abstract class EntityLivingBase extends Entity implements ClientLivingEntity {
     private static final UUID sprintingSpeedBoostModifierUUID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
@@ -61,10 +43,14 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
     private final CombatTracker _combatTracker = new CombatTracker(this);
     private final Int2ObjectOpenHashMap<PotionEffect> activePotionsMap = new Int2ObjectOpenHashMap<>();
 
-    /** The equipment this mob was previously wearing, used for syncing. */
+    /**
+     * The equipment this mob was previously wearing, used for syncing.
+     */
     private final ItemStack[] previousEquipment = new ItemStack[5];
 
-    /** Whether an arm swing is currently in progress. */
+    /**
+     * Whether an arm swing is currently in progress.
+     */
     public boolean isSwingInProgress;
     public int swingProgressInt;
     public int arrowHitTimer;
@@ -76,10 +62,14 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
      */
     public int hurtTime;
 
-    /** What the hurt time was max set to last. */
+    /**
+     * What the hurt time was max set to last.
+     */
     public int maxHurtTime;
 
-    /** The yaw at which this entity was last attacked from. */
+    /**
+     * The yaw at which this entity was last attacked from.
+     */
     public float attackedAtYaw;
 
     /**
@@ -99,10 +89,14 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
     public int maxHurtResistantTime = 20;
     public float prevCameraPitch, cameraPitch, field_70769_ao, field_70770_ap, renderYawOffset, prevRenderYawOffset;
 
-    /** Entity head rotation yaw */
+    /**
+     * Entity head rotation yaw
+     */
     public float rotationYawHead;
 
-    /** Entity head rotation yaw at previous tick */
+    /**
+     * Entity head rotation yaw at previous tick
+     */
     public float prevRotationYawHead;
 
     /**
@@ -111,7 +105,9 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
      */
     public float jumpMovementFactor = 0.02F;
 
-    /** The most recent player that has attacked this entity */
+    /**
+     * The most recent player that has attacked this entity
+     */
     protected EntityPlayer attackingPlayer;
 
     /**
@@ -127,11 +123,15 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
      */
     protected boolean dead;
 
-    /** The age of this EntityLiving (used to determine when it dies) */
+    /**
+     * The age of this EntityLiving (used to determine when it dies)
+     */
     public int entityAge;
     protected float field_70768_au, field_110154_aX, field_70764_aw, field_70763_ax, field_70741_aB;
 
-    /** The score value of the Mob, the amount of points the mob is worth. */
+    /**
+     * The score value of the Mob, the amount of points the mob is worth.
+     */
     protected int scoreValue;
 
     /**
@@ -140,7 +140,9 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
      */
     protected float lastDamage;
 
-    /** used to check whether entity is jumping. */
+    /**
+     * used to check whether entity is jumping.
+     */
     protected boolean isJumping;
     public float moveStrafing, moveForward;
     protected float randomYawVelocity;
@@ -151,30 +153,46 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
      */
     protected int newPosRotationIncrements;
 
-    /** The new X position to be applied to the entity. */
+    /**
+     * The new X position to be applied to the entity.
+     */
     protected double newPosX;
 
-    /** The new Y position to be applied to the entity. */
+    /**
+     * The new Y position to be applied to the entity.
+     */
     protected double newPosY;
 
-    /** The new Z position to be applied to the entity. */
+    /**
+     * The new Z position to be applied to the entity.
+     */
     protected double newPosZ;
 
-    /** The new yaw rotation to be applied to the entity. */
+    /**
+     * The new yaw rotation to be applied to the entity.
+     */
     protected double newRotationYaw;
 
-    /** The new yaw rotation to be applied to the entity. */
+    /**
+     * The new yaw rotation to be applied to the entity.
+     */
     protected double newRotationPitch;
 
-    /** Whether the DataWatcher needs to be updated with the active potions */
+    /**
+     * Whether the DataWatcher needs to be updated with the active potions
+     */
     private boolean potionsNeedUpdate = true;
 
-    /** is only being set, has no uses as of MC 1.1 */
+    /**
+     * is only being set, has no uses as of MC 1.1
+     */
     private EntityLivingBase entityLivingToAttack;
     private int revengeTimer;
     private EntityLivingBase lastAttacker;
 
-    /** Holds the value of ticksExisted when setLastAttacker was last called. */
+    /**
+     * Holds the value of ticksExisted when setLastAttacker was last called.
+     */
     private int lastAttackerTime;
 
     /**
@@ -184,7 +202,9 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
      */
     private float landMovementFactor;
 
-    /** Number of ticks since last jump */
+    /**
+     * Number of ticks since last jump
+     */
     private int jumpTicks;
     private float field_110151_bq;
 
@@ -212,10 +232,10 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
     }
 
     protected void entityInit() {
-        this.dataWatcher.addObject(7, Integer.valueOf(0));
-        this.dataWatcher.addObject(8, Byte.valueOf((byte) 0));
-        this.dataWatcher.addObject(9, Byte.valueOf((byte) 0));
-        this.dataWatcher.addObject(6, Float.valueOf(1.0F));
+        this.dataWatcher.addObject(7, 0);
+        this.dataWatcher.addObject(8, (byte) 0);
+        this.dataWatcher.addObject(9, (byte) 0);
+        this.dataWatcher.addObject(6, 1.0F);
     }
 
     protected void applyEntityAttributes() {
@@ -622,6 +642,7 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
         return this.activePotionsMap.values();
     }
 
+    @Override
     public boolean isPotionActive(int p_82165_1_) {
         return this.activePotionsMap.containsKey(p_82165_1_);
     }
@@ -727,6 +748,7 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
             this.setHealth(var2 + p_70691_1_);
     }
 
+    @Override
     public final float getHealth() {
         return this.dataWatcher.getWatchableObjectFloat(6);
     }
@@ -1105,7 +1127,7 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
     public EntityLivingBase func_94060_bK() {
         return (EntityLivingBase) (this._combatTracker.func_94550_c() != null ? this._combatTracker.func_94550_c()
                 : (this.attackingPlayer != null ? this.attackingPlayer
-                        : (this.entityLivingToAttack != null ? this.entityLivingToAttack : null)));
+                : (this.entityLivingToAttack != null ? this.entityLivingToAttack : null)));
     }
 
     public final float getMaxHealth() {
@@ -1136,8 +1158,8 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
         return this.isPotionActive(Potion.digSpeed)
                 ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) * 1
                 : (this.isPotionActive(Potion.digSlowdown)
-                        ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2
-                        : 6);
+                ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2
+                : 6);
     }
 
     /**
@@ -1308,7 +1330,7 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
 
                         if (World.doesBlockHaveSolidTopSurface(this.worldObj, var12, (int) this.posY - 1, var13)
                                 || this.worldObj.getBlock(var12, (int) this.posY - 1, var13)
-                                        .getMaterial() == Material.water) {
+                                .getMaterial() == Material.water) {
                             var3 = this.posX + (double) var10;
                             var5 = this.posY + 1.0D;
                             var7 = this.posZ + (double) var11;
@@ -1733,7 +1755,7 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
      * posY, posZ, yaw, pitch
      */
     public void setPositionAndRotation2(double p_70056_1_, double p_70056_3_, double p_70056_5_, float p_70056_7_,
-            float p_70056_8_, int p_70056_9_) {
+                                        float p_70056_8_, int p_70056_9_) {
         this.yOffset = 0.0F;
         this.newPosX = p_70056_1_;
         this.newPosY = p_70056_3_;

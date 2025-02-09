@@ -1,10 +1,9 @@
 package net.minecraft.client.gui;
 
-import java.util.List;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiContainer;
-
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -18,7 +17,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.apache.commons.io.Charsets;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import java.util.List;
 
 public class GuiRepair extends GuiContainer implements ICrafting {
     private static final ResourceLocation field_147093_u = new ResourceLocation("textures/gui/container/anvil.png");
@@ -27,10 +26,37 @@ public class GuiRepair extends GuiContainer implements ICrafting {
     private InventoryPlayer field_147094_x;
 
     public GuiRepair(Minecraft mc, InventoryPlayer p_i46381_1_, World p_i46381_2_, int p_i46381_3_, int p_i46381_4_,
-            int p_i46381_5_) {
+                     int p_i46381_5_) {
         super(mc, new ContainerRepair(p_i46381_1_, p_i46381_2_, p_i46381_3_, p_i46381_4_, p_i46381_5_, mc.thePlayer));
         this.field_147094_x = p_i46381_1_;
         this.field_147092_v = (ContainerRepair) this.container;
+    }
+
+    @Override
+    public int getScaleFactor() {
+        int scaleFactor = 1;
+        // This flag is usually used for checking if fancy graphics are enabled.
+        boolean fancyGraphics = mc.func_152349_b();
+        // Get the user-specified GUI scale; if it is 0, use a large number (effectively "no limit")
+        int guiScale = mc.gameSettings.guiScale;
+        if (guiScale == 0) {
+            guiScale = 1000;
+        }
+
+        // Increase the scale factor as long as it doesn't cause the scaled dimensions
+        // to drop below 320x240 and we haven't reached the user limit.
+        while (scaleFactor < guiScale
+                && mc.displayWidth / (scaleFactor + 1) >= 320
+                && mc.displayHeight / (scaleFactor + 1) >= 240) {
+            scaleFactor++;
+        }
+
+        // In some cases (e.g., fancy graphics enabled), adjust the scale factor so it is even.
+        if (fancyGraphics && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            scaleFactor--;
+        }
+
+        return scaleFactor;
     }
 
     /**
@@ -68,7 +94,7 @@ public class GuiRepair extends GuiContainer implements ICrafting {
             int var3 = 8453920;
             boolean var4 = true;
             String var5 = I18n.format("container.repair.cost",
-                    new Object[] { Integer.valueOf(this.field_147092_v.maximumCost) });
+                    new Object[]{Integer.valueOf(this.field_147092_v.maximumCost)});
 
             EntityClientPlayerMP thePlayer = this.mc.thePlayer;
             if (this.field_147092_v.maximumCost >= 40 && thePlayer != null

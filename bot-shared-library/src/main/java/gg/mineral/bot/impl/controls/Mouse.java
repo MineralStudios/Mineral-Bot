@@ -1,10 +1,5 @@
 package gg.mineral.bot.impl.controls;
 
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import gg.mineral.bot.api.controls.MouseButton.Type;
 import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.api.event.EventHandler;
@@ -14,6 +9,11 @@ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
 
@@ -29,6 +29,9 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
     private Log eventLog = null, currentLog = null;
     private Iterator<Log> iterator = null;
     private final EventHandler eventHandler;
+    @Getter
+    @Setter
+    private boolean grabbed = true;
 
     private final Object2LongOpenHashMap<Runnable> scheduledTasks = new Object2LongOpenHashMap<>();
 
@@ -112,7 +115,8 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
         }
 
         if (iterator == null) {
-            buttonsLoop: for (val button : mouseButtons) {
+            buttonsLoop:
+            for (val button : mouseButtons) {
                 if (button.isPressed()) {
                     for (val log : logs)
                         if (log.type == button.getType())
@@ -158,7 +162,7 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
     }
 
     public record Log(MouseButton.Type type, boolean pressed, int x, int y, int dX, int dY,
-            int dWheel) {
+                      int dWheel) {
     }
 
     @Override
@@ -179,6 +183,12 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
             currentLog = new Log(currentLog.type, currentLog.pressed, x, y, dX, dY, dWheel);
         else
             currentLog = new Log(Type.UNKNOWN, false, x, y, dX, dY, dWheel);
+    }
+
+    @Override
+    public void setCursorPosition(int x, int y) {
+        setX(x);
+        setY(y);
     }
 
     @Override

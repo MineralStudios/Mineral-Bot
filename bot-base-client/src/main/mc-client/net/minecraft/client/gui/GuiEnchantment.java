@@ -1,7 +1,5 @@
 package net.minecraft.client.gui;
 
-import java.util.Random;
-
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
 import gg.mineral.bot.base.lwjgl.util.glu.Project;
@@ -20,6 +18,8 @@ import net.minecraft.util.EnchantmentNameParts;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+
+import java.util.Random;
 
 public class GuiEnchantment extends GuiContainer {
     private static final ResourceLocation field_147078_C = new ResourceLocation(
@@ -40,11 +40,38 @@ public class GuiEnchantment extends GuiContainer {
     private String field_147079_H;
 
     public GuiEnchantment(Minecraft mc, InventoryPlayer p_i46398_1_, World p_i46398_2_, int p_i46398_3_,
-            int p_i46398_4_, int p_i46398_5_, String p_i46398_6_) {
+                          int p_i46398_4_, int p_i46398_5_, String p_i46398_6_) {
         super(mc, new ContainerEnchantment(p_i46398_1_, p_i46398_2_, p_i46398_3_, p_i46398_4_, p_i46398_5_));
         this.field_147072_E = new ModelBook(mc);
         this.field_147075_G = (ContainerEnchantment) this.container;
         this.field_147079_H = p_i46398_6_;
+    }
+
+    @Override
+    public int getScaleFactor() {
+        int scaleFactor = 1;
+        // This flag is usually used for checking if fancy graphics are enabled.
+        boolean fancyGraphics = mc.func_152349_b();
+        // Get the user-specified GUI scale; if it is 0, use a large number (effectively "no limit")
+        int guiScale = mc.gameSettings.guiScale;
+        if (guiScale == 0) {
+            guiScale = 1000;
+        }
+
+        // Increase the scale factor as long as it doesn't cause the scaled dimensions
+        // to drop below 320x240 and we haven't reached the user limit.
+        while (scaleFactor < guiScale
+                && mc.displayWidth / (scaleFactor + 1) >= 320
+                && mc.displayHeight / (scaleFactor + 1) >= 240) {
+            scaleFactor++;
+        }
+
+        // In some cases (e.g., fancy graphics enabled), adjust the scale factor so it is even.
+        if (fancyGraphics && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            scaleFactor--;
+        }
+
+        return scaleFactor;
     }
 
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {

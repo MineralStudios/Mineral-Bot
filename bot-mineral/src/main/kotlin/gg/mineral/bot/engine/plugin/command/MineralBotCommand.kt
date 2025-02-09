@@ -4,10 +4,7 @@ import gg.mineral.api.command.Command
 import gg.mineral.api.command.CommandExecutor
 import gg.mineral.api.entity.living.human.Player
 import gg.mineral.api.world.World
-import gg.mineral.bot.ai.goal.DrinkPotionGoal
-import gg.mineral.bot.ai.goal.EatGappleGoal
-import gg.mineral.bot.ai.goal.MeleeCombatGoal
-import gg.mineral.bot.ai.goal.ReplaceArmorGoal
+import gg.mineral.bot.ai.goal.*
 import gg.mineral.bot.api.BotAPI
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.entity.living.player.skin.Skins
@@ -44,7 +41,7 @@ class MineralBotCommand : Command("mineralbot", "") {
             instance.startGoals(
                 ReplaceArmorGoal(instance), DrinkPotionGoal(instance),
                 EatGappleGoal(instance),
-                MeleeCombatGoal(instance)
+                MeleeCombatGoal(instance), ThrowPearlGoal(instance)
             )
         }
     }

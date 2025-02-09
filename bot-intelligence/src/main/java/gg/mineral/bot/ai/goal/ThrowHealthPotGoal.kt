@@ -1,314 +1,168 @@
-package gg.mineral.bot.ai.goal;
+package gg.mineral.bot.ai.goal
 
-import gg.mineral.bot.api.controls.Key;
-import gg.mineral.bot.api.controls.MouseButton;
-import gg.mineral.bot.api.entity.living.ClientLivingEntity;
-import gg.mineral.bot.api.entity.living.player.ClientPlayer;
-import gg.mineral.bot.api.entity.living.player.FakePlayer;
-import gg.mineral.bot.api.event.Event;
-import gg.mineral.bot.api.goal.Goal;
+import gg.mineral.bot.ai.goal.type.InventoryGoal
+import gg.mineral.bot.api.controls.Key
+import gg.mineral.bot.api.controls.MouseButton
+import gg.mineral.bot.api.entity.ClientEntity
+import gg.mineral.bot.api.entity.living.ClientLivingEntity
+import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.instance.ClientInstance
+import gg.mineral.bot.api.inv.item.Item
+import gg.mineral.bot.api.inv.item.ItemStack
+import gg.mineral.bot.api.math.trajectory.Trajectory
+import gg.mineral.bot.api.math.trajectory.throwable.SplashPotionTrajectory
+import gg.mineral.bot.api.world.ClientWorld
+import gg.mineral.bot.api.world.block.Block
+import kotlin.math.atan2
 
-import gg.mineral.bot.api.instance.ClientInstance;
-import gg.mineral.bot.api.inv.item.Item;
+// TODO: support both regen and instant health potions
+class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+    private var lastPotTick = 0
+    private var potting = false
+    private var throwYaw = 0.0f
 
-import gg.mineral.bot.api.math.trajectory.Trajectory.CollisionFunction;
-import gg.mineral.bot.api.math.trajectory.throwable.EnderPearlTrajectory;
-import gg.mineral.bot.api.screen.type.ContainerScreen;
-import gg.mineral.bot.api.util.MathUtil;
-import gg.mineral.bot.api.world.ClientWorld;
-import gg.mineral.bot.api.world.block.Block;
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+    private fun switchToPot() {
+        var potSlot = -1
+        val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory ?: return
 
-public class ThrowHealthPotGoal extends Goal {
-
-    private int lastPearledTick = 0;
-    private boolean inventoryOpen = false;
-
-    public ThrowHealthPotGoal(ClientInstance clientInstance) {
-        super(clientInstance);
-    }
-
-    @RequiredArgsConstructor
-    private enum Type implements MathUtil {
-        RETREAT() {
-
-            @Override
-            public boolean test(FakePlayer fakePlayer, ClientLivingEntity entity) {
-                return false;
-            }
-
-        },
-        SIDE() {
-
-            @Override
-            public boolean test(FakePlayer fakePlayer, ClientLivingEntity entity) {
-                val distance = fakePlayer.distance3DTo(entity);
-                return distance < 6.0 && !fakePlayer.isOnGround();
-            }
-
-        },
-        FORWARD() {
-
-            @Override
-            public boolean test(FakePlayer fakePlayer, ClientLivingEntity entity) {
-                val distance = fakePlayer.distance3DTo(entity);
-                return distance > 16.0D;
-            }
-
-        };
-
-        public abstract boolean test(FakePlayer fakePlayer, ClientLivingEntity entity);
-    }
-
-    private void switchToPearl() {
-        var pearlSlot = -1;
-        val fakePlayer = clientInstance.getFakePlayer();
-        val inventory = fakePlayer.getInventory();
-
-        if (inventory == null)
-            return;
-
-        // Search hotbar
-        for (int i = 0; i < 36; i++) {
-            val itemStack = inventory.getItemStackAt(i);
-            if (itemStack == null)
-                continue;
-            val item = itemStack.getItem();
-            if (item.getId() == Item.ENDER_PEARL) {
-                pearlSlot = i;
-                break;
+        for (i in 0..35) {
+            val itemStack = inventory.getItemStackAt(i) ?: continue
+            val item = itemStack.item
+            if (item.id == Item.POTION && itemStack.durability == 16421) {
+                potSlot = i
+                break
             }
         }
 
-        if (pearlSlot > 8) {
-            if (!inventoryOpen) {
-                inventoryOpen = true;
-                pressKey(10, Key.Type.KEY_E);
-                return;
-            }
-
-            val screen = clientInstance.getCurrentScreen();
-
-            if (screen == null) {
-                inventoryOpen = false;
-                return;
-            }
-            // Move mouse
-            val inventoryContainer = fakePlayer.getInventoryContainer();
-
-            if (inventoryContainer == null) {
-                inventoryOpen = false;
-                return;
-            }
-
-            val slot = inventoryContainer.getSlot(inventory, pearlSlot);
-
-            if (slot == null) {
-                inventoryOpen = false;
-                pressKey(10, Key.Type.KEY_ESCAPE);
-                return;
-            }
-
-            if (screen instanceof ContainerScreen containerScreen) {
-                val x = containerScreen.getSlotX(slot);
-                val y = containerScreen.getSlotY(slot);
-
-                val currX = getMouseX();
-                val currY = getMouseY();
-
-                if (currX != x || currY != y) {
-                    setMouseX(x);
-                    setMouseY(y);
-                } else {
-                    // Move to end slot
-                    pressKey(10, Key.Type.KEY_8);
-                }
-
-            }
-
-            return;
-        }
+        if (potSlot > 8) return moveItemToHotbar(potSlot, inventory)
 
         if (inventoryOpen) {
-            inventoryOpen = false;
-            pressKey(10, Key.Type.KEY_ESCAPE);
-            return;
+            inventoryOpen = false
+            pressKey(10, Key.Type.KEY_ESCAPE)
+            return
         }
 
-        pressKey(10, Key.Type.valueOf("KEY_" + (pearlSlot + 1)));
+        pressKey(10, Key.Type.valueOf("KEY_" + (potSlot + 1)))
     }
 
-    @Override
-    // TODO: ender pearl cooldown
-    public boolean shouldExecute() {
-        if (clientInstance.getCurrentTick() - lastPearledTick < 20 || !canSeeEnemy())
-            return false;
+    override fun shouldExecute(): Boolean {
+        if (clientInstance.currentTick - lastPotTick < 20) return false
 
-        val fakePlayer = clientInstance.getFakePlayer();
-        val inventory = fakePlayer.getInventory();
+        val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory
 
-        if (inventory == null || !inventory.contains(Item.ENDER_PEARL))
-            return false;
+        if (inventory == null || !inventory.contains { it: ItemStack ->
+                it.item.id == Item.POTION && it.durability == 16421
+            }) return false
 
-        val world = fakePlayer.getWorld();
-
-        if (world == null)
-            return false;
-
-        for (val entity : world.getEntities())
-            if (entity instanceof ClientPlayer enemy
-                    && !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid()))
-                for (val t : Type.values())
-                    if (t.test(fakePlayer, enemy))
-                        return true;
-
-        return false;
+        return potting || fakePlayer.health < 10
     }
 
-    private boolean canSeeEnemy() {
-        val fakePlayer = clientInstance.getFakePlayer();
-        val world = fakePlayer.getWorld();
-        return world == null ? false
-                : world.getEntities().stream()
-                        .anyMatch(entity -> !clientInstance.getConfiguration().getFriendlyUUIDs()
-                                .contains(entity.getUuid()));
+    private fun angleAwayFromEnemies(): Float {
+        val fakePlayer = clientInstance.fakePlayer
+        val world = fakePlayer.world ?: return warn(this, "World is null").let { fakePlayer.yaw }
+
+        val enemy = world.entities
+            .minByOrNull {
+                if (it is ClientLivingEntity && !clientInstance.configuration.friendlyUUIDs.contains(it.uuid))
+                    it.distance3DTo(fakePlayer)
+                else Double.MAX_VALUE
+            } ?: return fakePlayer.yaw
+
+        val angle = toDegrees(atan2(fakePlayer.z - enemy.z, fakePlayer.x - enemy.x)).toFloat()
+        return angle
     }
 
-    @Override
-    public void onTick() {
-        val fakePlayer = clientInstance.getFakePlayer();
-        val world = fakePlayer.getWorld();
+    private fun distanceAwayFromEnemies(): Double {
+        val fakePlayer = clientInstance.fakePlayer
+        val world = fakePlayer.world ?: return warn(this, "World is null").let { Double.MAX_VALUE }
 
-        if (world == null)
-            return;
+        return world.entities
+            .minOfOrNull {
+                if (it is ClientLivingEntity && !clientInstance.configuration.friendlyUUIDs.contains(it.uuid))
+                    it.distance3DTo(fakePlayer)
+                else Double.MAX_VALUE
+            } ?: Double.MAX_VALUE
+    }
 
-        val inventory = fakePlayer.getInventory();
+    override fun onTick() {
+        val fakePlayer = clientInstance.fakePlayer
+        val world = fakePlayer.world ?: return
 
-        if (inventory == null)
-            return;
+        val inventory = fakePlayer.inventory ?: return
 
-        for (val entity : world.getEntities()) {
-            if (entity instanceof ClientPlayer enemy
-                    && !clientInstance.getConfiguration().getFriendlyUUIDs().contains(entity.getUuid())) {
-                for (val type : Type.values()) {
-                    if (type.test(fakePlayer, enemy)) {
-                        val targetX = enemy.getX();
-                        val targetY = enemy.getY();
-                        val targetZ = enemy.getZ();
 
-                        final CollisionFunction collisionFunction = switch (type) {
-                            case FORWARD -> (x1, y1, z1) -> floor(x1) == floor(targetX) && floor(y1) == floor(targetY)
-                                    && floor(z1) == floor(targetZ);
-                            case RETREAT -> (x1, y1, z1) -> hasHitBlock(world, x1, y1, z1);
-                            case SIDE ->
-                                (x1, y1, z1) -> hypot(x1 - targetX, z1 - targetZ) > 3 && hasHitBlock(world, x1, y1, z1);
-                        };
+        if (potting) {
+            setMouseYaw(throwYaw)
+            if (fakePlayer.health >= 10)
+                potting = false
+            return
+        }
+        // TODO: player motion prediction
+        val collisionFunction = Trajectory.CollisionFunction { x1: Double, y1: Double, z1: Double ->
 
-                        val angles = switch (type) {
-                            case FORWARD -> {
-                                val x = targetX - fakePlayer.getX();
-                                val z = targetZ - fakePlayer.getZ();
+            if (hasHitEntity(world, x1, y1, z1) || hasHitBlock(world, x1, y1, z1)) {
+                val distance: Double = fakePlayer.distance3DToSq(x1, y1, z1)
 
-                                float yaw;
-                                if (z < 0.0D && x < 0.0D)
-                                    yaw = (float) (90.0D + toDegrees(fastArcTan(z / x)));
-                                else if (z < 0.0D && x > 0.0D)
-                                    yaw = (float) (-90.0D + toDegrees(fastArcTan(z / x)));
-                                else
-                                    yaw = (float) toDegrees(-fastArcTan(z / x));
+                if (distance < 16.0) {
+                    val intensity = 1.0 - kotlin.math.sqrt(distance) / 4.0
 
-                                val optimizer = world
-                                        .univariateOptimizer(EnderPearlTrajectory.class,
-                                                EnderPearlTrajectory::getAirTimeTicks,
-                                                1000)
-                                        .val(fakePlayer.getX(), fakePlayer.getY() + fakePlayer.getEyeHeight(),
-                                                fakePlayer.getZ(), yaw)
-                                        .var(-90, 90).val(collisionFunction).build();
-
-                                float pitch = optimizer.minimize().floatValue();
-
-                                yield new float[] { yaw, pitch };
-                            }
-                            case RETREAT -> {
-
-                                val optimizer = world
-                                        .bivariateOptimizer(EnderPearlTrajectory.class,
-                                                trajectory -> trajectory.distance3DToSq(targetX, targetY, targetZ),
-                                                1000)
-                                        .val(fakePlayer.getX(), fakePlayer.getY() + fakePlayer.getEyeHeight(),
-                                                fakePlayer.getZ())
-                                        .var(-180, 180)
-                                        .var(-90, 90).val(collisionFunction).build();
-
-                                Number[] result = optimizer.maximize();
-                                float yaw = result[0].floatValue();
-                                float pitch = result[1].floatValue();
-
-                                yield new float[] { yaw, pitch };
-                            }
-                            case SIDE -> {
-                                val optimizer = world
-                                        .bivariateOptimizer(EnderPearlTrajectory.class,
-                                                trajectory -> abs(trajectory.distance2DToSq(targetX, targetZ)
-                                                        - 3.5),
-                                                1000)
-                                        .val(fakePlayer.getX(), fakePlayer.getY() + fakePlayer.getEyeHeight(),
-                                                fakePlayer.getZ())
-                                        .var(-180, 180)
-                                        .var(-90, 90).val(collisionFunction).build();
-
-                                Number[] result = optimizer.minimize();
-                                float yaw = result[0].floatValue();
-                                float pitch = result[1].floatValue();
-
-                                yield new float[] { yaw, pitch };
-                            }
-                            default -> new float[] { 0.0F, 0.0F };
-                        };
-
-                        setMouseYaw(angles[0]);
-                        setMousePitch(angles[1]);
-
-                        val itemStack = inventory.getHeldItemStack();
-
-                        if (itemStack == null || itemStack.getItem().getId() != Item.ENDER_PEARL)
-                            switchToPearl();
-                        else
-                            pressButton(10, MouseButton.Type.RIGHT_CLICK);
-                        break;
-                    }
+                    if (intensity > clientInstance.configuration.potAccuracy.coerceAtMost(0.9)) return@CollisionFunction true
                 }
-                break;
             }
+
+            false
         }
 
+        val univariateOptimizer =
+            clientInstance.univariateOptimizer({ SplashPotionTrajectory(world) }, { it.airTimeTicks }, 1000).`val`(
+                fakePlayer.x, fakePlayer.y + fakePlayer.eyeHeight,
+                fakePlayer.z, fakePlayer.yaw
+            ).`var`(-90, 90).`val`(collisionFunction).build()
+
+        val pitch = univariateOptimizer.minimize().toFloat()
+
+        setMouseYaw(angleAwayFromEnemies())
+        setMousePitch(pitch)
+
+        val itemStack = inventory.heldItemStack
+
+        if (itemStack == null || itemStack.item.id != Item.POTION || itemStack.durability != 16421) switchToPot()
+        else if (distanceAwayFromEnemies() > 3.5) {
+            potting = true
+            throwYaw = fakePlayer.yaw
+            lastPotTick = clientInstance.currentTick
+            pressButton(10, MouseButton.Type.RIGHT_CLICK)
+        }
     }
 
-    private boolean hasHitBlock(ClientWorld world, double x, double y, double z) {
-        val xTile = floor(x);
-        val yTile = floor(y);
-        val zTile = floor(z);
-        val block = world != null ? world.getBlockAt(xTile, yTile, zTile) : null;
+    private fun hasHitBlock(world: ClientWorld?, x: Double, y: Double, z: Double): Boolean {
+        val xTile = floor(x)
+        val yTile = floor(y)
+        val zTile = floor(z)
+        val block = world?.getBlockAt(xTile, yTile, zTile)
 
-        if (world != null && block != null && block.getId() != Block.AIR) {
-            val collisionBoundingBox = block.getCollisionBoundingBox(world,
-                    xTile,
-                    yTile, zTile);
+        if (world != null && block != null && block.id != Block.AIR) {
+            val collisionBoundingBox = block.getCollisionBoundingBox(
+                world,
+                xTile,
+                yTile, zTile
+            )
 
-            if (collisionBoundingBox != null && collisionBoundingBox.isVecInside(x, y, z))
-                return true;
+            return collisionBoundingBox != null && collisionBoundingBox.isVecInside(x, y, z)
         }
 
-        return false;
+        return false
     }
 
-    @Override
-    public boolean onEvent(Event event) {
-        return false;
+    private fun hasHitEntity(world: ClientWorld?, x: Double, y: Double, z: Double) =
+        world?.entities?.any { it: ClientEntity -> it.boundingBox?.isVecInside(x, y, z) == true } ?: false
+
+    override fun onEvent(event: Event): Boolean {
+        return false
     }
 
-    @Override
-    public void onGameLoop() {
+    public override fun onGameLoop() {
     }
 }

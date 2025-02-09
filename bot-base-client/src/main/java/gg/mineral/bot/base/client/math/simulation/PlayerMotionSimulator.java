@@ -1,7 +1,5 @@
 package gg.mineral.bot.base.client.math.simulation;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.entity.living.player.ClientPlayer;
 import gg.mineral.bot.api.event.Event;
@@ -15,6 +13,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.Session;
 import net.minecraft.world.World;
+import org.eclipse.jdt.annotation.NonNull;
 
 public class PlayerMotionSimulator extends EntityPlayerSP
         implements gg.mineral.bot.api.math.simulation.PlayerMotionSimulator {
@@ -23,7 +22,7 @@ public class PlayerMotionSimulator extends EntityPlayerSP
 
     private int millis;
 
-    private static EventHandler EMPTY_EVENT_HANDLER = new EventHandler() {
+    private static final EventHandler EMPTY_EVENT_HANDLER = new EventHandler() {
 
         @Override
         public <T extends Event> boolean callEvent(@NonNull T event) {
@@ -95,7 +94,9 @@ public class PlayerMotionSimulator extends EntityPlayerSP
     }
 
     public class Timer {
-        /** The number of timer ticks per second of real time */
+        /**
+         * The number of timer ticks per second of real time
+         */
         float ticksPerSecond;
 
         /**
@@ -139,7 +140,9 @@ public class PlayerMotionSimulator extends EntityPlayerSP
          */
         private long lastSyncHighResClock;
 
-        /** Accumulated time between syncs, used to adjust timeSyncRatio */
+        /**
+         * Accumulated time between syncs, used to adjust timeSyncRatio
+         */
         private long accumulatedTimeBetweenSyncs;
 
         /**
@@ -191,7 +194,7 @@ public class PlayerMotionSimulator extends EntityPlayerSP
             if (timeDelta > 1.0D)
                 timeDelta = 1.0D;
 
-            this.elapsedPartialTicks += timeDelta * this.timerSpeed * this.ticksPerSecond;
+            this.elapsedPartialTicks += (float) (timeDelta * this.timerSpeed * this.ticksPerSecond);
             this.elapsedTicks = (int) this.elapsedPartialTicks;
             this.elapsedPartialTicks -= this.elapsedTicks;
 

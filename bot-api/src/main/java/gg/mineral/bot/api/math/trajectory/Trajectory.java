@@ -5,22 +5,18 @@ import gg.mineral.bot.api.math.optimization.RecursiveCalculation;
 import gg.mineral.bot.api.world.ClientWorld;
 
 public interface Trajectory
-        extends RecursiveCalculation<gg.mineral.bot.api.math.trajectory.Trajectory.Result>, Positionable {
-
-    public enum Result {
-        HIT, MISS, CONTINUE;
-    }
+        extends RecursiveCalculation, Positionable {
 
     /**
      * Ticks the trajectory.
-     * 
+     *
      * @return the result of the tick
      */
     Result tick();
 
     /**
      * Computes the trajectory.
-     * 
+     *
      * @return the result of the computation
      */
     @Override
@@ -34,41 +30,41 @@ public interface Trajectory
 
     /**
      * The x-coordinate of the trajectory.
-     * 
+     *
      * @return the x-coordinate
      */
     double getX();
 
     /**
      * The y-coordinate of the trajectory.
-     * 
+     *
      * @return the y-coordinate
      */
     double getY();
 
     /**
      * The z-coordinate of the trajectory.
-     * 
+     *
      * @return the z-coordinate
      */
     double getZ();
 
     /**
      * The collision function of the trajectory.
-     * 
+     *
      * @return the collision function
      */
     CollisionFunction getCollisionFunction();
 
     /**
      * The world of the trajectory.
-     * 
+     *
      * @return the world
      */
     ClientWorld getWorld();
 
     @FunctionalInterface
-    public interface CollisionFunction {
+    interface CollisionFunction {
         boolean test(double x, double y, double z);
     }
 }

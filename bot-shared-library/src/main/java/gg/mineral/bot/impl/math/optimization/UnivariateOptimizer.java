@@ -1,24 +1,23 @@
 package gg.mineral.bot.impl.math.optimization;
 
-import java.util.function.Function;
-
+import gg.mineral.bot.api.math.optimization.RecursiveCalculation;
+import lombok.val;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.univariate.BrentOptimizer;
 import org.apache.commons.math3.optim.univariate.SearchInterval;
 import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction;
 
-import gg.mineral.bot.api.math.optimization.RecursiveCalculation;
-import gg.mineral.bot.api.world.ClientWorld;
-import lombok.val;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
 
-public class UnivariateOptimizer<C extends RecursiveCalculation<?>> extends Optimizer<C, Number>
+public class UnivariateOptimizer<C extends RecursiveCalculation> extends Optimizer<C, Number>
         implements gg.mineral.bot.api.math.optimization.UnivariateOptimizer<C> {
     private final int objectiveVarIndex;
 
-    public UnivariateOptimizer(ClientWorld world, Class<C> clazz, Function<C, Number> valueFunction, int maxEval,
-            Param<?>[] params) {
-        super(world, clazz, valueFunction, maxEval, params);
+    public UnivariateOptimizer(Callable<C> callable, Function<C, Number> valueFunction, int maxEval,
+                               Param<?>[] params) {
+        super(callable, valueFunction, maxEval, params);
 
         var objectiveVarIndex = -1;
 
@@ -37,12 +36,14 @@ public class UnivariateOptimizer<C extends RecursiveCalculation<?>> extends Opti
         val args = getArgs();
 
         val objectiveVar = params[objectiveVarIndex];
-        if (objectiveVar instanceof IndependentVar var) {
-            val searchInterval = new SearchInterval(var.lowerBound().doubleValue(), var.upperBound().doubleValue());
+        if (objectiveVar instanceof IndependentVar(Number lowerBound, Number upperBound)) {
+            val searchInterval = new SearchInterval(lowerBound.doubleValue(), upperBound.doubleValue());
             UnivariateFunction objective = x -> {
                 args[objectiveVarIndex] = x;
                 val calc = newCalculation(args);
-                return valueFunction.apply(calc).doubleValue();
+                if (calc.compute(maxEval.getMaxEval()) == RecursiveCalculation.Result.VALID)
+                    return valueFunction.apply(calc).doubleValue();
+                else return Double.MAX_VALUE;
             };
             val optimizer = new BrentOptimizer(1e-10, 1e-14);
             val result = optimizer.optimize(
@@ -62,12 +63,14 @@ public class UnivariateOptimizer<C extends RecursiveCalculation<?>> extends Opti
         val args = getArgs();
 
         val objectiveVar = params[objectiveVarIndex];
-        if (objectiveVar instanceof IndependentVar var) {
-            val searchInterval = new SearchInterval(var.lowerBound().doubleValue(), var.upperBound().doubleValue());
+        if (objectiveVar instanceof IndependentVar(Number lowerBound, Number upperBound)) {
+            val searchInterval = new SearchInterval(lowerBound.doubleValue(), upperBound.doubleValue());
             UnivariateFunction objective = x -> {
                 args[objectiveVarIndex] = x;
                 val calc = newCalculation(args);
-                return valueFunction.apply(calc).doubleValue();
+                if (calc.compute(maxEval.getMaxEval()) == RecursiveCalculation.Result.VALID)
+                    return valueFunction.apply(calc).doubleValue();
+                else return Double.MIN_VALUE;
             };
             val optimizer = new BrentOptimizer(1e-10, 1e-14);
             val result = optimizer.optimize(

@@ -1,19 +1,18 @@
 package gg.mineral.bot.api.inv;
 
-import java.util.function.Function;
-
-import org.eclipse.jdt.annotation.Nullable;
-
 import gg.mineral.bot.api.inv.item.Item;
 import gg.mineral.bot.api.inv.item.Item.Type;
 import gg.mineral.bot.api.inv.item.ItemStack;
 import gg.mineral.bot.api.inv.potion.Potion;
 import lombok.val;
+import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.function.Function;
 
 public interface Inventory {
     /**
      * Get the item stack that the player is currently holding.
-     * 
+     *
      * @return the item stack that the player is currently holding
      */
     @Nullable
@@ -21,16 +20,15 @@ public interface Inventory {
 
     /**
      * Get the slot that the player is currently holding.
-     * 
+     *
      * @return the slot that the player is currently holding
      */
     int getHeldSlot();
 
     /**
      * Get the item stack at the specified slot.
-     * 
-     * @param slot
-     *             the slot
+     *
+     * @param slot the slot
      * @return the item stack at the specified slot
      */
     @Nullable
@@ -38,7 +36,7 @@ public interface Inventory {
 
     /**
      * Get the helmet.
-     * 
+     *
      * @return the helmet
      */
     @Nullable
@@ -46,7 +44,7 @@ public interface Inventory {
 
     /**
      * Get the chestplate.
-     * 
+     *
      * @return the chestplate
      */
     @Nullable
@@ -54,7 +52,7 @@ public interface Inventory {
 
     /**
      * Get the leggings.
-     * 
+     *
      * @return the leggings
      */
     @Nullable
@@ -62,7 +60,7 @@ public interface Inventory {
 
     /**
      * Get the boots.
-     * 
+     *
      * @return the boots
      */
     @Nullable
@@ -70,9 +68,8 @@ public interface Inventory {
 
     /**
      * Find the slot of the specified item.
-     * 
-     * @param item
-     *             the item
+     *
+     * @param item the item
      * @return the slot of the specified item
      */
     int findSlot(Item item);
@@ -80,8 +77,7 @@ public interface Inventory {
     /**
      * Checks if the inventory contains the specified item.
      *
-     * @param item
-     *             the item to check for
+     * @param item the item to check for
      * @return true if the item is found in the inventory, false otherwise
      */
     default boolean contains(Item item) {
@@ -90,9 +86,8 @@ public interface Inventory {
 
     /**
      * Find the slot of the specified item.
-     * 
-     * @param id
-     *           the id of the item
+     *
+     * @param id the id of the item
      * @return the slot of the specified item
      */
     int findSlot(int id);
@@ -100,23 +95,40 @@ public interface Inventory {
     /**
      * Checks if the inventory contains an item with the specified ID.
      *
-     * @param id
-     *           the ID of the item to check
+     * @param id the ID of the item to check
      * @return true if the inventory contains an item with the specified ID, false
-     *         otherwise
+     * otherwise
      */
     default boolean contains(int id) {
         return findSlot(id) != -1;
     }
 
     /**
+     * Checks if the inventory contains an item that matches the specified filter.
+     *
+     * @param filter the filter to apply
+     * @return true if the inventory contains an item that matches the filter,
+     * false
+     * otherwise
+     */
+    default boolean contains(Function<ItemStack, Boolean> filter) {
+        for (int i = 0; i < 36; i++) {
+            val itemStack = getItemStackAt(i);
+            if (itemStack == null)
+                continue;
+            if (filter.apply(itemStack))
+                return true;
+        }
+        return false;
+    }
+
+    /**
      * Checks if the inventory contains a potion that matches the specified filter.
      *
-     * @param filter
-     *               the filter to apply
+     * @param filter the filter to apply
      * @return true if the inventory contains a potion that matches the filter,
-     *         false
-     *         otherwise
+     * false
+     * otherwise
      */
     default boolean containsPotion(Function<Potion, Boolean> filter) {
         for (int i = 0; i < 36; i++) {
@@ -135,12 +147,11 @@ public interface Inventory {
 
     /**
      * Checks if the inventory contains an item that matches the specified type.
-     * 
-     * @param type
-     *             the type to check for
+     *
+     * @param type the type to check for
      * @return true if the inventory contains an item that matches the specified
-     *         type,
-     *         false otherwise
+     * type,
+     * false otherwise
      */
     default boolean contains(Type type) {
         for (int i = 0; i < 36; i++) {

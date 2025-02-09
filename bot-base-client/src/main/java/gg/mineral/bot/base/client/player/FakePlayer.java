@@ -1,9 +1,7 @@
 package gg.mineral.bot.base.client.player;
 
-import javax.annotation.Nullable;
-
 import gg.mineral.bot.api.instance.ClientInstance;
-
+import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -11,10 +9,12 @@ import net.minecraft.stats.StatFileWriter;
 import net.minecraft.util.Session;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 public class FakePlayer extends EntityClientPlayerMP implements gg.mineral.bot.api.entity.living.player.FakePlayer {
 
     public FakePlayer(Minecraft instance, World world, Session session, NetHandlerPlayClient netHandlerClient,
-            StatFileWriter statFileWriter) {
+                      StatFileWriter statFileWriter) {
         super(instance, world, session, netHandlerClient, statFileWriter);
     }
 
@@ -22,5 +22,10 @@ public class FakePlayer extends EntityClientPlayerMP implements gg.mineral.bot.a
     @Nullable
     public ClientInstance getClientInstance() {
         return this.mc instanceof ClientInstance instance ? instance : null;
+    }
+
+    @Override
+    public PlayerMotionSimulator getMotionSimulator() {
+        return new gg.mineral.bot.base.client.math.simulation.PlayerMotionSimulator(this.mc, this);
     }
 }

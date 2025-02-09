@@ -1,16 +1,14 @@
 package gg.mineral.bot.api.math.optimization;
 
-import java.util.function.Function;
-
+import lombok.val;
 import org.eclipse.jdt.annotation.NonNull;
 
-import lombok.val;
-
 import java.util.LinkedList;
+import java.util.function.Function;
 
-public interface Optimizer<C extends RecursiveCalculation<?>, V> {
+public interface Optimizer<C extends RecursiveCalculation, V> {
 
-    public static abstract class Data<C extends RecursiveCalculation<?>, V> {
+    abstract class Data<C extends RecursiveCalculation, V> {
         protected final LinkedList<Object> queue = new LinkedList<>();
 
         public Data<C, V> val(Object... args) {
@@ -30,35 +28,35 @@ public interface Optimizer<C extends RecursiveCalculation<?>, V> {
         public abstract Optimizer<C, V> build();
     }
 
-    public static interface Param<T> {
+    interface Param<T> {
         /**
          * Gets the type of the parameter.
-         * 
+         *
          * @return the type of the parameter
          */
         Class<?> getType();
 
-        public static <T extends Number> Const<T> constant(@NonNull T value) {
+        static <T extends Number> Const<T> constant(@NonNull T value) {
             return new Const<>(value);
         }
 
-        public static <T extends Number> IndependentVar<T> var(@NonNull T lowerBound, @NonNull T upperBound) {
+        static <T extends Number> IndependentVar<T> var(@NonNull T lowerBound, @NonNull T upperBound) {
             return new IndependentVar<>(lowerBound, upperBound);
         }
 
-        public static <T> Obj<T> obj(@NonNull T value) {
+        static <T> Obj<T> obj(@NonNull T value) {
             return new Obj<>(value);
         }
     }
 
-    public static record Const<T extends Number>(@NonNull T value) implements Param<T> {
+    record Const<T extends Number>(@NonNull T value) implements Param<T> {
         @Override
         public Class<? extends Number> getType() {
             return value.getClass();
         }
     }
 
-    public static record IndependentVar<T extends Number>(@NonNull T lowerBound, @NonNull T upperBound)
+    record IndependentVar<T extends Number>(@NonNull T lowerBound, @NonNull T upperBound)
             implements Param<T> {
 
         @Override
@@ -67,7 +65,7 @@ public interface Optimizer<C extends RecursiveCalculation<?>, V> {
         }
     }
 
-    public static record Obj<T>(@NonNull T value) implements Param<T> {
+    record Obj<T>(@NonNull T value) implements Param<T> {
 
         @Override
         public Class<?> getType() {
@@ -77,35 +75,35 @@ public interface Optimizer<C extends RecursiveCalculation<?>, V> {
 
     /**
      * Returns the value to optimize.
-     * 
+     *
      * @return the value to optimize
      */
     Function<C, Number> getValueFunction();
 
     /**
      * The maximum number of evaluations.
-     * 
+     *
      * @return the maximum number of evaluations
      */
     int getMaxEval();
 
     /**
      * Creates a new calculation.
-     * 
+     *
      * @return the calculation
      */
     C newCalculation(Object... args);
 
     /**
      * Finds the minimum of the function.
-     * 
+     *
      * @return the result
      */
     V minimize();
 
     /**
      * Finds the maximum of the function.
-     * 
+     *
      * @return the result
      */
     V maximize();

@@ -3,7 +3,9 @@ package gg.mineral.bot.base.lwjgl.input;
 import gg.mineral.bot.api.controls.MouseButton.Type;
 import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
+import lombok.Getter;
 
+@Getter
 public class Mouse extends gg.mineral.bot.impl.controls.Mouse {
 
     public Mouse(EventHandler eventHandler) {
@@ -73,10 +75,10 @@ public class Mouse extends gg.mineral.bot.impl.controls.Mouse {
             org.lwjgl.input.Mouse.setCursorPosition(getX(), y);
     }
 
+    @Override
     public void setCursorPosition(int x, int y) {
         if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl()) {
-            super.setX(x);
-            super.setY(y);
+            super.setCursorPosition(x, y);
         } else
             org.lwjgl.input.Mouse.setCursorPosition(x, y);
     }
@@ -111,9 +113,12 @@ public class Mouse extends gg.mineral.bot.impl.controls.Mouse {
         return org.lwjgl.input.Mouse.getEventButtonState();
     }
 
+    @Override
     public void setGrabbed(boolean grab) {
-        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl())
+        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl()) {
+            super.setGrabbed(grab);
             return;
+        }
 
         org.lwjgl.input.Mouse.setGrabbed(grab);
     }

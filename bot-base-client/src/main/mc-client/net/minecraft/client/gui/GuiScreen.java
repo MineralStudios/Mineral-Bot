@@ -1,6 +1,19 @@
 package net.minecraft.client.gui;
 
-import java.awt.Toolkit;
+import gg.mineral.bot.api.screen.Screen;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import lombok.Getter;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -10,19 +23,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import gg.mineral.bot.api.screen.Screen;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
-
 public class GuiScreen extends Gui implements Screen {
     /**
      * Holds a instance of RenderItem, used to draw the achievement icons on screen
@@ -30,24 +30,38 @@ public class GuiScreen extends Gui implements Screen {
      */
     protected RenderItem itemRender;
 
-    /** The width of the screen object. */
+    /**
+     * The width of the screen object.
+     */
+    @Getter
     public int width;
 
-    /** The height of the screen object. */
+    /**
+     * The height of the screen object.
+     */
+    @Getter
     public int height;
 
-    /** A list of all the buttons in this container. */
+    /**
+     * A list of all the buttons in this container.
+     */
     protected List<GuiButton> buttonList = new ArrayList<>();
 
-    /** A list of all the labels in this container. */
+    /**
+     * A list of all the labels in this container.
+     */
     protected List labelList = new ArrayList();
     public boolean field_146291_p;
 
-    /** The FontRenderer used by GuiScreen */
+    /**
+     * The FontRenderer used by GuiScreen
+     */
     @Nullable
     protected FontRenderer fontRendererObj;
 
-    /** The button that was just pressed. */
+    /**
+     * The button that was just pressed.
+     */
     private GuiButton selectedButton;
     private int eventButton;
     private long lastMouseEvent;
@@ -128,7 +142,7 @@ public class GuiScreen extends Gui implements Screen {
     }
 
     protected void func_146279_a(String p_146279_1_, int p_146279_2_, int p_146279_3_) {
-        this.func_146283_a(Arrays.asList(new String[] { p_146279_1_ }), p_146279_2_, p_146279_3_);
+        this.func_146283_a(Arrays.asList(new String[]{p_146279_1_}), p_146279_2_, p_146279_3_);
     }
 
     protected void func_146283_a(List p_146283_1_, int p_146283_2_, int p_146283_3_) {

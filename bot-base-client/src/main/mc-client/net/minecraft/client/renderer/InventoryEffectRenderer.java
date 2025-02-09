@@ -1,9 +1,8 @@
 package net.minecraft.client.renderer;
 
-import java.util.Iterator;
-
-import javax.annotation.Nullable;
-
+import gg.mineral.bot.api.screen.type.InvEffectRendererScreen;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -11,9 +10,9 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.Container;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import gg.mineral.bot.api.screen.type.InvEffectRendererScreen;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import lombok.val;
+
+import javax.annotation.Nullable;
+import java.util.Iterator;
 
 public abstract class InventoryEffectRenderer extends GuiContainer implements InvEffectRendererScreen {
     private boolean field_147045_u;
@@ -32,6 +31,33 @@ public abstract class InventoryEffectRenderer extends GuiContainer implements In
             this.xShift = 160 + (this.width - this.field_146999_f - 200) / 2;
             this.field_147045_u = true;
         }
+    }
+
+    @Override
+    public int getScaleFactor() {
+        int scaleFactor = 1;
+        // This flag is usually used for checking if fancy graphics are enabled.
+        boolean fancyGraphics = mc.func_152349_b();
+        // Get the user-specified GUI scale; if it is 0, use a large number (effectively "no limit")
+        int guiScale = mc.gameSettings.guiScale;
+        if (guiScale == 0) {
+            guiScale = 1000;
+        }
+
+        // Increase the scale factor as long as it doesn't cause the scaled dimensions
+        // to drop below 320x240 and we haven't reached the user limit.
+        while (scaleFactor < guiScale
+                && mc.displayWidth / (scaleFactor + 1) >= 320
+                && mc.displayHeight / (scaleFactor + 1) >= 240) {
+            scaleFactor++;
+        }
+
+        // In some cases (e.g., fancy graphics enabled), adjust the scale factor so it is even.
+        if (fancyGraphics && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            scaleFactor--;
+        }
+
+        return scaleFactor;
     }
 
     /**

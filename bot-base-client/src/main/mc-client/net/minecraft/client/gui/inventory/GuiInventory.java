@@ -1,5 +1,8 @@
 package net.minecraft.client.gui.inventory;
 
+import gg.mineral.bot.api.screen.type.InventoryScreen;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.base.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiButton;
@@ -13,9 +16,6 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import gg.mineral.bot.api.screen.type.InventoryScreen;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
 
 public class GuiInventory extends InventoryEffectRenderer implements InventoryScreen {
     private float field_147048_u;
@@ -24,6 +24,33 @@ public class GuiInventory extends InventoryEffectRenderer implements InventorySc
     public GuiInventory(Minecraft mc, EntityPlayer p_i1094_1_) {
         super(mc, p_i1094_1_.inventoryContainer);
         this.field_146291_p = true;
+    }
+
+    @Override
+    public int getScaleFactor() {
+        int scaleFactor = 1;
+        // This flag is usually used for checking if fancy graphics are enabled.
+        boolean fancyGraphics = mc.func_152349_b();
+        // Get the user-specified GUI scale; if it is 0, use a large number (effectively "no limit")
+        int guiScale = mc.gameSettings.guiScale;
+        if (guiScale == 0) {
+            guiScale = 1000;
+        }
+
+        // Increase the scale factor as long as it doesn't cause the scaled dimensions
+        // to drop below 320x240 and we haven't reached the user limit.
+        while (scaleFactor < guiScale
+                && mc.displayWidth / (scaleFactor + 1) >= 320
+                && mc.displayHeight / (scaleFactor + 1) >= 240) {
+            scaleFactor++;
+        }
+
+        // In some cases (e.g., fancy graphics enabled), adjust the scale factor so it is even.
+        if (fancyGraphics && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            scaleFactor--;
+        }
+
+        return scaleFactor;
     }
 
     /**
@@ -77,8 +104,8 @@ public class GuiInventory extends InventoryEffectRenderer implements InventorySc
     }
 
     public static void func_147046_a(RenderManager instance, int p_147046_0_, int p_147046_1_, int p_147046_2_,
-            float p_147046_3_,
-            float p_147046_4_, EntityLivingBase p_147046_5_) {
+                                     float p_147046_3_,
+                                     float p_147046_4_, EntityLivingBase p_147046_5_) {
         GL11.glEnable(GL11.GL_COLOR_MATERIAL);
         GL11.glPushMatrix();
         GL11.glTranslatef((float) p_147046_0_, (float) p_147046_1_, 50.0F);

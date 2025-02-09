@@ -1,14 +1,14 @@
 package gg.mineral.bot.api.configuration;
 
-import java.io.File;
-import java.util.Set;
-import java.util.UUID;
-
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.entity.living.player.skin.Skins;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.File;
+import java.util.Set;
+import java.util.UUID;
 
 @Builder
 @Getter
@@ -40,6 +40,8 @@ public class BotConfiguration {
     private boolean debug = false;
     @Builder.Default
     private Set<UUID> friendlyUUIDs = BotAPI.INSTANCE.collections().newSet();
+    @Builder.Default
+    private double potAccuracy = 0.5;
 
     public String getFullUsername() {
         return usernamePrefix + username + usernameSuffix;

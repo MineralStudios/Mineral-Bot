@@ -1,21 +1,23 @@
 package gg.mineral.bot.api.math.optimization;
 
-public interface RecursiveCalculation<R> {
+public interface RecursiveCalculation {
+    enum Result {
+        VALID, INVALID, CONTINUE;
+    }
+
     /**
      * Initializes the calculation.
-     * 
+     *
      * @param args the arguments
-     * 
      * @return the calculation
      */
-    RecursiveCalculation<R> initialize(Object... args);
+    RecursiveCalculation initialize(Object... args);
 
     /**
      * Computes the calculation.
-     * 
+     *
      * @param maxEval the maximum number of evaluations
-     * 
      * @return the result of the computation
      */
-    R compute(int maxEval);
+    Result compute(int maxEval);
 }
