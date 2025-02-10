@@ -9,6 +9,7 @@ import gg.mineral.bot.api.inv.item.Item
 
 class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     override fun shouldExecute(): Boolean {
+        if (inventoryOpen) return true
         // TODO: don't replace armor if eating gapple or drinking potion
 
         val fakePlayer = clientInstance.fakePlayer
@@ -68,6 +69,7 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
+            info(this, "Closing inventory after switching to armor")
             return
         }
 

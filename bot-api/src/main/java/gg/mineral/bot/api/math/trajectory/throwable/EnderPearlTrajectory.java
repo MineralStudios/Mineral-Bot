@@ -4,8 +4,8 @@ import gg.mineral.bot.api.world.ClientWorld;
 
 public class EnderPearlTrajectory extends ThrowableEntityTrajectory {
 
-    public EnderPearlTrajectory(ClientWorld world) {
-        super(world);
+    public EnderPearlTrajectory(ClientWorld world, double x, double y, double z, float yaw, float pitch, CollisionFunction collisionFunction) {
+        super(world, x, y, z, yaw, pitch, collisionFunction);
     }
 
     @Override

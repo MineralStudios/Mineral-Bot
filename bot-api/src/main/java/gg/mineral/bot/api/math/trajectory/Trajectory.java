@@ -1,11 +1,16 @@
 package gg.mineral.bot.api.math.trajectory;
 
 import gg.mineral.bot.api.math.Positionable;
-import gg.mineral.bot.api.math.optimization.RecursiveCalculation;
 import gg.mineral.bot.api.world.ClientWorld;
 
 public interface Trajectory
-        extends RecursiveCalculation, Positionable {
+        extends Positionable {
+
+    enum Result {
+        CONTINUE,
+        VALID,
+        INVALID
+    }
 
     /**
      * Ticks the trajectory.
@@ -19,9 +24,8 @@ public interface Trajectory
      *
      * @return the result of the computation
      */
-    @Override
     default Result compute(int maxEval) {
-        Result result = null;
+        var result = Result.CONTINUE;
         for (int iterations = 0; iterations < maxEval
                 && result == Result.CONTINUE; iterations++)
             result = tick();

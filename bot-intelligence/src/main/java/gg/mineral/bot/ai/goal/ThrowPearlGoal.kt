@@ -10,14 +10,31 @@ import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.math.trajectory.Trajectory
+import gg.mineral.bot.api.math.trajectory.Trajectory.CollisionFunction
 import gg.mineral.bot.api.math.trajectory.throwable.EnderPearlTrajectory
 import gg.mineral.bot.api.util.MathUtil
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
 import lombok.RequiredArgsConstructor
+import org.apache.commons.math3.analysis.MultivariateFunction
+import org.apache.commons.math3.analysis.UnivariateFunction
+import org.apache.commons.math3.optim.InitialGuess
+import org.apache.commons.math3.optim.MaxEval
+import org.apache.commons.math3.optim.PointValuePair
+import org.apache.commons.math3.optim.SimpleBounds
+import org.apache.commons.math3.optim.nonlinear.scalar.GoalType
+import org.apache.commons.math3.optim.nonlinear.scalar.MultivariateOptimizer
+import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction
+import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.BOBYQAOptimizer
+import org.apache.commons.math3.optim.univariate.BrentOptimizer
+import org.apache.commons.math3.optim.univariate.SearchInterval
+import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction
+import kotlin.math.atan2
+
 
 class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     private var lastPearledTick = 0
+    private var type = Type.FORWARD
 
     @RequiredArgsConstructor
     private enum class Type : MathUtil {
@@ -27,11 +44,11 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         },
         SIDE {
             override fun test(fakePlayer: FakePlayer, entity: ClientLivingEntity) =
-                fakePlayer.distance3DTo(entity) > 3.0 && !fakePlayer.isOnGround
+                false /*fakePlayer.distance2DTo(entity.x, entity.z) in 3.6..6.0 && fakePlayer.isOnGround*/
         },
         FORWARD {
             override fun test(fakePlayer: FakePlayer, entity: ClientLivingEntity) =
-                fakePlayer.distance3DTo(entity) > 16.0
+                fakePlayer.distance3DTo(entity) > 12.0
         };
 
         abstract fun test(fakePlayer: FakePlayer, entity: ClientLivingEntity): Boolean
@@ -60,17 +77,16 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
+            info(this, "Closing inventory after switching to pearl")
             return
         }
 
         pressKey(10, Key.Type.valueOf("KEY_" + (pearlSlot + 1)))
     }
 
-    // TODO: ender pearl cooldown
     override fun shouldExecute(): Boolean {
-        if (clientInstance.currentTick - lastPearledTick < 20 || !canSeeEnemy() || clientInstance.currentTick - lastPearledTick < 20 * clientInstance.configuration.pearlCooldown) return false
-
-        lastPearledTick = clientInstance.currentTick
+        if (inventoryOpen) return true
+        if (!canSeeEnemy() || clientInstance.currentTick - lastPearledTick < 20 * clientInstance.configuration.pearlCooldown) return false
 
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
@@ -107,125 +123,223 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
             ) {
                 for (type in Type.entries) {
                     if (type.test(fakePlayer, entity)) {
-                        val targetX = entity.getX()
-                        val targetY = entity.getY()
-                        val targetZ = entity.getZ()
-
-                        val collisionFunction = when (type) {
-                            Type.FORWARD -> Trajectory.CollisionFunction { x1: Double, y1: Double, z1: Double ->
-                                floor(
-                                    x1
-                                ) == floor(targetX) && floor(y1) == floor(targetY) && floor(z1) == floor(targetZ)
-                            }
-
-                            Type.RETREAT -> Trajectory.CollisionFunction { x1: Double, y1: Double, z1: Double ->
-                                hasHitBlock(
-                                    world,
-                                    x1,
-                                    y1,
-                                    z1
-                                )
-                            }
-
-                            Type.SIDE -> Trajectory.CollisionFunction { x1: Double, y1: Double, z1: Double ->
-                                hypot(
-                                    x1 - targetX,
-                                    z1 - targetZ
-                                ) > 3 && hasHitBlock(world, x1, y1, z1)
-                            }
-                        }
-
-                        val angles = when (type) {
-                            Type.FORWARD -> {
-                                val x = targetX - fakePlayer.x
-                                val z = targetZ - fakePlayer.z
-                                val yaw = if (z < 0.0 && x < 0.0) (90.0 + toDegrees(fastArcTan(z / x))).toFloat()
-                                else if (z < 0.0 && x > 0.0) (-90.0 + toDegrees(fastArcTan(z / x))).toFloat()
-                                else toDegrees(-fastArcTan(x / z)).toFloat()
-
-                                val optimizer = clientInstance.univariateOptimizer(
-                                    { EnderPearlTrajectory(world) },
-                                    { it.airTimeTicks },
-                                    1000
-                                )
-                                    .`val`(
-                                        fakePlayer.x, fakePlayer.y + fakePlayer.eyeHeight,
-                                        fakePlayer.z, yaw
-                                    )
-                                    .`var`(-90, 90).`val`(collisionFunction).build()
-
-                                val pitch = optimizer.minimize().toFloat()
-
-                                floatArrayOf(yaw, pitch)
-                            }
-
-                            Type.RETREAT -> {
-                                val optimizer = clientInstance
-                                    .bivariateOptimizer(
-                                        { EnderPearlTrajectory(world) },
-                                        {
-                                            it.distance3DToSq(
-                                                targetX,
-                                                targetY,
-                                                targetZ
-                                            )
-                                        },
-                                        1000
-                                    )
-                                    .`val`(
-                                        fakePlayer.x, fakePlayer.y + fakePlayer.eyeHeight,
-                                        fakePlayer.z
-                                    )
-                                    .`var`(-180, 180)
-                                    .`var`(-90, 90).`val`(collisionFunction).build()
-
-                                val result = optimizer.maximize()
-                                val yaw = result[0].toFloat()
-                                val pitch = result[1].toFloat()
-
-                                floatArrayOf(yaw, pitch)
-                            }
-
-                            Type.SIDE -> {
-                                val optimizer = clientInstance
-                                    .bivariateOptimizer(
-                                        { EnderPearlTrajectory(world) },
-                                        {
-                                            abs(
-                                                it.distance2DToSq(targetX, targetZ)
-                                                        - 3.5
-                                            )
-                                        },
-                                        1000
-                                    )
-                                    .`val`(
-                                        fakePlayer.x, fakePlayer.y + fakePlayer.eyeHeight,
-                                        fakePlayer.z
-                                    )
-                                    .`var`(-180, 180)
-                                    .`var`(-90, 90).`val`(collisionFunction).build()
-
-                                val result = optimizer.minimize()
-                                val yaw = result[0].toFloat()
-                                val pitch = result[1].toFloat()
-
-                                floatArrayOf(yaw, pitch)
-                            }
-                        }
-
-                        setMouseYaw(angles[0])
-                        setMousePitch(angles[1])
-
-                        val itemStack = inventory.heldItemStack
-
-                        if (itemStack == null || itemStack.item.id != Item.ENDER_PEARL) switchToPearl()
-                        else pressButton(10, MouseButton.Type.RIGHT_CLICK)
+                        this.type = type
                         break
+                    }
+                }
+
+                val targetX = entity.x + (entity.x - entity.lastX)
+                val targetY = entity.y + (entity.y - entity.lastY)
+                val targetZ = entity.z + (entity.z - entity.lastZ)
+
+                val collisionFunction = when (type) {
+                    Type.FORWARD -> CollisionFunction { x1: Double, y1: Double, z1: Double ->
+                        abs(
+                            x1
+                                    - targetX
+                        ) < 4 && abs(
+                            y1
+                                    - targetY
+                        ) < 1 && abs(
+                            z1
+                                    - targetZ
+                        ) < 4 && hasHitBlock(world, x1, y1, z1)
+                    }
+
+                    Type.RETREAT -> CollisionFunction { x1: Double, y1: Double, z1: Double ->
+                        hasHitBlock(
+                            world,
+                            x1,
+                            y1,
+                            z1
+                        )
+                    }
+
+                    Type.SIDE -> CollisionFunction { x1: Double, y1: Double, z1: Double ->
+                        val dX = abs(x1 - targetX)
+                        val dZ = abs(z1 - targetZ)
+
+                        sqrt(dX * dX + dZ * dZ) in 2.5..3.6 && hasHitBlock(
+                            world,
+                            x1,
+                            y1,
+                            z1
+                        )
+                    }
+                }
+
+                /*val angles = when (type) {
+                    Type.FORWARD -> {
+                        val x = targetX - fakePlayer.x
+                        val z = targetZ - fakePlayer.z
+                        val yaw = if (z < 0.0 && x < 0.0) (90.0 + toDegrees(fastArcTan(z / x))).toFloat()
+                        else if (z < 0.0 && x > 0.0) (-90.0 + toDegrees(fastArcTan(z / x))).toFloat()
+                        else toDegrees(-fastArcTan(x / z)).toFloat()
+
+                        minimizePitch(fakePlayer, yaw, collisionFunction) {
+                            it.airTimeTicks.toDouble()
+                        }
+                    }
+
+                    Type.RETREAT -> {
+                        optimizeAngles(GoalType.MAXIMIZE, fakePlayer, collisionFunction) {
+                            it.distance3DToSq(
+                                targetX,
+                                targetY,
+                                targetZ
+                            )
+                        }
+                    }
+
+                    Type.SIDE -> {
+                        optimizeAngles(GoalType.MINIMIZE, fakePlayer, collisionFunction) {
+                            it.airTimeTicks.toDouble()
+                        }
+                    }
+                }*/
+
+                val angles = getAngles(fakePlayer, entity)
+
+                setMouseYaw(angles[0])
+                setMousePitch(angles[1])
+
+                val itemStack = inventory.heldItemStack
+                if (itemStack == null || itemStack.item.id != Item.ENDER_PEARL) switchToPearl()
+                else {
+                    if (inventoryOpen) {
+                        inventoryOpen = false
+                        pressKey(10, Key.Type.KEY_ESCAPE)
+                        info(this, "Closing inventory after switching to pearl")
+                        return
+                    }
+
+                    val trajectory = EnderPearlTrajectory(
+                        fakePlayer.world,
+                        fakePlayer.x,
+                        fakePlayer.y + fakePlayer.eyeHeight,
+                        fakePlayer.z,
+                        fakePlayer.yaw,
+                        fakePlayer.pitch,
+                        collisionFunction
+                    )
+
+                    if (trajectory.compute(1000) === Trajectory.Result.VALID) {
+                        lastPearledTick = clientInstance.currentTick
+
+                        pressButton(10, MouseButton.Type.RIGHT_CLICK)
                     }
                 }
                 break
             }
         }
+    }
+
+    private fun getAngles(player: ClientPlayer, entity: ClientPlayer): FloatArray {
+        val xDelta: Double = (entity.x - entity.lastX) * 0.4
+        val zDelta: Double = (entity.z - entity.lastZ) * 0.4
+        var d: Double = player.distance3DTo(entity)
+        d -= d % 0.8
+        val xMulti: Double
+        val zMulti: Double
+        val sprint = entity.isSprinting();
+        xMulti = d / 0.8 * xDelta * (if (sprint) 1.25 else 1.0)
+        zMulti = d / 0.8 * zDelta * (if (sprint) 1.25 else 1.0)
+        val x: Double = entity.x + xMulti - player.x
+        val z: Double = entity.z + zMulti - player.z
+        val y: Double = (player.y + player.eyeHeight
+                - (entity.y + entity.eyeHeight))
+        val dist: Double = player.distance3DTo(entity)
+        val yaw = Math.toDegrees(atan2(z, x)).toFloat() - 90.0f
+        val d1: Double = sqrt(x * x + z * z)
+        val pitch = -(atan2(y, d1) * 180.0 / Math.PI).toFloat() + dist.toFloat() * 0.11f
+
+        return floatArrayOf(yaw, -pitch)
+    }
+
+    private fun minimizePitch(
+        fakePlayer: FakePlayer,
+        yaw: Float,
+        collisionFunction: CollisionFunction,
+        valueFunction: (EnderPearlTrajectory) -> Double
+    ): FloatArray {
+        val objective = UnivariateFunction { pitch ->
+            val simulator = EnderPearlTrajectory(
+                fakePlayer.world,
+                fakePlayer.x,
+                fakePlayer.y + fakePlayer.eyeHeight,
+                fakePlayer.z,
+                yaw,
+                pitch.toFloat(),
+                collisionFunction
+            )
+            if (simulator.compute(1000) === Trajectory.Result.VALID) valueFunction.invoke(simulator) else Double.MAX_VALUE
+        }
+
+        val optimizer = BrentOptimizer(1e-10, 1e-14)
+
+        val result = optimizer.optimize(
+            MaxEval(1000),
+            UnivariateObjectiveFunction(objective),
+            GoalType.MINIMIZE,
+            SearchInterval(-60.0, 60.0)
+        )
+
+        return floatArrayOf(yaw, result.point.toFloat())
+    }
+
+    private fun optimizeAngles(
+        goalType: GoalType,
+        fakePlayer: FakePlayer,
+        collisionFunction: CollisionFunction,
+        valueFunction: (EnderPearlTrajectory) -> Double
+    ): FloatArray {
+        val objective = MultivariateFunction { angles ->
+            val simulator = EnderPearlTrajectory(
+                fakePlayer.world,
+                fakePlayer.x,
+                fakePlayer.y + fakePlayer.eyeHeight,
+                fakePlayer.z,
+                angles[0].toFloat(),
+                angles[1].toFloat(),
+                collisionFunction
+            )
+            if (simulator.compute(1000) === Trajectory.Result.VALID) valueFunction.invoke(simulator) else if (goalType == GoalType.MINIMIZE) Double.MAX_VALUE else Double.MIN_VALUE
+        }
+
+        val optimizer: MultivariateOptimizer = BOBYQAOptimizer(4)
+
+        val lowerBounds = doubleArrayOf(-180.0, -60.0)
+        val upperBounds = doubleArrayOf(180.0, 60.0)
+
+        fun wrapAngleTo180_float(par0: Float): Float {
+            var par0 = par0
+            par0 %= 360.0f
+
+            if (par0 >= 180.0f) {
+                par0 -= 360.0f
+            }
+
+            if (par0 < -180.0f) {
+                par0 += 360.0f
+            }
+
+            return par0
+        }
+
+        val initialGuess = doubleArrayOf(
+            wrapAngleTo180_float(fakePlayer.yaw).toDouble(),
+            wrapAngleTo180_float(fakePlayer.pitch).toDouble()
+        )
+
+        val optimum: PointValuePair = optimizer.optimize(
+            MaxEval(1000),
+            ObjectiveFunction(objective),
+            goalType,
+            InitialGuess(initialGuess),
+            SimpleBounds(lowerBounds, upperBounds)
+        )
+
+        return floatArrayOf(optimum.point[0].toFloat(), optimum.point[1].toFloat())
     }
 
     private fun hasHitBlock(world: ClientWorld?, x: Double, y: Double, z: Double): Boolean {

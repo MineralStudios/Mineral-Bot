@@ -6,15 +6,11 @@ import gg.mineral.bot.api.controls.Mouse;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.api.goal.Goal;
-import gg.mineral.bot.api.math.optimization.Optimizer;
-import gg.mineral.bot.api.math.optimization.RecursiveCalculation;
 import gg.mineral.bot.api.screen.Screen;
 import org.eclipse.jdt.annotation.NonNull;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Function;
 
 public interface ClientInstance extends EventHandler {
 
@@ -150,29 +146,4 @@ public interface ClientInstance extends EventHandler {
      * @return the display width
      */
     int getDisplayWidth();
-
-
-    /**
-     * Creates a new univariate optimizer.
-     *
-     * @param callable      the callable (obtains the input to optimize)
-     * @param valueFunction the value function (obtains the value to optimize)
-     * @param maxEval       the maximum number of evaluations
-     * @return the optimizer data
-     */
-    <C extends RecursiveCalculation> Optimizer.Data<C, Number> univariateOptimizer(Callable<C> callable,
-                                                                                   Function<C, Number> valueFunction,
-                                                                                   int maxEval);
-
-    /**
-     * Creates a new bivariate optimizer.
-     *
-     * @param callable      the callable (obtains the input to optimize)
-     * @param valueFunction the value function (obtains the value to optimize)
-     * @param maxEval       the maximum number of evaluations
-     * @return the optimizer data
-     */
-    <C extends RecursiveCalculation> Optimizer.Data<C, Number[]> bivariateOptimizer(Callable<C> callable,
-                                                                                    Function<C, Number> valueFunction,
-                                                                                    int maxEval);
 }

@@ -1,75 +1,28 @@
 package gg.mineral.bot.api.math.trajectory.throwable;
 
-import gg.mineral.bot.api.math.optimization.RecursiveCalculation;
 import gg.mineral.bot.api.math.trajectory.Trajectory;
 import gg.mineral.bot.api.util.MathUtil;
 import gg.mineral.bot.api.world.ClientWorld;
 import gg.mineral.bot.api.world.block.Block;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-@RequiredArgsConstructor
 public abstract class ThrowableEntityTrajectory implements MathUtil, Trajectory {
     @Getter
     private final ClientWorld world;
     @Getter
-    private int airTimeTicks = 0;
+    private int airTimeTicks;
     private float motX, motY, motZ;
     @Getter
     private double x, y, z;
     @Getter
-    private Result result = Result.CONTINUE;
-    @Getter
-    private CollisionFunction collisionFunction;
+    private final CollisionFunction collisionFunction;
 
-    /**
-     * Initializes the trajectory.
-     *
-     * @param args the arguments
-     */
-    public RecursiveCalculation initialize(Object... args) {
-        assert args.length == 6;
-
-        if (args[0] instanceof Double x && args[1] instanceof Double y && args[2] instanceof Double z
-                && args[3] instanceof Float yaw && args[4] instanceof Float pitch
-                && args[5] instanceof CollisionFunction collisionFunction)
-            initialize(x, y, z, yaw, pitch, collisionFunction);
-        else
-            throw new IllegalArgumentException("Invalid arguments");
-
-        return this;
-    }
-
-    public void shoot(float motX, float motY, float motZ, float power) {
-        val magnitude = sqrt(motX * motX + motY * motY + motZ * motZ);
-
-        motX /= magnitude;
-        motY /= magnitude;
-        motZ /= magnitude;
-        motX *= power;
-        motY *= power;
-        motZ *= power;
-        this.motX = motX;
-        this.motY = motY;
-        this.motZ = motZ;
-    }
-
-    /**
-     * Initializes the trajectory.
-     *
-     * @param x                 the x-coordinate
-     * @param y                 the y-coordinate
-     * @param z                 the z-coordinate
-     * @param yaw               the yaw
-     * @param pitch             the pitch
-     * @param collisionFunction the collision function
-     */
-    void initialize(double x, double y, double z, float yaw, float pitch,
-                    CollisionFunction collisionFunction) {
+    public ThrowableEntityTrajectory(ClientWorld world, double x, double y, double z, float yaw, float pitch,
+                                     CollisionFunction collisionFunction) {
+        this.world = world;
         assert world != null;
         this.airTimeTicks = 0;
-        this.result = Result.CONTINUE;
         this.collisionFunction = collisionFunction;
         this.x = x;
         this.y = y;
@@ -92,6 +45,20 @@ public abstract class ThrowableEntityTrajectory implements MathUtil, Trajectory 
         val offsetPitchRadians = toRadians(pitch + +this.offset());
         this.motY = -sin(offsetPitchRadians) * multiplier;
         this.shoot(this.motX, this.motY, this.motZ, this.power());
+    }
+
+    public void shoot(float motX, float motY, float motZ, float power) {
+        val magnitude = sqrt(motX * motX + motY * motY + motZ * motZ);
+
+        motX /= magnitude;
+        motY /= magnitude;
+        motZ /= magnitude;
+        motX *= power;
+        motY *= power;
+        motZ *= power;
+        this.motX = motX;
+        this.motY = motY;
+        this.motZ = motZ;
     }
 
     /**
@@ -137,7 +104,6 @@ public abstract class ThrowableEntityTrajectory implements MathUtil, Trajectory 
                     yTile, zTile);
 
             if (collisionBoundingBox != null && collisionBoundingBox.isVecInside(this.x, this.y, this.z)) {
-                airTimeTicks = Integer.MAX_VALUE;
                 return Result.INVALID;
             }
         }

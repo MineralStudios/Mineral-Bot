@@ -10,8 +10,6 @@ import gg.mineral.bot.api.goal.Goal;
 import gg.mineral.bot.api.inv.Inventory;
 import gg.mineral.bot.api.inv.InventoryContainer;
 import gg.mineral.bot.api.math.BoundingBox;
-import gg.mineral.bot.api.math.optimization.Optimizer;
-import gg.mineral.bot.api.math.optimization.RecursiveCalculation;
 import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator;
 import gg.mineral.bot.api.screen.Screen;
 import gg.mineral.bot.api.world.ClientWorld;
@@ -33,11 +31,9 @@ import java.net.Proxy;
 import java.util.Queue;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Function;
 
 public class ClientInstance extends Minecraft implements gg.mineral.bot.api.instance.ClientInstance {
 
@@ -176,37 +172,6 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
             }
     }
 
-    @Override
-    public <C extends RecursiveCalculation> Optimizer.Data<C, Number[]> bivariateOptimizer(Callable<C> callable,
-                                                                                           Function<C, Number> valueFunction, int maxEval) {
-        return new Optimizer.Data<C, Number[]>() {
-
-            @Override
-            public Optimizer<C, Number[]> build() {
-                return new gg.mineral.bot.impl.math.optimization.BivariateOptimizer<C>(callable,
-                        valueFunction,
-                        maxEval, queue.toArray(new Optimizer.Param<?>[0]));
-            }
-
-        };
-    }
-
-    @Override
-    public <C extends RecursiveCalculation> Optimizer.Data<C, Number> univariateOptimizer(Callable<C> callable,
-                                                                                          Function<C, Number> valueFunction,
-                                                                                          int maxEval) {
-        return new Optimizer.Data<C, Number>() {
-
-            @Override
-            public Optimizer<C, Number> build() {
-                return new gg.mineral.bot.impl.math.optimization.UnivariateOptimizer<>(callable,
-                        valueFunction,
-                        maxEval, queue.toArray(new Optimizer.Param<?>[0]));
-            }
-
-        };
-    }
-
     @SafeVarargs
     @Override
     public final <T extends Goal> void startGoals(T... goals) {
@@ -298,6 +263,11 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
                 }
 
                 @Override
+                public float getHunger() {
+                    return 20;
+                }
+
+                @Override
                 public double getHeadY() {
                     return 0;
                 }
@@ -378,6 +348,21 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
                 }
 
                 @Override
+                public double getMotionX() {
+                    return 0;
+                }
+
+                @Override
+                public double getMotionY() {
+                    return 0;
+                }
+
+                @Override
+                public double getMotionZ() {
+                    return 0;
+                }
+
+                @Override
                 public @Nullable ClientWorld getWorld() {
                     return null;
                 }
@@ -385,6 +370,11 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
                 @Override
                 public Random getRandom() {
                     return new Random();
+                }
+
+                @Override
+                public boolean isSprinting() {
+                    return false;
                 }
 
                 @Override

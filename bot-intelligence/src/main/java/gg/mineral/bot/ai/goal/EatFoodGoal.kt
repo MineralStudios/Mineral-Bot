@@ -3,38 +3,30 @@ package gg.mineral.bot.ai.goal
 import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
-import gg.mineral.bot.api.entity.effect.PotionEffectType
-import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 
-class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     private var eating = false
 
     override fun shouldExecute(): Boolean {
         if (inventoryOpen) return true
-        var hasRegen = false
-        val regenId = PotionEffectType.REGENERATION.id
+
         val fakePlayer = clientInstance.fakePlayer
-        val activeIds = fakePlayer.activePotionEffectIds
 
-        for (activeId in activeIds) if (activeId == regenId) {
-            hasRegen = true
-            break
-        }
-
-        val shouldExecute = eating || canSeeEnemy() && hasGapple() && !hasRegen
+        // TODO: config how conservative to be with food
+        val shouldExecute = eating || hasFood() && fakePlayer.hunger < 19
         info(this, "Checking shouldExecute: $shouldExecute")
         return shouldExecute
     }
 
     init {
-        info(this, "EatGappleGoal initialized")
+        info(this, "EatFoodGoal initialized")
     }
 
-    private fun hasGapple(): Boolean {
+    private fun hasFood(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
@@ -43,78 +35,55 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
             return false
         }
 
-        val hasGapple = inventory.contains(Item.GOLDEN_APPLE)
-        info(this, "Has golden apple: $hasGapple")
-        return hasGapple
+        val hasFood = inventory.contains(Item.Type.FOOD)
+        info(this, "Has food: $hasFood")
+        return hasFood
     }
 
-    private fun canSeeEnemy(): Boolean {
-        val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world
-
-        if (world == null) {
-            warn(this, "World is null")
-            return false
-        }
-
-        val canSeeEnemy = world.entities.any {
-            it is ClientPlayer
-                    && !clientInstance.configuration.friendlyUUIDs.contains(it.getUuid())
-        }
-        info(this, "Checking canSeeEnemy: $canSeeEnemy")
-        return canSeeEnemy
-    }
-
-    private fun eatGapple() {
+    private fun eatFood() {
         this.eating = true
-        success(this, "Started eating golden apple")
+        success(this, "Started eating")
     }
 
-    private fun switchToGapple() {
+    private fun switchToFood() {
         eating = false
-        info(this, "Switching to golden apple")
-        var gappleSlot = -1
+        info(this, "Switching to food")
+        var foodSlot = -1
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory ?: return warn(this, "Inventory is null")
 
+        // TODO: Choose best availible food
         for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
             val item = itemStack.item
-            if (item.id == Item.GOLDEN_APPLE) {
-                gappleSlot = i
+            if (Item.Type.FOOD.isType(item.id)) {
+                foodSlot = i
                 break
             }
         }
 
-        if (gappleSlot > 8) return moveItemToHotbar(gappleSlot, inventory)
+        if (foodSlot > 8) return moveItemToHotbar(foodSlot, inventory)
 
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            info(this, "Closing inventory after switching to golden apple")
+            info(this, "Closing inventory after switching to food")
             return
         }
 
-        pressKey(10, Key.Type.valueOf("KEY_" + (gappleSlot + 1)))
-        success(this, "Switched to golden apple slot: " + (gappleSlot + 1))
+        pressKey(10, Key.Type.valueOf("KEY_" + (foodSlot + 1)))
+        success(this, "Switched to food slot: " + (foodSlot + 1))
     }
 
     override fun onTick() {
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory ?: return warn(this, "Inventory is null on tick")
 
-        var hasRegen = false
-        val regenId = PotionEffectType.REGENERATION.id
-        val activeIds = fakePlayer.activePotionEffectIds
+        val isHungerSatisfied = fakePlayer.hunger >= 19
 
-        for (i in activeIds.indices) if (activeIds[i] == regenId) {
-            hasRegen = true
-            break
-        }
-
-        if (eating && hasRegen) {
+        if (eating && isHungerSatisfied) {
             eating = false
-            info(this, "Stopped eating as regeneration is active")
+            info(this, "Stopped eating as hunger is satisfied")
         }
 
         val rmbHeld = getButton(MouseButton.Type.RIGHT_CLICK).isPressed
@@ -124,7 +93,7 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
             info(this, "Unpressed RIGHT_CLICK as eating stopped")
         }
 
-        if (hasRegen) return
+        if (isHungerSatisfied) return
 
         if (eating && !rmbHeld) {
             pressButton(MouseButton.Type.RIGHT_CLICK)
@@ -136,11 +105,11 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
         val itemStack = inventory.heldItemStack
 
         if (itemStack != null && itemStack.item.id == Item.GOLDEN_APPLE) {
-            schedule({ this.eatGapple() }, 100)
-            info(this, "Scheduled eatGapple task")
+            schedule({ this.eatFood() }, 100)
+            info(this, "Scheduled eatFood task")
         } else {
-            schedule({ this.switchToGapple() }, 100)
-            info(this, "Scheduled switchToGapple task")
+            schedule({ this.switchToFood() }, 100)
+            info(this, "Scheduled switchToFood task")
         }
     }
 

@@ -5,21 +5,32 @@ import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.ClientEntity
 import gg.mineral.bot.api.entity.living.ClientLivingEntity
+import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.inv.item.ItemStack
+import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator
 import gg.mineral.bot.api.math.trajectory.Trajectory
+import gg.mineral.bot.api.math.trajectory.Trajectory.CollisionFunction
 import gg.mineral.bot.api.math.trajectory.throwable.SplashPotionTrajectory
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
+import org.apache.commons.math3.analysis.UnivariateFunction
+import org.apache.commons.math3.optim.MaxEval
+import org.apache.commons.math3.optim.nonlinear.scalar.GoalType
+import org.apache.commons.math3.optim.univariate.BrentOptimizer
+import org.apache.commons.math3.optim.univariate.SearchInterval
+import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction
 import kotlin.math.atan2
 
 // TODO: support both regen and instant health potions
 class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     private var lastPotTick = 0
-    private var potting = false
+    private var pottingTicks = 0
     private var throwYaw = 0.0f
+    private var distanceFromEnemy = Double.MAX_VALUE
+    private var onGround = true
 
     private fun switchToPot() {
         var potSlot = -1
@@ -47,7 +58,8 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
     }
 
     override fun shouldExecute(): Boolean {
-        if (clientInstance.currentTick - lastPotTick < 20) return false
+        if (inventoryOpen) return true
+        if (clientInstance.currentTick - lastPotTick < 20 && pottingTicks == 0) return false
 
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
@@ -56,7 +68,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
                 it.item.id == Item.POTION && it.durability == 16421
             }) return false
 
-        return potting || fakePlayer.health < 10
+        return pottingTicks > 0 || fakePlayer.health < 10
     }
 
     private fun angleAwayFromEnemies(): Float {
@@ -69,9 +81,13 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
                     it.distance3DTo(fakePlayer)
                 else Double.MAX_VALUE
             } ?: return fakePlayer.yaw
+        val x: Double = enemy.x - fakePlayer.x
+        val z: Double = enemy.z - fakePlayer.z
 
-        val angle = toDegrees(atan2(fakePlayer.z - enemy.z, fakePlayer.x - enemy.x)).toFloat()
-        return angle
+        var yaw = Math.toDegrees(-fastArcTan(x / z)).toFloat()
+        if (z < 0.0 && x < 0.0) yaw = (90.0 + Math.toDegrees(fastArcTan(z / x))).toFloat()
+        else if (z < 0.0 && x > 0.0) yaw = (-90.0 + Math.toDegrees(fastArcTan(z / x))).toFloat()
+        return yaw + 180.0f
     }
 
     private fun distanceAwayFromEnemies(): Double {
@@ -86,55 +102,90 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             } ?: Double.MAX_VALUE
     }
 
+    private fun PlayerMotionSimulator.setMouseYaw(yaw: Float) {
+        val rotYaw = this.yaw
+        getMouse().changeYaw(angleDifference(rotYaw, yaw))
+    }
+
+    private fun PlayerMotionSimulator.setMousePitch(pitch: Float) {
+        val rotPitch = this.pitch
+        getMouse().changePitch(angleDifference(rotPitch, pitch))
+    }
+
     override fun onTick() {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return
 
-        val inventory = fakePlayer.inventory ?: return
+        pressKey(Key.Type.KEY_W)
+        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
 
-
-        if (potting) {
+        if (pottingTicks > 0) {
             setMouseYaw(throwYaw)
+            pottingTicks--
             if (fakePlayer.health >= 10)
-                potting = false
+                pottingTicks = 0
             return
         }
-        // TODO: player motion prediction
-        val collisionFunction = Trajectory.CollisionFunction { x1: Double, y1: Double, z1: Double ->
 
-            if (hasHitEntity(world, x1, y1, z1) || hasHitBlock(world, x1, y1, z1)) {
-                val distance: Double = fakePlayer.distance3DToSq(x1, y1, z1)
+        if (!inventoryOpen) {
+            val r = sqrt(fakePlayer.motionX * fakePlayer.motionX + fakePlayer.motionZ * fakePlayer.motionZ)
 
-                if (distance < 16.0) {
-                    val intensity = 1.0 - kotlin.math.sqrt(distance) / 4.0
-
-                    if (intensity > clientInstance.configuration.potAccuracy.coerceAtMost(0.9)) return@CollisionFunction true
-                }
-            }
-
-            false
+            val yaw = angleAwayFromEnemies()
+            val pitch = abs(atan2(fakePlayer.motionZ, r) * 180 / Math.PI).toFloat()
+            setMouseYaw(yaw)
+            setMousePitch(pitch)
         }
 
-        val univariateOptimizer =
-            clientInstance.univariateOptimizer({ SplashPotionTrajectory(world) }, { it.airTimeTicks }, 1000).`val`(
-                fakePlayer.x, fakePlayer.y + fakePlayer.eyeHeight,
-                fakePlayer.z, fakePlayer.yaw
-            ).`var`(-90, 90).`val`(collisionFunction).build()
-
-        val pitch = univariateOptimizer.minimize().toFloat()
-
-        setMouseYaw(angleAwayFromEnemies())
-        setMousePitch(pitch)
+        val inventory = fakePlayer.inventory ?: return
 
         val itemStack = inventory.heldItemStack
 
         if (itemStack == null || itemStack.item.id != Item.POTION || itemStack.durability != 16421) switchToPot()
-        else if (distanceAwayFromEnemies() > 3.5) {
-            potting = true
-            throwYaw = fakePlayer.yaw
-            lastPotTick = clientInstance.currentTick
-            pressButton(10, MouseButton.Type.RIGHT_CLICK)
+        else {
+            if (inventoryOpen) {
+                inventoryOpen = false
+                pressKey(10, Key.Type.KEY_ESCAPE)
+                return
+            }
+            if (distanceAwayFromEnemies() >= distanceFromEnemy && distanceFromEnemy > 3.6 && fakePlayer.isOnGround && onGround) {
+                pottingTicks = 10
+                throwYaw = fakePlayer.yaw
+                lastPotTick = clientInstance.currentTick
+                pressButton(10, MouseButton.Type.RIGHT_CLICK)
+            }
         }
+
+        distanceFromEnemy = distanceAwayFromEnemies()
+        onGround = fakePlayer.isOnGround
+    }
+
+    private fun minimizePitch(
+        fakePlayer: FakePlayer,
+        collisionFunction: CollisionFunction,
+        valueFunction: (SplashPotionTrajectory) -> Double
+    ): Float {
+        val objective = UnivariateFunction { pitch ->
+            val simulator = SplashPotionTrajectory(
+                fakePlayer.world,
+                fakePlayer.x,
+                fakePlayer.y + fakePlayer.eyeHeight,
+                fakePlayer.z,
+                fakePlayer.yaw,
+                pitch.toFloat(),
+                collisionFunction
+            )
+            if (simulator.compute(1000) === Trajectory.Result.VALID) valueFunction.invoke(simulator) else Double.MAX_VALUE
+        }
+
+        val optimizer = BrentOptimizer(1e-10, 1e-14)
+
+        val result = optimizer.optimize(
+            MaxEval(1000),
+            UnivariateObjectiveFunction(objective),
+            GoalType.MINIMIZE,
+            SearchInterval(-90.0, 90.0)
+        )
+
+        return result.value.toFloat()
     }
 
     private fun hasHitBlock(world: ClientWorld?, x: Double, y: Double, z: Double): Boolean {
@@ -156,8 +207,17 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         return false
     }
 
-    private fun hasHitEntity(world: ClientWorld?, x: Double, y: Double, z: Double) =
-        world?.entities?.any { it: ClientEntity -> it.boundingBox?.isVecInside(x, y, z) == true } ?: false
+    private fun hitEntities(
+        world: ClientWorld?,
+        x: Double,
+        y: Double,
+        z: Double
+    ): List<ClientEntity> {
+        val list = mutableListOf<ClientEntity>()
+        val entities = world?.entities ?: return list
+        list.addAll(entities.filter { it: ClientEntity -> it.boundingBox?.isVecInside(x, y, z) == true })
+        return list
+    }
 
     override fun onEvent(event: Event): Boolean {
         return false

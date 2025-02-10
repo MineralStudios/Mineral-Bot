@@ -9,6 +9,7 @@ dependencies {
     annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
     compileOnly project(':bot-api')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.apache.commons:commons-math3:3.6.1'
 }
 
 jar {

@@ -45,6 +45,13 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         // If the potion is not in the hotbar (slots 0-8)
         if (bestMeleeWeaponSlot > 8) return moveItemToHotbar(bestMeleeWeaponSlot, inventory)
 
+        if (inventoryOpen) {
+            inventoryOpen = false
+            pressKey(10, Key.Type.KEY_ESCAPE)
+            info(this, "Closing inventory after switching to best melee weapon")
+            return
+        }
+
         if (inventory.heldSlot != bestMeleeWeaponSlot) pressKey(
             10,
             Key.Type.valueOf("KEY_" + (bestMeleeWeaponSlot + 1))
