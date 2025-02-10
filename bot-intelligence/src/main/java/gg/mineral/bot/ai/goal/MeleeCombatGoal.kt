@@ -25,6 +25,8 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
 
     override fun shouldExecute() = true
 
+    override fun isExecuting() = inventoryOpen
+
     private fun switchToBestMeleeWeapon() {
         var bestMeleeWeaponSlot = 0
         var damage = 0.0

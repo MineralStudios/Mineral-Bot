@@ -106,11 +106,20 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
         if (this.mainThread == null)
             this.mainThread = Thread.currentThread();
 
+        boolean executing = false;
         for (val goal : goals)
-            if (goal.shouldExecute()) {
+            if (goal.isExecuting()) {
                 goal.callGameLoop();
+                executing = true;
                 break;
             }
+
+        if (!executing)
+            for (val goal : goals)
+                if (goal.shouldExecute()) {
+                    goal.callGameLoop();
+                    break;
+                }
 
         while (!delayedTasks.isEmpty()) {
             val task = delayedTasks.peek();
@@ -146,6 +155,10 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
         var cancelled = false;
 
         for (val goal : goals)
+            if (goal.isExecuting())
+                return goal.onEvent(event);
+
+        for (val goal : goals)
             if (goal.shouldExecute()) {
                 cancelled = goal.onEvent(event);
                 break;
@@ -164,6 +177,12 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
         latency = (int) fakePlayer.getRandom().nextGaussian(getConfiguration().getLatency(),
                 getConfiguration().getLatencyDeviation());
+
+        for (val goal : goals)
+            if (goal.isExecuting()) {
+                goal.onTick();
+                return;
+            }
 
         for (val goal : goals)
             if (goal.shouldExecute()) {

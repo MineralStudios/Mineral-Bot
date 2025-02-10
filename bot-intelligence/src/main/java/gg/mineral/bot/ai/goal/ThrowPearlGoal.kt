@@ -48,7 +48,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         },
         FORWARD {
             override fun test(fakePlayer: FakePlayer, entity: ClientLivingEntity) =
-                fakePlayer.distance3DTo(entity) > 12.0
+                fakePlayer.distance3DTo(entity) > 6.0
         };
 
         abstract fun test(fakePlayer: FakePlayer, entity: ClientLivingEntity): Boolean
@@ -85,7 +85,6 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
     }
 
     override fun shouldExecute(): Boolean {
-        if (inventoryOpen) return true
         if (!canSeeEnemy() || clientInstance.currentTick - lastPearledTick < 20 * clientInstance.configuration.pearlCooldown) return false
 
         val fakePlayer = clientInstance.fakePlayer
@@ -95,12 +94,17 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
 
         val world = fakePlayer.world ?: return false
 
-        for (entity in world.entities) if (entity is ClientPlayer
-            && !clientInstance.configuration.friendlyUUIDs.contains(entity.getUuid())
-        ) for (t in Type.entries) if (t.test(fakePlayer, entity)) return true
+        val entity = world.entities.filterIsInstance<ClientPlayer>().minByOrNull {
+            if (!clientInstance.configuration.friendlyUUIDs.contains(it.getUuid())
+            ) fakePlayer.distance3DTo(it) else Double.MAX_VALUE
+        } ?: return false
+
+        for (t in Type.entries) if (t.test(fakePlayer, entity)) return true
 
         return false
     }
+
+    override fun isExecuting() = inventoryOpen
 
     private fun canSeeEnemy(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
@@ -117,119 +121,116 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
 
         val inventory = fakePlayer.inventory ?: return
 
-        for (entity in world.entities) {
-            if (entity is ClientPlayer
-                && !clientInstance.configuration.friendlyUUIDs.contains(entity.getUuid())
-            ) {
-                for (type in Type.entries) {
-                    if (type.test(fakePlayer, entity)) {
-                        this.type = type
-                        break
-                    }
-                }
+        val entity = world.entities.filterIsInstance<ClientPlayer>().minByOrNull {
+            if (!clientInstance.configuration.friendlyUUIDs.contains(it.getUuid())
+            ) fakePlayer.distance3DTo(it) else Double.MAX_VALUE
+        } ?: return
 
-                val targetX = entity.x + (entity.x - entity.lastX)
-                val targetY = entity.y + (entity.y - entity.lastY)
-                val targetZ = entity.z + (entity.z - entity.lastZ)
-
-                val collisionFunction = when (type) {
-                    Type.FORWARD -> CollisionFunction { x1: Double, y1: Double, z1: Double ->
-                        abs(
-                            x1
-                                    - targetX
-                        ) < 4 && abs(
-                            y1
-                                    - targetY
-                        ) < 1 && abs(
-                            z1
-                                    - targetZ
-                        ) < 4 && hasHitBlock(world, x1, y1, z1)
-                    }
-
-                    Type.RETREAT -> CollisionFunction { x1: Double, y1: Double, z1: Double ->
-                        hasHitBlock(
-                            world,
-                            x1,
-                            y1,
-                            z1
-                        )
-                    }
-
-                    Type.SIDE -> CollisionFunction { x1: Double, y1: Double, z1: Double ->
-                        val dX = abs(x1 - targetX)
-                        val dZ = abs(z1 - targetZ)
-
-                        sqrt(dX * dX + dZ * dZ) in 2.5..3.6 && hasHitBlock(
-                            world,
-                            x1,
-                            y1,
-                            z1
-                        )
-                    }
-                }
-
-                /*val angles = when (type) {
-                    Type.FORWARD -> {
-                        val x = targetX - fakePlayer.x
-                        val z = targetZ - fakePlayer.z
-                        val yaw = if (z < 0.0 && x < 0.0) (90.0 + toDegrees(fastArcTan(z / x))).toFloat()
-                        else if (z < 0.0 && x > 0.0) (-90.0 + toDegrees(fastArcTan(z / x))).toFloat()
-                        else toDegrees(-fastArcTan(x / z)).toFloat()
-
-                        minimizePitch(fakePlayer, yaw, collisionFunction) {
-                            it.airTimeTicks.toDouble()
-                        }
-                    }
-
-                    Type.RETREAT -> {
-                        optimizeAngles(GoalType.MAXIMIZE, fakePlayer, collisionFunction) {
-                            it.distance3DToSq(
-                                targetX,
-                                targetY,
-                                targetZ
-                            )
-                        }
-                    }
-
-                    Type.SIDE -> {
-                        optimizeAngles(GoalType.MINIMIZE, fakePlayer, collisionFunction) {
-                            it.airTimeTicks.toDouble()
-                        }
-                    }
-                }*/
-
-                val angles = getAngles(fakePlayer, entity)
-
-                setMouseYaw(angles[0])
-                setMousePitch(angles[1])
-
-                val itemStack = inventory.heldItemStack
-                if (itemStack == null || itemStack.item.id != Item.ENDER_PEARL) switchToPearl()
-                else {
-                    if (inventoryOpen) {
-                        inventoryOpen = false
-                        pressKey(10, Key.Type.KEY_ESCAPE)
-                        info(this, "Closing inventory after switching to pearl")
-                        return
-                    }
-
-                    val trajectory = EnderPearlTrajectory(
-                        fakePlayer.world,
-                        fakePlayer.x,
-                        fakePlayer.y + fakePlayer.eyeHeight,
-                        fakePlayer.z,
-                        fakePlayer.yaw,
-                        fakePlayer.pitch,
-                        collisionFunction
-                    )
-
-                    if (trajectory.compute(1000) === Trajectory.Result.VALID) {
-                        lastPearledTick = clientInstance.currentTick
-
-                        pressButton(10, MouseButton.Type.RIGHT_CLICK)
-                    }
-                }
+        for (type in Type.entries) {
+            if (type.test(fakePlayer, entity)) {
+                this.type = type
                 break
+            }
+        }
+
+        val targetX = entity.x + (entity.x - entity.lastX)
+        val targetY = entity.y + (entity.y - entity.lastY)
+        val targetZ = entity.z + (entity.z - entity.lastZ)
+
+        val collisionFunction = when (type) {
+            Type.FORWARD -> CollisionFunction { x1: Double, y1: Double, z1: Double ->
+                abs(
+                    x1
+                            - targetX
+                ) < 4 && abs(
+                    y1
+                            - targetY
+                ) < 1 && abs(
+                    z1
+                            - targetZ
+                ) < 4 && hasHitBlock(world, x1, y1, z1)
+            }
+
+            Type.RETREAT -> CollisionFunction { x1: Double, y1: Double, z1: Double ->
+                hasHitBlock(
+                    world,
+                    x1,
+                    y1,
+                    z1
+                )
+            }
+
+            Type.SIDE -> CollisionFunction { x1: Double, y1: Double, z1: Double ->
+                val dX = abs(x1 - targetX)
+                val dZ = abs(z1 - targetZ)
+
+                sqrt(dX * dX + dZ * dZ) in 2.5..3.6 && hasHitBlock(
+                    world,
+                    x1,
+                    y1,
+                    z1
+                )
+            }
+        }
+
+        val angles = when (type) {
+            Type.FORWARD -> {
+                getAngles(fakePlayer, entity)
+                /*val x = targetX - fakePlayer.x
+                val z = targetZ - fakePlayer.z
+                val yaw = if (z < 0.0 && x < 0.0) (90.0 + toDegrees(fastArcTan(z / x))).toFloat()
+                else if (z < 0.0 && x > 0.0) (-90.0 + toDegrees(fastArcTan(z / x))).toFloat()
+                else toDegrees(-fastArcTan(x / z)).toFloat()
+
+                minimizePitch(fakePlayer, yaw, collisionFunction) {
+                    it.airTimeTicks.toDouble()
+                }*/
+            }
+
+            Type.RETREAT -> {
+                optimizeAngles(GoalType.MAXIMIZE, fakePlayer, collisionFunction) {
+                    it.distance3DToSq(
+                        targetX,
+                        targetY,
+                        targetZ
+                    )
+                }
+            }
+
+            Type.SIDE -> {
+                optimizeAngles(GoalType.MINIMIZE, fakePlayer, collisionFunction) {
+                    it.airTimeTicks.toDouble()
+                }
+            }
+        }
+
+        setMouseYaw(angles[0])
+        setMousePitch(angles[1])
+
+        val itemStack = inventory.heldItemStack
+        if (itemStack == null || itemStack.item.id != Item.ENDER_PEARL) switchToPearl()
+        else {
+            if (inventoryOpen) {
+                inventoryOpen = false
+                pressKey(10, Key.Type.KEY_ESCAPE)
+                info(this, "Closing inventory after switching to pearl")
+                return
+            }
+
+            val trajectory = EnderPearlTrajectory(
+                fakePlayer.world,
+                fakePlayer.x,
+                fakePlayer.y + fakePlayer.eyeHeight,
+                fakePlayer.z,
+                fakePlayer.yaw,
+                fakePlayer.pitch,
+                collisionFunction
+            )
+
+            if (trajectory.compute(1000) === Trajectory.Result.VALID) {
+                lastPearledTick = clientInstance.currentTick
+
+                pressButton(10, MouseButton.Type.RIGHT_CLICK)
             }
         }
     }

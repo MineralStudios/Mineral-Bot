@@ -4,6 +4,7 @@ import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.effect.PotionEffectType
+import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
@@ -14,7 +15,6 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
     private var eating = false
 
     override fun shouldExecute(): Boolean {
-        if (inventoryOpen) return true
         var hasRegen = false
         val regenId = PotionEffectType.REGENERATION.id
         val fakePlayer = clientInstance.fakePlayer
@@ -25,9 +25,13 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
             break
         }
 
-        val shouldExecute = eating || canSeeEnemy() && hasGapple() && !hasRegen
+        val shouldExecute = canSeeEnemy() && hasGapple() && !hasRegen
         info(this, "Checking shouldExecute: $shouldExecute")
         return shouldExecute
+    }
+
+    override fun isExecuting(): Boolean {
+        return eating || inventoryOpen
     }
 
     init {
@@ -99,9 +103,43 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
         success(this, "Switched to golden apple slot: " + (gappleSlot + 1))
     }
 
+    private fun angleAwayFromEnemies(): Float {
+        val fakePlayer = clientInstance.fakePlayer
+        val world = fakePlayer.world ?: return warn(this, "World is null").let { fakePlayer.yaw }
+
+        val enemy = world.entities
+            .minByOrNull {
+                if (it is ClientLivingEntity && !clientInstance.configuration.friendlyUUIDs.contains(it.uuid))
+                    it.distance3DTo(fakePlayer)
+                else Double.MAX_VALUE
+            } ?: return fakePlayer.yaw
+        val x: Double = enemy.x - fakePlayer.x
+        val z: Double = enemy.z - fakePlayer.z
+
+        var yaw = Math.toDegrees(-fastArcTan(x / z)).toFloat()
+        if (z < 0.0 && x < 0.0) yaw = (90.0 + Math.toDegrees(fastArcTan(z / x))).toFloat()
+        else if (z < 0.0 && x > 0.0) yaw = (-90.0 + Math.toDegrees(fastArcTan(z / x))).toFloat()
+        return yaw + 180.0f
+    }
+
+    private fun distanceAwayFromEnemies(): Double {
+        val fakePlayer = clientInstance.fakePlayer
+        val world = fakePlayer.world ?: return warn(this, "World is null").let { Double.MAX_VALUE }
+
+        return world.entities
+            .minOfOrNull {
+                if (it is ClientLivingEntity && !clientInstance.configuration.friendlyUUIDs.contains(it.uuid))
+                    it.distance3DTo(fakePlayer)
+                else Double.MAX_VALUE
+            } ?: Double.MAX_VALUE
+    }
+
     override fun onTick() {
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory ?: return warn(this, "Inventory is null on tick")
+
+        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
+        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
 
         var hasRegen = false
         val regenId = PotionEffectType.REGENERATION.id
@@ -117,16 +155,19 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
             info(this, "Stopped eating as regeneration is active")
         }
 
-        val rmbHeld = getButton(MouseButton.Type.RIGHT_CLICK).isPressed
-
-        if (!eating && rmbHeld) {
+        if (!eating) {
             unpressButton(MouseButton.Type.RIGHT_CLICK)
+            unpressKey(Key.Type.KEY_SPACE)
             info(this, "Unpressed RIGHT_CLICK as eating stopped")
         }
 
         if (hasRegen) return
 
-        if (eating && !rmbHeld) {
+        if (eating) {
+            if (distanceAwayFromEnemies() < 16) {
+                setMouseYaw(angleAwayFromEnemies())
+                pressKey(Key.Type.KEY_SPACE)
+            }
             pressButton(MouseButton.Type.RIGHT_CLICK)
             info(this, "Pressed RIGHT_CLICK for eating golden apple")
         }

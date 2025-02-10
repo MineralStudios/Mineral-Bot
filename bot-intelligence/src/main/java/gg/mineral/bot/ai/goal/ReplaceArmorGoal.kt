@@ -9,9 +9,6 @@ import gg.mineral.bot.api.inv.item.Item
 
 class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     override fun shouldExecute(): Boolean {
-        if (inventoryOpen) return true
-        // TODO: don't replace armor if eating gapple or drinking potion
-
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory ?: return false
 
@@ -19,6 +16,8 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
 
         return canSeeEnemy() && missingArmorPiece != Item.Type.NONE && inventory.contains(missingArmorPiece)
     }
+
+    override fun isExecuting() = inventoryOpen
 
     private fun missingArmorPiece(): Item.Type {
         val fakePlayer = clientInstance.fakePlayer

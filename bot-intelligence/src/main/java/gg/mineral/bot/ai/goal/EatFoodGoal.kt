@@ -3,6 +3,7 @@ package gg.mineral.bot.ai.goal
 import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
+import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.instance.ClientInstance
@@ -12,14 +13,15 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
     private var eating = false
 
     override fun shouldExecute(): Boolean {
-        if (inventoryOpen) return true
-
         val fakePlayer = clientInstance.fakePlayer
-
         // TODO: config how conservative to be with food
-        val shouldExecute = eating || hasFood() && fakePlayer.hunger < 19
+        val shouldExecute = hasFood() && fakePlayer.hunger < 19
         info(this, "Checking shouldExecute: $shouldExecute")
         return shouldExecute
+    }
+
+    override fun isExecuting(): Boolean {
+        return eating || inventoryOpen
     }
 
     init {
@@ -43,6 +45,37 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
     private fun eatFood() {
         this.eating = true
         success(this, "Started eating")
+    }
+
+    private fun angleAwayFromEnemies(): Float {
+        val fakePlayer = clientInstance.fakePlayer
+        val world = fakePlayer.world ?: return warn(this, "World is null").let { fakePlayer.yaw }
+
+        val enemy = world.entities
+            .minByOrNull {
+                if (it is ClientLivingEntity && !clientInstance.configuration.friendlyUUIDs.contains(it.uuid))
+                    it.distance3DTo(fakePlayer)
+                else Double.MAX_VALUE
+            } ?: return fakePlayer.yaw
+        val x: Double = enemy.x - fakePlayer.x
+        val z: Double = enemy.z - fakePlayer.z
+
+        var yaw = Math.toDegrees(-fastArcTan(x / z)).toFloat()
+        if (z < 0.0 && x < 0.0) yaw = (90.0 + Math.toDegrees(fastArcTan(z / x))).toFloat()
+        else if (z < 0.0 && x > 0.0) yaw = (-90.0 + Math.toDegrees(fastArcTan(z / x))).toFloat()
+        return yaw + 180.0f
+    }
+
+    private fun distanceAwayFromEnemies(): Double {
+        val fakePlayer = clientInstance.fakePlayer
+        val world = fakePlayer.world ?: return warn(this, "World is null").let { Double.MAX_VALUE }
+
+        return world.entities
+            .minOfOrNull {
+                if (it is ClientLivingEntity && !clientInstance.configuration.friendlyUUIDs.contains(it.uuid))
+                    it.distance3DTo(fakePlayer)
+                else Double.MAX_VALUE
+            } ?: Double.MAX_VALUE
     }
 
     private fun switchToFood() {
@@ -79,6 +112,9 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory ?: return warn(this, "Inventory is null on tick")
 
+        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
+        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
+
         val isHungerSatisfied = fakePlayer.hunger >= 19
 
         if (eating && isHungerSatisfied) {
@@ -86,25 +122,28 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
             info(this, "Stopped eating as hunger is satisfied")
         }
 
-        val rmbHeld = getButton(MouseButton.Type.RIGHT_CLICK).isPressed
-
-        if (!eating && rmbHeld) {
+        if (!eating) {
             unpressButton(MouseButton.Type.RIGHT_CLICK)
+            unpressKey(Key.Type.KEY_SPACE)
             info(this, "Unpressed RIGHT_CLICK as eating stopped")
         }
 
         if (isHungerSatisfied) return
 
-        if (eating && !rmbHeld) {
+        if (eating) {
+            if (distanceAwayFromEnemies() < 16) {
+                setMouseYaw(angleAwayFromEnemies())
+                pressKey(Key.Type.KEY_SPACE)
+            }
             pressButton(MouseButton.Type.RIGHT_CLICK)
-            info(this, "Pressed RIGHT_CLICK for eating golden apple")
+            info(this, "Pressed RIGHT_CLICK for eating")
         }
 
         if (!delayedTasks.isEmpty()) return
 
         val itemStack = inventory.heldItemStack
 
-        if (itemStack != null && itemStack.item.id == Item.GOLDEN_APPLE) {
+        if (itemStack != null && Item.Type.FOOD.isType(itemStack.item.id)) {
             schedule({ this.eatFood() }, 100)
             info(this, "Scheduled eatFood task")
         } else {
