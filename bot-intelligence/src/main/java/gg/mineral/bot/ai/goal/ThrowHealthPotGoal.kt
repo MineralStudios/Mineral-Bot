@@ -182,14 +182,9 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         val inventory = fakePlayer.inventory ?: return
         val itemStack = inventory.heldItemStack
 
-        if (itemStack == null || itemStack.item.id != Item.POTION || itemStack.durability != 16421) {
+        if (itemStack == null || itemStack.item.id != Item.POTION || itemStack.durability != 16421 || inventoryOpen) {
             switchToPot()
         } else {
-            if (inventoryOpen) {
-                inventoryOpen = false
-                pressKey(10, Key.Type.KEY_ESCAPE)
-                return
-            }
             // Determine whether to throw the potion.
             // Either the original distance/ground conditions are met,
             // or the bot is at a wall (in which case we ignore distance checks).

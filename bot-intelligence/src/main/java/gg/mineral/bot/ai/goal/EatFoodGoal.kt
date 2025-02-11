@@ -143,8 +143,8 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
 
         val itemStack = inventory.heldItemStack
 
-        if (itemStack != null && Item.Type.FOOD.isType(itemStack.item.id)) {
-            schedule({ this.eatFood() }, 100)
+        if (itemStack != null && Item.Type.FOOD.isType(itemStack.item.id) && !inventoryOpen) {
+            this.eatFood()
             info(this, "Scheduled eatFood task")
         } else {
             schedule({ this.switchToFood() }, 100)

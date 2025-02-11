@@ -159,8 +159,8 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
 
         if (drinking || !delayedTasks.isEmpty()) return
 
-        if (itemStack != null && itemStack.item.id == Item.POTION) {
-            schedule({ this.drinkPotion() }, 100)
+        if (itemStack != null && itemStack.item.id == Item.POTION && !inventoryOpen) {
+            this.drinkPotion()
             info(this, "Scheduled drinkPotion task")
         } else {
             schedule({ this.switchToDrinkablePotion() }, 100)

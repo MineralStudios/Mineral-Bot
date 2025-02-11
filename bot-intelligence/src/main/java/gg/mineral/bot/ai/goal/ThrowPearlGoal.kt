@@ -208,15 +208,8 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         setMousePitch(angles[1])
 
         val itemStack = inventory.heldItemStack
-        if (itemStack == null || itemStack.item.id != Item.ENDER_PEARL) switchToPearl()
+        if (itemStack == null || itemStack.item.id != Item.ENDER_PEARL || inventoryOpen) switchToPearl()
         else {
-            if (inventoryOpen) {
-                inventoryOpen = false
-                pressKey(10, Key.Type.KEY_ESCAPE)
-                info(this, "Closing inventory after switching to pearl")
-                return
-            }
-
             val trajectory = EnderPearlTrajectory(
                 fakePlayer.world,
                 fakePlayer.x,

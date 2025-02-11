@@ -17,7 +17,9 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
 
     override fun isExecuting() = inventoryOpen
 
-    private fun eatSoup() = pressButton(10, MouseButton.Type.RIGHT_CLICK)
+    private fun eatSoup() {
+        pressButton(10, MouseButton.Type.RIGHT_CLICK)
+    }
 
     private fun switchToSoup() {
         var soupSlot = -1
@@ -51,10 +53,8 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
 
         val itemStack = inventory.heldItemStack
 
-        if (!delayedTasks.isEmpty()) return
-
-        if (itemStack != null && itemStack.item.id == Item.MUSHROOM_STEW) schedule({ this.eatSoup() }, 100)
-        else schedule({ this.switchToSoup() }, 100)
+        if (itemStack != null && itemStack.item.id == Item.MUSHROOM_STEW && !inventoryOpen) this.eatSoup()
+        else if (delayedTasks.isEmpty()) schedule({ this.switchToSoup() }, 100)
     }
 
     override fun onEvent(event: Event) = false

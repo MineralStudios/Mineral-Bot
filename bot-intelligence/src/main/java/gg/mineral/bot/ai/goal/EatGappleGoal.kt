@@ -176,8 +176,8 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
 
         val itemStack = inventory.heldItemStack
 
-        if (itemStack != null && itemStack.item.id == Item.GOLDEN_APPLE) {
-            schedule({ this.eatGapple() }, 100)
+        if (itemStack != null && itemStack.item.id == Item.GOLDEN_APPLE && !inventoryOpen) {
+            this.eatGapple()
             info(this, "Scheduled eatGapple task")
         } else {
             schedule({ this.switchToGapple() }, 100)

@@ -1,45 +1,43 @@
 package gg.mineral.bot.ai.goal
 
-import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.goal.Goal
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 
-class DropEmptyBowlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance) {
     override fun shouldExecute(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory ?: return false
 
-        return inventory.contains(Item.BOWL)
+        for (i in 0..8) {
+            val itemStack = inventory.getItemStackAt(i) ?: continue
+            val item = itemStack.item
+            if (item.id == Item.BOWL) return true
+        }
+        return false
     }
 
-    override fun isExecuting() = inventoryOpen
+    override fun isExecuting() = false
 
     private fun dropBowl() = pressKey(10, Key.Type.KEY_Q)
 
     private fun switchToBowl() {
-        var soupSlot = -1
+        var bowlSlot = -1
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory ?: return
 
         for (i in 0..8) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
             val item = itemStack.item
-            if (item.id == Item.MUSHROOM_STEW) {
-                soupSlot = i
+            if (item.id == Item.BOWL) {
+                bowlSlot = i
                 break
             }
         }
 
-        if (inventoryOpen) {
-            inventoryOpen = false
-            pressKey(10, Key.Type.KEY_ESCAPE)
-            info(this, "Closing inventory after switching to soup")
-            return
-        }
-
-        pressKey(10, Key.Type.valueOf("KEY_" + (soupSlot + 1)))
+        pressKey(10, Key.Type.valueOf("KEY_" + (bowlSlot + 1)))
     }
 
     override fun onTick() {
@@ -48,10 +46,8 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : InventoryGoal(clientIn
 
         val itemStack = inventory.heldItemStack
 
-        if (!delayedTasks.isEmpty()) return
-
-        if (itemStack != null && itemStack.item.id == Item.BOWL) schedule({ this.dropBowl() }, 100)
-        else schedule({ this.switchToBowl() }, 100)
+        if (itemStack != null && itemStack.item.id == Item.BOWL) this.dropBowl()
+        else if (delayedTasks.isEmpty()) schedule({ this.switchToBowl() }, 100)
     }
 
     override fun onEvent(event: Event) = false

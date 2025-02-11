@@ -85,7 +85,7 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
 
         if (!delayedTasks.isEmpty()) return
 
-        if (itemStack != null && missingArmorPiece.isType(itemStack.item.id)) schedule({ this.applyArmor() }, 100)
+        if (itemStack != null && missingArmorPiece.isType(itemStack.item.id) && !inventoryOpen) this.applyArmor()
         else schedule({ this.switchToArmor() }, 100)
     }
 

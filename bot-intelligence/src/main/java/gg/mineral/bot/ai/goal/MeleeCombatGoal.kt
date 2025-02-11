@@ -54,7 +54,7 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
             return
         }
 
-        if (inventory.heldSlot != bestMeleeWeaponSlot) pressKey(
+        if (inventory.heldSlot != bestMeleeWeaponSlot && !inventoryOpen) pressKey(
             10,
             Key.Type.valueOf("KEY_" + (bestMeleeWeaponSlot + 1))
         )
