@@ -27,7 +27,7 @@ dependencies {
     implementation 'com.google.guava:guava:33.4.0-jre'
     implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation 'commons-io:commons-io:2.18.0'
-    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.google.code.gson:gson:2.12.1'
     implementation 'org.lwjgl.lwjgl:lwjgl:2.9.3'
     implementation 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
     implementation 'com.mojang:authlib:1.5.21'
