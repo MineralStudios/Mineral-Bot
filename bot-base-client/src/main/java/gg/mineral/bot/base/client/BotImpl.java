@@ -1,18 +1,9 @@
 package gg.mineral.bot.base.client;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-
 import com.google.common.collect.HashMultimap;
-
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.collections.OptimizedCollections;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.math.ServerLocation;
@@ -22,6 +13,13 @@ import gg.mineral.bot.impl.thread.ThreadManager;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.val;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 public abstract class BotImpl extends BotAPI {
 
@@ -52,7 +50,7 @@ public abstract class BotImpl extends BotAPI {
 
         val newLine = System.lineSeparator();
 
-        for (Iterator<Entry<String>> it = nameCount.object2IntEntrySet().iterator(); it.hasNext();) {
+        for (Iterator<Entry<String>> it = nameCount.object2IntEntrySet().iterator(); it.hasNext(); ) {
             val e = it.next();
             val name = e.getKey();
             val count = e.getIntValue();
@@ -132,11 +130,12 @@ public abstract class BotImpl extends BotAPI {
     @Override
     public boolean despawn(UUID uuid) {
         val instance = InstanceManager.getInstances().get(uuid);
-        val running = instance != null && instance.running;
-        if (instance != null)
+        if (instance != null) {
             instance.shutdown();
+            return true;
+        }
 
-        return running;
+        return false;
     }
 
     @Override

@@ -71,10 +71,12 @@ public class ServerBotImpl extends BotImpl implements Listener {
 
             @Override
             public void disconnect(String s) {
+                if (disconnected)
+                    return;
+                disconnected = true;
                 despawn(configuration.getUuid());
                 // TODO: cancellable kick event
                 super.disconnect(s);
-                disconnected = true;
             }
 
             @Override
@@ -138,7 +140,7 @@ public class ServerBotImpl extends BotImpl implements Listener {
                 instance.run();
                 InstanceManager.getPendingInstances().remove(configuration.getUuid());
                 InstanceManager.getInstances().put(configuration.getUuid(), instance);
-                MinecraftServer.getServer().postToMainThread(() -> sNetworkManager.releasePacketQueue());
+                MinecraftServer.getServer().postToMainThread(sNetworkManager::releasePacketQueue);
             } catch (Exception e) {
                 e.printStackTrace();
             }
