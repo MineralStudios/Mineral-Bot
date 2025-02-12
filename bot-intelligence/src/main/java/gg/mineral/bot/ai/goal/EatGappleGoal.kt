@@ -25,7 +25,7 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
             break
         }
 
-        val shouldExecute = canSeeEnemy() && hasGapple() && !hasRegen
+        val shouldExecute = canSeeEnemy() && hasGapple() && !hasRegen && fakePlayer.health < 10
         info(this, "Checking shouldExecute: $shouldExecute")
         return shouldExecute
     }
