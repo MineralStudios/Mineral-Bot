@@ -1,8 +1,8 @@
 package net.minecraft.client.gui.inventory;
 
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import java.util.Iterator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -20,7 +20,7 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import java.util.Iterator;
 
 public class GuiBeacon extends GuiContainer {
     private static final Logger logger = LogManager.getLogger(GuiBeacon.class);
@@ -196,6 +196,33 @@ public class GuiBeacon extends GuiContainer {
         itemRender.zLevel = 0.0F;
     }
 
+    @Override
+    public int getScaleFactor() {
+        int scaleFactor = 1;
+        // This flag is usually used for checking if fancy graphics are enabled.
+        boolean fancyGraphics = mc.func_152349_b();
+        // Get the user-specified GUI scale; if it is 0, use a large number (effectively "no limit")
+        int guiScale = mc.gameSettings.guiScale;
+        if (guiScale == 0) {
+            guiScale = 1000;
+        }
+
+        // Increase the scale factor as long as it doesn't cause the scaled dimensions
+        // to drop below 320x240 and we haven't reached the user limit.
+        while (scaleFactor < guiScale
+                && mc.displayWidth / (scaleFactor + 1) >= 320
+                && mc.displayHeight / (scaleFactor + 1) >= 240) {
+            scaleFactor++;
+        }
+
+        // In some cases (e.g., fancy graphics enabled), adjust the scale factor so it is even.
+        if (fancyGraphics && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            scaleFactor--;
+        }
+
+        return scaleFactor;
+    }
+
     static class Button extends GuiButton {
         private final ResourceLocation field_146145_o;
         private final int field_146144_p;
@@ -203,8 +230,8 @@ public class GuiBeacon extends GuiContainer {
         private boolean field_146142_r;
 
         protected Button(Minecraft mc, int p_i1077_1_, int p_i1077_2_, int p_i1077_3_, ResourceLocation p_i1077_4_,
-                int p_i1077_5_,
-                int p_i1077_6_) {
+                         int p_i1077_5_,
+                         int p_i1077_6_) {
             super(mc, p_i1077_1_, p_i1077_2_, p_i1077_3_, 22, 22, "");
             this.field_146145_o = p_i1077_4_;
             this.field_146144_p = p_i1077_5_;

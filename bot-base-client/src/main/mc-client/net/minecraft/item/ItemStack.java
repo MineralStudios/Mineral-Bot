@@ -2,17 +2,8 @@ package net.minecraft.item;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-
 import gg.mineral.bot.api.entity.effect.PotionEffect;
 import gg.mineral.bot.api.inv.potion.Potion;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.Map.Entry;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentDurability;
@@ -30,17 +21,19 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.stats.StatList;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
+
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, Potion {
     public static final DecimalFormat field_111284_a = new DecimalFormat("#.###");
 
-    /** Size of the stack. */
+    /**
+     * Size of the stack.
+     */
     public int stackSize;
 
     /**
@@ -56,10 +49,14 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
      */
     public NBTTagCompound stackTagCompound;
 
-    /** Damage dealt to the item or number of use. Raise when using items. */
+    /**
+     * Damage dealt to the item or number of use. Raise when using items.
+     */
     private int itemDamage;
 
-    /** Item frame this stack is on, or null if not on an item frame. */
+    /**
+     * Item frame this stack is on, or null if not on an item frame.
+     */
     private EntityItemFrame itemFrame;
 
     public ItemStack(Block block) {
@@ -134,7 +131,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
     }
 
     public boolean tryPlaceItemIntoWorld(EntityPlayer p_77943_1_, World p_77943_2_, int p_77943_3_, int p_77943_4_,
-            int p_77943_5_, int p_77943_6_, float p_77943_7_, float p_77943_8_, float p_77943_9_) {
+                                         int p_77943_5_, int p_77943_6_, float p_77943_7_, float p_77943_8_, float p_77943_9_) {
         boolean var10 = this.getItem().onItemUse(this, p_77943_1_, p_77943_2_, p_77943_3_, p_77943_4_, p_77943_5_,
                 p_77943_6_, p_77943_7_, p_77943_8_, p_77943_9_);
 
@@ -335,7 +332,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
     }
 
     public void func_150999_a(World p_150999_1_, Block p_150999_2_, int p_150999_3_, int p_150999_4_, int p_150999_5_,
-            EntityPlayer p_150999_6_) {
+                              EntityPlayer p_150999_6_) {
         boolean var7 = this.item.onBlockDestroyed(this, p_150999_1_, p_150999_2_, p_150999_3_, p_150999_4_,
                 p_150999_5_, p_150999_6_);
 
@@ -368,12 +365,12 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
     public static boolean areItemStackTagsEqual(ItemStack p_77970_0_, ItemStack p_77970_1_) {
         return p_77970_0_ == null
                 && p_77970_1_ == null
-                        ? true
-                        : (p_77970_0_ != null && p_77970_1_ != null
-                                ? (p_77970_0_.stackTagCompound == null && p_77970_1_.stackTagCompound != null ? false
-                                        : p_77970_0_.stackTagCompound == null
-                                                || p_77970_0_.stackTagCompound.equals(p_77970_1_.stackTagCompound))
-                                : false);
+                ? true
+                : (p_77970_0_ != null && p_77970_1_ != null
+                ? (p_77970_0_.stackTagCompound == null && p_77970_1_.stackTagCompound != null ? false
+                : p_77970_0_.stackTagCompound == null
+                || p_77970_0_.stackTagCompound.equals(p_77970_1_.stackTagCompound))
+                : false);
     }
 
     /**
@@ -392,10 +389,10 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
     private boolean isItemStackEqual(ItemStack p_77959_1_) {
         return this.stackSize != p_77959_1_.stackSize ? false
                 : (this.item != p_77959_1_.item ? false
-                        : (this.itemDamage != p_77959_1_.itemDamage ? false
-                                : (this.stackTagCompound == null && p_77959_1_.stackTagCompound != null ? false
-                                        : this.stackTagCompound == null
-                                                || this.stackTagCompound.equals(p_77959_1_.stackTagCompound))));
+                : (this.itemDamage != p_77959_1_.itemDamage ? false
+                : (this.stackTagCompound == null && p_77959_1_.stackTagCompound != null ? false
+                : this.stackTagCompound == null
+                || this.stackTagCompound.equals(p_77959_1_.stackTagCompound))));
     }
 
     /**
@@ -536,7 +533,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
     public boolean hasDisplayName() {
         return this.stackTagCompound == null ? false
                 : (!this.stackTagCompound.func_150297_b("display", 10) ? false
-                        : this.stackTagCompound.getCompoundTag("display").func_150297_b("Name", 8));
+                : this.stackTagCompound.getCompoundTag("display").func_150297_b("Name", 8));
     }
 
     /**
@@ -564,9 +561,9 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
 
             if (this.getHasSubtypes()) {
                 var4 = var4 + String.format("#%04d/%d%s",
-                        new Object[] { Integer.valueOf(var6), Integer.valueOf(this.itemDamage), var5 });
+                        new Object[]{Integer.valueOf(var6), Integer.valueOf(this.itemDamage), var5});
             } else {
-                var4 = var4 + String.format("#%04d%s", new Object[] { Integer.valueOf(var6), var5 });
+                var4 = var4 + String.format("#%04d%s", new Object[]{Integer.valueOf(var6), var5});
             }
         } else if (!this.hasDisplayName() && this.item == Items.filled_map) {
             var4 = var4 + " #" + this.itemDamage;
@@ -639,14 +636,14 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
                 if (var9 > 0.0D) {
                     var3.add(EnumChatFormatting.BLUE + StatCollector.translateToLocalFormatted(
                             "attribute.modifier.plus." + var20.getOperation(),
-                            new Object[] { field_111284_a.format(var11),
-                                    StatCollector.translateToLocal("attribute.name." + (String) var18.getKey()) }));
+                            new Object[]{field_111284_a.format(var11),
+                                    StatCollector.translateToLocal("attribute.name." + (String) var18.getKey())}));
                 } else if (var9 < 0.0D) {
                     var11 *= -1.0D;
                     var3.add(EnumChatFormatting.RED + StatCollector.translateToLocalFormatted(
                             "attribute.modifier.take." + var20.getOperation(),
-                            new Object[] { field_111284_a.format(var11),
-                                    StatCollector.translateToLocal("attribute.name." + (String) var18.getKey()) }));
+                            new Object[]{field_111284_a.format(var11),
+                                    StatCollector.translateToLocal("attribute.name." + (String) var18.getKey())}));
                 }
             }
         }
@@ -859,15 +856,8 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
 
     @Override
     public List<PotionEffect> getEffects() {
-
-        if (getItem() instanceof ItemPotion potion) {
-            List<PotionEffect> effects = new ArrayList<>();
-
-            for (PotionEffect effect : potion.getEffects(this))
-                effects.add(effect);
-
-            return effects;
-        }
+        if (getItem() instanceof ItemPotion potion)
+            return Collections.unmodifiableList(potion.getEffects(this));
 
         throw new IllegalStateException("Item is not a potion");
     }

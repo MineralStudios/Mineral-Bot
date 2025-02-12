@@ -1,6 +1,6 @@
 
 dependencies {
-    compileOnly 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+    compileOnly 'com.github.ben-manes.caffeine:caffeine:3.2.0'
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
     implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'

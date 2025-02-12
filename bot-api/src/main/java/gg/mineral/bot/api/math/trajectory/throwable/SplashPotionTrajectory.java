@@ -2,24 +2,24 @@ package gg.mineral.bot.api.math.trajectory.throwable;
 
 import gg.mineral.bot.api.world.ClientWorld;
 
-public class EnderPearlTrajectory extends ThrowableEntityTrajectory {
+public class SplashPotionTrajectory extends ThrowableEntityTrajectory {
 
-    public EnderPearlTrajectory(ClientWorld world, double x, double y, double z, float yaw, float pitch, CollisionFunction collisionFunction) {
+    public SplashPotionTrajectory(ClientWorld world, double x, double y, double z, float yaw, float pitch, CollisionFunction collisionFunction) {
         super(world, x, y, z, yaw, pitch, collisionFunction);
     }
 
     @Override
     public float offset() {
-        return 0.0F;
+        return -20.0f;
     }
 
     @Override
     public float power() {
-        return 1.5F;
+        return 0.5f;
     }
 
     @Override
     public float gravity() {
-        return 0.03F;
+        return 0.05f;
     }
 }

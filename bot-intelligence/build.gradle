@@ -1,4 +1,6 @@
-
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.1.10'
+}
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
@@ -6,6 +8,8 @@ dependencies {
     implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
     annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
     compileOnly project(':bot-api')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.apache.commons:commons-math3:3.6.1'
 }
 
 jar {
@@ -13,4 +17,10 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+}
+repositories {
+    mavenCentral()
+}
+kotlin {
+    jvmToolchain(21)
 }

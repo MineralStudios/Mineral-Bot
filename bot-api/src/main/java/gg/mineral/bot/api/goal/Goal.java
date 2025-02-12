@@ -1,11 +1,5 @@
 package gg.mineral.bot.api.goal;
 
-import java.util.Queue;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.eclipse.jdt.annotation.NonNull;
-
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.Keyboard;
 import gg.mineral.bot.api.controls.Mouse;
@@ -17,6 +11,11 @@ import gg.mineral.bot.api.util.MathUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.eclipse.jdt.annotation.NonNull;
+
+import java.util.Queue;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Getter
 @RequiredArgsConstructor
@@ -36,6 +35,8 @@ public abstract class Goal implements MathUtil, Logger {
     }
 
     public abstract boolean shouldExecute();
+
+    public abstract boolean isExecuting();
 
     public abstract void onTick();
 

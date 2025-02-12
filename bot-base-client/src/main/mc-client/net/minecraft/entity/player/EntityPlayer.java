@@ -2,28 +2,17 @@ package net.minecraft.entity.player;
 
 import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
-
 import gg.mineral.bot.api.entity.living.player.ClientPlayer;
 import gg.mineral.bot.api.inv.Inventory;
 import gg.mineral.bot.api.inv.InventoryContainer;
 import lombok.val;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.server.CommandBlockLogic;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityMultiPart;
-import net.minecraft.entity.IMerchant;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityDragonPart;
 import net.minecraft.entity.item.EntityBoat;
@@ -49,37 +38,26 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
-import net.minecraft.scoreboard.IScoreObjectiveCriteria;
-import net.minecraft.scoreboard.Score;
-import net.minecraft.scoreboard.ScoreObjective;
-import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.Team;
+import net.minecraft.scoreboard.*;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityBeacon;
-import net.minecraft.tileentity.TileEntityBrewingStand;
-import net.minecraft.tileentity.TileEntityDispenser;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.tileentity.TileEntityHopper;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.FoodStats;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.tileentity.*;
+import net.minecraft.util.*;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.chunk.IChunkProvider;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
 public abstract class EntityPlayer extends EntityLivingBase implements ICommandSender, ClientPlayer {
-    /** Inventory of the player */
+    /**
+     * Inventory of the player
+     */
     public InventoryPlayer inventory = new InventoryPlayer(this);
 
     @Override
@@ -99,10 +77,14 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
      */
     public Container inventoryContainer;
 
-    /** The Container the player has open. */
+    /**
+     * The Container the player has open.
+     */
     public Container openContainer;
 
-    /** The food object of the player, the general hunger logic. */
+    /**
+     * The food object of the player, the general hunger logic.
+     */
     protected FoodStats foodStats = new FoodStats();
 
     /**
@@ -127,17 +109,23 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
     public double field_71095_bQ;
     public double field_71085_bR;
 
-    /** Boolean value indicating weather a player is sleeping or not */
+    /**
+     * Boolean value indicating weather a player is sleeping or not
+     */
     protected boolean sleeping;
 
-    /** the current location of the player */
+    /**
+     * the current location of the player
+     */
     public ChunkCoordinates playerLocation;
     private int sleepTimer;
     public float field_71079_bU;
     public float field_71082_cx;
     public float field_71089_bV;
 
-    /** holds the spawn chunk of the player */
+    /**
+     * holds the spawn chunk of the player
+     */
     private ChunkCoordinates spawnChunk;
 
     /**
@@ -146,13 +134,19 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
      */
     private boolean spawnForced;
 
-    /** Holds the coordinate of the player when enter a minecraft to ride. */
+    /**
+     * Holds the coordinate of the player when enter a minecraft to ride.
+     */
     private ChunkCoordinates startMinecartRidingCoordinate;
 
-    /** The player's capabilities. (See class PlayerCapabilities) */
+    /**
+     * The player's capabilities. (See class PlayerCapabilities)
+     */
     public PlayerCapabilities capabilities = new PlayerCapabilities();
 
-    /** The current experience level the player is on. */
+    /**
+     * The current experience level the player is on.
+     */
     public int experienceLevel;
 
     /**
@@ -201,6 +195,11 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
                 0.0F);
         this.field_70741_aB = 180.0F;
         this.fireResistance = 20;
+    }
+
+    @Override
+    public float getHunger() {
+        return this.foodStats.getFoodLevel();
     }
 
     @Override
@@ -698,7 +697,7 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
      */
     public EntityItem dropOneItem(boolean p_71040_1_) {
         return this.func_146097_a(this.inventory.decrStackSize(this.inventory.currentItem,
-                p_71040_1_ && this.inventory.getCurrentItem() != null ? this.inventory.getCurrentItem().stackSize : 1),
+                        p_71040_1_ && this.inventory.getCurrentItem() != null ? this.inventory.getCurrentItem().stackSize : 1),
                 false, true);
     }
 
@@ -1410,7 +1409,7 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
      * spawn.
      */
     public static ChunkCoordinates verifyRespawnCoordinates(World p_71056_0_, ChunkCoordinates p_71056_1_,
-            boolean p_71056_2_) {
+                                                            boolean p_71056_2_) {
         IChunkProvider var3 = p_71056_0_.getChunkProvider();
         var3.loadChunk(p_71056_1_.posX - 3 >> 4, p_71056_1_.posZ - 3 >> 4);
         var3.loadChunk(p_71056_1_.posX + 3 >> 4, p_71056_1_.posZ - 3 >> 4);
@@ -2045,8 +2044,8 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
         private final int chatVisibility;
         private final String resourceKey;
 
-        private static final EntityPlayer.EnumChatVisibility[] $VALUES = new EntityPlayer.EnumChatVisibility[] { FULL,
-                SYSTEM, HIDDEN };
+        private static final EntityPlayer.EnumChatVisibility[] $VALUES = new EntityPlayer.EnumChatVisibility[]{FULL,
+                SYSTEM, HIDDEN};
 
         private EnumChatVisibility(String p_i45323_1_, int p_i45323_2_, int p_i45323_3_, String p_i45323_4_) {
             this.chatVisibility = p_i45323_3_;

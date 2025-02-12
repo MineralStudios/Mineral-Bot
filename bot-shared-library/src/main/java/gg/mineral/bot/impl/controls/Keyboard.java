@@ -1,10 +1,5 @@
 package gg.mineral.bot.impl.controls;
 
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import gg.mineral.bot.api.controls.Key.Type;
 import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.api.event.EventHandler;
@@ -12,6 +7,11 @@ import gg.mineral.bot.api.event.peripherals.KeyboardKeyEvent;
 import gg.mineral.bot.api.instance.ClientInstance;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.val;
+
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Keyboard implements gg.mineral.bot.api.controls.Keyboard, Logger {
     private final Key[] keys;
@@ -30,6 +30,21 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard, Logger {
             }
             return false;
         });
+
+        // --- Begin added logic to replicate LWJGL 2.9.4 mouse grab behavior ---
+        // If the eventHandler is a ClientInstance, we can check the mouse.
+        if (eventHandler instanceof ClientInstance clientInstance) {
+            // When the mouse is ungrabbed, release all pressed keys.
+            if (!clientInstance.getMouse().isGrabbed()) {
+                for (val key : keys) {
+                    if (key.isPressed()) {
+                        // Using duration 0 so that no reschedule occurs.
+                        unpressKey(0, key.getType());
+                    }
+                }
+            }
+        }
+        // --- End added logic ---
     }
 
     public void schedule(Runnable runnable, long delay) {
@@ -104,7 +119,8 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard, Logger {
         }
 
         if (iterator == null) {
-            keysLoop: for (val key : keys) {
+            keysLoop:
+            for (val key : keys) {
                 if (key.isPressed()) {
                     for (val log : logs)
                         if (log.type == key.getType())

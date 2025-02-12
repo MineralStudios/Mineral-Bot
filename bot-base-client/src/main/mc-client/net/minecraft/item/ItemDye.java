@@ -1,6 +1,5 @@
 package net.minecraft.item;
 
-import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockLog;
@@ -16,13 +15,15 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class ItemDye extends Item {
-    public static final String[] field_150923_a = new String[] { "black", "red", "green", "brown", "blue", "purple",
-            "cyan", "silver", "gray", "pink", "lime", "yellow", "lightBlue", "magenta", "orange", "white" };
-    public static final String[] field_150921_b = new String[] { "black", "red", "green", "brown", "blue", "purple",
-            "cyan", "silver", "gray", "pink", "lime", "yellow", "light_blue", "magenta", "orange", "white" };
-    public static final int[] field_150922_c = new int[] { 1973019, 11743532, 3887386, 5320730, 2437522, 8073150,
-            2651799, 11250603, 4408131, 14188952, 4312372, 14602026, 6719955, 12801229, 15435844, 15790320 };
+    public static final String[] field_150923_a = new String[]{"black", "red", "green", "brown", "blue", "purple",
+            "cyan", "silver", "gray", "pink", "lime", "yellow", "lightBlue", "magenta", "orange", "white"};
+    public static final String[] field_150921_b = new String[]{"black", "red", "green", "brown", "blue", "purple",
+            "cyan", "silver", "gray", "pink", "lime", "yellow", "light_blue", "magenta", "orange", "white"};
+    public static final int[] field_150922_c = new int[]{1973019, 11743532, 3887386, 5320730, 2437522, 8073150,
+            2651799, 11250603, 4408131, 14188952, 4312372, 14602026, 6719955, 12801229, 15435844, 15790320};
     private IIcon[] field_150920_d;
 
     public ItemDye() {
@@ -36,6 +37,9 @@ public class ItemDye extends Item {
      */
     public IIcon getIconFromDamage(int p_77617_1_) {
         int var2 = MathHelper.clamp_int(p_77617_1_, 0, 15);
+        if (this.field_150920_d == null)
+            return null;
+
         return this.field_150920_d[var2];
     }
 
@@ -55,7 +59,7 @@ public class ItemDye extends Item {
      * True if something happen and false if it don't. This is for ITEMS, not BLOCKS
      */
     public boolean onItemUse(ItemStack p_77648_1_, EntityPlayer p_77648_2_, World p_77648_3_, int p_77648_4_,
-            int p_77648_5_, int p_77648_6_, int p_77648_7_, float p_77648_8_, float p_77648_9_, float p_77648_10_) {
+                             int p_77648_5_, int p_77648_6_, int p_77648_7_, float p_77648_8_, float p_77648_9_, float p_77648_10_) {
         if (!p_77648_2_.canPlayerEdit(p_77648_4_, p_77648_5_, p_77648_6_, p_77648_7_, p_77648_1_)) {
             return false;
         } else {
@@ -115,7 +119,7 @@ public class ItemDye extends Item {
     }
 
     public static boolean func_150919_a(ItemStack p_150919_0_, World p_150919_1_, int p_150919_2_, int p_150919_3_,
-            int p_150919_4_) {
+                                        int p_150919_4_) {
         Block var5 = p_150919_1_.getBlock(p_150919_2_, p_150919_3_, p_150919_4_);
 
         if (var5 instanceof IGrowable) {
@@ -138,7 +142,7 @@ public class ItemDye extends Item {
     }
 
     public static void func_150918_a(World p_150918_0_, int p_150918_1_, int p_150918_2_, int p_150918_3_,
-            int p_150918_4_) {
+                                     int p_150918_4_) {
         if (p_150918_4_ == 0) {
             p_150918_4_ = 15;
         }
@@ -164,7 +168,7 @@ public class ItemDye extends Item {
      * sheep.
      */
     public boolean itemInteractionForEntity(ItemStack p_111207_1_, EntityPlayer p_111207_2_,
-            EntityLivingBase p_111207_3_) {
+                                            EntityLivingBase p_111207_3_) {
         if (p_111207_3_ instanceof EntitySheep) {
             EntitySheep var4 = (EntitySheep) p_111207_3_;
             int var5 = BlockColored.func_150032_b(p_111207_1_.getItemDamage());

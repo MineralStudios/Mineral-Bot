@@ -1,9 +1,7 @@
 package net.minecraft.client.gui.inventory;
 
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
-
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -19,6 +17,33 @@ public class GuiBrewingStand extends GuiContainer {
     public GuiBrewingStand(Minecraft mc, InventoryPlayer p_i1081_1_, TileEntityBrewingStand p_i1081_2_) {
         super(mc, new ContainerBrewingStand(p_i1081_1_, p_i1081_2_));
         this.field_147013_v = p_i1081_2_;
+    }
+
+    @Override
+    public int getScaleFactor() {
+        int scaleFactor = 1;
+        // This flag is usually used for checking if fancy graphics are enabled.
+        boolean fancyGraphics = mc.func_152349_b();
+        // Get the user-specified GUI scale; if it is 0, use a large number (effectively "no limit")
+        int guiScale = mc.gameSettings.guiScale;
+        if (guiScale == 0) {
+            guiScale = 1000;
+        }
+
+        // Increase the scale factor as long as it doesn't cause the scaled dimensions
+        // to drop below 320x240 and we haven't reached the user limit.
+        while (scaleFactor < guiScale
+                && mc.displayWidth / (scaleFactor + 1) >= 320
+                && mc.displayHeight / (scaleFactor + 1) >= 240) {
+            scaleFactor++;
+        }
+
+        // In some cases (e.g., fancy graphics enabled), adjust the scale factor so it is even.
+        if (fancyGraphics && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            scaleFactor--;
+        }
+
+        return scaleFactor;
     }
 
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {

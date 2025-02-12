@@ -1,9 +1,5 @@
 package net.minecraft.entity;
 
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
 import gg.mineral.bot.api.entity.ClientEntity;
 import gg.mineral.bot.api.world.ClientWorld;
 import lombok.Getter;
@@ -25,19 +21,14 @@ import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagFloat;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ReportedException;
-import net.minecraft.util.StatCollector;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public abstract class Entity implements ClientEntity {
     private static int nextEntityID;
@@ -53,39 +44,64 @@ public abstract class Entity implements ClientEntity {
      */
     public boolean preventEntitySpawning;
 
-    /** The entity that is riding this entity */
+    /**
+     * The entity that is riding this entity
+     */
     public Entity riddenByEntity;
 
-    /** The entity we are currently riding */
+    /**
+     * The entity we are currently riding
+     */
     public Entity ridingEntity;
     public boolean forceSpawn;
 
-    /** Reference to the World object. */
+    /**
+     * Reference to the World object.
+     */
     public World worldObj;
     public double prevPosX, prevPosY, prevPosZ;
 
-    /** Entity position X */
+    /**
+     * Entity position X
+     */
     public double posX;
 
-    /** Entity position Y */
+    /**
+     * Entity position Y
+     */
     public double posY;
 
-    /** Entity position Z */
+    /**
+     * Entity position Z
+     */
     public double posZ;
 
-    /** Entity motion X */
+    /**
+     * Entity motion X
+     */
+    @Getter
     public double motionX;
 
-    /** Entity motion Y */
+    /**
+     * Entity motion Y
+     */
+    @Getter
     public double motionY;
 
-    /** Entity motion Z */
+    /**
+     * Entity motion Z
+     */
+    @Getter
     public double motionZ;
 
-    /** Entity rotation Yaw */
+    /**
+     * Entity rotation Yaw
+     */
     public float rotationYaw;
 
-    /** Entity rotation Pitch */
+    /**
+     * Entity rotation Pitch
+     */
     public float rotationPitch;
     public float prevRotationYaw;
     public float prevRotationPitch;
@@ -120,7 +136,9 @@ public abstract class Entity implements ClientEntity {
         return this.worldObj instanceof ClientWorld clientWorld ? clientWorld : null;
     }
 
-    /** Axis aligned bounding box. */
+    /**
+     * Axis aligned bounding box.
+     */
     public final AxisAlignedBB boundingBox;
     @Getter
     public boolean onGround;
@@ -151,16 +169,24 @@ public abstract class Entity implements ClientEntity {
     public boolean isDead;
     public float yOffset;
 
-    /** How wide this entity is considered to be */
+    /**
+     * How wide this entity is considered to be
+     */
     public float width;
 
-    /** How high this entity is considered to be */
+    /**
+     * How high this entity is considered to be
+     */
     public float height;
 
-    /** The previous ticks distance walked multiplied by 0.6 */
+    /**
+     * The previous ticks distance walked multiplied by 0.6
+     */
     public float prevDistanceWalkedModified;
 
-    /** The distance walked multiplied by 0.6 */
+    /**
+     * The distance walked multiplied by 0.6
+     */
     public float distanceWalkedModified, distanceWalkedOnStepModified, fallDistance;
 
     /**
@@ -207,7 +233,9 @@ public abstract class Entity implements ClientEntity {
     public float entityCollisionReduction;
     protected Random rand;
 
-    /** How many ticks has this entity had ran since being alive */
+    /**
+     * How many ticks has this entity had ran since being alive
+     */
     public int ticksExisted;
 
     /**
@@ -230,7 +258,9 @@ public abstract class Entity implements ClientEntity {
     protected DataWatcher dataWatcher;
     private double entityRiderPitchDelta, entityRiderYawDelta;
 
-    /** Has this entity been added to the chunk its within */
+    /**
+     * Has this entity been added to the chunk its within
+     */
     public boolean addedToChunk;
     public int chunkCoordX, chunkCoordY, chunkCoordZ, serverPosX, serverPosY, serverPosZ;
 
@@ -242,11 +272,15 @@ public abstract class Entity implements ClientEntity {
     public boolean ignoreFrustumCheck, isAirBorne;
     public int timeUntilPortal;
 
-    /** Whether the entity is inside a Portal */
+    /**
+     * Whether the entity is inside a Portal
+     */
     protected boolean inPortal;
     protected int portalCounter;
 
-    /** Which dimension the player is in (-1 = the Nether, 0 = normal world) */
+    /**
+     * Which dimension the player is in (-1 = the Nether, 0 = normal world)
+     */
     public int dimension;
     protected int teleportDirection;
     private boolean invulnerable;
@@ -655,9 +689,9 @@ public abstract class Entity implements ClientEntity {
 
                 while (p_70091_1_ != 0.0D && p_70091_5_ != 0.0D
                         && this.worldObj
-                                .getCollidingBoundingBoxes(this,
-                                        this.boundingBox.getOffsetBoundingBox(p_70091_1_, -1.0D, p_70091_5_))
-                                .isEmpty()) {
+                        .getCollidingBoundingBoxes(this,
+                                this.boundingBox.getOffsetBoundingBox(p_70091_1_, -1.0D, p_70091_5_))
+                        .isEmpty()) {
                     if (p_70091_1_ < var21 && p_70091_1_ >= -var21) {
                         p_70091_1_ = 0.0D;
                     } else if (p_70091_1_ > 0.0D) {
@@ -1012,9 +1046,9 @@ public abstract class Entity implements ClientEntity {
     public boolean isWet() {
         return this.inWater
                 || this.worldObj.canLightningStrikeAt(MathHelper.floor_double(this.posX),
-                        MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))
+                MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))
                 || this.worldObj.canLightningStrikeAt(MathHelper.floor_double(this.posX),
-                        MathHelper.floor_double(this.posY + (double) this.height), MathHelper.floor_double(this.posZ));
+                MathHelper.floor_double(this.posY + (double) this.height), MathHelper.floor_double(this.posZ));
     }
 
     /**
@@ -1175,7 +1209,7 @@ public abstract class Entity implements ClientEntity {
      * Sets the entity's position and rotation. Args: posX, posY, posZ, yaw, pitch
      */
     public void setPositionAndRotation(double p_70080_1_, double p_70080_3_, double p_70080_5_, float p_70080_7_,
-            float p_70080_8_) {
+                                       float p_70080_8_) {
         this.prevPosX = this.posX = p_70080_1_;
         this.prevPosY = this.posY = p_70080_3_;
         this.prevPosZ = this.posZ = p_70080_5_;
@@ -1198,7 +1232,7 @@ public abstract class Entity implements ClientEntity {
      * Sets the location and Yaw/Pitch of an entity in the world
      */
     public void setLocationAndAngles(double p_70012_1_, double p_70012_3_, double p_70012_5_, float p_70012_7_,
-            float p_70012_8_) {
+                                     float p_70012_8_) {
         this.lastTickPosX = this.prevPosX = this.posX = p_70012_1_;
         this.lastTickPosY = this.prevPosY = this.posY = p_70012_3_ + (double) this.yOffset;
         this.lastTickPosZ = this.prevPosZ = this.posZ = p_70012_5_;
@@ -1399,10 +1433,10 @@ public abstract class Entity implements ClientEntity {
     public void writeToNBT(NBTTagCompound p_70109_1_) {
         try {
             p_70109_1_.setTag("Pos",
-                    this.newDoubleNBTList(new double[] { this.posX, this.posY + (double) this.ySize, this.posZ }));
+                    this.newDoubleNBTList(new double[]{this.posX, this.posY + (double) this.ySize, this.posZ}));
             p_70109_1_.setTag("Motion",
-                    this.newDoubleNBTList(new double[] { this.motionX, this.motionY, this.motionZ }));
-            p_70109_1_.setTag("Rotation", this.newFloatNBTList(new float[] { this.rotationYaw, this.rotationPitch }));
+                    this.newDoubleNBTList(new double[]{this.motionX, this.motionY, this.motionZ}));
+            p_70109_1_.setTag("Rotation", this.newFloatNBTList(new float[]{this.rotationYaw, this.rotationPitch}));
             p_70109_1_.setFloat("FallDistance", this.fallDistance);
             p_70109_1_.setShort("Fire", (short) this.fire);
             p_70109_1_.setShort("Air", (short) this.getAir());
@@ -1734,7 +1768,7 @@ public abstract class Entity implements ClientEntity {
      * posY, posZ, yaw, pitch
      */
     public void setPositionAndRotation2(double p_70056_1_, double p_70056_3_, double p_70056_5_, float p_70056_7_,
-            float p_70056_8_, int p_70056_9_) {
+                                        float p_70056_8_, int p_70056_9_) {
         this.setPosition(p_70056_1_, p_70056_3_, p_70056_5_);
         this.setRotation(p_70056_7_, p_70056_8_);
         List var10 = this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox.contract(0.03125D, 0.0D, 0.03125D));
@@ -2080,10 +2114,10 @@ public abstract class Entity implements ClientEntity {
 
     public String toString() {
         return String.format("%s[\'%s\'/%d, l=\'%s\', x=%.2f, y=%.2f, z=%.2f]",
-                new Object[] { this.getClass().getSimpleName(), this.getCommandSenderName(),
+                new Object[]{this.getClass().getSimpleName(), this.getCommandSenderName(),
                         Integer.valueOf(this.entityId),
                         this.worldObj == null ? "~NULL~" : this.worldObj.getWorldInfo().getWorldName(),
-                        Double.valueOf(this.posX), Double.valueOf(this.posY), Double.valueOf(this.posZ) });
+                        Double.valueOf(this.posX), Double.valueOf(this.posY), Double.valueOf(this.posZ)});
     }
 
     /**
@@ -2164,12 +2198,12 @@ public abstract class Entity implements ClientEntity {
     }
 
     public float func_145772_a(Explosion p_145772_1_, World p_145772_2_, int p_145772_3_, int p_145772_4_,
-            int p_145772_5_, Block p_145772_6_) {
+                               int p_145772_5_, Block p_145772_6_) {
         return p_145772_6_.getExplosionResistance(this);
     }
 
     public boolean func_145774_a(Explosion p_145774_1_, World p_145774_2_, int p_145774_3_, int p_145774_4_,
-            int p_145774_5_, Block p_145774_6_, float p_145774_7_) {
+                                 int p_145774_5_, Block p_145774_6_, float p_145774_7_) {
         return true;
     }
 
@@ -2195,12 +2229,12 @@ public abstract class Entity implements ClientEntity {
         p_85029_1_.addCrashSection("Entity ID", this.entityId);
         p_85029_1_.addCrashSectionCallable("Entity Name", () -> Entity.this.getCommandSenderName());
         p_85029_1_.addCrashSection("Entity\'s Exact location", String.format("%.2f, %.2f, %.2f",
-                new Object[] { Double.valueOf(this.posX), Double.valueOf(this.posY), Double.valueOf(this.posZ) }));
+                new Object[]{Double.valueOf(this.posX), Double.valueOf(this.posY), Double.valueOf(this.posZ)}));
         p_85029_1_.addCrashSection("Entity\'s Block location",
                 CrashReportCategory.getLocationInfo(MathHelper.floor_double(this.posX),
                         MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)));
-        p_85029_1_.addCrashSection("Entity\'s Momentum", String.format("%.2f, %.2f, %.2f", new Object[] {
-                Double.valueOf(this.motionX), Double.valueOf(this.motionY), Double.valueOf(this.motionZ) }));
+        p_85029_1_.addCrashSection("Entity\'s Momentum", String.format("%.2f, %.2f, %.2f", new Object[]{
+                Double.valueOf(this.motionX), Double.valueOf(this.motionY), Double.valueOf(this.motionZ)}));
     }
 
     /**
@@ -2230,8 +2264,8 @@ public abstract class Entity implements ClientEntity {
                 4),
         SIZE_6("SIZE_6", 5);
 
-        private static final Entity.EnumEntitySize[] $VALUES = new Entity.EnumEntitySize[] { SIZE_1, SIZE_2, SIZE_3,
-                SIZE_4, SIZE_5, SIZE_6 };
+        private static final Entity.EnumEntitySize[] $VALUES = new Entity.EnumEntitySize[]{SIZE_1, SIZE_2, SIZE_3,
+                SIZE_4, SIZE_5, SIZE_6};
 
         private EnumEntitySize(String p_i1581_1_, int p_i1581_2_) {
         }

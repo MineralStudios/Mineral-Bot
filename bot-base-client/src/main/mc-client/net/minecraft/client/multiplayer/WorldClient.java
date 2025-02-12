@@ -1,15 +1,6 @@
 package net.minecraft.client.multiplayer;
 
-import java.util.Collection;
-import java.util.Random;
-import java.util.Set;
-import java.util.function.Function;
-
 import gg.mineral.bot.api.entity.ClientEntity;
-import gg.mineral.bot.api.math.optimization.Optimizer;
-import gg.mineral.bot.api.math.optimization.Optimizer.Data;
-import gg.mineral.bot.api.math.optimization.Optimizer.Param;
-import gg.mineral.bot.api.math.optimization.RecursiveCalculation;
 import gg.mineral.bot.api.world.ClientWorld;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -17,7 +8,6 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -46,11 +36,19 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.SaveHandlerMP;
 
+import java.util.Collection;
+import java.util.Random;
+import java.util.Set;
+
 public class WorldClient extends World implements ClientWorld {
-    /** The packets that need to be sent to the server. */
+    /**
+     * The packets that need to be sent to the server.
+     */
     private NetHandlerPlayClient sendQueue;
 
-    /** The ChunkProviderClient instance */
+    /**
+     * The ChunkProviderClient instance
+     */
     private ChunkProviderClient clientChunkProvider;
 
     /**
@@ -59,7 +57,9 @@ public class WorldClient extends World implements ClientWorld {
      */
     private Int2ObjectOpenHashMap<ClientEntity> entityHashSet = new Int2ObjectOpenHashMap<>();
 
-    /** Contains all entities for this client, both spawned and non-spawned. */
+    /**
+     * Contains all entities for this client, both spawned and non-spawned.
+     */
     private Set<Entity> entityList = new ObjectOpenHashSet<>();
 
     /**
@@ -73,7 +73,7 @@ public class WorldClient extends World implements ClientWorld {
     private final LongSet previousActiveChunkSet = new LongOpenHashSet();
 
     public WorldClient(Minecraft mc, NetHandlerPlayClient p_i45063_1_, WorldSettings p_i45063_2_, int p_i45063_3_,
-            EnumDifficulty p_i45063_4_, Profiler p_i45063_5_) {
+                       EnumDifficulty p_i45063_4_, Profiler p_i45063_5_) {
         super(new SaveHandlerMP(), "MpServer", WorldProvider.getProviderForDimension(p_i45063_3_), p_i45063_2_,
                 p_i45063_5_);
         this.sendQueue = p_i45063_1_;
@@ -120,7 +120,7 @@ public class WorldClient extends World implements ClientWorld {
      * client-side in the intervening 80 receive ticks.
      */
     public void invalidateBlockReceiveRegion(int p_73031_1_, int p_73031_2_, int p_73031_3_, int p_73031_4_,
-            int p_73031_5_, int p_73031_6_) {
+                                             int p_73031_5_, int p_73031_6_) {
     }
 
     /**
@@ -289,7 +289,7 @@ public class WorldClient extends World implements ClientWorld {
     }
 
     public boolean func_147492_c(int p_147492_1_, int p_147492_2_, int p_147492_3_, Block p_147492_4_,
-            int p_147492_5_) {
+                                 int p_147492_5_) {
         this.invalidateBlockReceiveRegion(p_147492_1_, p_147492_2_, p_147492_3_, p_147492_1_, p_147492_2_, p_147492_3_);
         return super.setBlock(p_147492_1_, p_147492_2_, p_147492_3_, p_147492_4_, p_147492_5_, 3);
     }
@@ -411,7 +411,7 @@ public class WorldClient extends World implements ClientWorld {
      * par8 is loudness, all pars passed to minecraftInstance.sndManager.playSound
      */
     public void playSound(double p_72980_1_, double p_72980_3_, double p_72980_5_, String p_72980_7_, float p_72980_8_,
-            float p_72980_9_, boolean p_72980_10_) {
+                          float p_72980_9_, boolean p_72980_10_) {
         double var11 = this.mc.renderViewEntity.getDistanceSq(p_72980_1_, p_72980_3_, p_72980_5_);
         PositionedSoundRecord var13 = new PositionedSoundRecord(new ResourceLocation(p_72980_7_), p_72980_8_,
                 p_72980_9_, (float) p_72980_1_, (float) p_72980_3_, (float) p_72980_5_);
@@ -427,7 +427,7 @@ public class WorldClient extends World implements ClientWorld {
     }
 
     public void makeFireworks(double p_92088_1_, double p_92088_3_, double p_92088_5_, double p_92088_7_,
-            double p_92088_9_, double p_92088_11_, NBTTagCompound p_92088_13_) {
+                              double p_92088_9_, double p_92088_11_, NBTTagCompound p_92088_13_) {
         if (this.mc.effectRenderer != null)
             this.mc.effectRenderer
                     .addEffect(new EntityFireworkStarterFX(this.mc, this, p_92088_1_, p_92088_3_, p_92088_5_,
@@ -460,42 +460,6 @@ public class WorldClient extends World implements ClientWorld {
     @Override
     public gg.mineral.bot.api.world.block.Block getBlockAt(int x, int y, int z) {
         return getBlock(x, y, z);
-    }
-
-    @Override
-    public <C extends RecursiveCalculation<?>> Optimizer.Data<C, Number> univariateOptimizer(Class<C> calcClass,
-            Function<C, Number> valueFunction,
-            int maxEval) {
-
-        val world = this;
-
-        return new Optimizer.Data<C, Number>() {
-
-            @Override
-            public Optimizer<C, Number> build() {
-                return new gg.mineral.bot.impl.math.optimization.UnivariateOptimizer<C>(world, calcClass,
-                        valueFunction,
-                        maxEval, queue.toArray(new Param<?>[0]));
-            }
-
-        };
-    }
-
-    @Override
-    public <C extends RecursiveCalculation<?>> Data<C, Number[]> bivariateOptimizer(Class<C> calcClass,
-            Function<C, Number> valueFunction, int maxEval) {
-        val world = this;
-
-        return new Optimizer.Data<C, Number[]>() {
-
-            @Override
-            public Optimizer<C, Number[]> build() {
-                return new gg.mineral.bot.impl.math.optimization.BivariateOptimizer<C>(world, calcClass,
-                        valueFunction,
-                        maxEval, queue.toArray(new Param<?>[0]));
-            }
-
-        };
     }
 
     @Override

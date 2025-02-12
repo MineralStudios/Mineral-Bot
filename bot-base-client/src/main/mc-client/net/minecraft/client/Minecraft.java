@@ -1,37 +1,5 @@
 package net.minecraft.client;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Proxy;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-
-import java.util.List;
-import java.util.Queue;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-
-import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.eclipse.jdt.annotation.NonNull;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.OpenGLException;
-import org.lwjgl.opengl.PixelFormat;
-import org.lwjgl.util.glu.GLU;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Queues;
@@ -40,7 +8,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.base.client.gui.GuiConnecting;
@@ -65,17 +32,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiControls;
-import net.minecraft.client.gui.GuiGameOver;
-import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiSleepMP;
-import net.minecraft.client.gui.GuiWinGame;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.achievement.GuiAchievement;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
@@ -84,14 +41,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerLoginClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -99,29 +49,8 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererChestHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.resources.DefaultResourcePack;
-import net.minecraft.client.resources.FoliageColorReloadListener;
-import net.minecraft.client.resources.GrassColorReloadListener;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.IResourcePack;
-import net.minecraft.client.resources.LanguageManager;
-import net.minecraft.client.resources.ResourceIndex;
-import net.minecraft.client.resources.ResourcePackRepository;
-import net.minecraft.client.resources.SimpleReloadableResourceManager;
-import net.minecraft.client.resources.SkinManager;
-import net.minecraft.client.resources.data.AnimationMetadataSection;
-import net.minecraft.client.resources.data.AnimationMetadataSectionSerializer;
-import net.minecraft.client.resources.data.FontMetadataSection;
-import net.minecraft.client.resources.data.FontMetadataSectionSerializer;
-import net.minecraft.client.resources.data.IMetadataSerializer;
-import net.minecraft.client.resources.data.LanguageMetadataSection;
-import net.minecraft.client.resources.data.LanguageMetadataSectionSerializer;
-import net.minecraft.client.resources.data.PackMetadataSection;
-import net.minecraft.client.resources.data.PackMetadataSectionSerializer;
-import net.minecraft.client.resources.data.TextureMetadataSection;
-import net.minecraft.client.resources.data.TextureMetadataSectionSerializer;
+import net.minecraft.client.resources.*;
+import net.minecraft.client.resources.data.*;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.shader.Framebuffer;
@@ -152,16 +81,8 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.IStatStringFormat;
 import net.minecraft.stats.StatFileWriter;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MouseHelper;
-import net.minecraft.util.MovementInputFromOptions;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.ReportedException;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.ScreenShotHelper;
-import net.minecraft.util.Session;
 import net.minecraft.util.Timer;
-import net.minecraft.util.Util;
+import net.minecraft.util.*;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.WorldProviderHell;
@@ -170,21 +91,49 @@ import net.minecraft.world.chunk.storage.AnvilSaveConverter;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.jdt.annotation.NonNull;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.OpenGLException;
+import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.util.glu.GLU;
+
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.Proxy;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
 public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     public static final Logger logger = LogManager.getLogger(Minecraft.class);
     private static final ResourceLocation locationMojangPng = new ResourceLocation("textures/gui/title/mojang.png");
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
 
-    /** A 10MiB preallocation to ensure the heap is reasonably sized. */
+    /**
+     * A 10MiB preallocation to ensure the heap is reasonably sized.
+     */
     public static byte[] memoryReserve = BotGlobalConfig.isOptimizedGameLoop() ? new byte[0] : new byte[10485760];
     private static final List<DisplayMode> macDisplayModes = Lists
-            .newArrayList(new DisplayMode[] { new DisplayMode(2560, 1600), new DisplayMode(2880, 1800) });
+            .newArrayList(new DisplayMode[]{new DisplayMode(2560, 1600), new DisplayMode(2880, 1800)});
     private final File fileResourcepacks;
     private final Multimap field_152356_J;
     private ServerData currentServerData;
 
-    /** The RenderEngine instance used by Minecraft */
+    /**
+     * The RenderEngine instance used by Minecraft
+     */
     @Nullable
     private TextureManager renderEngine;
 
@@ -192,7 +141,9 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     private boolean fullscreen;
     public boolean hasCrashed;
 
-    /** Instance of CrashReport. */
+    /**
+     * Instance of CrashReport.
+     */
     public CrashReport crashReporter;
     public int displayWidth, displayHeight;
     private Timer timer = new Timer(20.0F);
@@ -225,49 +176,71 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     private final Session session;
     private boolean isGamePaused;
 
-    /** The font renderer used for displaying and measuring text. */
+    /**
+     * The font renderer used for displaying and measuring text.
+     */
     @Nullable
     public FontRenderer fontRenderer;
     @Nullable
     public FontRenderer standardGalacticFontRenderer;
 
-    /** The GuiScreen that's being displayed at the moment. */
+    /**
+     * The GuiScreen that's being displayed at the moment.
+     */
     @Nullable
     public GuiScreen currentScreen;
     public LoadingScreenRenderer loadingScreen;
     public EntityRenderer entityRenderer;
 
-    /** Mouse left click counter */
+    /**
+     * Mouse left click counter
+     */
     private int leftClickCounter;
     @Getter
     @Setter
     @Nullable
     private Tessellator tessellator;
 
-    /** Display width */
+    /**
+     * Display width
+     */
     private int tempDisplayWidth;
 
-    /** Display height */
+    /**
+     * Display height
+     */
     private int tempDisplayHeight;
 
-    /** Instance of IntegratedServer. */
+    /**
+     * Instance of IntegratedServer.
+     */
     private IntegratedServer theIntegratedServer;
 
-    /** Gui achievement */
+    /**
+     * Gui achievement
+     */
     @Nullable
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
 
-    /** Skip render world */
+    /**
+     * Skip render world
+     */
     public boolean skipRenderWorld;
 
-    /** The ray trace hit that the mouse is over. */
+    /**
+     * The ray trace hit that the mouse is over.
+     */
     public MovingObjectPosition objectMouseOver;
 
-    /** The game settings that currently hold effect. */
+    /**
+     * The game settings that currently hold effect.
+     */
     public GameSettings gameSettings;
 
-    /** Mouse helper instance. */
+    /**
+     * Mouse helper instance.
+     */
     public MouseHelper mouseHelper;
     public final File mcDataDir;
     private final File fileAssets;
@@ -305,14 +278,18 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     public boolean inGameHasFocus;
     long systemTime = getSystemTime();
 
-    /** Join player counter */
+    /**
+     * Join player counter
+     */
     private int joinPlayerCounter;
     private final static boolean jvm64bit;
     private final boolean isDemo;
     private NetworkManager myNetworkManager;
     private boolean integratedServerIsRunning;
 
-    /** The profiler instance */
+    /**
+     * The profiler instance
+     */
     public final Profiler mcProfiler = new Profiler();
     private long field_83002_am = -1L;
     private IReloadableResourceManager mcResourceManager;
@@ -346,17 +323,25 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
      */
     public volatile boolean running = true;
 
-    /** String that shows the debug information */
+    /**
+     * String that shows the debug information
+     */
     public String debug = "";
 
-    /** Approximate time (in ms) of last update to debug string */
+    /**
+     * Approximate time (in ms) of last update to debug string
+     */
     long debugUpdateTime = getSystemTime();
 
-    /** holds the current fps */
+    /**
+     * holds the current fps
+     */
     int fpsCounter;
     long prevFrameTime = -1L;
 
-    /** Profiler currently displayed in the debug screen pie chart */
+    /**
+     * Profiler currently displayed in the debug screen pie chart
+     */
     private String debugProfilerName = "root";
     @Nullable
     public final TileEntityRendererDispatcher tileEntityRendererDispatcher;
@@ -392,8 +377,8 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     }
 
     public Minecraft(Session p_i1103_1_, int p_i1103_2_, int p_i1103_3_, boolean p_i1103_4_, boolean p_i1103_5_,
-            File p_i1103_6_, File p_i1103_7_, File p_i1103_8_, Proxy p_i1103_9_, String p_i1103_10_,
-            Multimap p_i1103_11_, String p_i1103_12_) {
+                     File p_i1103_6_, File p_i1103_7_, File p_i1103_8_, Proxy p_i1103_9_, String p_i1103_10_,
+                     Multimap p_i1103_11_, String p_i1103_12_) {
         if (this instanceof EventHandler eventHandler) {
             this.keyboard = new Keyboard(eventHandler);
             this.mouse = new Mouse(eventHandler);
@@ -435,7 +420,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
         this.proxy = p_i1103_9_ == null ? Proxy.NO_PROXY : p_i1103_9_;
         this.authenticationService = BotGlobalConfig.isDisableConnection() ? null
                 : (new YggdrasilAuthenticationService(p_i1103_9_, UUID.randomUUID().toString()))
-                        .createMinecraftSessionService();
+                .createMinecraftSessionService();
         this.session = p_i1103_1_;
         info(this, "Setting user: " + p_i1103_1_.getUsername());
         info(this, "(Session ID is " + p_i1103_1_.getSessionID() + ")");
@@ -452,7 +437,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     }
 
     private static boolean isJvm64bit() {
-        String[] var0 = new String[] { "sun.arch.data.model", "com.ibm.vm.bitmode", "os.arch" };
+        String[] var0 = new String[]{"sun.arch.data.model", "com.ibm.vm.bitmode", "os.arch"};
         String[] var1 = var0;
         int var2 = var0.length;
 
@@ -565,7 +550,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
                         .func_152780_c(new ResourceLocation("icons/icon_32x32.png"));
 
                 if (icon16x != null && icon32x != null)
-                    Display.setIcon(new ByteBuffer[] { this.func_152340_a(icon16x), this.func_152340_a(icon32x) });
+                    Display.setIcon(new ByteBuffer[]{this.func_152340_a(icon16x), this.func_152340_a(icon32x)});
 
             } catch (IOException var8) {
                 logger.error("Couldn\'t set icon", var8);
@@ -661,9 +646,9 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
 
             public String formatString(String p_74535_1_) {
                 try {
-                    return String.format(p_74535_1_, new Object[] { GameSettings
+                    return String.format(p_74535_1_, new Object[]{GameSettings
                             .getKeyDisplayString(Minecraft.this,
-                                    Minecraft.this.gameSettings.keyBindInventory.getKeyCode()) });
+                            Minecraft.this.gameSettings.keyBindInventory.getKeyCode())});
                 } catch (Exception var3) {
                     return "Error: " + var3.getLocalizedMessage();
                 }
@@ -901,7 +886,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
      * Loads Tessellator with a scaled resolution
      */
     public void scaledTessellator(int p_71392_1_, int p_71392_2_, int p_71392_3_, int p_71392_4_, int p_71392_5_,
-            int p_71392_6_) {
+                                  int p_71392_6_) {
         float var7 = 0.00390625F;
         float var8 = 0.00390625F;
         val tessellator = this.getTessellator();
@@ -1029,7 +1014,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
          * ThreadManager.shutdown();
          * return;
          * }
-         * 
+         *
          * try {
          * if (!this.hasCrashed || this.crashReporter == null) {
          * try {
@@ -2383,7 +2368,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
             String var1 = ClientBrandRetriever.getClientModName();
             return !var1.equals("vanilla") ? "Definitely; Client brand changed to \'" + var1 + "\'"
                     : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated"
-                            : "Probably not. Jar signature remains and client brand is untouched.");
+                    : "Probably not. Jar signature remains and client brand is untouched.");
         });
         p_71396_1_.getCategory().addCrashSectionCallable("Type", () -> "Client (map_client.txt)");
         p_71396_1_.getCategory().addCrashSectionCallable("Resource Packs",
@@ -2528,15 +2513,15 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
         EntityClientPlayerMP thePlayer = this.thePlayer;
         return this.currentScreen instanceof GuiWinGame ? MusicTicker.MusicType.CREDITS
                 : (thePlayer != null ? (thePlayer.worldObj.provider instanceof WorldProviderHell
-                        ? MusicTicker.MusicType.NETHER
-                        : (thePlayer.worldObj.provider instanceof WorldProviderEnd
-                                ? (BossStatus.bossName != null && BossStatus.statusBarTime > 0
-                                        ? MusicTicker.MusicType.END_BOSS
-                                        : MusicTicker.MusicType.END)
-                                : (thePlayer.capabilities.isCreativeMode && thePlayer.capabilities.allowFlying
-                                        ? MusicTicker.MusicType.CREATIVE
-                                        : MusicTicker.MusicType.GAME)))
-                        : MusicTicker.MusicType.MENU);
+                ? MusicTicker.MusicType.NETHER
+                : (thePlayer.worldObj.provider instanceof WorldProviderEnd
+                ? (BossStatus.bossName != null && BossStatus.statusBarTime > 0
+                ? MusicTicker.MusicType.END_BOSS
+                : MusicTicker.MusicType.END)
+                : (thePlayer.capabilities.isCreativeMode && thePlayer.capabilities.allowFlying
+                ? MusicTicker.MusicType.CREATIVE
+                : MusicTicker.MusicType.GAME)))
+                : MusicTicker.MusicType.MENU);
     }
 
     public void func_152348_aa() {

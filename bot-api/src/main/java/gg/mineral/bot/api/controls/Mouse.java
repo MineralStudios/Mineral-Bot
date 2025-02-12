@@ -5,162 +5,170 @@ package gg.mineral.bot.api.controls;
  */
 public interface Mouse {
 
-  /**
-   * Gets a mouse button by its type.
-   *
-   * @param type
-   *             The type of the mouse button to retrieve.
-   * @return The mouse button of the specified type, or null if not found.
-   */
-  MouseButton getButton(MouseButton.Type type);
+    /**
+     * Gets a mouse button by its type.
+     *
+     * @param type The type of the mouse button to retrieve.
+     * @return The mouse button of the specified type, or null if not found.
+     */
+    MouseButton getButton(MouseButton.Type type);
 
-  /**
-   * Presses a button for a specified duration.
-   * 
-   * @param durationMillis
-   *                       The duration in milliseconds the button is to be
-   *                       pressed.
-   * @param type
-   *                       The type of the button to press.
-   */
-  void pressButton(int durationMillis, MouseButton.Type... type);
+    /**
+     * Presses a button for a specified duration.
+     *
+     * @param durationMillis The duration in milliseconds the button is to be
+     *                       pressed.
+     * @param type           The type of the button to press.
+     */
+    void pressButton(int durationMillis, MouseButton.Type... type);
 
-  /**
-   * Presses a button indefinitely.
-   * 
-   * @param type
-   *             The type of the button to press.
-   */
-  default void pressButton(MouseButton.Type... type) {
-    pressButton(Integer.MAX_VALUE, type);
-  }
+    /**
+     * Presses a button indefinitely.
+     *
+     * @param type The type of the button to press.
+     */
+    default void pressButton(MouseButton.Type... type) {
+        pressButton(Integer.MAX_VALUE, type);
+    }
 
-  /**
-   * Unpresses a button.
-   * 
-   * @param type
-   *                       The type of the button to unpress.
-   * @param durationMillis
-   *                       The duration in milliseconds the button is to be
-   *                       unpressed.
-   */
-  void unpressButton(int durationMillis, MouseButton.Type... type);
+    /**
+     * Unpresses a button.
+     *
+     * @param type           The type of the button to unpress.
+     * @param durationMillis The duration in milliseconds the button is to be
+     *                       unpressed.
+     */
+    void unpressButton(int durationMillis, MouseButton.Type... type);
 
-  /**
-   * Unpresses a button indefinitely.
-   * 
-   * @param type
-   *             The type of the button to unpress.
-   */
-  default void unpressButton(MouseButton.Type... type) {
-    unpressButton(Integer.MAX_VALUE, type);
-  }
+    /**
+     * Unpresses a button indefinitely.
+     *
+     * @param type The type of the button to unpress.
+     */
+    default void unpressButton(MouseButton.Type... type) {
+        unpressButton(Integer.MAX_VALUE, type);
+    }
 
-  /**
-   * Advances to the next log event.
-   *
-   * @return True if there is a next log event, false otherwise.
-   */
-  boolean next();
+    /**
+     * Advances to the next log event.
+     *
+     * @return True if there is a next log event, false otherwise.
+     */
+    boolean next();
 
-  /**
-   * Gets the type of the current event button.
-   *
-   * @return The type of the current event button, or null if not found.
-   */
-  MouseButton.Type getEventButtonType();
+    /**
+     * Gets the type of the current event button.
+     *
+     * @return The type of the current event button, or null if not found.
+     */
+    MouseButton.Type getEventButtonType();
 
-  /**
-   * Gets the button code of the current event button.
-   *
-   * @return The button code of the current event button, or -1 if not
-   *         found.
-   */
-  int getEventButton();
+    /**
+     * Gets the button code of the current event button.
+     *
+     * @return The button code of the current event button, or -1 if not
+     * found.
+     */
+    int getEventButton();
 
-  /**
-   * Gets the delta wheel of the current event.
-   * 
-   * @return The delta wheel of the current event.
-   */
-  int getDWheel();
+    /**
+     * Gets the delta wheel of the current event.
+     *
+     * @return The delta wheel of the current event.
+     */
+    int getDWheel();
 
-  /**
-   * Sets the delta wheel of the current event.
-   * 
-   * @param dWheel
-   *               The delta wheel of the current event.
-   */
-  void setDWheel(int dWheel);
+    /**
+     * Sets the delta wheel of the current event.
+     *
+     * @param dWheel The delta wheel of the current event.
+     */
+    void setDWheel(int dWheel);
 
-  /**
-   * @return The x position of the mouse.
-   */
-  int getX();
+    /**
+     * @return The x position of the mouse.
+     */
+    int getX();
 
-  /**
-   * @return The y position of the mouse.
-   */
-  int getY();
+    /**
+     * @return The y position of the mouse.
+     */
+    int getY();
 
-  /**
-   * Sets the x position of the mouse.
-   * 
-   * @param x
-   *          The x position of the mouse.
-   */
-  void setX(int x);
+    /**
+     * Sets the x position of the mouse.
+     *
+     * @param x The x position of the mouse.
+     */
+    void setX(int x);
 
-  /**
-   * Sets the y position of the mouse.
-   * 
-   * @param y
-   *          The y position of the mouse.
-   */
-  void setY(int y);
+    /**
+     * Sets the y position of the mouse.
+     *
+     * @param y The y position of the mouse.
+     */
+    void setY(int y);
 
-  /**
-   * Updates the mouse position to change the yaw by a specified amount.
-   * 
-   * @param dYaw
-   */
-  void changeYaw(float dYaw);
+    /**
+     * Sets the position of the mouse.
+     *
+     * @param x The x position of the mouse.
+     * @param y The y position of the mouse.
+     */
+    void setCursorPosition(int x, int y);
 
-  /**
-   * Updates the mouse position to change the pitch by a specified amount.
-   * 
-   * @param dPitch
-   */
-  void changePitch(float dPitch);
+    /**
+     * Updates the mouse position to change the yaw by a specified amount.
+     *
+     * @param dYaw
+     */
+    void changeYaw(float dYaw);
 
-  /**
-   * @return The delta x position of the mouse.
-   */
-  int getDX();
+    /**
+     * Updates the mouse position to change the pitch by a specified amount.
+     *
+     * @param dPitch
+     */
+    void changePitch(float dPitch);
 
-  /**
-   * @return The delta y position of the mouse.
-   */
-  int getDY();
+    /**
+     * @return The delta x position of the mouse.
+     */
+    int getDX();
 
-  /**
-   * Sets the delta x position of the mouse.
-   * 
-   * @param dx
-   *           The delta x position of the mouse.
-   */
-  void setDX(int dx);
+    /**
+     * @return The delta y position of the mouse.
+     */
+    int getDY();
 
-  /**
-   * Sets the delta y position of the mouse.
-   * 
-   * @param dy
-   *           The delta y position of the mouse.
-   */
-  void setDY(int dy);
+    /**
+     * Sets the delta x position of the mouse.
+     *
+     * @param dx The delta x position of the mouse.
+     */
+    void setDX(int dx);
 
-  /**
-   * Stops all mouse actions.
-   */
-  void stopAll();
+    /**
+     * Sets the delta y position of the mouse.
+     *
+     * @param dy The delta y position of the mouse.
+     */
+    void setDY(int dy);
+
+    /**
+     * Stops all mouse actions.
+     */
+    void stopAll();
+
+    /**
+     * Sets if the mouse is grabbed.
+     *
+     * @param grabbed
+     */
+    void setGrabbed(boolean grabbed);
+
+    /**
+     * @return True if the mouse is grabbed, false otherwise.
+     */
+    boolean isGrabbed();
 }

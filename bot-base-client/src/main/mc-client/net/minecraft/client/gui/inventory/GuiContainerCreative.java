@@ -1,12 +1,7 @@
 package net.minecraft.client.gui.inventory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.base.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiButton;
@@ -15,7 +10,6 @@ import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.client.gui.achievement.GuiStats;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.renderer.RenderHelper;
-
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
@@ -35,8 +29,11 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class GuiContainerCreative extends InventoryEffectRenderer {
     private static final ResourceLocation field_147061_u = new ResourceLocation(
@@ -58,6 +55,33 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
         this.field_146291_p = true;
         this.field_147000_g = 136;
         this.field_146999_f = 195;
+    }
+
+    @Override
+    public int getScaleFactor() {
+        int scaleFactor = 1;
+        // This flag is usually used for checking if fancy graphics are enabled.
+        boolean fancyGraphics = mc.func_152349_b();
+        // Get the user-specified GUI scale; if it is 0, use a large number (effectively "no limit")
+        int guiScale = mc.gameSettings.guiScale;
+        if (guiScale == 0) {
+            guiScale = 1000;
+        }
+
+        // Increase the scale factor as long as it doesn't cause the scaled dimensions
+        // to drop below 320x240 and we haven't reached the user limit.
+        while (scaleFactor < guiScale
+                && mc.displayWidth / (scaleFactor + 1) >= 320
+                && mc.displayHeight / (scaleFactor + 1) >= 240) {
+            scaleFactor++;
+        }
+
+        // In some cases (e.g., fancy graphics enabled), adjust the scale factor so it is even.
+        if (fancyGraphics && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            scaleFactor--;
+        }
+
+        return scaleFactor;
     }
 
     /**
@@ -555,7 +579,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
         if (this.field_147064_C != null && field_147058_w == CreativeTabs.tabInventory.getTabIndex()
                 && this.isMouseOver(this.field_147064_C.xDisplayPosition, this.field_147064_C.yDisplayPosition, 16,
-                        16, p_73863_1_, p_73863_2_)) {
+                16, p_73863_1_, p_73863_2_)) {
             this.func_146279_a(I18n.format("inventory.binSlot", new Object[0]), p_73863_1_, p_73863_2_);
         }
 

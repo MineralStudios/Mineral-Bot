@@ -1,11 +1,12 @@
 package net.minecraft.client.gui;
 
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.base.lwjgl.opengl.GL12;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
-
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.IMerchant;
@@ -19,8 +20,6 @@ import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
 
 public class GuiMerchant extends GuiContainer {
     private static final Logger logger = LogManager.getLogger(GuiMerchant.class);
@@ -32,11 +31,38 @@ public class GuiMerchant extends GuiContainer {
     private String field_147040_A;
 
     public GuiMerchant(Minecraft mc, InventoryPlayer p_i46380_1_, IMerchant p_i46380_2_, World p_i46380_3_,
-            String p_i46380_4_) {
+                       String p_i46380_4_) {
         super(mc, new ContainerMerchant(p_i46380_1_, p_i46380_2_, p_i46380_3_));
         this.field_147037_w = p_i46380_2_;
         this.field_147040_A = p_i46380_4_ != null && p_i46380_4_.length() >= 1 ? p_i46380_4_
                 : I18n.format("entity.Villager.name", new Object[0]);
+    }
+
+    @Override
+    public int getScaleFactor() {
+        int scaleFactor = 1;
+        // This flag is usually used for checking if fancy graphics are enabled.
+        boolean fancyGraphics = mc.func_152349_b();
+        // Get the user-specified GUI scale; if it is 0, use a large number (effectively "no limit")
+        int guiScale = mc.gameSettings.guiScale;
+        if (guiScale == 0) {
+            guiScale = 1000;
+        }
+
+        // Increase the scale factor as long as it doesn't cause the scaled dimensions
+        // to drop below 320x240 and we haven't reached the user limit.
+        while (scaleFactor < guiScale
+                && mc.displayWidth / (scaleFactor + 1) >= 320
+                && mc.displayHeight / (scaleFactor + 1) >= 240) {
+            scaleFactor++;
+        }
+
+        // In some cases (e.g., fancy graphics enabled), adjust the scale factor so it is even.
+        if (fancyGraphics && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            scaleFactor--;
+        }
+
+        return scaleFactor;
     }
 
     /**

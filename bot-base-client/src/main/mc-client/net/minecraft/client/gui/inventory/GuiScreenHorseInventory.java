@@ -25,6 +25,33 @@ public class GuiScreenHorseInventory extends GuiContainer {
         this.field_146291_p = false;
     }
 
+    @Override
+    public int getScaleFactor() {
+        int scaleFactor = 1;
+        // This flag is usually used for checking if fancy graphics are enabled.
+        boolean fancyGraphics = mc.func_152349_b();
+        // Get the user-specified GUI scale; if it is 0, use a large number (effectively "no limit")
+        int guiScale = mc.gameSettings.guiScale;
+        if (guiScale == 0) {
+            guiScale = 1000;
+        }
+
+        // Increase the scale factor as long as it doesn't cause the scaled dimensions
+        // to drop below 320x240 and we haven't reached the user limit.
+        while (scaleFactor < guiScale
+                && mc.displayWidth / (scaleFactor + 1) >= 320
+                && mc.displayHeight / (scaleFactor + 1) >= 240) {
+            scaleFactor++;
+        }
+
+        // In some cases (e.g., fancy graphics enabled), adjust the scale factor so it is even.
+        if (fancyGraphics && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            scaleFactor--;
+        }
+
+        return scaleFactor;
+    }
+
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {
         if (this.fontRendererObj != null)
             this.fontRendererObj
