@@ -15,7 +15,7 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
     override fun shouldExecute(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
         // TODO: config how conservative to be with food
-        val shouldExecute = hasFood() && fakePlayer.hunger < 19
+        val shouldExecute = hasFood() && fakePlayer.hunger < 19 && fakePlayer.health > 16.0
         info(this, "Checking shouldExecute: $shouldExecute")
         return shouldExecute
     }
