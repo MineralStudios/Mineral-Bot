@@ -96,7 +96,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
                 it.item.id == Item.POTION && it.durability == 16421
             }) return false
 
-        return fakePlayer.health < 10
+        return fakePlayer.health < 12 && (fakePlayer.health < 5 || distanceAwayFromEnemies() > 3.8)
     }
 
     override fun isExecuting(): Boolean {
@@ -152,55 +152,40 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         pressKey(Key.Type.KEY_W)
         unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
 
-        // If we are in the process of “potting” (throwing) the potion…
-        if (pottingTicks > 0) {
-            // Always maintain our yaw while potting.
-            setMouseYaw(throwYaw)
-            // If we’re doing a wall splash, force the pitch straight down.
-            if (throwAtWall) {
-                setMousePitch(90f) // 90 means straight down.
-            }
-            pottingTicks--
-            if (fakePlayer.health >= 10)
-                pottingTicks = 0
-            // (Optionally, you could reset throwAtWall here when done.)
-            if (pottingTicks == 0) {
-                throwAtWall = false
-            }
-            return
-        }
-
         // When not potting, adjust aim based on movement and enemy positions.
         if (!inventoryOpen) {
+            if (pottingTicks > 0) {
+                if (throwAtWall) setMousePitch(90f)
+                pottingTicks--
+                if (fakePlayer.health >= 10f && (pottingTicks <= 10 || fakePlayer.health >= 16f)) pottingTicks = 0
+                if (pottingTicks == 0) throwAtWall = false
+                if (pottingTicks <= 10) return
+            }
+
             val r = sqrt(fakePlayer.motionX * fakePlayer.motionX + fakePlayer.motionZ * fakePlayer.motionZ)
             val yaw = angleAwayFromEnemies()
             val pitch = abs(atan2(fakePlayer.motionZ, r) * 180 / Math.PI).toFloat()
-            setMouseYaw(yaw)
+            setMouseYaw(if (pottingTicks > 0) throwYaw else yaw)
             setMousePitch(pitch)
         }
 
         val inventory = fakePlayer.inventory ?: return
-        val itemStack = inventory.heldItemStack
-
+        val itemStack: ItemStack? = inventory.heldItemStack
         if (itemStack == null || itemStack.item.id != Item.POTION || itemStack.durability != 16421 || inventoryOpen) {
             switchToPot()
         } else {
-            // Determine whether to throw the potion.
-            // Either the original distance/ground conditions are met,
-            // or the bot is at a wall (in which case we ignore distance checks).
             val distanceCondition = distanceAwayFromEnemies() >= distanceFromEnemy &&
                     distanceFromEnemy > 3.6 &&
-                    fakePlayer.isOnGround && onGround
-            if (isAtWall() || distanceCondition || fakePlayer.health <= 6) {
-                pottingTicks = 10
+                    fakePlayer.isOnGround &&
+                    onGround
+            if (isAtWall() || distanceCondition || fakePlayer.health <= 6f) {
+                pottingTicks = if (fakePlayer.health <= 4f) 20 else 10
                 throwYaw = fakePlayer.yaw
-                // Set the flag so that during the potting phase we aim straight down.
                 throwAtWall = isAtWall()
                 lastPotTick = clientInstance.currentTick
                 pressButton(10, MouseButton.Type.RIGHT_CLICK)
             }
         }
-
         distanceFromEnemy = distanceAwayFromEnemies()
         onGround = fakePlayer.isOnGround
     }

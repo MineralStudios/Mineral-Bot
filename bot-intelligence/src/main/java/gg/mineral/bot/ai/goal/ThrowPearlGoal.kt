@@ -99,7 +99,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
             ) fakePlayer.distance3DTo(it) else Double.MAX_VALUE
         } ?: return false
 
-        for (t in Type.entries) if (t.test(fakePlayer, entity)) return true
+        for (t in Type.entries) if (t.test(fakePlayer, entity)) return fakePlayer.health > 16.0
 
         return false
     }
