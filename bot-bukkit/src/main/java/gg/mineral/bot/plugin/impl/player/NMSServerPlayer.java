@@ -1,29 +1,19 @@
 package gg.mineral.bot.plugin.impl.player;
 
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-
-import org.bukkit.event.player.PlayerInitialSpawnEvent;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
-
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-
 import gg.mineral.bot.api.entity.living.player.ServerPlayer;
 import gg.mineral.bot.api.world.ServerWorld;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import lombok.val;
-import net.minecraft.server.v1_8_R3.Block;
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import net.minecraft.server.v1_8_R3.LocaleI18n;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-import net.minecraft.server.v1_8_R3.PlayerInteractManager;
-import net.minecraft.server.v1_8_R3.ScoreboardServer;
-import net.minecraft.server.v1_8_R3.World;
-import net.minecraft.server.v1_8_R3.WorldServer;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.event.player.PlayerInitialSpawnEvent;
+import org.eclipse.jdt.annotation.NonNull;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
+
+import java.util.UUID;
 
 public class NMSServerPlayer extends EntityPlayer implements ServerPlayer {
 
@@ -81,7 +71,7 @@ public class NMSServerPlayer extends EntityPlayer implements ServerPlayer {
     }
 
     @Override
-    public void spawnInWorld(ServerWorld<?> world) {
+    public void spawnInWorld(@NonNull ServerWorld<?> world) {
         this.world = getHandle(world.getHandle());
         this.dimension = ((WorldServer) this.world).dimension;
         this.spawnWorld = this.world.worldData.getName();
@@ -92,7 +82,7 @@ public class NMSServerPlayer extends EntityPlayer implements ServerPlayer {
     @Override
     public void onJoin() {
         MinecraftServer.getServer().getPlayerList().onPlayerJoin(this,
-                "\u00A7e" + LocaleI18n.a("multiplayer.player.joined", this.getName()));
+                "§e" + LocaleI18n.a("multiplayer.player.joined", this.getName()));
     }
 
     @Override
@@ -126,7 +116,7 @@ public class NMSServerPlayer extends EntityPlayer implements ServerPlayer {
     }
 
     @Override
-    public String getWorldTypeName() {
+    public @NonNull String getWorldTypeName() {
         return getWorld().getWorldData().getType().name();
     }
 
@@ -136,7 +126,7 @@ public class NMSServerPlayer extends EntityPlayer implements ServerPlayer {
     }
 
     @Override
-    public String getServerModName() {
+    public @NonNull String getServerModName() {
         return MinecraftServer.getServer().getServerModName();
     }
 
@@ -157,10 +147,10 @@ public class NMSServerPlayer extends EntityPlayer implements ServerPlayer {
     }
 
     @Override
-    public int[] getWorldSpawn() {
-        return new int[] { getWorld().getWorldData().c(),
+    public int @NonNull [] getWorldSpawn() {
+        return new int[]{getWorld().getWorldData().c(),
                 getWorld().getWorldData().d(),
-                getWorld().getWorldData().e() };
+                getWorld().getWorldData().e()};
     }
 
     @Override
@@ -188,7 +178,7 @@ public class NMSServerPlayer extends EntityPlayer implements ServerPlayer {
     public void initResourcePack() {
         val server = MinecraftServer.getServer();
         val resourcePack = server.getResourcePack();
-        if (resourcePack.length() > 0)
+        if (!resourcePack.isEmpty())
             setResourcePack(resourcePack,
                     server.getResourcePackHash());
     }

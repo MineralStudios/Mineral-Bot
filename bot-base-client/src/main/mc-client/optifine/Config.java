@@ -1,38 +1,5 @@
 package optifine;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.PixelFormat;
-import org.lwjgl.util.glu.GLU;
-
 import gg.mineral.bot.base.lwjgl.Sys;
 import gg.mineral.bot.base.lwjgl.opengl.Display;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
@@ -62,6 +29,23 @@ import net.minecraft.util.Util;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.util.glu.GLU;
+
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Config {
     public static final String OF_NAME = "OptiFine";
@@ -204,22 +188,22 @@ public class Config {
     private static int getOpenGlVersion() {
         return !GLContext.getCapabilities().OpenGL11 ? 10
                 : (!GLContext.getCapabilities().OpenGL12 ? 11
-                        : (!GLContext.getCapabilities().OpenGL13 ? 12
-                                : (!GLContext.getCapabilities().OpenGL14 ? 13
-                                        : (!GLContext.getCapabilities().OpenGL15 ? 14
-                                                : (!GLContext.getCapabilities().OpenGL20 ? 15
-                                                        : (!GLContext.getCapabilities().OpenGL21 ? 20
-                                                                : (!GLContext.getCapabilities().OpenGL30 ? 21
-                                                                        : (!GLContext.getCapabilities().OpenGL31 ? 30
-                                                                                : (!GLContext.getCapabilities().OpenGL32
-                                                                                        ? 31
-                                                                                        : (!GLContext
-                                                                                                .getCapabilities().OpenGL33
-                                                                                                        ? 32
-                                                                                                        : (!GLContext
-                                                                                                                .getCapabilities().OpenGL40
-                                                                                                                        ? 33
-                                                                                                                        : 40)))))))))));
+                : (!GLContext.getCapabilities().OpenGL13 ? 12
+                : (!GLContext.getCapabilities().OpenGL14 ? 13
+                : (!GLContext.getCapabilities().OpenGL15 ? 14
+                : (!GLContext.getCapabilities().OpenGL20 ? 15
+                : (!GLContext.getCapabilities().OpenGL21 ? 20
+                : (!GLContext.getCapabilities().OpenGL30 ? 21
+                : (!GLContext.getCapabilities().OpenGL31 ? 30
+                : (!GLContext.getCapabilities().OpenGL32
+                ? 31
+                : (!GLContext
+                .getCapabilities().OpenGL33
+                ? 32
+                : (!GLContext
+                .getCapabilities().OpenGL40
+                ? 33
+                : 40)))))))))));
     }
 
     public static void updateThreadPriorities() {
@@ -646,7 +630,7 @@ public class Config {
             list.add(rep.func_148530_e());
         }
 
-        IResourcePack[] rps1 = (IResourcePack[]) ((IResourcePack[]) list.toArray(new IResourcePack[list.size()]));
+        IResourcePack[] rps1 = (IResourcePack[]) list.toArray(new IResourcePack[list.size()]);
         return rps1;
     }
 
@@ -930,6 +914,7 @@ public class Config {
         return strs1;
     }
 
+    @org.jetbrains.annotations.Nullable
     public static DisplayMode getDesktopDisplayMode() {
         return desktopDisplayMode;
     }
@@ -963,7 +948,7 @@ public class Config {
             return var5;
         } catch (Exception var4) {
             var4.printStackTrace();
-            return new DisplayMode[] { desktopDisplayMode };
+            return new DisplayMode[]{desktopDisplayMode};
         }
     }
 
@@ -990,7 +975,7 @@ public class Config {
 
             if (dm.getWidth() == dim.width && dm.getHeight() == dim.height
                     && (desktopDisplayMode == null || dm.getBitsPerPixel() == desktopDisplayMode.getBitsPerPixel()
-                            && dm.getFrequency() == desktopDisplayMode.getFrequency()))
+                    && dm.getFrequency() == desktopDisplayMode.getFrequency()))
                 return dm;
 
         }
@@ -1179,15 +1164,15 @@ public class Config {
             Matcher m = p.matcher(relStr);
 
             if (!m.matches()) {
-                return new String[] { "", "", "" };
+                return new String[]{"", "", ""};
             } else {
                 String branch = normalize(m.group(1));
                 String revision = normalize(m.group(2));
                 String suffix = normalize(m.group(3));
-                return new String[] { branch, revision, suffix };
+                return new String[]{branch, revision, suffix};
             }
         } else {
-            return new String[] { "", "", "" };
+            return new String[]{"", "", ""};
         }
     }
 
@@ -1319,7 +1304,7 @@ public class Config {
                     File e = new File(minecraft.mcDataDir, "assets");
                     ByteBuffer bufIcon16 = readIconImage(new File(e, "/icons/icon_16x16.png"));
                     ByteBuffer bufIcon32 = readIconImage(new File(e, "/icons/icon_32x32.png"));
-                    ByteBuffer[] buf = new ByteBuffer[] { bufIcon16, bufIcon32 };
+                    ByteBuffer[] buf = new ByteBuffer[]{bufIcon16, bufIcon32};
                     Display.setIcon(buf);
                 } catch (IOException var6) {
                     warn(var6.getClass().getName() + ": " + var6.getMessage());
@@ -1497,7 +1482,7 @@ public class Config {
     }
 
     public static int getBitsJre() {
-        String[] propNames = new String[] { "sun.arch.data.model", "com.ibm.vm.bitmode", "os.arch" };
+        String[] propNames = new String[]{"sun.arch.data.model", "com.ibm.vm.bitmode", "os.arch"};
 
         for (int i = 0; i < propNames.length; ++i) {
             String propName = propNames[i];
@@ -1552,7 +1537,7 @@ public class Config {
     }
 
     public static int[] addIntToArray(int[] intArray, int intValue) {
-        return addIntsToArray(intArray, new int[] { intValue });
+        return addIntsToArray(intArray, new int[]{intValue});
     }
 
     public static int[] addIntsToArray(int[] intArray, int[] copyFrom) {

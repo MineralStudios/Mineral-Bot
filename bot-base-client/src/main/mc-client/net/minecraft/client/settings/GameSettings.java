@@ -1,24 +1,6 @@
 package net.minecraft.client.settings;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-
 import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.base.lwjgl.opengl.Display;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
@@ -35,28 +17,30 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.C15PacketClientSettings;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;
-import optifine.ClearWater;
-import optifine.Config;
-import optifine.CustomColorizer;
-import optifine.CustomSky;
-import optifine.IWrUpdater;
-import optifine.NaturalTextures;
-import optifine.RandomMobs;
-import optifine.Reflector;
-import optifine.TextureUtils;
-import optifine.WrUpdaterSmooth;
-import optifine.WrUpdaterThreaded;
-import optifine.WrUpdates;
+import optifine.*;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.*;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class GameSettings {
     private static final Logger logger = LogManager.getLogger(GameSettings.class);
     private static final Gson gson = new Gson();
     private static final ParameterizedType typeListString = new ParameterizedType() {
 
+        @NotNull
         public Type[] getActualTypeArguments() {
-            return new Type[] { String.class };
+            return new Type[]{String.class};
         }
 
+        @NotNull
         public Type getRawType() {
             return List.class;
         }
@@ -66,34 +50,40 @@ public class GameSettings {
         }
     };
 
-    /** GUI scale values */
-    private static final String[] GUISCALES = new String[] { "options.guiScale.auto", "options.guiScale.small",
-            "options.guiScale.normal", "options.guiScale.large" };
-    private static final String[] PARTICLES = new String[] { "options.particles.all", "options.particles.decreased",
-            "options.particles.minimal" };
-    private static final String[] AMBIENT_OCCLUSIONS = new String[] { "options.ao.off", "options.ao.min",
-            "options.ao.max" };
-    private static final String[] field_152391_aS = new String[] { "options.stream.compression.low",
-            "options.stream.compression.medium", "options.stream.compression.high" };
-    private static final String[] field_152392_aT = new String[] { "options.stream.chat.enabled.streaming",
-            "options.stream.chat.enabled.always", "options.stream.chat.enabled.never" };
-    private static final String[] field_152393_aU = new String[] { "options.stream.chat.userFilter.all",
-            "options.stream.chat.userFilter.subs", "options.stream.chat.userFilter.mods" };
-    private static final String[] field_152394_aV = new String[] { "options.stream.mic_toggle.mute",
-            "options.stream.mic_toggle.talk" };
+    /**
+     * GUI scale values
+     */
+    private static final String[] GUISCALES = new String[]{"options.guiScale.auto", "options.guiScale.small",
+            "options.guiScale.normal", "options.guiScale.large"};
+    private static final String[] PARTICLES = new String[]{"options.particles.all", "options.particles.decreased",
+            "options.particles.minimal"};
+    private static final String[] AMBIENT_OCCLUSIONS = new String[]{"options.ao.off", "options.ao.min",
+            "options.ao.max"};
+    private static final String[] field_152391_aS = new String[]{"options.stream.compression.low",
+            "options.stream.compression.medium", "options.stream.compression.high"};
+    private static final String[] field_152392_aT = new String[]{"options.stream.chat.enabled.streaming",
+            "options.stream.chat.enabled.always", "options.stream.chat.enabled.never"};
+    private static final String[] field_152393_aU = new String[]{"options.stream.chat.userFilter.all",
+            "options.stream.chat.userFilter.subs", "options.stream.chat.userFilter.mods"};
+    private static final String[] field_152394_aV = new String[]{"options.stream.mic_toggle.mute",
+            "options.stream.mic_toggle.talk"};
     public float mouseSensitivity = 0.5F;
     public boolean invertMouse;
     public int renderDistanceChunks = -1;
     public boolean viewBobbing = true;
     public boolean anaglyph;
 
-    /** Advanced OpenGL */
+    /**
+     * Advanced OpenGL
+     */
     public boolean advancedOpengl;
     public boolean fboEnable = true;
     public int limitFramerate = 120;
     public boolean fancyGraphics = true;
 
-    /** Smooth Lighting */
+    /**
+     * Smooth Lighting
+     */
     public int ambientOcclusion = 2;
     public int ofFogType = 1;
     public float ofFogStart = 0.8F;
@@ -174,7 +164,9 @@ public class GameSettings {
     public KeyBinding ofKeyBindZoom;
     private File optionsFileOF;
 
-    /** Clouds flag */
+    /**
+     * Clouds flag
+     */
     public boolean clouds = true;
     public List resourcePacks = new ArrayList();
     public EntityPlayer.EnumChatVisibility chatVisibility;
@@ -191,10 +183,14 @@ public class GameSettings {
      */
     public boolean advancedItemTooltips;
 
-    /** Whether to pause when the game loses focus, toggled by F3+P */
+    /**
+     * Whether to pause when the game loses focus, toggled by F3+P
+     */
     public boolean pauseOnLostFocus;
 
-    /** Whether to show your cape */
+    /**
+     * Whether to show your cape
+     */
     public boolean showCape;
     public boolean touchscreen;
     public int overrideWidth;
@@ -246,36 +242,54 @@ public class GameSettings {
     public boolean hideGUI;
     public int thirdPersonView;
 
-    /** true if debug info should be displayed instead of version */
+    /**
+     * true if debug info should be displayed instead of version
+     */
     public boolean showDebugInfo;
     public boolean showDebugProfilerChart;
 
-    /** The lastServer string. */
+    /**
+     * The lastServer string.
+     */
     public String lastServer;
 
-    /** No clipping for singleplayer */
+    /**
+     * No clipping for singleplayer
+     */
     public boolean noclip;
 
-    /** Smooth Camera Toggle */
+    /**
+     * Smooth Camera Toggle
+     */
     public boolean smoothCamera;
     public boolean debugCamEnable;
 
-    /** No clipping movement rate */
+    /**
+     * No clipping movement rate
+     */
     public float noclipRate;
 
-    /** Change rate for debug camera */
+    /**
+     * Change rate for debug camera
+     */
     public float debugCamRate;
     public float fovSetting;
     public float gammaSetting;
     public float saturation;
 
-    /** GUI scale */
+    /**
+     * GUI scale
+     */
     public int guiScale;
 
-    /** Determines amount of particles. 0 = All, 1 = Decreased, 2 = Minimal */
+    /**
+     * Determines amount of particles. 0 = All, 1 = Decreased, 2 = Minimal
+     */
     public int particleSetting;
 
-    /** Game settings language */
+    /**
+     * Game settings language
+     */
     public String language;
     public boolean forceUnicodeFont;
 
@@ -328,7 +342,7 @@ public class GameSettings {
                 "key.categories.misc");
         this.keyBindSmoothCamera = new KeyBinding(par1Minecraft, "key.smoothCamera", 0, "key.categories.misc");
         this.toggleFullscreen = new KeyBinding(par1Minecraft, "key.fullscreen", 87, "key.categories.misc");
-        this.keyBindsHotbar = new KeyBinding[] {
+        this.keyBindsHotbar = new KeyBinding[]{
                 new KeyBinding(par1Minecraft, "key.hotbar.1", 2, "key.categories.inventory"),
                 new KeyBinding(par1Minecraft, "key.hotbar.2", 3, "key.categories.inventory"),
                 new KeyBinding(par1Minecraft, "key.hotbar.3", 4, "key.categories.inventory"),
@@ -337,12 +351,12 @@ public class GameSettings {
                 new KeyBinding(par1Minecraft, "key.hotbar.6", 7, "key.categories.inventory"),
                 new KeyBinding(par1Minecraft, "key.hotbar.7", 8, "key.categories.inventory"),
                 new KeyBinding(par1Minecraft, "key.hotbar.8", 9, "key.categories.inventory"),
-                new KeyBinding(par1Minecraft, "key.hotbar.9", 10, "key.categories.inventory") };
-        this.keyBindings = (KeyBinding[]) ((KeyBinding[]) ArrayUtils.addAll(new KeyBinding[] { this.keyBindAttack,
-                this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight,
-                this.keyBindJump, this.keyBindSneak, this.keyBindDrop, this.keyBindInventory, this.keyBindChat,
-                this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot,
-                this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindSprint, this.toggleFullscreen },
+                new KeyBinding(par1Minecraft, "key.hotbar.9", 10, "key.categories.inventory")};
+        this.keyBindings = (KeyBinding[]) ((KeyBinding[]) ArrayUtils.addAll(new KeyBinding[]{this.keyBindAttack,
+                        this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight,
+                        this.keyBindJump, this.keyBindSneak, this.keyBindDrop, this.keyBindInventory, this.keyBindChat,
+                        this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot,
+                        this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindSprint, this.toggleFullscreen},
                 this.keyBindsHotbar));
         this.difficulty = EnumDifficulty.NORMAL;
         this.lastServer = "";
@@ -415,7 +429,7 @@ public class GameSettings {
         this.keyBindSmoothCamera = new KeyBinding(mc, "key.smoothCamera", 0, "key.categories.misc");
         this.toggleFullscreen = new KeyBinding(mc, "key.fullscreen", 87, "key.categories.misc");
 
-        this.keyBindsHotbar = new KeyBinding[] { new KeyBinding(mc, "key.hotbar.1", 2, "key.categories.inventory"),
+        this.keyBindsHotbar = new KeyBinding[]{new KeyBinding(mc, "key.hotbar.1", 2, "key.categories.inventory"),
                 new KeyBinding(mc, "key.hotbar.2", 3, "key.categories.inventory"),
                 new KeyBinding(mc, "key.hotbar.3", 4, "key.categories.inventory"),
                 new KeyBinding(mc, "key.hotbar.4", 5, "key.categories.inventory"),
@@ -423,12 +437,12 @@ public class GameSettings {
                 new KeyBinding(mc, "key.hotbar.6", 7, "key.categories.inventory"),
                 new KeyBinding(mc, "key.hotbar.7", 8, "key.categories.inventory"),
                 new KeyBinding(mc, "key.hotbar.8", 9, "key.categories.inventory"),
-                new KeyBinding(mc, "key.hotbar.9", 10, "key.categories.inventory") };
-        this.keyBindings = (KeyBinding[]) ((KeyBinding[]) ArrayUtils.addAll(new KeyBinding[] { this.keyBindAttack,
-                this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight,
-                this.keyBindJump, this.keyBindSneak, this.keyBindDrop, this.keyBindInventory, this.keyBindChat,
-                this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot,
-                this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindSprint, this.toggleFullscreen },
+                new KeyBinding(mc, "key.hotbar.9", 10, "key.categories.inventory")};
+        this.keyBindings = (KeyBinding[]) ((KeyBinding[]) ArrayUtils.addAll(new KeyBinding[]{this.keyBindAttack,
+                        this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight,
+                        this.keyBindJump, this.keyBindSneak, this.keyBindDrop, this.keyBindInventory, this.keyBindChat,
+                        this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot,
+                        this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindSprint, this.toggleFullscreen},
                 this.keyBindsHotbar));
         this.difficulty = EnumDifficulty.NORMAL;
         this.lastServer = "";
@@ -447,7 +461,7 @@ public class GameSettings {
      * Represents a key or mouse button as a string. Args: key
      */
     public static String getKeyDisplayString(Minecraft mc, int par0) {
-        return par0 < 0 ? I18n.format("key.mouseButton", new Object[] { Integer.valueOf(par0 + 101) })
+        return par0 < 0 ? I18n.format("key.mouseButton", new Object[]{Integer.valueOf(par0 + 101)})
                 : Key.Type.fromKeyCode(par0).name();
     }
 
@@ -457,7 +471,7 @@ public class GameSettings {
     public static boolean isKeyDown(Minecraft mc, KeyBinding par0KeyBinding) {
         return par0KeyBinding.getKeyCode() == 0 ? false
                 : (par0KeyBinding.getKeyCode() < 0 ? mc.getMouse().isButtonDown(par0KeyBinding.getKeyCode() + 100)
-                        : mc.getKeyboard().isKeyDown(par0KeyBinding.getKeyCode()));
+                : mc.getKeyboard().isKeyDown(par0KeyBinding.getKeyCode()));
     }
 
     public void setKeyCodeSave(KeyBinding p_151440_1_, int p_151440_2_) {
@@ -1122,33 +1136,33 @@ public class GameSettings {
     public float getOptionFloatValue(GameSettings.Options par1EnumOptions) {
         return par1EnumOptions == GameSettings.Options.CLOUD_HEIGHT ? this.ofCloudsHeight
                 : (par1EnumOptions == GameSettings.Options.AO_LEVEL ? this.ofAoLevel
-                        : (par1EnumOptions == GameSettings.Options.FRAMERATE_LIMIT
-                                ? ((float) this.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax()
-                                        && this.enableVsync ? 0.0F : (float) this.limitFramerate)
-                                : (par1EnumOptions == GameSettings.Options.FOV ? this.fovSetting
-                                        : (par1EnumOptions == GameSettings.Options.GAMMA ? this.gammaSetting
-                                                : (par1EnumOptions == GameSettings.Options.SATURATION ? this.saturation
-                                                        : (par1EnumOptions == GameSettings.Options.SENSITIVITY
-                                                                ? this.mouseSensitivity
-                                                                : (par1EnumOptions == GameSettings.Options.CHAT_OPACITY
-                                                                        ? this.chatOpacity
-                                                                        : (par1EnumOptions == GameSettings.Options.CHAT_HEIGHT_FOCUSED
-                                                                                ? this.chatHeightFocused
-                                                                                : (par1EnumOptions == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED
-                                                                                        ? this.chatHeightUnfocused
-                                                                                        : (par1EnumOptions == GameSettings.Options.CHAT_SCALE
-                                                                                                ? this.chatScale
-                                                                                                : (par1EnumOptions == GameSettings.Options.CHAT_WIDTH
-                                                                                                        ? this.chatWidth
-                                                                                                        : (par1EnumOptions == GameSettings.Options.FRAMERATE_LIMIT
-                                                                                                                ? (float) this.limitFramerate
-                                                                                                                : (par1EnumOptions == GameSettings.Options.ANISOTROPIC_FILTERING
-                                                                                                                        ? (float) this.anisotropicFiltering
-                                                                                                                        : (par1EnumOptions == GameSettings.Options.MIPMAP_LEVELS
-                                                                                                                                ? (float) this.mipmapLevels
-                                                                                                                                : (par1EnumOptions == GameSettings.Options.RENDER_DISTANCE
-                                                                                                                                        ? (float) this.renderDistanceChunks
-                                                                                                                                        : 0.0F)))))))))))))));
+                : (par1EnumOptions == GameSettings.Options.FRAMERATE_LIMIT
+                ? ((float) this.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax()
+                && this.enableVsync ? 0.0F : (float) this.limitFramerate)
+                : (par1EnumOptions == GameSettings.Options.FOV ? this.fovSetting
+                : (par1EnumOptions == GameSettings.Options.GAMMA ? this.gammaSetting
+                : (par1EnumOptions == GameSettings.Options.SATURATION ? this.saturation
+                : (par1EnumOptions == GameSettings.Options.SENSITIVITY
+                ? this.mouseSensitivity
+                : (par1EnumOptions == GameSettings.Options.CHAT_OPACITY
+                ? this.chatOpacity
+                : (par1EnumOptions == GameSettings.Options.CHAT_HEIGHT_FOCUSED
+                ? this.chatHeightFocused
+                : (par1EnumOptions == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED
+                ? this.chatHeightUnfocused
+                : (par1EnumOptions == GameSettings.Options.CHAT_SCALE
+                ? this.chatScale
+                : (par1EnumOptions == GameSettings.Options.CHAT_WIDTH
+                ? this.chatWidth
+                : (par1EnumOptions == GameSettings.Options.FRAMERATE_LIMIT
+                ? (float) this.limitFramerate
+                : (par1EnumOptions == GameSettings.Options.ANISOTROPIC_FILTERING
+                ? (float) this.anisotropicFiltering
+                : (par1EnumOptions == GameSettings.Options.MIPMAP_LEVELS
+                ? (float) this.mipmapLevels
+                : (par1EnumOptions == GameSettings.Options.RENDER_DISTANCE
+                ? (float) this.renderDistanceChunks
+                : 0.0F)))))))))))))));
     }
 
     public boolean getOptionOrdinalValue(GameSettings.Options par1EnumOptions) {
@@ -1436,7 +1450,7 @@ public class GameSettings {
         } else if (par1EnumOptions == GameSettings.Options.AUTOSAVE_TICKS) {
             return this.ofAutoSaveTicks <= 40 ? var2 + "Default (2s)"
                     : (this.ofAutoSaveTicks <= 400 ? var2 + "20s"
-                            : (this.ofAutoSaveTicks <= 4000 ? var2 + "3min" : var2 + "30min"));
+                    : (this.ofAutoSaveTicks <= 4000 ? var2 + "3min" : var2 + "30min"));
         } else if (par1EnumOptions == GameSettings.Options.BETTER_GRASS) {
             switch (this.ofBetterGrass) {
                 case 1:
@@ -1532,63 +1546,63 @@ public class GameSettings {
                 var32 = this.getOptionFloatValue(par1EnumOptions);
                 return var32 == 0.0F ? var2 + "VSync"
                         : (var32 == par1EnumOptions.valueMax
-                                ? var2 + I18n.format("options.framerateLimit.max", new Object[0])
-                                : var2 + (int) var32 + " fps");
+                        ? var2 + I18n.format("options.framerateLimit.max", new Object[0])
+                        : var2 + (int) var32 + " fps");
             } else if (par1EnumOptions.getEnumFloat()) {
                 var32 = this.getOptionFloatValue(par1EnumOptions);
                 float var4 = par1EnumOptions.normalizeValue(var32);
                 return par1EnumOptions == GameSettings.Options.SENSITIVITY
                         ? (var4 == 0.0F ? var2 + I18n.format("options.sensitivity.min", new Object[0])
-                                : (var4 == 1.0F ? var2 + I18n.format("options.sensitivity.max", new Object[0])
-                                        : var2 + (int) (var4 * 200.0F) + "%"))
+                        : (var4 == 1.0F ? var2 + I18n.format("options.sensitivity.max", new Object[0])
+                        : var2 + (int) (var4 * 200.0F) + "%"))
                         : (par1EnumOptions == GameSettings.Options.FOV
-                                ? (var32 == 70.0F ? var2 + I18n.format("options.fov.min", new Object[0])
-                                        : (var32 == 110.0F ? var2 + I18n.format("options.fov.max", new Object[0])
-                                                : var2 + (int) var32))
-                                : (par1EnumOptions == GameSettings.Options.FRAMERATE_LIMIT
-                                        ? (var32 == par1EnumOptions.valueMax
-                                                ? var2 + I18n.format("options.framerateLimit.max", new Object[0])
-                                                : var2 + (int) var32 + " fps")
-                                        : (par1EnumOptions == GameSettings.Options.GAMMA
-                                                ? (var4 == 0.0F ? var2 + I18n.format("options.gamma.min", new Object[0])
-                                                        : (var4 == 1.0F
-                                                                ? var2 + I18n.format("options.gamma.max", new Object[0])
-                                                                : var2 + "+" + (int) (var4 * 100.0F) + "%"))
-                                                : (par1EnumOptions == GameSettings.Options.SATURATION
-                                                        ? var2 + (int) (var4 * 400.0F) + "%"
-                                                        : (par1EnumOptions == GameSettings.Options.CHAT_OPACITY
-                                                                ? var2 + (int) (var4 * 90.0F + 10.0F) + "%"
-                                                                : (par1EnumOptions == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED
-                                                                        ? var2 + GuiNewChat.func_146243_b(var4) + "px"
-                                                                        : (par1EnumOptions == GameSettings.Options.CHAT_HEIGHT_FOCUSED
-                                                                                ? var2 + GuiNewChat.func_146243_b(var4)
-                                                                                        + "px"
-                                                                                : (par1EnumOptions == GameSettings.Options.CHAT_WIDTH
-                                                                                        ? var2 + GuiNewChat
-                                                                                                .func_146233_a(var4)
-                                                                                                + "px"
-                                                                                        : (par1EnumOptions == GameSettings.Options.RENDER_DISTANCE
-                                                                                                ? var2 + (int) var32
-                                                                                                        + " chunks"
-                                                                                                : (par1EnumOptions == GameSettings.Options.ANISOTROPIC_FILTERING
-                                                                                                        ? (var32 == 1.0F
-                                                                                                                ? var2 + I18n
-                                                                                                                        .format("options.off",
-                                                                                                                                new Object[0])
-                                                                                                                : var2 + (int) var32)
-                                                                                                        : (par1EnumOptions == GameSettings.Options.MIPMAP_LEVELS
-                                                                                                                ? (var32 == 0.0F
-                                                                                                                        ? var2 + I18n
-                                                                                                                                .format("options.off",
-                                                                                                                                        new Object[0])
-                                                                                                                        : var2 + (int) var32)
-                                                                                                                : (var4 == 0.0F
-                                                                                                                        ? var2 + I18n
-                                                                                                                                .format("options.off",
-                                                                                                                                        new Object[0])
-                                                                                                                        : var2 + (int) (var4
-                                                                                                                                * 100.0F)
-                                                                                                                                + "%"))))))))))));
+                        ? (var32 == 70.0F ? var2 + I18n.format("options.fov.min", new Object[0])
+                        : (var32 == 110.0F ? var2 + I18n.format("options.fov.max", new Object[0])
+                        : var2 + (int) var32))
+                        : (par1EnumOptions == GameSettings.Options.FRAMERATE_LIMIT
+                        ? (var32 == par1EnumOptions.valueMax
+                        ? var2 + I18n.format("options.framerateLimit.max", new Object[0])
+                        : var2 + (int) var32 + " fps")
+                        : (par1EnumOptions == GameSettings.Options.GAMMA
+                        ? (var4 == 0.0F ? var2 + I18n.format("options.gamma.min", new Object[0])
+                        : (var4 == 1.0F
+                        ? var2 + I18n.format("options.gamma.max", new Object[0])
+                        : var2 + "+" + (int) (var4 * 100.0F) + "%"))
+                        : (par1EnumOptions == GameSettings.Options.SATURATION
+                        ? var2 + (int) (var4 * 400.0F) + "%"
+                        : (par1EnumOptions == GameSettings.Options.CHAT_OPACITY
+                        ? var2 + (int) (var4 * 90.0F + 10.0F) + "%"
+                        : (par1EnumOptions == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED
+                        ? var2 + GuiNewChat.func_146243_b(var4) + "px"
+                        : (par1EnumOptions == GameSettings.Options.CHAT_HEIGHT_FOCUSED
+                        ? var2 + GuiNewChat.func_146243_b(var4)
+                        + "px"
+                        : (par1EnumOptions == GameSettings.Options.CHAT_WIDTH
+                        ? var2 + GuiNewChat
+                        .func_146233_a(var4)
+                        + "px"
+                        : (par1EnumOptions == GameSettings.Options.RENDER_DISTANCE
+                        ? var2 + (int) var32
+                        + " chunks"
+                        : (par1EnumOptions == GameSettings.Options.ANISOTROPIC_FILTERING
+                        ? (var32 == 1.0F
+                        ? var2 + I18n
+                        .format("options.off",
+                                new Object[0])
+                        : var2 + (int) var32)
+                        : (par1EnumOptions == GameSettings.Options.MIPMAP_LEVELS
+                        ? (var32 == 0.0F
+                        ? var2 + I18n
+                        .format("options.off",
+                                new Object[0])
+                        : var2 + (int) var32)
+                        : (var4 == 0.0F
+                        ? var2 + I18n
+                        .format("options.off",
+                                new Object[0])
+                        : var2 + (int) (var4
+                        * 100.0F)
+                        + "%"))))))))))));
             } else if (par1EnumOptions.getEnumBoolean()) {
                 boolean var31 = this.getOptionOrdinalValue(par1EnumOptions);
                 return var31 ? var2 + I18n.format("options.on", new Object[0])
@@ -2607,545 +2621,544 @@ public class GameSettings {
     public static enum Options {
         INVERT_MOUSE("INVERT_MOUSE", 0, "INVERT_MOUSE", 0, "options.invertMouse", false, true), SENSITIVITY(
                 "SENSITIVITY", 1, "SENSITIVITY", 1, "options.sensitivity", true, false), FOV("FOV", 2, "FOV", 2,
-                        "options.fov", true, false, 30.0F, 110.0F,
-                        1.0F), GAMMA("GAMMA", 3, "GAMMA", 3, "options.gamma", true, false), SATURATION("SATURATION", 4,
-                                "SATURATION", 4, "options.saturation", true, false), RENDER_DISTANCE("RENDER_DISTANCE",
-                                        5, "RENDER_DISTANCE", 5, "options.renderDistance", true, false, 2.0F, 16.0F,
-                                        1.0F), VIEW_BOBBING("VIEW_BOBBING", 6, "VIEW_BOBBING", 6, "options.viewBobbing",
-                                                false, true), ANAGLYPH("ANAGLYPH", 7, "ANAGLYPH", 7, "options.anaglyph",
-                                                        false, true), ADVANCED_OPENGL("ADVANCED_OPENGL", 8,
-                                                                "ADVANCED_OPENGL", 8, "options.advancedOpengl", false,
-                                                                true), FRAMERATE_LIMIT("FRAMERATE_LIMIT", 9,
-                                                                        "FRAMERATE_LIMIT", 9, "options.framerateLimit",
-                                                                        true, false, 0.0F, 260.0F,
-                                                                        5.0F), FBO_ENABLE("FBO_ENABLE", 10,
-                                                                                "FBO_ENABLE", 10, "options.fboEnable",
-                                                                                false, true), DIFFICULTY("DIFFICULTY",
-                                                                                        11, "DIFFICULTY", 11,
-                                                                                        "options.difficulty", false,
-                                                                                        false), GRAPHICS("GRAPHICS", 12,
-                                                                                                "GRAPHICS", 12,
-                                                                                                "options.graphics",
-                                                                                                false,
-                                                                                                false), AMBIENT_OCCLUSION(
-                                                                                                        "AMBIENT_OCCLUSION",
-                                                                                                        13,
-                                                                                                        "AMBIENT_OCCLUSION",
-                                                                                                        13,
-                                                                                                        "options.ao",
-                                                                                                        false,
-                                                                                                        false), GUI_SCALE(
-                                                                                                                "GUI_SCALE",
-                                                                                                                14,
-                                                                                                                "GUI_SCALE",
-                                                                                                                14,
-                                                                                                                "options.guiScale",
-                                                                                                                false,
-                                                                                                                false), RENDER_CLOUDS(
-                                                                                                                        "RENDER_CLOUDS",
-                                                                                                                        15,
-                                                                                                                        "RENDER_CLOUDS",
-                                                                                                                        15,
-                                                                                                                        "options.renderClouds",
-                                                                                                                        false,
-                                                                                                                        true), PARTICLES(
-                                                                                                                                "PARTICLES",
-                                                                                                                                16,
-                                                                                                                                "PARTICLES",
-                                                                                                                                16,
-                                                                                                                                "options.particles",
-                                                                                                                                false,
-                                                                                                                                false), CHAT_VISIBILITY(
-                                                                                                                                        "CHAT_VISIBILITY",
-                                                                                                                                        17,
-                                                                                                                                        "CHAT_VISIBILITY",
-                                                                                                                                        17,
-                                                                                                                                        "options.chat.visibility",
-                                                                                                                                        false,
-                                                                                                                                        false), CHAT_COLOR(
-                                                                                                                                                "CHAT_COLOR",
-                                                                                                                                                18,
-                                                                                                                                                "CHAT_COLOR",
-                                                                                                                                                18,
-                                                                                                                                                "options.chat.color",
-                                                                                                                                                false,
-                                                                                                                                                true), CHAT_LINKS(
-                                                                                                                                                        "CHAT_LINKS",
-                                                                                                                                                        19,
-                                                                                                                                                        "CHAT_LINKS",
-                                                                                                                                                        19,
-                                                                                                                                                        "options.chat.links",
-                                                                                                                                                        false,
-                                                                                                                                                        true), CHAT_OPACITY(
-                                                                                                                                                                "CHAT_OPACITY",
-                                                                                                                                                                20,
-                                                                                                                                                                "CHAT_OPACITY",
-                                                                                                                                                                20,
-                                                                                                                                                                "options.chat.opacity",
-                                                                                                                                                                true,
-                                                                                                                                                                false), CHAT_LINKS_PROMPT(
-                                                                                                                                                                        "CHAT_LINKS_PROMPT",
-                                                                                                                                                                        21,
-                                                                                                                                                                        "CHAT_LINKS_PROMPT",
-                                                                                                                                                                        21,
-                                                                                                                                                                        "options.chat.links.prompt",
-                                                                                                                                                                        false,
-                                                                                                                                                                        true), USE_FULLSCREEN(
-                                                                                                                                                                                "USE_FULLSCREEN",
-                                                                                                                                                                                23,
-                                                                                                                                                                                "USE_FULLSCREEN",
-                                                                                                                                                                                23,
-                                                                                                                                                                                "options.fullscreen",
-                                                                                                                                                                                false,
-                                                                                                                                                                                true), ENABLE_VSYNC(
-                                                                                                                                                                                        "ENABLE_VSYNC",
-                                                                                                                                                                                        24,
-                                                                                                                                                                                        "ENABLE_VSYNC",
-                                                                                                                                                                                        24,
-                                                                                                                                                                                        "options.vsync",
-                                                                                                                                                                                        false,
-                                                                                                                                                                                        true), SHOW_CAPE(
-                                                                                                                                                                                                "SHOW_CAPE",
-                                                                                                                                                                                                25,
-                                                                                                                                                                                                "SHOW_CAPE",
-                                                                                                                                                                                                25,
-                                                                                                                                                                                                "options.showCape",
-                                                                                                                                                                                                false,
-                                                                                                                                                                                                true), TOUCHSCREEN(
-                                                                                                                                                                                                        "TOUCHSCREEN",
-                                                                                                                                                                                                        26,
-                                                                                                                                                                                                        "TOUCHSCREEN",
-                                                                                                                                                                                                        26,
-                                                                                                                                                                                                        "options.touchscreen",
-                                                                                                                                                                                                        false,
-                                                                                                                                                                                                        true), CHAT_SCALE(
-                                                                                                                                                                                                                "CHAT_SCALE",
-                                                                                                                                                                                                                27,
-                                                                                                                                                                                                                "CHAT_SCALE",
-                                                                                                                                                                                                                27,
-                                                                                                                                                                                                                "options.chat.scale",
-                                                                                                                                                                                                                true,
-                                                                                                                                                                                                                false), CHAT_WIDTH(
-                                                                                                                                                                                                                        "CHAT_WIDTH",
-                                                                                                                                                                                                                        28,
-                                                                                                                                                                                                                        "CHAT_WIDTH",
-                                                                                                                                                                                                                        28,
-                                                                                                                                                                                                                        "options.chat.width",
-                                                                                                                                                                                                                        true,
-                                                                                                                                                                                                                        false), CHAT_HEIGHT_FOCUSED(
-                                                                                                                                                                                                                                "CHAT_HEIGHT_FOCUSED",
-                                                                                                                                                                                                                                29,
-                                                                                                                                                                                                                                "CHAT_HEIGHT_FOCUSED",
-                                                                                                                                                                                                                                29,
-                                                                                                                                                                                                                                "options.chat.height.focused",
-                                                                                                                                                                                                                                true,
-                                                                                                                                                                                                                                false), CHAT_HEIGHT_UNFOCUSED(
-                                                                                                                                                                                                                                        "CHAT_HEIGHT_UNFOCUSED",
-                                                                                                                                                                                                                                        30,
-                                                                                                                                                                                                                                        "CHAT_HEIGHT_UNFOCUSED",
-                                                                                                                                                                                                                                        30,
-                                                                                                                                                                                                                                        "options.chat.height.unfocused",
-                                                                                                                                                                                                                                        true,
-                                                                                                                                                                                                                                        false), MIPMAP_LEVELS(
-                                                                                                                                                                                                                                                "MIPMAP_LEVELS",
-                                                                                                                                                                                                                                                31,
-                                                                                                                                                                                                                                                "MIPMAP_LEVELS",
-                                                                                                                                                                                                                                                31,
-                                                                                                                                                                                                                                                "options.mipmapLevels",
-                                                                                                                                                                                                                                                true,
-                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                0.0F,
-                                                                                                                                                                                                                                                4.0F,
-                                                                                                                                                                                                                                                1.0F), ANISOTROPIC_FILTERING(
-                                                                                                                                                                                                                                                        "ANISOTROPIC_FILTERING",
-                                                                                                                                                                                                                                                        32,
-                                                                                                                                                                                                                                                        "ANISOTROPIC_FILTERING",
-                                                                                                                                                                                                                                                        32,
-                                                                                                                                                                                                                                                        "options.anisotropicFiltering",
-                                                                                                                                                                                                                                                        true,
-                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                        1.0F,
-                                                                                                                                                                                                                                                        16.0F,
-                                                                                                                                                                                                                                                        0.0F,
-                                                                                                                                                                                                                                                        (Object) null,
-                                                                                                                                                                                                                                                        null) {
-
-                                                                                                                                                                                                                                                    protected float snapToStep(
-                                                                                                                                                                                                                                                            float p_148264_1_) {
-                                                                                                                                                                                                                                                        return (float) MathHelper
-                                                                                                                                                                                                                                                                .roundUpToPowerOfTwo(
-                                                                                                                                                                                                                                                                        (int) p_148264_1_);
-                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                },
+                "options.fov", true, false, 30.0F, 110.0F,
+                1.0F), GAMMA("GAMMA", 3, "GAMMA", 3, "options.gamma", true, false), SATURATION("SATURATION", 4,
+                "SATURATION", 4, "options.saturation", true, false), RENDER_DISTANCE("RENDER_DISTANCE",
+                5, "RENDER_DISTANCE", 5, "options.renderDistance", true, false, 2.0F, 16.0F,
+                1.0F), VIEW_BOBBING("VIEW_BOBBING", 6, "VIEW_BOBBING", 6, "options.viewBobbing",
+                false, true), ANAGLYPH("ANAGLYPH", 7, "ANAGLYPH", 7, "options.anaglyph",
+                false, true), ADVANCED_OPENGL("ADVANCED_OPENGL", 8,
+                "ADVANCED_OPENGL", 8, "options.advancedOpengl", false,
+                true), FRAMERATE_LIMIT("FRAMERATE_LIMIT", 9,
+                "FRAMERATE_LIMIT", 9, "options.framerateLimit",
+                true, false, 0.0F, 260.0F,
+                5.0F), FBO_ENABLE("FBO_ENABLE", 10,
+                "FBO_ENABLE", 10, "options.fboEnable",
+                false, true), DIFFICULTY("DIFFICULTY",
+                11, "DIFFICULTY", 11,
+                "options.difficulty", false,
+                false), GRAPHICS("GRAPHICS", 12,
+                "GRAPHICS", 12,
+                "options.graphics",
+                false,
+                false), AMBIENT_OCCLUSION(
+                "AMBIENT_OCCLUSION",
+                13,
+                "AMBIENT_OCCLUSION",
+                13,
+                "options.ao",
+                false,
+                false), GUI_SCALE(
+                "GUI_SCALE",
+                14,
+                "GUI_SCALE",
+                14,
+                "options.guiScale",
+                false,
+                false), RENDER_CLOUDS(
+                "RENDER_CLOUDS",
+                15,
+                "RENDER_CLOUDS",
+                15,
+                "options.renderClouds",
+                false,
+                true), PARTICLES(
+                "PARTICLES",
+                16,
+                "PARTICLES",
+                16,
+                "options.particles",
+                false,
+                false), CHAT_VISIBILITY(
+                "CHAT_VISIBILITY",
+                17,
+                "CHAT_VISIBILITY",
+                17,
+                "options.chat.visibility",
+                false,
+                false), CHAT_COLOR(
+                "CHAT_COLOR",
+                18,
+                "CHAT_COLOR",
+                18,
+                "options.chat.color",
+                false,
+                true), CHAT_LINKS(
+                "CHAT_LINKS",
+                19,
+                "CHAT_LINKS",
+                19,
+                "options.chat.links",
+                false,
+                true), CHAT_OPACITY(
+                "CHAT_OPACITY",
+                20,
+                "CHAT_OPACITY",
+                20,
+                "options.chat.opacity",
+                true,
+                false), CHAT_LINKS_PROMPT(
+                "CHAT_LINKS_PROMPT",
+                21,
+                "CHAT_LINKS_PROMPT",
+                21,
+                "options.chat.links.prompt",
+                false,
+                true), USE_FULLSCREEN(
+                "USE_FULLSCREEN",
+                23,
+                "USE_FULLSCREEN",
+                23,
+                "options.fullscreen",
+                false,
+                true), ENABLE_VSYNC(
+                "ENABLE_VSYNC",
+                24,
+                "ENABLE_VSYNC",
+                24,
+                "options.vsync",
+                false,
+                true), SHOW_CAPE(
+                "SHOW_CAPE",
+                25,
+                "SHOW_CAPE",
+                25,
+                "options.showCape",
+                false,
+                true), TOUCHSCREEN(
+                "TOUCHSCREEN",
+                26,
+                "TOUCHSCREEN",
+                26,
+                "options.touchscreen",
+                false,
+                true), CHAT_SCALE(
+                "CHAT_SCALE",
+                27,
+                "CHAT_SCALE",
+                27,
+                "options.chat.scale",
+                true,
+                false), CHAT_WIDTH(
+                "CHAT_WIDTH",
+                28,
+                "CHAT_WIDTH",
+                28,
+                "options.chat.width",
+                true,
+                false), CHAT_HEIGHT_FOCUSED(
+                "CHAT_HEIGHT_FOCUSED",
+                29,
+                "CHAT_HEIGHT_FOCUSED",
+                29,
+                "options.chat.height.focused",
+                true,
+                false), CHAT_HEIGHT_UNFOCUSED(
+                "CHAT_HEIGHT_UNFOCUSED",
+                30,
+                "CHAT_HEIGHT_UNFOCUSED",
+                30,
+                "options.chat.height.unfocused",
+                true,
+                false), MIPMAP_LEVELS(
+                "MIPMAP_LEVELS",
+                31,
+                "MIPMAP_LEVELS",
+                31,
+                "options.mipmapLevels",
+                true,
+                false,
+                0.0F,
+                4.0F,
+                1.0F), ANISOTROPIC_FILTERING(
+                "ANISOTROPIC_FILTERING",
+                32,
+                "ANISOTROPIC_FILTERING",
+                32,
+                "options.anisotropicFiltering",
+                true,
+                false,
+                1.0F,
+                16.0F,
+                0.0F,
+                (Object) null,
+                null) {
+            protected float snapToStep(
+                    float p_148264_1_) {
+                return (float) MathHelper
+                        .roundUpToPowerOfTwo(
+                                (int) p_148264_1_);
+            }
+        },
         FORCE_UNICODE_FONT("FORCE_UNICODE_FONT", 33, "FORCE_UNICODE_FONT", 33, "options.forceUnicodeFont", false, true),
 
         FOG_FANCY("FOG_FANCY", 44, "FOG", 999, "Fog", false, false), FOG_START("FOG_START", 45, "", 999, "Fog Start",
                 false, false), MIPMAP_TYPE("MIPMAP_TYPE", 46, "", 999, "Mipmap Type", false, false), LOAD_FAR(
-                        "LOAD_FAR", 47, "", 999, "Load Far", false, false), PRELOADED_CHUNKS("PRELOADED_CHUNKS", 48, "",
-                                999, "Preloaded Chunks", false, false), SMOOTH_FPS("SMOOTH_FPS", 49, "", 999,
-                                        "Smooth FPS", false,
-                                        false), CLOUDS("CLOUDS", 50, "", 999, "Clouds", false, false), CLOUD_HEIGHT(
-                                                "CLOUD_HEIGHT", 51, "", 999, "Cloud Height", true,
-                                                false), TREES("TREES", 52, "", 999, "Trees", false, false), GRASS(
-                                                        "GRASS", 53, "", 999, "Grass", false, false), RAIN("RAIN", 54,
-                                                                "", 999, "Rain & Snow", false, false), WATER("WATER",
-                                                                        55, "", 999, "Water", false,
-                                                                        false), ANIMATED_WATER("ANIMATED_WATER", 56, "",
-                                                                                999, "Water Animated", false,
-                                                                                false), ANIMATED_LAVA("ANIMATED_LAVA",
-                                                                                        57, "", 999, "Lava Animated",
-                                                                                        false, false), ANIMATED_FIRE(
-                                                                                                "ANIMATED_FIRE", 58, "",
-                                                                                                999, "Fire Animated",
-                                                                                                false,
-                                                                                                false), ANIMATED_PORTAL(
-                                                                                                        "ANIMATED_PORTAL",
-                                                                                                        59, "", 999,
-                                                                                                        "Portal Animated",
-                                                                                                        false,
-                                                                                                        false), AO_LEVEL(
-                                                                                                                "AO_LEVEL",
-                                                                                                                60, "",
-                                                                                                                999,
-                                                                                                                "Smooth Lighting Level",
-                                                                                                                true,
-                                                                                                                false), LAGOMETER(
-                                                                                                                        "LAGOMETER",
-                                                                                                                        61,
-                                                                                                                        "",
-                                                                                                                        999,
-                                                                                                                        "Lagometer",
-                                                                                                                        false,
-                                                                                                                        false), SHOW_FPS(
-                                                                                                                                "SHOW_FPS",
-                                                                                                                                62,
-                                                                                                                                "",
-                                                                                                                                999,
-                                                                                                                                "Show FPS",
-                                                                                                                                false,
-                                                                                                                                false), AUTOSAVE_TICKS(
-                                                                                                                                        "AUTOSAVE_TICKS",
-                                                                                                                                        63,
-                                                                                                                                        "",
-                                                                                                                                        999,
-                                                                                                                                        "Autosave",
-                                                                                                                                        false,
-                                                                                                                                        false), BETTER_GRASS(
-                                                                                                                                                "BETTER_GRASS",
-                                                                                                                                                64,
-                                                                                                                                                "",
-                                                                                                                                                999,
-                                                                                                                                                "Better Grass",
-                                                                                                                                                false,
-                                                                                                                                                false), ANIMATED_REDSTONE(
-                                                                                                                                                        "ANIMATED_REDSTONE",
-                                                                                                                                                        65,
-                                                                                                                                                        "",
-                                                                                                                                                        999,
-                                                                                                                                                        "Redstone Animated",
-                                                                                                                                                        false,
-                                                                                                                                                        false), ANIMATED_EXPLOSION(
-                                                                                                                                                                "ANIMATED_EXPLOSION",
-                                                                                                                                                                66,
-                                                                                                                                                                "",
-                                                                                                                                                                999,
-                                                                                                                                                                "Explosion Animated",
-                                                                                                                                                                false,
-                                                                                                                                                                false), ANIMATED_FLAME(
-                                                                                                                                                                        "ANIMATED_FLAME",
-                                                                                                                                                                        67,
-                                                                                                                                                                        "",
-                                                                                                                                                                        999,
-                                                                                                                                                                        "Flame Animated",
-                                                                                                                                                                        false,
-                                                                                                                                                                        false), ANIMATED_SMOKE(
-                                                                                                                                                                                "ANIMATED_SMOKE",
-                                                                                                                                                                                68,
-                                                                                                                                                                                "",
-                                                                                                                                                                                999,
-                                                                                                                                                                                "Smoke Animated",
-                                                                                                                                                                                false,
-                                                                                                                                                                                false), WEATHER(
-                                                                                                                                                                                        "WEATHER",
-                                                                                                                                                                                        69,
-                                                                                                                                                                                        "",
-                                                                                                                                                                                        999,
-                                                                                                                                                                                        "Weather",
-                                                                                                                                                                                        false,
-                                                                                                                                                                                        false), SKY(
-                                                                                                                                                                                                "SKY",
-                                                                                                                                                                                                70,
-                                                                                                                                                                                                "",
-                                                                                                                                                                                                999,
-                                                                                                                                                                                                "Sky",
-                                                                                                                                                                                                false,
-                                                                                                                                                                                                false), STARS(
-                                                                                                                                                                                                        "STARS",
-                                                                                                                                                                                                        71,
-                                                                                                                                                                                                        "",
-                                                                                                                                                                                                        999,
-                                                                                                                                                                                                        "Stars",
-                                                                                                                                                                                                        false,
-                                                                                                                                                                                                        false), SUN_MOON(
-                                                                                                                                                                                                                "SUN_MOON",
-                                                                                                                                                                                                                72,
-                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                "Sun & Moon",
-                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                false), VIGNETTE(
-                                                                                                                                                                                                                        "VIGNETTE",
-                                                                                                                                                                                                                        73,
-                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                        "Vignette",
-                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                        false), CHUNK_UPDATES(
-                                                                                                                                                                                                                                "CHUNK_UPDATES",
-                                                                                                                                                                                                                                74,
-                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                "Chunk Updates",
-                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                false), CHUNK_UPDATES_DYNAMIC(
-                                                                                                                                                                                                                                        "CHUNK_UPDATES_DYNAMIC",
-                                                                                                                                                                                                                                        75,
-                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                        "Dynamic Updates",
-                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                        false), TIME(
-                                                                                                                                                                                                                                                "TIME",
-                                                                                                                                                                                                                                                76,
-                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                "Time",
-                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                false), CLEAR_WATER(
-                                                                                                                                                                                                                                                        "CLEAR_WATER",
-                                                                                                                                                                                                                                                        77,
-                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                        "Clear Water",
-                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                        false), SMOOTH_WORLD(
-                                                                                                                                                                                                                                                                "SMOOTH_WORLD",
-                                                                                                                                                                                                                                                                78,
-                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                "Smooth World",
-                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                false), DEPTH_FOG(
-                                                                                                                                                                                                                                                                        "DEPTH_FOG",
-                                                                                                                                                                                                                                                                        79,
-                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                        "Depth Fog",
-                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                        false), VOID_PARTICLES(
-                                                                                                                                                                                                                                                                                "VOID_PARTICLES",
-                                                                                                                                                                                                                                                                                80,
-                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                "Void Particles",
-                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                false), WATER_PARTICLES(
-                                                                                                                                                                                                                                                                                        "WATER_PARTICLES",
-                                                                                                                                                                                                                                                                                        81,
-                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                        "Water Particles",
-                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                        false), RAIN_SPLASH(
-                                                                                                                                                                                                                                                                                                "RAIN_SPLASH",
-                                                                                                                                                                                                                                                                                                82,
-                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                "Rain Splash",
-                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                false), PORTAL_PARTICLES(
-                                                                                                                                                                                                                                                                                                        "PORTAL_PARTICLES",
-                                                                                                                                                                                                                                                                                                        83,
-                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                        "Portal Particles",
-                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                        false), POTION_PARTICLES(
-                                                                                                                                                                                                                                                                                                                "POTION_PARTICLES",
-                                                                                                                                                                                                                                                                                                                84,
-                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                "Potion Particles",
-                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                false), PROFILER(
-                                                                                                                                                                                                                                                                                                                        "PROFILER",
-                                                                                                                                                                                                                                                                                                                        85,
-                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                        "Debug Profiler",
-                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                        false), DRIPPING_WATER_LAVA(
-                                                                                                                                                                                                                                                                                                                                "DRIPPING_WATER_LAVA",
-                                                                                                                                                                                                                                                                                                                                86,
-                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                "Dripping Water/Lava",
-                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                false), BETTER_SNOW(
-                                                                                                                                                                                                                                                                                                                                        "BETTER_SNOW",
-                                                                                                                                                                                                                                                                                                                                        87,
-                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                        "Better Snow",
-                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                        false), FULLSCREEN_MODE(
-                                                                                                                                                                                                                                                                                                                                                "FULLSCREEN_MODE",
-                                                                                                                                                                                                                                                                                                                                                88,
-                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                "Fullscreen Mode",
-                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                false), ANIMATED_TERRAIN(
-                                                                                                                                                                                                                                                                                                                                                        "ANIMATED_TERRAIN",
-                                                                                                                                                                                                                                                                                                                                                        89,
-                                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                                        "Terrain Animated",
-                                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                                        false), ANIMATED_ITEMS(
-                                                                                                                                                                                                                                                                                                                                                                "ANIMATED_ITEMS",
-                                                                                                                                                                                                                                                                                                                                                                90,
-                                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                                "Items Animated",
-                                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                                false), SWAMP_COLORS(
-                                                                                                                                                                                                                                                                                                                                                                        "SWAMP_COLORS",
-                                                                                                                                                                                                                                                                                                                                                                        91,
-                                                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                                                        "Swamp Colors",
-                                                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                                                        false), RANDOM_MOBS(
-                                                                                                                                                                                                                                                                                                                                                                                "RANDOM_MOBS",
-                                                                                                                                                                                                                                                                                                                                                                                92,
-                                                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                                                "Random Mobs",
-                                                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                                                false), SMOOTH_BIOMES(
-                                                                                                                                                                                                                                                                                                                                                                                        "SMOOTH_BIOMES",
-                                                                                                                                                                                                                                                                                                                                                                                        93,
-                                                                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                                                                        "Smooth Biomes",
-                                                                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                                                                        false), CUSTOM_FONTS(
-                                                                                                                                                                                                                                                                                                                                                                                                "CUSTOM_FONTS",
-                                                                                                                                                                                                                                                                                                                                                                                                94,
-                                                                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                                                                "Custom Fonts",
-                                                                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                                                                false), CUSTOM_COLORS(
-                                                                                                                                                                                                                                                                                                                                                                                                        "CUSTOM_COLORS",
-                                                                                                                                                                                                                                                                                                                                                                                                        95,
-                                                                                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                                                                                        "Custom Colors",
-                                                                                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                                                                                        false), SHOW_CAPES(
-                                                                                                                                                                                                                                                                                                                                                                                                                "SHOW_CAPES",
-                                                                                                                                                                                                                                                                                                                                                                                                                96,
-                                                                                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                                                                                "Show Capes",
-                                                                                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                                                                                false), CONNECTED_TEXTURES(
-                                                                                                                                                                                                                                                                                                                                                                                                                        "CONNECTED_TEXTURES",
-                                                                                                                                                                                                                                                                                                                                                                                                                        97,
-                                                                                                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                                                                                                        "Connected Textures",
-                                                                                                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                                                                                                        false), AA_LEVEL(
-                                                                                                                                                                                                                                                                                                                                                                                                                                "AA_LEVEL",
-                                                                                                                                                                                                                                                                                                                                                                                                                                98,
-                                                                                                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                "Antialiasing",
-                                                                                                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                false), ANIMATED_TEXTURES(
-                                                                                                                                                                                                                                                                                                                                                                                                                                        "ANIMATED_TEXTURES",
-                                                                                                                                                                                                                                                                                                                                                                                                                                        99,
-                                                                                                                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                        "Textures Animated",
-                                                                                                                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                        false), NATURAL_TEXTURES(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                "NATURAL_TEXTURES",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                100,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                "Natural Textures",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                false), CHUNK_LOADING(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        "CHUNK_LOADING",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        101,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        "Chunk Loading",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        false), HELD_ITEM_TOOLTIPS(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                "HELD_ITEM_TOOLTIPS",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                102,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                "Held Item Tooltips",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                false), DROPPED_ITEMS(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        "DROPPED_ITEMS",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        103,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        "Dropped Items",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        false), LAZY_CHUNK_LOADING(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "LAZY_CHUNK_LOADING",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                104,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "Lazy Chunk Loading",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                false), CUSTOM_SKY(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        "CUSTOM_SKY",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        105,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        "Custom Sky",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        false), FAST_MATH(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "FAST_MATH",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                106,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "Fast Math",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                false), FAST_RENDER(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        "FAST_RENDER",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        107,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        "Fast Render",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        false), TRANSLUCENT_BLOCKS(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "TRANSLUCENT_BLOCKS",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                108,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                999,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "Translucent Blocks",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                false,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                false);
+                "LOAD_FAR", 47, "", 999, "Load Far", false, false), PRELOADED_CHUNKS("PRELOADED_CHUNKS", 48, "",
+                999, "Preloaded Chunks", false, false), SMOOTH_FPS("SMOOTH_FPS", 49, "", 999,
+                "Smooth FPS", false,
+                false), CLOUDS("CLOUDS", 50, "", 999, "Clouds", false, false), CLOUD_HEIGHT(
+                "CLOUD_HEIGHT", 51, "", 999, "Cloud Height", true,
+                false), TREES("TREES", 52, "", 999, "Trees", false, false), GRASS(
+                "GRASS", 53, "", 999, "Grass", false, false), RAIN("RAIN", 54,
+                "", 999, "Rain & Snow", false, false), WATER("WATER",
+                55, "", 999, "Water", false,
+                false), ANIMATED_WATER("ANIMATED_WATER", 56, "",
+                999, "Water Animated", false,
+                false), ANIMATED_LAVA("ANIMATED_LAVA",
+                57, "", 999, "Lava Animated",
+                false, false), ANIMATED_FIRE(
+                "ANIMATED_FIRE", 58, "",
+                999, "Fire Animated",
+                false,
+                false), ANIMATED_PORTAL(
+                "ANIMATED_PORTAL",
+                59, "", 999,
+                "Portal Animated",
+                false,
+                false), AO_LEVEL(
+                "AO_LEVEL",
+                60, "",
+                999,
+                "Smooth Lighting Level",
+                true,
+                false), LAGOMETER(
+                "LAGOMETER",
+                61,
+                "",
+                999,
+                "Lagometer",
+                false,
+                false), SHOW_FPS(
+                "SHOW_FPS",
+                62,
+                "",
+                999,
+                "Show FPS",
+                false,
+                false), AUTOSAVE_TICKS(
+                "AUTOSAVE_TICKS",
+                63,
+                "",
+                999,
+                "Autosave",
+                false,
+                false), BETTER_GRASS(
+                "BETTER_GRASS",
+                64,
+                "",
+                999,
+                "Better Grass",
+                false,
+                false), ANIMATED_REDSTONE(
+                "ANIMATED_REDSTONE",
+                65,
+                "",
+                999,
+                "Redstone Animated",
+                false,
+                false), ANIMATED_EXPLOSION(
+                "ANIMATED_EXPLOSION",
+                66,
+                "",
+                999,
+                "Explosion Animated",
+                false,
+                false), ANIMATED_FLAME(
+                "ANIMATED_FLAME",
+                67,
+                "",
+                999,
+                "Flame Animated",
+                false,
+                false), ANIMATED_SMOKE(
+                "ANIMATED_SMOKE",
+                68,
+                "",
+                999,
+                "Smoke Animated",
+                false,
+                false), WEATHER(
+                "WEATHER",
+                69,
+                "",
+                999,
+                "Weather",
+                false,
+                false), SKY(
+                "SKY",
+                70,
+                "",
+                999,
+                "Sky",
+                false,
+                false), STARS(
+                "STARS",
+                71,
+                "",
+                999,
+                "Stars",
+                false,
+                false), SUN_MOON(
+                "SUN_MOON",
+                72,
+                "",
+                999,
+                "Sun & Moon",
+                false,
+                false), VIGNETTE(
+                "VIGNETTE",
+                73,
+                "",
+                999,
+                "Vignette",
+                false,
+                false), CHUNK_UPDATES(
+                "CHUNK_UPDATES",
+                74,
+                "",
+                999,
+                "Chunk Updates",
+                false,
+                false), CHUNK_UPDATES_DYNAMIC(
+                "CHUNK_UPDATES_DYNAMIC",
+                75,
+                "",
+                999,
+                "Dynamic Updates",
+                false,
+                false), TIME(
+                "TIME",
+                76,
+                "",
+                999,
+                "Time",
+                false,
+                false), CLEAR_WATER(
+                "CLEAR_WATER",
+                77,
+                "",
+                999,
+                "Clear Water",
+                false,
+                false), SMOOTH_WORLD(
+                "SMOOTH_WORLD",
+                78,
+                "",
+                999,
+                "Smooth World",
+                false,
+                false), DEPTH_FOG(
+                "DEPTH_FOG",
+                79,
+                "",
+                999,
+                "Depth Fog",
+                false,
+                false), VOID_PARTICLES(
+                "VOID_PARTICLES",
+                80,
+                "",
+                999,
+                "Void Particles",
+                false,
+                false), WATER_PARTICLES(
+                "WATER_PARTICLES",
+                81,
+                "",
+                999,
+                "Water Particles",
+                false,
+                false), RAIN_SPLASH(
+                "RAIN_SPLASH",
+                82,
+                "",
+                999,
+                "Rain Splash",
+                false,
+                false), PORTAL_PARTICLES(
+                "PORTAL_PARTICLES",
+                83,
+                "",
+                999,
+                "Portal Particles",
+                false,
+                false), POTION_PARTICLES(
+                "POTION_PARTICLES",
+                84,
+                "",
+                999,
+                "Potion Particles",
+                false,
+                false), PROFILER(
+                "PROFILER",
+                85,
+                "",
+                999,
+                "Debug Profiler",
+                false,
+                false), DRIPPING_WATER_LAVA(
+                "DRIPPING_WATER_LAVA",
+                86,
+                "",
+                999,
+                "Dripping Water/Lava",
+                false,
+                false), BETTER_SNOW(
+                "BETTER_SNOW",
+                87,
+                "",
+                999,
+                "Better Snow",
+                false,
+                false), FULLSCREEN_MODE(
+                "FULLSCREEN_MODE",
+                88,
+                "",
+                999,
+                "Fullscreen Mode",
+                false,
+                false), ANIMATED_TERRAIN(
+                "ANIMATED_TERRAIN",
+                89,
+                "",
+                999,
+                "Terrain Animated",
+                false,
+                false), ANIMATED_ITEMS(
+                "ANIMATED_ITEMS",
+                90,
+                "",
+                999,
+                "Items Animated",
+                false,
+                false), SWAMP_COLORS(
+                "SWAMP_COLORS",
+                91,
+                "",
+                999,
+                "Swamp Colors",
+                false,
+                false), RANDOM_MOBS(
+                "RANDOM_MOBS",
+                92,
+                "",
+                999,
+                "Random Mobs",
+                false,
+                false), SMOOTH_BIOMES(
+                "SMOOTH_BIOMES",
+                93,
+                "",
+                999,
+                "Smooth Biomes",
+                false,
+                false), CUSTOM_FONTS(
+                "CUSTOM_FONTS",
+                94,
+                "",
+                999,
+                "Custom Fonts",
+                false,
+                false), CUSTOM_COLORS(
+                "CUSTOM_COLORS",
+                95,
+                "",
+                999,
+                "Custom Colors",
+                false,
+                false), SHOW_CAPES(
+                "SHOW_CAPES",
+                96,
+                "",
+                999,
+                "Show Capes",
+                false,
+                false), CONNECTED_TEXTURES(
+                "CONNECTED_TEXTURES",
+                97,
+                "",
+                999,
+                "Connected Textures",
+                false,
+                false), AA_LEVEL(
+                "AA_LEVEL",
+                98,
+                "",
+                999,
+                "Antialiasing",
+                false,
+                false), ANIMATED_TEXTURES(
+                "ANIMATED_TEXTURES",
+                99,
+                "",
+                999,
+                "Textures Animated",
+                false,
+                false), NATURAL_TEXTURES(
+                "NATURAL_TEXTURES",
+                100,
+                "",
+                999,
+                "Natural Textures",
+                false,
+                false), CHUNK_LOADING(
+                "CHUNK_LOADING",
+                101,
+                "",
+                999,
+                "Chunk Loading",
+                false,
+                false), HELD_ITEM_TOOLTIPS(
+                "HELD_ITEM_TOOLTIPS",
+                102,
+                "",
+                999,
+                "Held Item Tooltips",
+                false,
+                false), DROPPED_ITEMS(
+                "DROPPED_ITEMS",
+                103,
+                "",
+                999,
+                "Dropped Items",
+                false,
+                false), LAZY_CHUNK_LOADING(
+                "LAZY_CHUNK_LOADING",
+                104,
+                "",
+                999,
+                "Lazy Chunk Loading",
+                false,
+                false), CUSTOM_SKY(
+                "CUSTOM_SKY",
+                105,
+                "",
+                999,
+                "Custom Sky",
+                false,
+                false), FAST_MATH(
+                "FAST_MATH",
+                106,
+                "",
+                999,
+                "Fast Math",
+                false,
+                false), FAST_RENDER(
+                "FAST_RENDER",
+                107,
+                "",
+                999,
+                "Fast Render",
+                false,
+                false), TRANSLUCENT_BLOCKS(
+                "TRANSLUCENT_BLOCKS",
+                108,
+                "",
+                999,
+                "Translucent Blocks",
+                false,
+                false);
 
         private final boolean enumFloat;
         private final boolean enumBoolean;
@@ -3153,14 +3166,14 @@ public class GameSettings {
         private final float valueStep;
         private float valueMin;
         private float valueMax;
-        private static final GameSettings.Options[] $VALUES = new GameSettings.Options[] { INVERT_MOUSE, SENSITIVITY,
+        private static final GameSettings.Options[] $VALUES = new GameSettings.Options[]{INVERT_MOUSE, SENSITIVITY,
                 FOV, GAMMA, SATURATION, RENDER_DISTANCE, VIEW_BOBBING, ANAGLYPH, ADVANCED_OPENGL, FRAMERATE_LIMIT,
                 FBO_ENABLE, DIFFICULTY, GRAPHICS, AMBIENT_OCCLUSION, GUI_SCALE, RENDER_CLOUDS, PARTICLES,
                 CHAT_VISIBILITY, CHAT_COLOR, CHAT_LINKS, CHAT_OPACITY, CHAT_LINKS_PROMPT,
                 USE_FULLSCREEN, ENABLE_VSYNC, SHOW_CAPE, TOUCHSCREEN, CHAT_SCALE, CHAT_WIDTH, CHAT_HEIGHT_FOCUSED,
-                CHAT_HEIGHT_UNFOCUSED, MIPMAP_LEVELS, ANISOTROPIC_FILTERING, FORCE_UNICODE_FONT };
+                CHAT_HEIGHT_UNFOCUSED, MIPMAP_LEVELS, ANISOTROPIC_FILTERING, FORCE_UNICODE_FONT};
 
-        private static final GameSettings.Options[] $VALUES$ = new GameSettings.Options[] { INVERT_MOUSE, SENSITIVITY,
+        private static final GameSettings.Options[] $VALUES$ = new GameSettings.Options[]{INVERT_MOUSE, SENSITIVITY,
                 FOV, GAMMA, SATURATION, RENDER_DISTANCE, VIEW_BOBBING, ANAGLYPH, ADVANCED_OPENGL, FRAMERATE_LIMIT,
                 FBO_ENABLE, DIFFICULTY, GRAPHICS, AMBIENT_OCCLUSION, GUI_SCALE, RENDER_CLOUDS, PARTICLES,
                 CHAT_VISIBILITY, CHAT_COLOR, CHAT_LINKS, CHAT_OPACITY, CHAT_LINKS_PROMPT,
@@ -3174,7 +3187,7 @@ public class GameSettings {
                 POTION_PARTICLES, PROFILER, DRIPPING_WATER_LAVA, BETTER_SNOW, FULLSCREEN_MODE, ANIMATED_TERRAIN,
                 ANIMATED_ITEMS, SWAMP_COLORS, RANDOM_MOBS, SMOOTH_BIOMES, CUSTOM_FONTS, CUSTOM_COLORS, SHOW_CAPES,
                 CONNECTED_TEXTURES, AA_LEVEL, ANIMATED_TEXTURES, NATURAL_TEXTURES, CHUNK_LOADING, HELD_ITEM_TOOLTIPS,
-                DROPPED_ITEMS, LAZY_CHUNK_LOADING, CUSTOM_SKY, FAST_MATH, FAST_RENDER, TRANSLUCENT_BLOCKS };
+                DROPPED_ITEMS, LAZY_CHUNK_LOADING, CUSTOM_SKY, FAST_MATH, FAST_RENDER, TRANSLUCENT_BLOCKS};
 
         public static GameSettings.Options getEnumOptions(int par0) {
             GameSettings.Options[] var1 = values();
@@ -3192,12 +3205,12 @@ public class GameSettings {
         }
 
         private Options(String p_i46401_1_, int p_i46401_2_, String par1Str, int par2, String par3Str, boolean par4,
-                boolean par5) {
+                        boolean par5) {
             this(p_i46401_1_, p_i46401_2_, par1Str, par2, par3Str, par4, par5, 0.0F, 1.0F, 0.0F);
         }
 
         private Options(String p_i46402_1_, int p_i46402_2_, String p_i45004_1_, int p_i45004_2_, String p_i45004_3_,
-                boolean p_i45004_4_, boolean p_i45004_5_, float p_i45004_6_, float p_i45004_7_, float p_i45004_8_) {
+                        boolean p_i45004_4_, boolean p_i45004_5_, float p_i45004_6_, float p_i45004_7_, float p_i45004_8_) {
             this.enumString = p_i45004_3_;
             this.enumFloat = p_i45004_4_;
             this.enumBoolean = p_i45004_5_;
@@ -3254,8 +3267,8 @@ public class GameSettings {
         }
 
         private Options(String p_i46403_1_, int p_i46403_2_, String p_i45005_1_, int p_i45005_2_, String p_i45005_3_,
-                boolean p_i45005_4_, boolean p_i45005_5_, float p_i45005_6_, float p_i45005_7_, float p_i45005_8_,
-                Object p_i45005_9_) {
+                        boolean p_i45005_4_, boolean p_i45005_5_, float p_i45005_6_, float p_i45005_7_, float p_i45005_8_,
+                        Object p_i45005_9_) {
             this(p_i46403_1_, p_i46403_2_, p_i45005_1_, p_i45005_2_, p_i45005_3_, p_i45005_4_, p_i45005_5_, p_i45005_6_,
                     p_i45005_7_, p_i45005_8_);
         }

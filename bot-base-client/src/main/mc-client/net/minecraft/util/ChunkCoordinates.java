@@ -1,12 +1,18 @@
 package net.minecraft.util;
 
+import org.jetbrains.annotations.NotNull;
+
 public class ChunkCoordinates implements Comparable {
     public int posX;
 
-    /** the y coordinate */
+    /**
+     * the y coordinate
+     */
     public int posY;
 
-    /** the z coordinate */
+    /**
+     * the z coordinate
+     */
     public int posZ;
 
     public ChunkCoordinates() {
@@ -72,7 +78,7 @@ public class ChunkCoordinates implements Comparable {
         return "Pos{x=" + this.posX + ", y=" + this.posY + ", z=" + this.posZ + '}';
     }
 
-    public int compareTo(Object p_compareTo_1_) {
+    public int compareTo(@NotNull Object p_compareTo_1_) {
         return this.compareTo((ChunkCoordinates) p_compareTo_1_);
     }
 }

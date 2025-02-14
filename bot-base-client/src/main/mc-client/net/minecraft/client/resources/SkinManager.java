@@ -7,8 +7,19 @@ import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.InsecureTextureException;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.IImageBuffer;
+import net.minecraft.client.renderer.ImageBufferDownload;
+import net.minecraft.client.renderer.ThreadDownloadImageData;
+import net.minecraft.client.renderer.texture.ITextureObject;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.util.ResourceLocation;
+import org.eclipse.jdt.annotation.NonNull;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
@@ -17,17 +28,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IImageBuffer;
-import net.minecraft.client.renderer.ImageBufferDownload;
-import net.minecraft.client.renderer.ThreadDownloadImageData;
-import net.minecraft.client.renderer.texture.ITextureObject;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.util.ResourceLocation;
 
 public class SkinManager {
     public static final ResourceLocation field_152793_a = new ResourceLocation("textures/entity/steve.png");
@@ -41,7 +41,7 @@ public class SkinManager {
     private final Minecraft mc;
 
     public SkinManager(Minecraft mc, TextureManager p_i1044_1_, File p_i1044_2_,
-            @Nullable MinecraftSessionService authenticationService) {
+                       @Nullable MinecraftSessionService authenticationService) {
         this.field_152795_c = p_i1044_1_;
         this.field_152796_d = p_i1044_2_;
         this.authenticationService = authenticationService;
@@ -50,7 +50,7 @@ public class SkinManager {
                 .build(new CacheLoader<>() {
 
                     @Override
-                    public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> load(
+                    public @NonNull Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> load(
                             @Nonnull GameProfile gameProfile) {
                         MinecraftSessionService mcSessionService = mc.getAuthenticationService();
 
@@ -67,7 +67,7 @@ public class SkinManager {
     }
 
     public ResourceLocation func_152789_a(MinecraftProfileTexture p_152789_1_, final Type p_152789_2_,
-            final SkinManager.SkinAvailableCallback p_152789_3_) {
+                                          final SkinManager.SkinAvailableCallback p_152789_3_) {
         final ResourceLocation var4 = new ResourceLocation("skins/" + p_152789_1_.getHash());
         ITextureObject var5 = this.field_152795_c.getTexture(var4);
 
@@ -108,7 +108,7 @@ public class SkinManager {
     }
 
     public void func_152790_a(final GameProfile p_152790_1_, final SkinManager.SkinAvailableCallback p_152790_2_,
-            final boolean p_152790_3_) {
+                              final boolean p_152790_3_) {
 
         MinecraftSessionService authenticationService = this.authenticationService;
 

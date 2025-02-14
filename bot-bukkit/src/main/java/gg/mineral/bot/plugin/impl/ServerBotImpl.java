@@ -22,6 +22,7 @@ import net.minecraft.server.v1_8_R3.*;
 import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
+import org.eclipse.jdt.annotation.NonNull;
 
 import java.io.File;
 import java.util.UUID;
@@ -33,7 +34,7 @@ public class ServerBotImpl extends BotImpl implements Listener {
     }
 
     @Override
-    public ClientInstance spawn(BotConfiguration configuration, ServerLocation location) {
+    public @NonNull ClientInstance spawn(@NonNull BotConfiguration configuration, @NonNull ServerLocation location) {
         val startTime = System.nanoTime() / 1000000;
         val file = configuration.getRunDirectory();
 

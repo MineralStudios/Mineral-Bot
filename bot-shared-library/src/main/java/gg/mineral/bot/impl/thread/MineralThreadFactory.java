@@ -1,13 +1,14 @@
 package gg.mineral.bot.impl.thread;
 
-import java.util.concurrent.ThreadFactory;
-
 import lombok.val;
+import org.eclipse.jdt.annotation.NonNull;
+
+import java.util.concurrent.ThreadFactory;
 
 public class MineralThreadFactory implements ThreadFactory {
 
     @Override
-    public Thread newThread(Runnable r) {
+    public Thread newThread(@NonNull Runnable r) {
         val t = new Thread(r);
         t.setName("MineralThread-" + t.getId());
         t.setUncaughtExceptionHandler((thread, throwable) -> {

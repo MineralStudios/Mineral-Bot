@@ -2,6 +2,8 @@ package net.minecraft.util;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.Iterator;
@@ -167,6 +169,7 @@ public class ChatComponentTranslation extends ChatComponentStyle {
         return this;
     }
 
+    @NotNull
     public Iterator iterator() {
         this.ensureInitialized();
         return Iterators.concat(createDeepCopyIterator(this.children), createDeepCopyIterator(this.siblings));

@@ -4,17 +4,6 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
-import java.io.File;
-import java.net.SocketAddress;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.Map.Entry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,34 +12,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S01PacketJoinGame;
-import net.minecraft.network.play.server.S02PacketChat;
-import net.minecraft.network.play.server.S03PacketTimeUpdate;
-import net.minecraft.network.play.server.S05PacketSpawnPosition;
-import net.minecraft.network.play.server.S07PacketRespawn;
-import net.minecraft.network.play.server.S09PacketHeldItemChange;
-import net.minecraft.network.play.server.S1DPacketEntityEffect;
-import net.minecraft.network.play.server.S1FPacketSetExperience;
-import net.minecraft.network.play.server.S2BPacketChangeGameState;
-import net.minecraft.network.play.server.S38PacketPlayerListItem;
-import net.minecraft.network.play.server.S39PacketPlayerAbilities;
-import net.minecraft.network.play.server.S3EPacketTeams;
-import net.minecraft.network.play.server.S3FPacketCustomPayload;
+import net.minecraft.network.play.server.*;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.scoreboard.Score;
-import net.minecraft.scoreboard.ScoreObjective;
-import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ServerScoreboard;
-import net.minecraft.scoreboard.Team;
+import net.minecraft.scoreboard.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.StatList;
 import net.minecraft.stats.StatisticsFile;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;
@@ -58,6 +26,12 @@ import net.minecraft.world.demo.DemoWorldManager;
 import net.minecraft.world.storage.IPlayerFileData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
+import java.net.SocketAddress;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 public abstract class ServerConfigurationManager {
     public static final File field_152613_a = new File("banned-players.json");
@@ -67,22 +41,32 @@ public abstract class ServerConfigurationManager {
     private static final Logger logger = LogManager.getLogger(ServerConfigurationManager.class);
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd \'at\' HH:mm:ss z");
 
-    /** Reference to the MinecraftServer object. */
+    /**
+     * Reference to the MinecraftServer object.
+     */
     private final MinecraftServer mcServer;
 
-    /** A list of player entities that exist on this server. */
+    /**
+     * A list of player entities that exist on this server.
+     */
     public final List playerEntityList = new ArrayList();
     private final UserListBans bannedPlayers;
     private final BanList bannedIPs;
 
-    /** A set containing the OPs. */
+    /**
+     * A set containing the OPs.
+     */
     private final UserListOps ops;
 
-    /** The Set of all whitelisted players. */
+    /**
+     * The Set of all whitelisted players.
+     */
     private final UserListWhitelist whiteListedPlayers;
     private final Map field_148547_k;
 
-    /** Reference to the PlayerNBTManager object. */
+    /**
+     * Reference to the PlayerNBTManager object.
+     */
     private IPlayerFileData playerNBTManagerObj;
 
     /**
@@ -90,12 +74,16 @@ public abstract class ServerConfigurationManager {
      */
     private boolean whiteListEnforced;
 
-    /** The maximum number of players that can be connected at a time. */
+    /**
+     * The maximum number of players that can be connected at a time.
+     */
     protected int maxPlayers;
     private int viewDistance;
     private WorldSettings.GameType gameType;
 
-    /** True if all players are allowed to use commands (cheats). */
+    /**
+     * True if all players are allowed to use commands (cheats).
+     */
     private boolean commandsAllowedForAll;
 
     /**
@@ -154,10 +142,10 @@ public abstract class ServerConfigurationManager {
 
         if (!p_72355_2_.getCommandSenderName().equalsIgnoreCase(var6)) {
             var12 = new ChatComponentTranslation("multiplayer.player.joined.renamed",
-                    new Object[] { p_72355_2_.func_145748_c_(), var6 });
+                    new Object[]{p_72355_2_.func_145748_c_(), var6});
         } else {
             var12 = new ChatComponentTranslation("multiplayer.player.joined",
-                    new Object[] { p_72355_2_.func_145748_c_() });
+                    new Object[]{p_72355_2_.func_145748_c_()});
         }
 
         var12.getChatStyle().setColor(EnumChatFormatting.YELLOW);
@@ -476,7 +464,7 @@ public abstract class ServerConfigurationManager {
      * Transfers an entity from a world to another world.
      */
     public void transferEntityToWorld(Entity p_82448_1_, int p_82448_2_, WorldServer p_82448_3_,
-            WorldServer p_82448_4_) {
+                                      WorldServer p_82448_4_) {
         double var5 = p_82448_1_.posX;
         double var7 = p_82448_1_.posZ;
         double var9 = 8.0D;
@@ -575,22 +563,22 @@ public abstract class ServerConfigurationManager {
     }
 
     public String func_152609_b(boolean p_152609_1_) {
-        String var2 = "";
+        StringBuilder var2 = new StringBuilder();
         ArrayList var3 = Lists.newArrayList(this.playerEntityList);
 
         for (int var4 = 0; var4 < var3.size(); ++var4) {
             if (var4 > 0) {
-                var2 = var2 + ", ";
+                var2.append(", ");
             }
 
-            var2 = var2 + ((EntityPlayerMP) var3.get(var4)).getCommandSenderName();
+            var2.append(((EntityPlayerMP) var3.get(var4)).getCommandSenderName());
 
             if (p_152609_1_) {
-                var2 = var2 + " (" + ((EntityPlayerMP) var3.get(var4)).getUniqueID().toString() + ")";
+                var2.append(" (").append(((EntityPlayerMP) var3.get(var4)).getUniqueID().toString()).append(")");
             }
         }
 
-        return var2;
+        return var2.toString();
     }
 
     /**
@@ -640,7 +628,7 @@ public abstract class ServerConfigurationManager {
     public boolean func_152596_g(GameProfile p_152596_1_) {
         return this.ops.func_152692_d(p_152596_1_)
                 || this.mcServer.isSinglePlayer() && this.mcServer.worldServers[0].getWorldInfo().areCommandsAllowed()
-                        && this.mcServer.getServerOwner().equalsIgnoreCase(p_152596_1_.getName())
+                && this.mcServer.getServerOwner().equalsIgnoreCase(p_152596_1_.getName())
                 || this.commandsAllowedForAll;
     }
 
@@ -663,7 +651,7 @@ public abstract class ServerConfigurationManager {
      * Find all players in a specified range and narrowing down by other parameters
      */
     public List findPlayers(ChunkCoordinates p_82449_1_, int p_82449_2_, int p_82449_3_, int p_82449_4_, int p_82449_5_,
-            int p_82449_6_, int p_82449_7_, Map p_82449_8_, String p_82449_9_, String p_82449_10_, World p_82449_11_) {
+                            int p_82449_6_, int p_82449_7_, Map p_82449_8_, String p_82449_9_, String p_82449_10_, World p_82449_11_) {
         if (this.playerEntityList.isEmpty()) {
             return Collections.emptyList();
         } else {
@@ -705,7 +693,7 @@ public abstract class ServerConfigurationManager {
 
                     if (this.func_96457_a(var19, p_82449_8_)
                             && (p_82449_5_ == WorldSettings.GameType.NOT_SET.getID()
-                                    || p_82449_5_ == var19.theItemInWorldManager.getGameType().getID())
+                            || p_82449_5_ == var19.theItemInWorldManager.getGameType().getID())
                             && (p_82449_6_ <= 0 || var19.experienceLevel >= p_82449_6_)
                             && var19.experienceLevel <= p_82449_7_) {
                         ((List) var12).add(var19);
@@ -772,13 +760,13 @@ public abstract class ServerConfigurationManager {
     }
 
     public void func_148541_a(double p_148541_1_, double p_148541_3_, double p_148541_5_, double p_148541_7_,
-            int p_148541_9_, Packet p_148541_10_) {
+                              int p_148541_9_, Packet p_148541_10_) {
         this.func_148543_a((EntityPlayer) null, p_148541_1_, p_148541_3_, p_148541_5_, p_148541_7_, p_148541_9_,
                 p_148541_10_);
     }
 
     public void func_148543_a(EntityPlayer p_148543_1_, double p_148543_2_, double p_148543_4_, double p_148543_6_,
-            double p_148543_8_, int p_148543_10_, Packet p_148543_11_) {
+                              double p_148543_8_, int p_148543_10_, Packet p_148543_11_) {
         for (int var12 = 0; var12 < this.playerEntityList.size(); ++var12) {
             EntityPlayerMP var13 = (EntityPlayerMP) this.playerEntityList.get(var12);
 

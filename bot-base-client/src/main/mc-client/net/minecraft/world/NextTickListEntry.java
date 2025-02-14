@@ -1,26 +1,39 @@
 package net.minecraft.world;
 
 import net.minecraft.block.Block;
+import org.jetbrains.annotations.NotNull;
 
 public class NextTickListEntry implements Comparable {
-    /** The id number for the next tick entry */
+    /**
+     * The id number for the next tick entry
+     */
     private static long nextTickEntryID;
     private final Block field_151352_g;
 
-    /** X position this tick is occuring at */
+    /**
+     * X position this tick is occuring at
+     */
     public int xCoord;
 
-    /** Y position this tick is occuring at */
+    /**
+     * Y position this tick is occuring at
+     */
     public int yCoord;
 
-    /** Z position this tick is occuring at */
+    /**
+     * Z position this tick is occuring at
+     */
     public int zCoord;
 
-    /** Time this tick is scheduled to occur at */
+    /**
+     * Time this tick is scheduled to occur at
+     */
     public long scheduledTime;
     public int priority;
 
-    /** The id of the tick entry */
+    /**
+     * The id of the tick entry
+     */
     private long tickEntryID;
 
     public NextTickListEntry(int p_i45370_1_, int p_i45370_2_, int p_i45370_3_, Block p_i45370_4_) {
@@ -60,9 +73,9 @@ public class NextTickListEntry implements Comparable {
     public int compareTo(NextTickListEntry p_compareTo_1_) {
         return this.scheduledTime < p_compareTo_1_.scheduledTime ? -1
                 : (this.scheduledTime > p_compareTo_1_.scheduledTime ? 1
-                        : (this.priority != p_compareTo_1_.priority ? this.priority - p_compareTo_1_.priority
-                                : (this.tickEntryID < p_compareTo_1_.tickEntryID ? -1
-                                        : (this.tickEntryID > p_compareTo_1_.tickEntryID ? 1 : 0))));
+                : (this.priority != p_compareTo_1_.priority ? this.priority - p_compareTo_1_.priority
+                : (this.tickEntryID < p_compareTo_1_.tickEntryID ? -1
+                : (this.tickEntryID > p_compareTo_1_.tickEntryID ? 1 : 0))));
     }
 
     public String toString() {
@@ -74,7 +87,7 @@ public class NextTickListEntry implements Comparable {
         return this.field_151352_g;
     }
 
-    public int compareTo(Object p_compareTo_1_) {
+    public int compareTo(@NotNull Object p_compareTo_1_) {
         return this.compareTo((NextTickListEntry) p_compareTo_1_);
     }
 }

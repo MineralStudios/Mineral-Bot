@@ -1,7 +1,5 @@
 package net.minecraft.client.gui;
 
-import java.util.Random;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ChatAllowedCharacters;
@@ -10,6 +8,8 @@ import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.WorldInfo;
+
+import java.util.Random;
 
 public class GuiCreateWorld extends GuiScreen {
     private GuiScreen field_146332_f;
@@ -37,9 +37,9 @@ public class GuiCreateWorld extends GuiScreen {
     private String field_146330_J;
     private int field_146331_K;
     public String field_146334_a = "";
-    private static final String[] field_146327_L = new String[] { "CON", "COM", "PRN", "AUX", "CLOCK$", "NUL", "COM1",
+    private static final String[] field_146327_L = new String[]{"CON", "COM", "PRN", "AUX", "CLOCK$", "NUL", "COM1",
             "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5",
-            "LPT6", "LPT7", "LPT8", "LPT9" };
+            "LPT6", "LPT7", "LPT8", "LPT9"};
 
     public GuiCreateWorld(Minecraft mc, GuiScreen p_i46320_1_) {
         super(mc);
@@ -155,13 +155,15 @@ public class GuiCreateWorld extends GuiScreen {
         String[] var2 = field_146327_L;
         int var3 = var2.length;
 
+        StringBuilder p_146317_1_Builder = new StringBuilder(p_146317_1_);
         for (int var4 = 0; var4 < var3; ++var4) {
             String var5 = var2[var4];
 
-            if (p_146317_1_.equalsIgnoreCase(var5)) {
-                p_146317_1_ = "_" + p_146317_1_ + "_";
+            if (p_146317_1_Builder.toString().equalsIgnoreCase(var5)) {
+                p_146317_1_Builder = new StringBuilder("_" + p_146317_1_Builder + "_");
             }
         }
+        p_146317_1_ = p_146317_1_Builder.toString();
 
         while (p_146317_0_.getWorldInfo(p_146317_1_) != null) {
             p_146317_1_ = p_146317_1_ + "-";
@@ -387,7 +389,7 @@ public class GuiCreateWorld extends GuiScreen {
     }
 
     public void func_146318_a(WorldInfo p_146318_1_) {
-        this.field_146330_J = I18n.format("selectWorld.newWorld.copyOf", new Object[] { p_146318_1_.getWorldName() });
+        this.field_146330_J = I18n.format("selectWorld.newWorld.copyOf", new Object[]{p_146318_1_.getWorldName()});
         this.field_146329_I = p_146318_1_.getSeed() + "";
         this.field_146331_K = p_146318_1_.getTerrainType().getWorldTypeID();
         this.field_146334_a = p_146318_1_.getGeneratorOptions();

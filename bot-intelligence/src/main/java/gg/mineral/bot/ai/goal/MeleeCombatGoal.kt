@@ -13,7 +13,7 @@ import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.world.block.Block
 
 class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
-    private var target: ClientLivingEntity? = null
+    private var target: ClientPlayer? = null
 
     private val meanDelay = (1000 / clientInstance.configuration.averageCps).toLong()
     private val deviation =

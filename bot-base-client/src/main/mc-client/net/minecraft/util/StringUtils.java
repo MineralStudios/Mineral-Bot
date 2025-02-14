@@ -23,6 +23,6 @@ public class StringUtils {
      * Returns a value indicating whether the given string is null or empty.
      */
     public static boolean isNullOrEmpty(String p_151246_0_) {
-        return p_151246_0_ == null || "".equals(p_151246_0_);
+        return p_151246_0_ == null || p_151246_0_.isEmpty();
     }
 }

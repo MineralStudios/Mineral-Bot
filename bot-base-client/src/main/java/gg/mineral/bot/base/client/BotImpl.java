@@ -58,7 +58,7 @@ public abstract class BotImpl extends BotAPI {
             if (it.hasNext())
                 sb.append(newLine);
 
-            sb.append("• " + name + " x" + count);
+            sb.append("• ").append(name).append(" x").append(count);
         }
 
         println(ChatColor.WHITE + ChatColor.UNDERLINE + "Recent Spawn Info:" + ChatColor.RESET);

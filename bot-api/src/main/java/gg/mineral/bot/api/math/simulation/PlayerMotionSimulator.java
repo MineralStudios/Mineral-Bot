@@ -40,4 +40,9 @@ public interface PlayerMotionSimulator extends MotionSimulator {
      * @return the bounding box
      */
     BoundingBox getBoundingBox();
+
+    /**
+     * Resets the player's motion simulator.
+     */
+    void reset();
 }

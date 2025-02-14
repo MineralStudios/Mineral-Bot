@@ -1,5 +1,19 @@
 package net.minecraft.client.main;
 
+import com.google.common.collect.HashMultimap;
+import com.google.gson.Gson;
+import gg.mineral.bot.api.configuration.BotConfiguration;
+import gg.mineral.bot.base.client.instance.ClientInstance;
+import gg.mineral.bot.base.client.manager.InstanceManager;
+import gg.mineral.bot.base.client.tick.GameLoop;
+import joptsimple.ArgumentAcceptingOptionSpec;
+import joptsimple.NonOptionArgumentSpec;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import lombok.val;
+import net.minecraft.client.Minecraft;
+import org.eclipse.jdt.annotation.NonNull;
+
 import java.io.File;
 import java.lang.reflect.ParameterizedType;
 import java.net.Authenticator;
@@ -13,31 +27,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.google.common.collect.HashMultimap;
-import com.google.gson.Gson;
-
-import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.bot.base.client.instance.ClientInstance;
-import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.base.client.tick.GameLoop;
-import joptsimple.ArgumentAcceptingOptionSpec;
-import joptsimple.NonOptionArgumentSpec;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import lombok.val;
-import net.minecraft.client.Minecraft;
-
 public class Main {
     private static final java.lang.reflect.Type field_152370_a = new ParameterizedType() {
 
-        public java.lang.reflect.Type[] getActualTypeArguments() {
-            return new java.lang.reflect.Type[] { String.class, new ParameterizedType() {
+        public java.lang.reflect.Type @NonNull [] getActualTypeArguments() {
+            return new java.lang.reflect.Type[]{String.class, new ParameterizedType() {
 
-                public java.lang.reflect.Type[] getActualTypeArguments() {
-                    return new java.lang.reflect.Type[] { String.class };
+                public java.lang.reflect.Type @NonNull [] getActualTypeArguments() {
+                    return new java.lang.reflect.Type[]{String.class};
                 }
 
-                public java.lang.reflect.Type getRawType() {
+                public java.lang.reflect.@NonNull Type getRawType() {
                     return Collection.class;
                 }
 

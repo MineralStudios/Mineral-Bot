@@ -1,18 +1,5 @@
 package optifine;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockQuartz;
 import net.minecraft.block.BlockRotatedPillar;
@@ -27,6 +14,14 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.biome.BiomeGenBase;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class ConnectedTextures {
     private static ConnectedProperties[][] blockProperties = (ConnectedProperties[][]) null;
@@ -47,15 +42,15 @@ public class ConnectedTextures {
     private static final int Y_AXIS = 0;
     private static final int Z_AXIS = 1;
     private static final int X_AXIS = 2;
-    private static final String[] propSuffixes = new String[] { "", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
-            "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
-    private static final int[] ctmIndexes = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 0, 0, 0, 12, 13, 14,
+    private static final String[] propSuffixes = new String[]{"", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+            "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+    private static final int[] ctmIndexes = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 0, 0, 0, 12, 13, 14,
             15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 0, 0, 0, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 0, 0, 0, 0,
-            36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 0, 0, 0, 0, 0 };
+            36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 0, 0, 0, 0, 0};
 
     public static IIcon getConnectedTexture(Minecraft mc, IBlockAccess blockAccess, Block block, int x, int y, int z,
-            int side,
-            IIcon icon) {
+                                            int side,
+                                            IIcon icon) {
         if (blockAccess == null) {
             return icon;
         } else {
@@ -84,8 +79,8 @@ public class ConnectedTextures {
     }
 
     public static IIcon getConnectedTextureSingle(Minecraft mc, IBlockAccess blockAccess, Block block, int x, int y,
-            int z, int side,
-            IIcon icon, boolean checkBlocks) {
+                                                  int z, int side,
+                                                  IIcon icon, boolean checkBlocks) {
         if (!(icon instanceof TextureAtlasSprite)) {
             return icon;
         } else {
@@ -135,8 +130,8 @@ public class ConnectedTextures {
     }
 
     public static ConnectedProperties getConnectedProperties(Minecraft mc, IBlockAccess blockAccess, Block block, int x,
-            int y, int z,
-            int side, IIcon icon) {
+                                                             int y, int z,
+                                                             int side, IIcon icon) {
         if (blockAccess == null) {
             return null;
         } else if (!(icon instanceof TextureAtlasSprite)) {
@@ -191,7 +186,7 @@ public class ConnectedTextures {
     }
 
     private static IIcon getConnectedTexture(ConnectedProperties[] cps, IBlockAccess blockAccess, Block block, int x,
-            int y, int z, int side, IIcon icon, int metadata) {
+                                             int y, int z, int side, IIcon icon, int metadata) {
         for (int i = 0; i < cps.length; ++i) {
             ConnectedProperties cp = cps[i];
 
@@ -208,7 +203,7 @@ public class ConnectedTextures {
     }
 
     private static ConnectedProperties getConnectedProperties(ConnectedProperties[] cps, IBlockAccess blockAccess,
-            Block block, int x, int y, int z, int side, IIcon icon, int metadata) {
+                                                              Block block, int x, int y, int z, int side, IIcon icon, int metadata) {
         for (int i = 0; i < cps.length; ++i) {
             ConnectedProperties cp = cps[i];
 
@@ -225,7 +220,7 @@ public class ConnectedTextures {
     }
 
     private static IIcon getConnectedTexture(ConnectedProperties cp, IBlockAccess blockAccess, Block block, int x,
-            int y, int z, int side, IIcon icon, int metadata) {
+                                             int y, int z, int side, IIcon icon, int metadata) {
         if (y >= cp.minHeight && y <= cp.maxHeight) {
             int mds;
 
@@ -490,7 +485,7 @@ public class ConnectedTextures {
     }
 
     private static IIcon getConnectedTextureCtm(ConnectedProperties cp, IBlockAccess blockAccess, Block block, int x,
-            int y, int z, int side, IIcon icon, int metadata) {
+                                                int y, int z, int side, IIcon icon, int metadata) {
         boolean[] borders = new boolean[6];
 
         switch (side) {
@@ -677,7 +672,7 @@ public class ConnectedTextures {
     }
 
     private static boolean isNeighbour(ConnectedProperties cp, IBlockAccess iblockaccess, Block block, int x, int y,
-            int z, int side, IIcon icon, int metadata) {
+                                       int z, int side, IIcon icon, int metadata) {
         Block neighbourBlock = iblockaccess.getBlock(x, y, z);
 
         if (cp.connect == 2) {
@@ -703,7 +698,7 @@ public class ConnectedTextures {
     }
 
     private static IIcon getConnectedTextureHorizontal(ConnectedProperties cp, IBlockAccess blockAccess, Block block,
-            int x, int y, int z, int vertAxis, int side, IIcon icon, int metadata) {
+                                                       int x, int y, int z, int vertAxis, int side, IIcon icon, int metadata) {
         boolean left;
         boolean right;
         left = false;
@@ -816,7 +811,7 @@ public class ConnectedTextures {
     }
 
     private static IIcon getConnectedTextureVertical(ConnectedProperties cp, IBlockAccess blockAccess, Block block,
-            int x, int y, int z, int vertAxis, int side, IIcon icon, int metadata) {
+                                                     int x, int y, int z, int vertAxis, int side, IIcon icon, int metadata) {
         boolean bottom = false;
         boolean top = false;
 
@@ -867,7 +862,7 @@ public class ConnectedTextures {
     }
 
     private static IIcon getConnectedTextureHorizontalVertical(ConnectedProperties cp, IBlockAccess blockAccess,
-            Block block, int x, int y, int z, int vertAxis, int side, IIcon icon, int metadata) {
+                                                               Block block, int x, int y, int z, int vertAxis, int side, IIcon icon, int metadata) {
         IIcon[] tileIcons = cp.tileIcons;
         IIcon iconH = getConnectedTextureHorizontal(cp, blockAccess, block, x, y, z, vertAxis, side, icon, metadata);
 
@@ -881,7 +876,7 @@ public class ConnectedTextures {
     }
 
     private static IIcon getConnectedTextureVerticalHorizontal(ConnectedProperties cp, IBlockAccess blockAccess,
-            Block block, int x, int y, int z, int vertAxis, int side, IIcon icon, int metadata) {
+                                                               Block block, int x, int y, int z, int vertAxis, int side, IIcon icon, int metadata) {
         IIcon[] tileIcons = cp.tileIcons;
         IIcon iconV = getConnectedTextureVertical(cp, blockAccess, block, x, y, z, vertAxis, side, icon, metadata);
 
@@ -896,7 +891,7 @@ public class ConnectedTextures {
     }
 
     private static IIcon getConnectedTextureTop(ConnectedProperties cp, IBlockAccess blockAccess, Block block, int x,
-            int y, int z, int vertAxis, int side, IIcon icon, int metadata) {
+                                                int y, int z, int vertAxis, int side, IIcon icon, int metadata) {
         boolean top = false;
 
         switch (vertAxis) {
@@ -1117,7 +1112,7 @@ public class ConnectedTextures {
             File tpFile = ResourceUtils.getResourcePackFile(arp);
             return tpFile == null ? new String[0]
                     : (tpFile.isDirectory() ? collectFilesFolder(tpFile, "", prefix, suffix)
-                            : (tpFile.isFile() ? collectFilesZIP(tpFile, prefix, suffix) : new String[0]));
+                    : (tpFile.isFile() ? collectFilesZIP(tpFile, prefix, suffix) : new String[0]));
         }
     }
 
@@ -1155,8 +1150,8 @@ public class ConnectedTextures {
             list.add(defPath + "sandstone.properties");
         }
 
-        String[] colors = new String[] { "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
-                "silver", "cyan", "purple", "blue", "brown", "green", "red", "black" };
+        String[] colors = new String[]{"white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
+                "silver", "cyan", "purple", "blue", "brown", "green", "red", "black"};
 
         for (int paths = 0; paths < colors.length; ++paths) {
             String color = colors[paths];
@@ -1197,10 +1192,7 @@ public class ConnectedTextures {
                     dirPath = basePath + file.getName() + "/";
                     String[] names1 = collectFilesFolder(file, dirPath, prefix, suffix);
 
-                    for (int n = 0; n < names1.length; ++n) {
-                        String name = names1[n];
-                        list.add(name);
-                    }
+                    list.addAll(Arrays.asList(names1));
                 }
             }
 
@@ -1242,8 +1234,8 @@ public class ConnectedTextures {
     public static int getPaneTextureIndex(boolean linkP, boolean linkN, boolean linkYp, boolean linkYn) {
         return linkN && linkP ? (linkYp ? (linkYn ? 34 : 50) : (linkYn ? 18 : 2))
                 : (linkN && !linkP ? (linkYp ? (linkYn ? 35 : 51) : (linkYn ? 19 : 3))
-                        : (!linkN && linkP ? (linkYp ? (linkYn ? 33 : 49) : (linkYn ? 17 : 1))
-                                : (linkYp ? (linkYn ? 32 : 48) : (linkYn ? 16 : 0))));
+                : (!linkN && linkP ? (linkYp ? (linkYn ? 33 : 49) : (linkYn ? 17 : 1))
+                : (linkYp ? (linkYn ? 32 : 48) : (linkYn ? 16 : 0))));
     }
 
     public static int getReversePaneTextureIndex(int texNum) {

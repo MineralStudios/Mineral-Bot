@@ -1,6 +1,5 @@
 package net.minecraft.entity.item;
 
-import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.material.Material;
@@ -22,17 +21,23 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
+import java.util.List;
+
 public abstract class EntityMinecart extends Entity {
     private boolean isInReverse;
     private String entityName;
 
-    /** Minecart rotational logic matrix */
-    private static final int[][][] matrix = new int[][][] { { { 0, 0, -1 }, { 0, 0, 1 } },
-            { { -1, 0, 0 }, { 1, 0, 0 } }, { { -1, -1, 0 }, { 1, 0, 0 } }, { { -1, 0, 0 }, { 1, -1, 0 } },
-            { { 0, 0, -1 }, { 0, -1, 1 } }, { { 0, -1, -1 }, { 0, 0, 1 } }, { { 0, 0, 1 }, { 1, 0, 0 } },
-            { { 0, 0, 1 }, { -1, 0, 0 } }, { { 0, 0, -1 }, { -1, 0, 0 } }, { { 0, 0, -1 }, { 1, 0, 0 } } };
+    /**
+     * Minecart rotational logic matrix
+     */
+    private static final int[][][] matrix = new int[][][]{{{0, 0, -1}, {0, 0, 1}},
+            {{-1, 0, 0}, {1, 0, 0}}, {{-1, -1, 0}, {1, 0, 0}}, {{-1, 0, 0}, {1, -1, 0}},
+            {{0, 0, -1}, {0, -1, 1}}, {{0, -1, -1}, {0, 0, 1}}, {{0, 0, 1}, {1, 0, 0}},
+            {{0, 0, 1}, {-1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
 
-    /** appears to be the progress of the turn */
+    /**
+     * appears to be the progress of the turn
+     */
     private int turnProgress;
     private double minecartX;
     private double minecartY;
@@ -60,7 +65,7 @@ public abstract class EntityMinecart extends Entity {
      * a standard empty minecart
      */
     public static EntityMinecart createMinecart(World p_94090_0_, double p_94090_1_, double p_94090_3_,
-            double p_94090_5_, int p_94090_7_) {
+                                                double p_94090_5_, int p_94090_7_) {
         switch (p_94090_7_) {
             case 1:
                 return new EntityMinecartChest(p_94090_0_, p_94090_1_, p_94090_3_, p_94090_5_);
@@ -115,7 +120,7 @@ public abstract class EntityMinecart extends Entity {
     /**
      * returns the bounding box for this entity
      */
-    public AxisAlignedBB getBoundingBox() {
+    public AxisAlignedBB getCollidingBoundingBox() {
         return null;
     }
 
@@ -402,7 +407,7 @@ public abstract class EntityMinecart extends Entity {
     }
 
     protected void func_145821_a(int p_145821_1_, int p_145821_2_, int p_145821_3_, double p_145821_4_,
-            double p_145821_6_, Block p_145821_8_, int p_145821_9_) {
+                                 double p_145821_6_, Block p_145821_8_, int p_145821_9_) {
         this.fallDistance = 0.0F;
         Vec3 var10 = this.func_70489_a(this.posX, this.posY, this.posZ);
         this.posY = (double) p_145821_2_;
@@ -851,7 +856,7 @@ public abstract class EntityMinecart extends Entity {
      * posY, posZ, yaw, pitch
      */
     public void setPositionAndRotation2(double p_70056_1_, double p_70056_3_, double p_70056_5_, float p_70056_7_,
-            float p_70056_8_, int p_70056_9_) {
+                                        float p_70056_8_, int p_70056_9_) {
         this.minecartX = p_70056_1_;
         this.minecartY = p_70056_3_;
         this.minecartZ = p_70056_5_;

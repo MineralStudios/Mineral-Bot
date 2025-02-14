@@ -13,17 +13,17 @@ public class EnchantmentNameParts {
      */
     public String generateNewRandomName() {
         int var1 = this.rand.nextInt(2) + 3;
-        String var2 = "";
+        StringBuilder var2 = new StringBuilder();
 
         for (int var3 = 0; var3 < var1; ++var3) {
             if (var3 > 0) {
-                var2 = var2 + " ";
+                var2.append(" ");
             }
 
-            var2 = var2 + this.namePartsArray[this.rand.nextInt(this.namePartsArray.length)];
+            var2.append(this.namePartsArray[this.rand.nextInt(this.namePartsArray.length)]);
         }
 
-        return var2;
+        return var2.toString();
     }
 
     /**

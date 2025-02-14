@@ -1,24 +1,7 @@
 package net.minecraft.client.audio;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
@@ -28,6 +11,18 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.jdt.annotation.NonNull;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlayerListBox {
     private static final Logger logger = LogManager.getLogger(SoundHandler.class);
@@ -35,11 +30,11 @@ public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlay
             .registerTypeAdapter(SoundList.class, new SoundListSerializer()).create();
     private static final ParameterizedType field_147696_d = new ParameterizedType() {
 
-        public Type[] getActualTypeArguments() {
-            return new Type[] { String.class, SoundList.class };
+        public Type @NonNull [] getActualTypeArguments() {
+            return new Type[]{String.class, SoundList.class};
         }
 
-        public Type getRawType() {
+        public @NonNull Type getRawType() {
             return Map.class;
         }
 
@@ -99,7 +94,7 @@ public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlay
         if (this.soundRegistry.containsKey(p_147693_1_) && !p_147693_2_.func_148574_b()) {
             var3 = this.soundRegistry.getObject(p_147693_1_);
         } else {
-            logger.debug("Registered/replaced new sound event location {}", new Object[] { p_147693_1_ });
+            logger.debug("Registered/replaced new sound event location {}", new Object[]{p_147693_1_});
             var3 = new SoundEventAccessorComposite(p_147693_1_, 1.0D, 1.0D, p_147693_2_.func_148573_c());
             this.soundRegistry.add(var3);
         }
@@ -121,7 +116,7 @@ public class SoundHandler implements IResourceManagerReloadListener, IUpdatePlay
                         this.field_147695_g.getResource(var10);
                     } catch (FileNotFoundException var12) {
                         logger.warn("File {} does not exist, cannot add it to event {}",
-                                new Object[] { var10, p_147693_1_ });
+                                new Object[]{var10, p_147693_1_});
                         continue;
                     } catch (IOException var13) {
                         logger.warn("Could not load sound file " + var10 + ", cannot add it to event " + p_147693_1_,

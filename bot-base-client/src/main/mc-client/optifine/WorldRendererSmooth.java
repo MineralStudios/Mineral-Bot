@@ -1,15 +1,12 @@
 package optifine;
 
-import java.util.HashSet;
-import java.util.List;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
@@ -18,12 +15,14 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+
+import java.util.HashSet;
+import java.util.List;
 
 public class WorldRendererSmooth extends WorldRenderer {
     private WrUpdateState updateState = new WrUpdateState();
     public int activeSet = 0;
-    public int[] activeListIndex = new int[] { 0, 0 };
+    public int[] activeListIndex = new int[]{0, 0};
     public int[][][] glWorkLists = new int[2][2][16];
     public boolean[] tempSkipRenderPass = new boolean[2];
     public TesselatorVertexState tempVertexState;
@@ -124,9 +123,8 @@ public class WorldRendererSmooth extends WorldRenderer {
                         zMin - renderNextPass, xMax + renderNextPass, yMax + renderNextPass, zMax + renderNextPass,
                         renderNextPass);
                 renderblocks = new RenderBlocks(this.mc, chunkcache);
-                Reflector.callVoid(Reflector.ForgeHooksClient_setWorldRendererRB, new Object[] { renderblocks });
-                setOldEntityRenders = new HashSet();
-                setOldEntityRenders.addAll(this.tileEntityRenderers);
+                Reflector.callVoid(Reflector.ForgeHooksClient_setWorldRendererRB, new Object[]{renderblocks});
+                setOldEntityRenders = new HashSet(this.tileEntityRenderers);
                 this.tileEntityRenderers.clear();
             }
 
@@ -147,7 +145,7 @@ public class WorldRendererSmooth extends WorldRenderer {
                             chunkcache = this.updateState.chunkcache;
                             renderblocks = this.updateState.renderblocks;
                             Reflector.callVoid(Reflector.ForgeHooksClient_setWorldRendererRB,
-                                    new Object[] { renderblocks });
+                                    new Object[]{renderblocks});
                             setOldEntityRenders = this.updateState.setOldEntityRenders;
                             viewEntityPosX = this.updateState.viewEntityPosX;
                             viewEntityPosY = this.updateState.viewEntityPosY;
@@ -199,8 +197,8 @@ public class WorldRendererSmooth extends WorldRenderer {
                                     if (var29) {
                                         hasTileEntity = chunkcache != null
                                                 ? Reflector.callBoolean(block, Reflector.ForgeBlock_hasTileEntity,
-                                                        new Object[] {
-                                                                Integer.valueOf(chunkcache.getBlockMetadata(x, y, z)) })
+                                                new Object[]{
+                                                        Integer.valueOf(chunkcache.getBlockMetadata(x, y, z))})
                                                 : false;
                                     } else {
                                         hasTileEntity = block.hasTileEntity();
@@ -225,7 +223,7 @@ public class WorldRendererSmooth extends WorldRenderer {
 
                                     if (Reflector.ForgeBlock_canRenderInPass.exists()) {
                                         canRender = Reflector.callBoolean(block, Reflector.ForgeBlock_canRenderInPass,
-                                                new Object[] { Integer.valueOf(var31) });
+                                                new Object[]{Integer.valueOf(var31)});
                                     }
 
                                     if (canRender) {
@@ -261,15 +259,14 @@ public class WorldRendererSmooth extends WorldRenderer {
                     }
                 }
 
-                Reflector.callVoid(Reflector.ForgeHooksClient_setWorldRendererRB, new Object[] { (RenderBlocks) null });
+                Reflector.callVoid(Reflector.ForgeHooksClient_setWorldRendererRB, new Object[]{(RenderBlocks) null});
             }
 
-            HashSet var30 = new HashSet();
-            var30.addAll(this.tileEntityRenderers);
+            HashSet var30 = new HashSet(this.tileEntityRenderers);
             var30.removeAll(setOldEntityRenders);
             this.tileEntities.addAll(var30);
             if (setOldEntityRenders != null)
-                setOldEntityRenders.removeAll(this.tileEntityRenderers);
+                this.tileEntityRenderers.forEach(setOldEntityRenders::remove);
             this.tileEntities.removeAll(setOldEntityRenders);
             this.isChunkLit = Chunk.isLit;
             this.isInitialized = true;
@@ -292,7 +289,7 @@ public class WorldRendererSmooth extends WorldRenderer {
 
         if (Config.isFastRender()) {
             Reflector.callVoid(Reflector.ForgeHooksClient_onPreRenderWorld,
-                    new Object[] { this, Integer.valueOf(renderpass) });
+                    new Object[]{this, Integer.valueOf(renderpass)});
             this.tessellator.startDrawingQuads();
             this.tessellator.setTranslation((double) (-globalChunkOffsetX), 0.0D, (double) (-globalChunkOffsetZ));
         } else {
@@ -303,7 +300,7 @@ public class WorldRendererSmooth extends WorldRenderer {
             GL11.glScalef(var2, var2, var2);
             GL11.glTranslatef(8.0F, 8.0F, 8.0F);
             Reflector.callVoid(Reflector.ForgeHooksClient_onPreRenderWorld,
-                    new Object[] { this, Integer.valueOf(renderpass) });
+                    new Object[]{this, Integer.valueOf(renderpass)});
             this.tessellator.startDrawingQuads();
             this.tessellator.setTranslation((double) (-this.posX), (double) (-this.posY), (double) (-this.posZ));
         }
@@ -323,7 +320,7 @@ public class WorldRendererSmooth extends WorldRenderer {
 
         this.bytesDrawn += this.tessellator.draw();
         Reflector.callVoid(Reflector.ForgeHooksClient_onPostRenderWorld,
-                new Object[] { this, Integer.valueOf(renderpass) });
+                new Object[]{this, Integer.valueOf(renderpass)});
         this.tessellator.setRenderingChunk(false);
 
         if (!Config.isFastRender()) {

@@ -25,6 +25,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.Session;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.net.Proxy;
@@ -146,12 +147,12 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     }
 
     @Override
-    public boolean schedule(Runnable runnable, long delay) {
+    public boolean schedule(@NotNull Runnable runnable, long delay) {
         return this.scheduleTask(runnable, delay);
     }
 
     @Override
-    public <T extends Event> boolean callEvent(T event) {
+    public <T extends Event> boolean callEvent(@NotNull T event) {
         var cancelled = false;
 
         for (val goal : goals)
@@ -312,7 +313,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
                 }
 
                 @Override
-                public @Nullable BoundingBox getBoundingBox() {
+                public @Nullable BoundingBox getCollidingBoundingBox() {
                     return null;
                 }
 
@@ -389,6 +390,71 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
                 @Override
                 public Random getRandom() {
                     return new Random();
+                }
+
+                @Override
+                public BoundingBox getBoundingBox() {
+                    return new BoundingBox() {
+                        @Override
+                        public void setMinX(double minX) {
+
+                        }
+
+                        @Override
+                        public void setMinY(double minY) {
+
+                        }
+
+                        @Override
+                        public void setMinZ(double minZ) {
+
+                        }
+
+                        @Override
+                        public void setMaxX(double maxX) {
+
+                        }
+
+                        @Override
+                        public void setMaxY(double maxY) {
+
+                        }
+
+                        @Override
+                        public void setMaxZ(double maxZ) {
+
+                        }
+
+                        @Override
+                        public double getMinX() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getMinY() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getMinZ() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getMaxX() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getMaxY() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getMaxZ() {
+                            return 0;
+                        }
+                    };
                 }
 
                 @Override

@@ -1,14 +1,11 @@
 package net.minecraft.client.renderer.texture;
 
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import net.minecraft.client.renderer.StitcherException;
 import net.minecraft.util.MathHelper;
+import org.eclipse.jdt.annotation.NonNull;
+
+import java.util.*;
 
 public class Stitcher {
     private final int mipmapLevelStitcher;
@@ -20,7 +17,9 @@ public class Stitcher {
     private final int maxHeight;
     private final boolean forcePowerOf2;
 
-    /** Max size (width or height) of a single tile */
+    /**
+     * Max size (width or height) of a single tile
+     */
     private final int maxTileDimension;
 
     public Stitcher(int p_i45095_1_, int p_i45095_2_, boolean p_i45095_3_, int p_i45095_4_, int p_i45095_5_) {
@@ -62,11 +61,11 @@ public class Stitcher {
             if (!this.allocateSlot(var5)) {
                 String var6 = String.format(
                         "Unable to fit: %s, size: %dx%d, atlas: %dx%d, atlasMax: %dx%d - Maybe try a lower resolution resourcepack?",
-                        new Object[] { var5.getAtlasSprite().getIconName(),
+                        new Object[]{var5.getAtlasSprite().getIconName(),
                                 Integer.valueOf(var5.getAtlasSprite().getIconWidth()),
                                 Integer.valueOf(var5.getAtlasSprite().getIconHeight()),
                                 Integer.valueOf(this.currentWidth), Integer.valueOf(this.currentHeight),
-                                Integer.valueOf(this.maxWidth), Integer.valueOf(this.maxHeight) });
+                                Integer.valueOf(this.maxWidth), Integer.valueOf(this.maxHeight)});
                 throw new StitcherException(var5, var6);
             }
         }
@@ -267,7 +266,7 @@ public class Stitcher {
             return var2;
         }
 
-        public int compareTo(Object par1Obj) {
+        public int compareTo(@NonNull Object par1Obj) {
             return this.compareTo((Stitcher.Holder) par1Obj);
         }
     }

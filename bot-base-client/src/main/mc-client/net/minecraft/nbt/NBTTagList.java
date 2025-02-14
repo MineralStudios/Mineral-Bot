@@ -8,7 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 
 public class NBTTagList extends NBTBase {
-    /** The array list containing the tags encapsulated in this list. */
+    /**
+     * The array list containing the tags encapsulated in this list.
+     */
     private List tagList = new ArrayList();
 
     /**
@@ -60,12 +62,12 @@ public class NBTTagList extends NBTBase {
     }
 
     public String toString() {
-        String var1 = "[";
+        StringBuilder var1 = new StringBuilder("[");
         int var2 = 0;
 
         for (Iterator var3 = this.tagList.iterator(); var3.hasNext(); ++var2) {
             NBTBase var4 = (NBTBase) var3.next();
-            var1 = var1 + "" + var2 + ':' + var4 + ',';
+            var1.append(var2).append(':').append(var4).append(',');
         }
 
         return var1 + "]";

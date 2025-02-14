@@ -13,12 +13,12 @@ public class AxisAlignedBB implements gg.mineral.bot.api.math.BoundingBox {
      * maxX, maxY, maxZ
      */
     public static AxisAlignedBB getBoundingBox(double p_72330_0_, double p_72330_2_, double p_72330_4_,
-            double p_72330_6_, double p_72330_8_, double p_72330_10_) {
+                                               double p_72330_6_, double p_72330_8_, double p_72330_10_) {
         return new AxisAlignedBB(p_72330_0_, p_72330_2_, p_72330_4_, p_72330_6_, p_72330_8_, p_72330_10_);
     }
 
     protected AxisAlignedBB(double p_i2300_1_, double p_i2300_3_, double p_i2300_5_, double p_i2300_7_,
-            double p_i2300_9_, double p_i2300_11_) {
+                            double p_i2300_9_, double p_i2300_11_) {
         this.minX = p_i2300_1_;
         this.minY = p_i2300_3_;
         this.minZ = p_i2300_5_;
@@ -31,7 +31,7 @@ public class AxisAlignedBB implements gg.mineral.bot.api.math.BoundingBox {
      * Sets the bounds of the bounding box. Args: minX, minY, minZ, maxX, maxY, maxZ
      */
     public AxisAlignedBB setBounds(double p_72324_1_, double p_72324_3_, double p_72324_5_, double p_72324_7_,
-            double p_72324_9_, double p_72324_11_) {
+                                   double p_72324_9_, double p_72324_11_) {
         this.minX = p_72324_1_;
         this.minY = p_72324_3_;
         this.minZ = p_72324_5_;
@@ -233,8 +233,8 @@ public class AxisAlignedBB implements gg.mineral.bot.api.math.BoundingBox {
     public boolean intersectsWith(AxisAlignedBB p_72326_1_) {
         return p_72326_1_.maxX > this.minX && p_72326_1_.minX < this.maxX
                 ? (p_72326_1_.maxY > this.minY && p_72326_1_.minY < this.maxY
-                        ? p_72326_1_.maxZ > this.minZ && p_72326_1_.minZ < this.maxZ
-                        : false)
+                ? p_72326_1_.maxZ > this.minZ && p_72326_1_.minZ < this.maxZ
+                : false)
                 : false;
     }
 
@@ -257,8 +257,8 @@ public class AxisAlignedBB implements gg.mineral.bot.api.math.BoundingBox {
     public boolean isVecInside(Vec3 p_72318_1_) {
         return p_72318_1_.xCoord > this.minX && p_72318_1_.xCoord < this.maxX
                 ? (p_72318_1_.yCoord > this.minY && p_72318_1_.yCoord < this.maxY
-                        ? p_72318_1_.zCoord > this.minZ && p_72318_1_.zCoord < this.maxZ
-                        : false)
+                ? p_72318_1_.zCoord > this.minZ && p_72318_1_.zCoord < this.maxZ
+                : false)
                 : false;
     }
 
@@ -390,7 +390,7 @@ public class AxisAlignedBB implements gg.mineral.bot.api.math.BoundingBox {
     private boolean isVecInYZ(Vec3 p_72333_1_) {
         return p_72333_1_ == null ? false
                 : p_72333_1_.yCoord >= this.minY && p_72333_1_.yCoord <= this.maxY && p_72333_1_.zCoord >= this.minZ
-                        && p_72333_1_.zCoord <= this.maxZ;
+                && p_72333_1_.zCoord <= this.maxZ;
     }
 
     /**
@@ -400,7 +400,7 @@ public class AxisAlignedBB implements gg.mineral.bot.api.math.BoundingBox {
     private boolean isVecInXZ(Vec3 p_72315_1_) {
         return p_72315_1_ == null ? false
                 : p_72315_1_.xCoord >= this.minX && p_72315_1_.xCoord <= this.maxX && p_72315_1_.zCoord >= this.minZ
-                        && p_72315_1_.zCoord <= this.maxZ;
+                && p_72315_1_.zCoord <= this.maxZ;
     }
 
     /**
@@ -410,7 +410,7 @@ public class AxisAlignedBB implements gg.mineral.bot.api.math.BoundingBox {
     private boolean isVecInXY(Vec3 p_72319_1_) {
         return p_72319_1_ == null ? false
                 : p_72319_1_.xCoord >= this.minX && p_72319_1_.xCoord <= this.maxX && p_72319_1_.yCoord >= this.minY
-                        && p_72319_1_.yCoord <= this.maxY;
+                && p_72319_1_.yCoord <= this.maxY;
     }
 
     /**

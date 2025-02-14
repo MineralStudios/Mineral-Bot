@@ -4,27 +4,18 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.jdt.annotation.NonNull;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.*;
 
 public class UserList {
     protected static final Logger field_152693_a = LogManager.getLogger(UserList.class);
@@ -33,11 +24,11 @@ public class UserList {
     private final Map field_152696_d = Maps.newHashMap();
     private boolean field_152697_e = true;
     private static final ParameterizedType field_152698_f = new ParameterizedType() {
-        public Type[] getActualTypeArguments() {
-            return new Type[] { UserListEntry.class };
+        public Type @NonNull [] getActualTypeArguments() {
+            return new Type[]{UserListEntry.class};
         }
 
-        public Type getRawType() {
+        public @NonNull Type getRawType() {
             return List.class;
         }
 
@@ -145,14 +136,14 @@ public class UserList {
         }
 
         public JsonElement func_152751_a(UserListEntry p_152751_1_, Type p_152751_2_,
-                JsonSerializationContext p_152751_3_) {
+                                         JsonSerializationContext p_152751_3_) {
             JsonObject var4 = new JsonObject();
             p_152751_1_.func_152641_a(var4);
             return var4;
         }
 
         public UserListEntry func_152750_a(JsonElement p_152750_1_, Type p_152750_2_,
-                JsonDeserializationContext p_152750_3_) {
+                                           JsonDeserializationContext p_152750_3_) {
             if (p_152750_1_.isJsonObject()) {
                 JsonObject var4 = p_152750_1_.getAsJsonObject();
                 UserListEntry var5 = UserList.this.func_152682_a(var4);
@@ -163,12 +154,12 @@ public class UserList {
         }
 
         public JsonElement serialize(Object p_serialize_1_, Type p_serialize_2_,
-                JsonSerializationContext p_serialize_3_) {
+                                     JsonSerializationContext p_serialize_3_) {
             return this.func_152751_a((UserListEntry) p_serialize_1_, p_serialize_2_, p_serialize_3_);
         }
 
         public Object deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_,
-                JsonDeserializationContext p_deserialize_3_) {
+                                  JsonDeserializationContext p_deserialize_3_) {
             return this.func_152750_a(p_deserialize_1_, p_deserialize_2_, p_deserialize_3_);
         }
 

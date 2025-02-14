@@ -1,14 +1,11 @@
 package net.minecraft.client.renderer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,12 +18,16 @@ import net.minecraft.world.chunk.Chunk;
 import optifine.Config;
 import optifine.Reflector;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 public class WorldRenderer {
     protected TesselatorVertexState vertexState;
 
-    /** Reference to the World object. */
+    /**
+     * Reference to the World object.
+     */
     public World worldObj;
     protected int glRenderList;
     protected Tessellator tessellator;
@@ -35,62 +36,98 @@ public class WorldRenderer {
     public int posY;
     public int posZ;
 
-    /** Pos X minus */
+    /**
+     * Pos X minus
+     */
     public int posXMinus;
 
-    /** Pos Y minus */
+    /**
+     * Pos Y minus
+     */
     public int posYMinus;
 
-    /** Pos Z minus */
+    /**
+     * Pos Z minus
+     */
     public int posZMinus;
 
-    /** Pos X clipped */
+    /**
+     * Pos X clipped
+     */
     public int posXClip;
 
-    /** Pos Y clipped */
+    /**
+     * Pos Y clipped
+     */
     public int posYClip;
 
-    /** Pos Z clipped */
+    /**
+     * Pos Z clipped
+     */
     public int posZClip;
     public boolean isInFrustum;
 
-    /** Should this renderer skip this render pass */
+    /**
+     * Should this renderer skip this render pass
+     */
     public boolean[] skipRenderPass;
 
-    /** Pos X plus */
+    /**
+     * Pos X plus
+     */
     public int posXPlus;
 
-    /** Pos Y plus */
+    /**
+     * Pos Y plus
+     */
     public int posYPlus;
 
-    /** Pos Z plus */
+    /**
+     * Pos Z plus
+     */
     public int posZPlus;
 
-    /** Boolean for whether this renderer needs to be updated or not */
+    /**
+     * Boolean for whether this renderer needs to be updated or not
+     */
     public volatile boolean needsUpdate;
 
-    /** Axis aligned bounding box */
+    /**
+     * Axis aligned bounding box
+     */
     public AxisAlignedBB rendererBoundingBox;
 
-    /** Chunk index */
+    /**
+     * Chunk index
+     */
     public int chunkIndex;
 
-    /** Is this renderer visible according to the occlusion query */
+    /**
+     * Is this renderer visible according to the occlusion query
+     */
     public boolean isVisible;
 
-    /** Is this renderer waiting on the result of the occlusion query */
+    /**
+     * Is this renderer waiting on the result of the occlusion query
+     */
     public boolean isWaitingOnOcclusionQuery;
 
-    /** OpenGL occlusion query */
+    /**
+     * OpenGL occlusion query
+     */
     public int glOcclusionQuery;
 
-    /** Is the chunk lit */
+    /**
+     * Is the chunk lit
+     */
     public boolean isChunkLit;
     protected boolean isInitialized;
     public List<TileEntity> tileEntityRenderers;
     protected List tileEntities;
 
-    /** Bytes sent to the GPU */
+    /**
+     * Bytes sent to the GPU
+     */
     protected int bytesDrawn;
     public boolean isVisibleFromPosition;
     public double visibleFromX;
@@ -112,7 +149,7 @@ public class WorldRenderer {
     public WorldRenderer(Minecraft mc, World par1World, List par2List, int par3, int par4, int par5, int par6) {
         this.tessellator = mc.getTessellator();
         this.mc = mc;
-        this.skipRenderPass = new boolean[] { true, true };
+        this.skipRenderPass = new boolean[]{true, true};
         this.tileEntityRenderers = new ArrayList<>();
         this.isVisibleFromPosition = false;
         this.isInFrustrumFully = false;
@@ -204,8 +241,7 @@ public class WorldRenderer {
                 }
 
                 Chunk.isLit = false;
-                HashSet var30 = new HashSet();
-                var30.addAll(this.tileEntityRenderers);
+                HashSet var30 = new HashSet(this.tileEntityRenderers);
                 this.tileEntityRenderers.clear();
                 EntityLivingBase var10 = mc.renderViewEntity;
                 int viewEntityPosX = MathHelper.floor_double(var10.posX);
@@ -218,7 +254,7 @@ public class WorldRenderer {
                 if (!chunkcache.extendedLevelsInChunkCache()) {
                     ++chunksUpdated;
                     RenderBlocks var27 = new RenderBlocks(this.mc, chunkcache);
-                    Reflector.callVoid(Reflector.ForgeHooksClient_setWorldRendererRB, new Object[] { var27 });
+                    Reflector.callVoid(Reflector.ForgeHooksClient_setWorldRendererRB, new Object[]{var27});
                     this.bytesDrawn = 0;
                     this.vertexState = null;
                     this.tessellator = this.mc.getTessellator();
@@ -244,8 +280,8 @@ public class WorldRenderer {
 
                                         if (hasForge) {
                                             hasTileEntity = Reflector.callBoolean(block,
-                                                    Reflector.ForgeBlock_hasTileEntity, new Object[] {
-                                                            Integer.valueOf(chunkcache.getBlockMetadata(x, y, z)) });
+                                                    Reflector.ForgeBlock_hasTileEntity, new Object[]{
+                                                            Integer.valueOf(chunkcache.getBlockMetadata(x, y, z))});
                                         } else {
                                             hasTileEntity = block.hasTileEntity();
                                         }
@@ -255,7 +291,7 @@ public class WorldRenderer {
 
                                             if (this.mc.tileEntityRendererDispatcher != null
                                                     && this.mc.tileEntityRendererDispatcher
-                                                            .hasSpecialRenderer(blockPass))
+                                                    .hasSpecialRenderer(blockPass))
                                                 this.tileEntityRenderers.add(blockPass);
 
                                         }
@@ -271,7 +307,7 @@ public class WorldRenderer {
                                         if (Reflector.ForgeBlock_canRenderInPass.exists()) {
                                             canRender = Reflector.callBoolean(block,
                                                     Reflector.ForgeBlock_canRenderInPass,
-                                                    new Object[] { Integer.valueOf(renderPass) });
+                                                    new Object[]{Integer.valueOf(renderPass)});
                                         }
 
                                         if (canRender) {
@@ -307,14 +343,13 @@ public class WorldRenderer {
                     }
 
                     Reflector.callVoid(Reflector.ForgeHooksClient_setWorldRendererRB,
-                            new Object[] { (RenderBlocks) null });
+                            new Object[]{(RenderBlocks) null});
                 }
 
-                HashSet var31 = new HashSet();
-                var31.addAll(this.tileEntityRenderers);
+                HashSet var31 = new HashSet(this.tileEntityRenderers);
                 var31.removeAll(var30);
                 this.tileEntities.addAll(var31);
-                var30.removeAll(this.tileEntityRenderers);
+                this.tileEntityRenderers.forEach(var30::remove);
                 this.tileEntities.removeAll(var30);
                 this.isChunkLit = Chunk.isLit;
                 this.isInitialized = true;
@@ -330,7 +365,7 @@ public class WorldRenderer {
 
         if (Config.isFastRender()) {
             Reflector.callVoid(Reflector.ForgeHooksClient_onPreRenderWorld,
-                    new Object[] { this, Integer.valueOf(renderpass) });
+                    new Object[]{this, Integer.valueOf(renderpass)});
             this.tessellator.startDrawingQuads();
             this.tessellator.setTranslation((double) (-globalChunkOffsetX), 0.0D, (double) (-globalChunkOffsetZ));
         } else {
@@ -341,7 +376,7 @@ public class WorldRenderer {
             GL11.glScalef(var2, var2, var2);
             GL11.glTranslatef(8.0F, 8.0F, 8.0F);
             Reflector.callVoid(Reflector.ForgeHooksClient_onPreRenderWorld,
-                    new Object[] { this, Integer.valueOf(renderpass) });
+                    new Object[]{this, Integer.valueOf(renderpass)});
             this.tessellator.startDrawingQuads();
             this.tessellator.setTranslation((double) (-this.posX), (double) (-this.posY), (double) (-this.posZ));
         }
@@ -355,7 +390,7 @@ public class WorldRenderer {
 
         this.bytesDrawn += this.tessellator.draw();
         Reflector.callVoid(Reflector.ForgeHooksClient_onPostRenderWorld,
-                new Object[] { this, Integer.valueOf(renderpass) });
+                new Object[]{this, Integer.valueOf(renderpass)});
         this.tessellator.setRenderingChunk(false);
 
         if (!Config.isFastRender()) {

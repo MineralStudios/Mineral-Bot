@@ -22,7 +22,7 @@ public interface ClientEntity extends Positionable {
      * @return the entity's bounding box
      */
     @Nullable
-    BoundingBox getBoundingBox();
+    BoundingBox getCollidingBoundingBox();
 
     /**
      * Gets the entity's ID.
@@ -30,27 +30,6 @@ public interface ClientEntity extends Positionable {
      * @return the entity's ID
      */
     int getEntityId();
-
-    /**
-     * Gets the entity's X position.
-     *
-     * @return the entity's X position
-     */
-    double getX();
-
-    /**
-     * Gets the entity's Y position.
-     *
-     * @return the entity's Y position
-     */
-    double getY();
-
-    /**
-     * Gets the entity's Z position.
-     *
-     * @return the entity's Z position
-     */
-    double getZ();
 
     /**
      * Gets the entity's yaw.
@@ -129,6 +108,13 @@ public interface ClientEntity extends Positionable {
      * @return the entity's random
      */
     Random getRandom();
+
+    /**
+     * Gets the entity's bounding box.
+     *
+     * @return the entity's bounding box
+     */
+    BoundingBox getBoundingBox();
 
     /**
      * Gets whether the entity is sprinting.

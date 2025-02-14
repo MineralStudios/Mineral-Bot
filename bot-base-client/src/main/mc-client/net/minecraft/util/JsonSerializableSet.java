@@ -5,12 +5,15 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import java.util.Collection;
+import org.eclipse.jdt.annotation.NonNull;
+
 import java.util.Iterator;
 import java.util.Set;
 
 public class JsonSerializableSet extends ForwardingSet implements IJsonSerializable {
-    /** The set for this ForwardingSet to forward methods to. */
+    /**
+     * The set for this ForwardingSet to forward methods to.
+     */
     private final Set underlyingSet = Sets.newHashSet();
 
     public void func_152753_a(JsonElement p_152753_1_) {
@@ -39,7 +42,7 @@ public class JsonSerializableSet extends ForwardingSet implements IJsonSerializa
         return var1;
     }
 
-    protected Set delegate() {
+    protected @NonNull Set delegate() {
         return this.underlyingSet;
     }
 }

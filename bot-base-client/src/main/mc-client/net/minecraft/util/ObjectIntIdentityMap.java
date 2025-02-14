@@ -3,10 +3,11 @@ package net.minecraft.util;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import org.eclipse.jdt.annotation.NonNull;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class ObjectIntIdentityMap<V> implements IObjectIntIterable {
                 : null;
     }
 
-    public Iterator<V> iterator() {
+    public @NonNull Iterator<V> iterator() {
         return Iterators.filter(this.valueList.iterator(), Predicates.notNull());
     }
 

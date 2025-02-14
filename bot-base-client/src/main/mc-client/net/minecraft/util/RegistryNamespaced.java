@@ -2,11 +2,15 @@ package net.minecraft.util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.eclipse.jdt.annotation.NonNull;
+
 import java.util.Iterator;
 import java.util.Map;
 
 public class RegistryNamespaced<V> extends RegistrySimple<String, V> implements IObjectIntIterable {
-    /** The backing store that maps Integers to objects. */
+    /**
+     * The backing store that maps Integers to objects.
+     */
     protected final ObjectIntIdentityMap<V> underlyingIntegerMap = new ObjectIntIdentityMap<>();
     protected final BiMap<V, String> biMap;
 
@@ -66,7 +70,7 @@ public class RegistryNamespaced<V> extends RegistrySimple<String, V> implements 
         return this.underlyingIntegerMap.getObject(p_148754_1_);
     }
 
-    public Iterator<V> iterator() {
+    public @NonNull Iterator<V> iterator() {
         return this.underlyingIntegerMap.iterator();
     }
 

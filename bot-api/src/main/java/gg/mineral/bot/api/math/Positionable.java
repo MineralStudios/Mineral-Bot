@@ -1,15 +1,29 @@
 package gg.mineral.bot.api.math;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 import lombok.val;
+import org.eclipse.jdt.annotation.NonNull;
 
 public interface Positionable {
 
+    /**
+     * Gets the X position.
+     *
+     * @return the X position
+     */
     double getX();
 
+    /**
+     * Gets the Y position.
+     *
+     * @return the Y position
+     */
     double getY();
 
+    /**
+     * Gets the Z position.
+     *
+     * @return the Z position
+     */
     double getZ();
 
     default double distance3DTo(@NonNull Positionable entityIn) {

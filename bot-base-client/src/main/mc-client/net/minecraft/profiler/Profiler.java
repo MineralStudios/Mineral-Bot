@@ -1,39 +1,45 @@
 package net.minecraft.profiler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import optifine.Config;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Profiler {
     private static final Logger logger = LogManager.getLogger(Profiler.class);
 
-    /** List of parent sections */
+    /**
+     * List of parent sections
+     */
     private final List<String> sectionList = new ArrayList<>();
 
-    /** List of timestamps (System.nanoTime) */
+    /**
+     * List of timestamps (System.nanoTime)
+     */
     private final LongList timestampList = new LongArrayList();
 
-    /** Flag profiling enabled */
+    /**
+     * Flag profiling enabled
+     */
     public boolean profilingEnabled;
 
-    /** Current profiling section */
+    /**
+     * Current profiling section
+     */
     private String profilingSection = "";
 
-    /** Profiling map */
+    /**
+     * Profiling map
+     */
     private final Object2LongOpenHashMap<String> profilingMap = new Object2LongOpenHashMap<>();
     public boolean profilerGlobalEnabled = true;
     private boolean profilerLocalEnabled;
@@ -128,7 +134,7 @@ public class Profiler {
         this.profilerLocalEnabled = this.profilerGlobalEnabled;
 
         if (!this.profilerLocalEnabled)
-            return new ArrayList<>(Arrays.asList(new Profiler.Result("root", 0.0D, 0.0D)));
+            return new ArrayList<>(List.of(new Result("root", 0.0D, 0.0D)));
         if (!this.profilingEnabled)
             return null;
 
@@ -216,7 +222,7 @@ public class Profiler {
         public int compareTo(Profiler.Result par1Obj) {
             return par1Obj.field_76332_a < this.field_76332_a ? -1
                     : (par1Obj.field_76332_a > this.field_76332_a ? 1
-                            : par1Obj.field_76331_c.compareTo(this.field_76331_c));
+                    : par1Obj.field_76331_c.compareTo(this.field_76331_c));
         }
 
         public int func_76329_a() {

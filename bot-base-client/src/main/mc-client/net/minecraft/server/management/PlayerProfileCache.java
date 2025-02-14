@@ -5,38 +5,21 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNull;
+
+import java.io.*;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
-import org.apache.commons.io.IOUtils;
+import java.util.*;
 
 public class PlayerProfileCache {
     public static final SimpleDateFormat field_152659_a = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
@@ -48,11 +31,11 @@ public class PlayerProfileCache {
     private final File field_152665_g;
     private static final ParameterizedType field_152666_h = new ParameterizedType() {
 
-        public Type[] getActualTypeArguments() {
-            return new Type[] { PlayerProfileCache.ProfileEntry.class };
+        public Type @NonNull [] getActualTypeArguments() {
+            return new Type[]{PlayerProfileCache.ProfileEntry.class};
         }
 
-        public Type getRawType() {
+        public @NonNull Type getRawType() {
             return List.class;
         }
 
@@ -80,11 +63,11 @@ public class PlayerProfileCache {
             }
 
             public void onProfileLookupFailed(GameProfile p_onProfileLookupFailed_1_,
-                    Exception p_onProfileLookupFailed_2_) {
+                                              Exception p_onProfileLookupFailed_2_) {
                 var2[0] = null;
             }
         };
-        p_152650_0_.func_152359_aw().findProfilesByNames(new String[] { p_152650_1_ }, Agent.MINECRAFT, var3);
+        p_152650_0_.func_152359_aw().findProfilesByNames(new String[]{p_152650_1_}, Agent.MINECRAFT, var3);
 
         if (!p_152650_0_.isServerInOnlineMode() && var2[0] == null) {
             UUID var4 = EntityPlayer.getUUIDFromGameProfile(new GameProfile((UUID) null, p_152650_1_));
@@ -196,7 +179,8 @@ public class PlayerProfileCache {
     public void func_152657_b() {
         List var1 = null;
         BufferedReader var2 = null;
-        label81: {
+        label81:
+        {
             try {
                 var2 = Files.newReader(this.field_152665_g, Charsets.UTF_8);
                 var1 = (List) this.field_152660_b.fromJson(var2, field_152666_h);
@@ -300,7 +284,7 @@ public class PlayerProfileCache {
         }
 
         public JsonElement func_152676_a(PlayerProfileCache.ProfileEntry p_152676_1_, Type p_152676_2_,
-                JsonSerializationContext p_152676_3_) {
+                                         JsonSerializationContext p_152676_3_) {
             JsonObject var4 = new JsonObject();
             var4.addProperty("name", p_152676_1_.func_152668_a().getName());
             UUID var5 = p_152676_1_.func_152668_a().getId();
@@ -310,7 +294,7 @@ public class PlayerProfileCache {
         }
 
         public PlayerProfileCache.ProfileEntry func_152675_a(JsonElement p_152675_1_, Type p_152675_2_,
-                JsonDeserializationContext p_152675_3_) {
+                                                             JsonDeserializationContext p_152675_3_) {
             if (p_152675_1_.isJsonObject()) {
                 JsonObject var4 = p_152675_1_.getAsJsonObject();
                 JsonElement var5 = var4.get("name");
@@ -354,12 +338,12 @@ public class PlayerProfileCache {
         }
 
         public JsonElement serialize(Object p_serialize_1_, Type p_serialize_2_,
-                JsonSerializationContext p_serialize_3_) {
+                                     JsonSerializationContext p_serialize_3_) {
             return this.func_152676_a((PlayerProfileCache.ProfileEntry) p_serialize_1_, p_serialize_2_, p_serialize_3_);
         }
 
         public Object deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_,
-                JsonDeserializationContext p_deserialize_3_) {
+                                  JsonDeserializationContext p_deserialize_3_) {
             return this.func_152675_a(p_deserialize_1_, p_deserialize_2_, p_deserialize_3_);
         }
 

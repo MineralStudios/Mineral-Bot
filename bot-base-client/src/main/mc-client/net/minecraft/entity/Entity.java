@@ -1,6 +1,7 @@
 package net.minecraft.entity;
 
 import gg.mineral.bot.api.entity.ClientEntity;
+import gg.mineral.bot.api.math.BoundingBox;
 import gg.mineral.bot.api.world.ClientWorld;
 import lombok.Getter;
 import lombok.Setter;
@@ -139,7 +140,7 @@ public abstract class Entity implements ClientEntity {
     /**
      * Axis aligned bounding box.
      */
-    public final AxisAlignedBB boundingBox;
+    public AxisAlignedBB boundingBox;
     @Getter
     public boolean onGround;
 
@@ -287,18 +288,22 @@ public abstract class Entity implements ClientEntity {
     protected UUID entityUniqueID;
     public Entity.EnumEntitySize myEntitySize;
 
+    @Override
     public double getX() {
         return this.posX;
     }
 
+    @Override
     public double getY() {
-        return this.posY;
+        return this.boundingBox.minY;
     }
 
+    @Override
     public double getZ() {
         return this.posZ;
     }
 
+    @Override
     public UUID getUuid() {
         return this.getUniqueID();
     }
@@ -328,8 +333,8 @@ public abstract class Entity implements ClientEntity {
         }
 
         this.dataWatcher = new DataWatcher(this);
-        this.dataWatcher.addObject(0, Byte.valueOf((byte) 0));
-        this.dataWatcher.addObject(1, Short.valueOf((short) 300));
+        this.dataWatcher.addObject(0, (byte) 0);
+        this.dataWatcher.addObject(1, (short) 300);
         this.entityInit();
     }
 
@@ -1011,8 +1016,13 @@ public abstract class Entity implements ClientEntity {
     /**
      * returns the bounding box for this entity
      */
-    public AxisAlignedBB getBoundingBox() {
+    public AxisAlignedBB getCollidingBoundingBox() {
         return null;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox;
     }
 
     /**

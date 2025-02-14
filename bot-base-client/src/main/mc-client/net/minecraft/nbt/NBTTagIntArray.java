@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class NBTTagIntArray extends NBTBase {
-    /** The array of saved integers */
+    /**
+     * The array of saved integers
+     */
     private int[] intArray;
 
     NBTTagIntArray() {
@@ -46,13 +48,13 @@ public class NBTTagIntArray extends NBTBase {
     }
 
     public String toString() {
-        String var1 = "[";
+        StringBuilder var1 = new StringBuilder("[");
         int[] var2 = this.intArray;
         int var3 = var2.length;
 
         for (int var4 = 0; var4 < var3; ++var4) {
             int var5 = var2[var4];
-            var1 = var1 + var5 + ",";
+            var1.append(var5).append(",");
         }
 
         return var1 + "]";

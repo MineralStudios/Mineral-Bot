@@ -1,11 +1,8 @@
 package net.minecraft.server.management;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
+import org.eclipse.jdt.annotation.NonNull;
+
+import java.util.*;
 
 public class LowerStringMap implements Map {
     private final Map internalMap = new LinkedHashMap();
@@ -51,15 +48,15 @@ public class LowerStringMap implements Map {
         this.internalMap.clear();
     }
 
-    public Set keySet() {
+    public @NonNull Set keySet() {
         return this.internalMap.keySet();
     }
 
-    public Collection values() {
+    public @NonNull Collection values() {
         return this.internalMap.values();
     }
 
-    public Set entrySet() {
+    public @NonNull Set entrySet() {
         return this.internalMap.entrySet();
     }
 

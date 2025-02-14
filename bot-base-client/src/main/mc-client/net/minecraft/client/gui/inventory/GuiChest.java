@@ -54,6 +54,7 @@ public class GuiChest extends GuiContainer {
     }
 
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {
+        if (fontRendererObj == null) return;
         this.fontRendererObj
                 .drawString(this.field_147015_w.isInventoryNameLocalized() ? this.field_147015_w.getInventoryName()
                         : I18n.format(this.field_147015_w.getInventoryName(), new Object[0]), 8, 6, 4210752);

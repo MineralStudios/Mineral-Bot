@@ -1,81 +1,64 @@
 package optifine;
 
+import net.minecraft.util.LongHashMap;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.NextTickListEntry;
+import org.eclipse.jdt.annotation.NonNull;
+
 import java.util.AbstractSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import net.minecraft.util.LongHashMap;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.NextTickListEntry;
 
-public class NextTickHashSet extends AbstractSet
-{
+public class NextTickHashSet extends AbstractSet {
     private LongHashMap longHashMap = new LongHashMap();
     private int size = 0;
     private HashSet emptySet = new HashSet();
 
-    public NextTickHashSet(Set oldSet)
-    {
+    public NextTickHashSet(Set oldSet) {
         this.addAll(oldSet);
     }
 
-    public int size()
-    {
+    public int size() {
         return this.size;
     }
 
-    public boolean contains(Object obj)
-    {
-        if (!(obj instanceof NextTickListEntry))
-        {
+    public boolean contains(Object obj) {
+        if (!(obj instanceof NextTickListEntry)) {
             return false;
-        }
-        else
-        {
-            NextTickListEntry entry = (NextTickListEntry)obj;
+        } else {
+            NextTickListEntry entry = (NextTickListEntry) obj;
 
-            if (entry == null)
-            {
+            if (entry == null) {
                 return false;
-            }
-            else
-            {
+            } else {
                 long key = ChunkCoordIntPair.chunkXZ2Int(entry.xCoord >> 4, entry.zCoord >> 4);
-                HashSet set = (HashSet)this.longHashMap.getValueByKey(key);
+                HashSet set = (HashSet) this.longHashMap.getValueByKey(key);
                 return set == null ? false : set.contains(entry);
             }
         }
     }
 
-    public boolean add(Object obj)
-    {
-        if (!(obj instanceof NextTickListEntry))
-        {
+    public boolean add(Object obj) {
+        if (!(obj instanceof NextTickListEntry)) {
             return false;
-        }
-        else
-        {
-            NextTickListEntry entry = (NextTickListEntry)obj;
+        } else {
+            NextTickListEntry entry = (NextTickListEntry) obj;
 
-            if (entry == null)
-            {
+            if (entry == null) {
                 return false;
-            }
-            else
-            {
+            } else {
                 long key = ChunkCoordIntPair.chunkXZ2Int(entry.xCoord >> 4, entry.zCoord >> 4);
-                HashSet set = (HashSet)this.longHashMap.getValueByKey(key);
+                HashSet set = (HashSet) this.longHashMap.getValueByKey(key);
 
-                if (set == null)
-                {
+                if (set == null) {
                     set = new HashSet();
                     this.longHashMap.add(key, set);
                 }
 
                 boolean added = set.add(entry);
 
-                if (added)
-                {
+                if (added) {
                     ++this.size;
                 }
 
@@ -84,35 +67,24 @@ public class NextTickHashSet extends AbstractSet
         }
     }
 
-    public boolean remove(Object obj)
-    {
-        if (!(obj instanceof NextTickListEntry))
-        {
+    public boolean remove(Object obj) {
+        if (!(obj instanceof NextTickListEntry)) {
             return false;
-        }
-        else
-        {
-            NextTickListEntry entry = (NextTickListEntry)obj;
+        } else {
+            NextTickListEntry entry = (NextTickListEntry) obj;
 
-            if (entry == null)
-            {
+            if (entry == null) {
                 return false;
-            }
-            else
-            {
+            } else {
                 long key = ChunkCoordIntPair.chunkXZ2Int(entry.xCoord >> 4, entry.zCoord >> 4);
-                HashSet set = (HashSet)this.longHashMap.getValueByKey(key);
+                HashSet set = (HashSet) this.longHashMap.getValueByKey(key);
 
-                if (set == null)
-                {
+                if (set == null) {
                     return false;
-                }
-                else
-                {
+                } else {
                     boolean removed = set.remove(entry);
 
-                    if (removed)
-                    {
+                    if (removed) {
                         --this.size;
                     }
 
@@ -122,27 +94,23 @@ public class NextTickHashSet extends AbstractSet
         }
     }
 
-    public Iterator getNextTickEntries(int chunkX, int chunkZ)
-    {
+    public Iterator getNextTickEntries(int chunkX, int chunkZ) {
         HashSet set = this.getNextTickEntriesSet(chunkX, chunkZ);
         return set.iterator();
     }
 
-    public HashSet getNextTickEntriesSet(int chunkX, int chunkZ)
-    {
+    public HashSet getNextTickEntriesSet(int chunkX, int chunkZ) {
         long key = ChunkCoordIntPair.chunkXZ2Int(chunkX, chunkZ);
-        HashSet set = (HashSet)this.longHashMap.getValueByKey(key);
+        HashSet set = (HashSet) this.longHashMap.getValueByKey(key);
 
-        if (set == null)
-        {
+        if (set == null) {
             set = this.emptySet;
         }
 
         return set;
     }
 
-    public Iterator iterator()
-    {
+    public @NonNull Iterator iterator() {
         throw new UnsupportedOperationException("Not implemented");
     }
 }

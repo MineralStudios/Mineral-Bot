@@ -1,8 +1,8 @@
 package gg.mineral.bot.api.util;
 
 import gg.mineral.bot.api.entity.living.ClientLivingEntity;
+import gg.mineral.bot.api.entity.living.player.ClientPlayer;
 import gg.mineral.bot.api.math.Positionable;
-
 import lombok.val;
 
 public interface MathUtil {
@@ -84,10 +84,10 @@ public interface MathUtil {
         return (float) Math.sqrt(x);
     }
 
-    default float[] computeOptimalYawAndPitch(ClientLivingEntity player,
-            ClientLivingEntity entity) {
+    default float[] computeOptimalYawAndPitch(ClientPlayer player,
+                                              ClientPlayer entity) {
         double x = entity.getX() - player.getX();
-        double y = entity.getHeadY() - player.getHeadY();
+        double y = (entity.getY() + entity.getEyeHeight()) - (player.getY() + player.getEyeHeight()) - 1.9D;
         double z = entity.getZ() - player.getZ();
 
         val newPitch = y != 0 ? (float) -toDegrees(fastArcTan(y / sqrt(x * x + z * z))) : 0;
@@ -99,7 +99,7 @@ public interface MathUtil {
         else
             newYaw = (float) toDegrees(-fastArcTan(x / z));
 
-        return new float[] { newPitch, newYaw };
+        return new float[]{newPitch, newYaw};
     }
 
     default float computeOptimalYaw(ClientLivingEntity entity, Positionable target) {
@@ -182,16 +182,14 @@ public interface MathUtil {
         val f1 = sin(-yaw * 0.017453292F - (float) Math.PI);
         val f2 = -cos(-pitch * 0.017453292F);
         val f3 = sin(-pitch * 0.017453292F);
-        return new double[] { (double) (f1 * f2), (double) f3, (double) (f * f2) };
+        return new double[]{(double) (f1 * f2), (double) f3, (double) (f * f2)};
     }
 
     /**
      * Combines two integers into a long.
-     * 
-     * @param high
-     *             The high 32 bits of the resulting long.
-     * @param low
-     *             The low 32 bits of the resulting long.
+     *
+     * @param high The high 32 bits of the resulting long.
+     * @param low  The low 32 bits of the resulting long.
      * @return A long containing the two input integers.
      */
     default long combineIntsToLong(int high, int low) {
@@ -200,9 +198,8 @@ public interface MathUtil {
 
     /**
      * Extracts the high 32 bits from a long as an int.
-     * 
-     * @param value
-     *              The long value to extract from.
+     *
+     * @param value The long value to extract from.
      * @return The high 32 bits of the input long as an int.
      */
     default int highInt(long value) {
@@ -211,9 +208,8 @@ public interface MathUtil {
 
     /**
      * Extracts the low 32 bits from a long as an int.
-     * 
-     * @param value
-     *              The long value to extract from.
+     *
+     * @param value The long value to extract from.
      * @return The low 32 bits of the input long as an int.
      */
     default int lowInt(long value) {

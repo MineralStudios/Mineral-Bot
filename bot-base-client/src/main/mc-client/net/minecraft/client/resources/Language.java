@@ -1,5 +1,7 @@
 package net.minecraft.client.resources;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 public class Language implements Comparable {
     private final String languageCode;
     private final String region;
@@ -22,13 +24,13 @@ public class Language implements Comparable {
     }
 
     public String toString() {
-        return String.format("%s (%s)", new Object[] { this.name, this.region });
+        return String.format("%s (%s)", new Object[]{this.name, this.region});
     }
 
     public boolean equals(Object p_equals_1_) {
         return this == p_equals_1_ ? true
                 : (!(p_equals_1_ instanceof Language) ? false
-                        : this.languageCode.equals(((Language) p_equals_1_).languageCode));
+                : this.languageCode.equals(((Language) p_equals_1_).languageCode));
     }
 
     public int hashCode() {
@@ -39,7 +41,7 @@ public class Language implements Comparable {
         return this.languageCode.compareTo(p_compareTo_1_.languageCode);
     }
 
-    public int compareTo(Object p_compareTo_1_) {
+    public int compareTo(@NonNull Object p_compareTo_1_) {
         return this.compareTo((Language) p_compareTo_1_);
     }
 }

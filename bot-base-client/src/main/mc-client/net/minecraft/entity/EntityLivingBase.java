@@ -210,7 +210,7 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
 
     @Override
     public double getHeadY() {
-        return this.posY + (double) this.getEyeHeight();
+        return this.posY;
     }
 
     @Override
@@ -1567,7 +1567,7 @@ public abstract class EntityLivingBase extends Entity implements ClientLivingEnt
 
         if (var5 > 0.0025000002F) {
             var8 = 1.0F;
-            var7 = (float) Math.sqrt((double) var5) * 3.0F;
+            var7 = (float) Math.sqrt(var5) * 3.0F;
             var6 = (float) Math.atan2(var10, var9) * 180.0F / (float) Math.PI - 90.0F;
         }
 

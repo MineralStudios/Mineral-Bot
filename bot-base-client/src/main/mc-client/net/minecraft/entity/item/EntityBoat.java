@@ -1,6 +1,5 @@
 package net.minecraft.entity.item;
 
-import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -15,8 +14,12 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class EntityBoat extends Entity {
-    /** true if no player in boat */
+    /**
+     * true if no player in boat
+     */
     private boolean isBoatEmpty;
     private double speedMultiplier;
     private int boatPosRotationIncrements;
@@ -65,7 +68,7 @@ public class EntityBoat extends Entity {
     /**
      * returns the bounding box for this entity
      */
-    public AxisAlignedBB getBoundingBox() {
+    public AxisAlignedBB getCollidingBoundingBox() {
         return this.boundingBox;
     }
 
@@ -152,7 +155,7 @@ public class EntityBoat extends Entity {
      * posY, posZ, yaw, pitch
      */
     public void setPositionAndRotation2(double p_70056_1_, double p_70056_3_, double p_70056_5_, float p_70056_7_,
-            float p_70056_8_, int p_70056_9_) {
+                                        float p_70056_8_, int p_70056_9_) {
         if (this.isBoatEmpty) {
             this.boatPosRotationIncrements = p_70056_9_ + 5;
         } else {

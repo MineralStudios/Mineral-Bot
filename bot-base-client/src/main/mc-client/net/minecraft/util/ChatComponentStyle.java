@@ -3,6 +3,8 @@ package net.minecraft.util;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,8 +66,9 @@ public abstract class ChatComponentStyle implements IChatComponent {
         return this.style;
     }
 
+    @NotNull
     public Iterator iterator() {
-        return Iterators.concat(Iterators.forArray(new ChatComponentStyle[] { this }),
+        return Iterators.concat(Iterators.forArray(new ChatComponentStyle[]{this}),
                 createDeepCopyIterator(this.siblings));
     }
 

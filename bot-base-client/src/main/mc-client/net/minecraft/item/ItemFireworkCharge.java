@@ -1,6 +1,5 @@
 package net.minecraft.item;
 
-import java.util.List;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
@@ -8,6 +7,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
+
+import java.util.List;
 
 public class ItemFireworkCharge extends Item {
     private IIcon field_150904_a;
@@ -100,7 +101,7 @@ public class ItemFireworkCharge extends Item {
 
         if (var3.length > 0) {
             boolean var4 = true;
-            String var5 = "";
+            StringBuilder var5 = new StringBuilder();
             int[] var6 = var3;
             int var7 = var3.length;
 
@@ -108,7 +109,7 @@ public class ItemFireworkCharge extends Item {
                 var9 = var6[var8];
 
                 if (!var4) {
-                    var5 = var5 + ", ";
+                    var5.append(", ");
                 }
 
                 var4 = false;
@@ -117,18 +118,18 @@ public class ItemFireworkCharge extends Item {
                 for (int var11 = 0; var11 < 16; ++var11) {
                     if (var9 == ItemDye.field_150922_c[var11]) {
                         var10 = true;
-                        var5 = var5 + StatCollector
-                                .translateToLocal("item.fireworksCharge." + ItemDye.field_150923_a[var11]);
+                        var5.append(StatCollector
+                                .translateToLocal("item.fireworksCharge." + ItemDye.field_150923_a[var11]));
                         break;
                     }
                 }
 
                 if (!var10) {
-                    var5 = var5 + StatCollector.translateToLocal("item.fireworksCharge.customColor");
+                    var5.append(StatCollector.translateToLocal("item.fireworksCharge.customColor"));
                 }
             }
 
-            p_150902_1_.add(var5);
+            p_150902_1_.add(var5.toString());
         }
 
         int[] var13 = p_150902_0_.getIntArray("FadeColors");
@@ -136,7 +137,7 @@ public class ItemFireworkCharge extends Item {
 
         if (var13.length > 0) {
             var14 = true;
-            String var15 = StatCollector.translateToLocal("item.fireworksCharge.fadeTo") + " ";
+            StringBuilder var15 = new StringBuilder(StatCollector.translateToLocal("item.fireworksCharge.fadeTo") + " ");
             int[] var17 = var13;
             var8 = var13.length;
 
@@ -144,7 +145,7 @@ public class ItemFireworkCharge extends Item {
                 int var18 = var17[var9];
 
                 if (!var14) {
-                    var15 = var15 + ", ";
+                    var15.append(", ");
                 }
 
                 var14 = false;
@@ -153,18 +154,18 @@ public class ItemFireworkCharge extends Item {
                 for (int var12 = 0; var12 < 16; ++var12) {
                     if (var18 == ItemDye.field_150922_c[var12]) {
                         var19 = true;
-                        var15 = var15 + StatCollector
-                                .translateToLocal("item.fireworksCharge." + ItemDye.field_150923_a[var12]);
+                        var15.append(StatCollector
+                                .translateToLocal("item.fireworksCharge." + ItemDye.field_150923_a[var12]));
                         break;
                     }
                 }
 
                 if (!var19) {
-                    var15 = var15 + StatCollector.translateToLocal("item.fireworksCharge.customColor");
+                    var15.append(StatCollector.translateToLocal("item.fireworksCharge.customColor"));
                 }
             }
 
-            p_150902_1_.add(var15);
+            p_150902_1_.add(var15.toString());
         }
 
         var14 = p_150902_0_.getBoolean("Trail");

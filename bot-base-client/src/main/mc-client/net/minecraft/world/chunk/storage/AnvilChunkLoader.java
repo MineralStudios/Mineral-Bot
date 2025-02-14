@@ -1,14 +1,5 @@
 package net.minecraft.world.chunk.storage;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -27,13 +18,21 @@ import net.minecraft.world.storage.ThreadedFileIOBase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
 public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
     private static final Logger logger = LogManager.getLogger(AnvilChunkLoader.class);
     private List chunksToRemove = new ArrayList();
     private Set pendingAnvilChunksCoordinates = new HashSet();
     private Object syncLockObject = new Object();
 
-    /** Save directory for chunks using the Anvil format */
+    /**
+     * Save directory for chunks using the Anvil format
+     */
     private final File chunkSaveLocation;
 
     public AnvilChunkLoader(File p_i2003_1_) {
@@ -76,7 +75,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
      * Wraps readChunkFromNBT. Checks the coordinates and several NBT tags.
      */
     protected Chunk checkedReadChunkFromNBT(World p_75822_1_, int p_75822_2_, int p_75822_3_,
-            NBTTagCompound p_75822_4_) {
+                                            NBTTagCompound p_75822_4_) {
         if (!p_75822_4_.func_150297_b("Level", 10)) {
             logger.error("Chunk file at " + p_75822_2_ + "," + p_75822_3_ + " is missing level data, skipping");
             return null;
@@ -149,12 +148,10 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
             this.pendingAnvilChunksCoordinates.remove(var1.chunkCoordinate);
         }
 
-        if (var1 != null) {
-            try {
-                this.writeChunkNBTTags(var1);
-            } catch (Exception var4) {
-                var4.printStackTrace();
-            }
+        try {
+            this.writeChunkNBTTags(var1);
+        } catch (Exception var4) {
+            var4.printStackTrace();
         }
 
         return true;
