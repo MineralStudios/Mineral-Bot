@@ -26,6 +26,7 @@ import kotlin.math.atan2
 class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     private var lastPotTick = 0
     private var pottingTicks = 0
+    private var startHealth = 0f
 
     // When not at a wall, throwYaw is used normally.
     // When at a wall, we also force pitch to 90 (i.e. straight down).
@@ -155,9 +156,11 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         // When not potting, adjust aim based on movement and enemy positions.
         if (!inventoryOpen) {
             if (pottingTicks > 0) {
+                setMouseYaw(throwYaw)
                 if (throwAtWall) setMousePitch(90f)
                 pottingTicks--
-                if (fakePlayer.health >= 10f && (pottingTicks <= 10 || fakePlayer.health >= 16f)) pottingTicks = 0
+                if (fakePlayer.health >= 10f && fakePlayer.health - startHealth > 2 && (pottingTicks <= 10 || fakePlayer.health >= 16f)) pottingTicks =
+                    0
                 if (pottingTicks == 0) throwAtWall = false
                 if (pottingTicks <= 10) return
             }
@@ -181,6 +184,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             if (isAtWall() || distanceCondition || fakePlayer.health <= 6f) {
                 pottingTicks = if (fakePlayer.health <= 4f) 20 else 10
                 throwYaw = fakePlayer.yaw
+                startHealth = fakePlayer.health
                 throwAtWall = isAtWall()
                 lastPotTick = clientInstance.currentTick
                 pressButton(10, MouseButton.Type.RIGHT_CLICK)
