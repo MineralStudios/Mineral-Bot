@@ -1,11 +1,5 @@
 package net.minecraft.world.gen.structure;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.Callable;
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -16,6 +10,8 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.MapGenBase;
+
+import java.util.*;
 
 public abstract class MapGenStructure extends MapGenBase {
     private MapGenStructureData field_143029_e;
@@ -32,7 +28,7 @@ public abstract class MapGenStructure extends MapGenBase {
     public abstract String func_143025_a();
 
     protected final void func_151538_a(World p_151538_1_, final int p_151538_2_, final int p_151538_3_, int p_151538_4_,
-            int p_151538_5_, Block[] p_151538_6_) {
+                                       int p_151538_5_, Block[] p_151538_6_) {
         this.func_143027_a(p_151538_1_);
 
         if (!this.structureMap.containsKey(Long.valueOf(ChunkCoordIntPair.chunkXZ2Int(p_151538_2_, p_151538_3_)))) {
@@ -51,7 +47,7 @@ public abstract class MapGenStructure extends MapGenBase {
                         () -> MapGenStructure.this.canSpawnStructureAtCoords(p_151538_2_, p_151538_3_) ? "True"
                                 : "False");
                 var9.addCrashSection("Chunk location", String.format("%d,%d",
-                        new Object[] { Integer.valueOf(p_151538_2_), Integer.valueOf(p_151538_3_) }));
+                        new Object[]{Integer.valueOf(p_151538_2_), Integer.valueOf(p_151538_3_)}));
                 var9.addCrashSectionCallable("Chunk pos hash",
                         () -> String.valueOf(ChunkCoordIntPair.chunkXZ2Int(p_151538_2_, p_151538_3_)));
                 var9.addCrashSectionCallable("Structure type",

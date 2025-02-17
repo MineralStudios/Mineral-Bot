@@ -1,9 +1,5 @@
 package net.minecraft.world;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -12,13 +8,22 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.LongHashMap;
 import net.minecraft.util.MathHelper;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
 public class Teleporter {
     private final WorldServer worldServerInstance;
 
-    /** A private Random() function in Teleporter */
+    /**
+     * A private Random() function in Teleporter
+     */
     private final Random random;
 
-    /** Stores successful portal placement locations for rapid lookup. */
+    /**
+     * Stores successful portal placement locations for rapid lookup.
+     */
     private final LongHashMap destinationCoordinateCache = new LongHashMap();
 
     /**
@@ -37,7 +42,7 @@ public class Teleporter {
      * Place an entity in a nearby portal, creating one if necessary.
      */
     public void placeInPortal(Entity p_77185_1_, double p_77185_2_, double p_77185_4_, double p_77185_6_,
-            float p_77185_8_) {
+                              float p_77185_8_) {
         if (this.worldServerInstance.provider.dimensionId != 1) {
             if (!this.placeInExistingPortal(p_77185_1_, p_77185_2_, p_77185_4_, p_77185_6_, p_77185_8_)) {
                 this.makePortal(p_77185_1_);
@@ -72,7 +77,7 @@ public class Teleporter {
      * Place an entity in a nearby portal which already exists.
      */
     public boolean placeInExistingPortal(Entity p_77184_1_, double p_77184_2_, double p_77184_4_, double p_77184_6_,
-            float p_77184_8_) {
+                                         float p_77184_8_) {
         short var9 = 128;
         double var10 = -1.0D;
         int var12 = 0;
@@ -124,7 +129,7 @@ public class Teleporter {
 
         if (var10 >= 0.0D) {
             if (var19) {
-                this.destinationCoordinateCache.add(var17, new Teleporter.PortalPosition(var12, var13, var14,
+                this.destinationCoordinateCache.add(var17, new PortalPosition(var12, var13, var14,
                         this.worldServerInstance.getTotalWorldTime()));
                 this.destinationCoordinateKeys.add(Long.valueOf(var17));
             }
@@ -161,7 +166,7 @@ public class Teleporter {
                 boolean var36 = !this.worldServerInstance.isAirBlock(var12 + var32 + var34, var13,
                         var14 + var33 + var35)
                         || !this.worldServerInstance.isAirBlock(var12 + var32 + var34, var13 + 1,
-                                var14 + var33 + var35);
+                        var14 + var33 + var35);
                 boolean var37 = !this.worldServerInstance.isAirBlock(var12 + var32, var13, var14 + var33)
                         || !this.worldServerInstance.isAirBlock(var12 + var32, var13 + 1, var14 + var33);
 
@@ -178,7 +183,7 @@ public class Teleporter {
                     var27 -= (double) var35;
                     var36 = !this.worldServerInstance.isAirBlock(var48 + var32 + var34, var13, var22 + var33 + var35)
                             || !this.worldServerInstance.isAirBlock(var48 + var32 + var34, var13 + 1,
-                                    var22 + var33 + var35);
+                            var22 + var33 + var35);
                     var37 = !this.worldServerInstance.isAirBlock(var48 + var32, var13, var22 + var33)
                             || !this.worldServerInstance.isAirBlock(var48 + var32, var13 + 1, var22 + var33);
                 }
@@ -289,9 +294,9 @@ public class Teleporter {
 
                                         if (var25 < 0
                                                 && !this.worldServerInstance.getBlock(var26, var27, var28).getMaterial()
-                                                        .isSolid()
+                                                .isSolid()
                                                 || var25 >= 0
-                                                        && !this.worldServerInstance.isAirBlock(var26, var27, var28)) {
+                                                && !this.worldServerInstance.isAirBlock(var26, var27, var28)) {
                                             continue label274;
                                         }
                                     }
@@ -340,9 +345,9 @@ public class Teleporter {
 
                                         if (var24 < 0
                                                 && !this.worldServerInstance.getBlock(var25, var26, var27).getMaterial()
-                                                        .isSolid()
+                                                .isSolid()
                                                 || var24 >= 0
-                                                        && !this.worldServerInstance.isAirBlock(var25, var26, var27)) {
+                                                && !this.worldServerInstance.isAirBlock(var25, var26, var27)) {
                                             continue label222;
                                         }
                                     }
@@ -451,7 +456,7 @@ public class Teleporter {
         }
     }
 
-    public class PortalPosition extends ChunkCoordinates {
+    public static class PortalPosition extends ChunkCoordinates {
         public long lastUpdateTime;
 
         public PortalPosition(int p_i1962_2_, int p_i1962_3_, int p_i1962_4_, long p_i1962_5_) {

@@ -3,11 +3,7 @@ package net.minecraft.client.resources.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumTypeAdapterFactory;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.IRegistry;
-import net.minecraft.util.RegistrySimple;
+import net.minecraft.util.*;
 
 public class IMetadataSerializer {
     private final IRegistry<String, IMetadataSerializer.Registration> metadataSectionSerializerRegistry = new RegistrySimple<>();
@@ -27,7 +23,7 @@ public class IMetadataSerializer {
 
     public void registerMetadataSectionType(IMetadataSectionSerializer p_110504_1_, Class p_110504_2_) {
         this.metadataSectionSerializerRegistry.putObject(p_110504_1_.getSectionName(),
-                new IMetadataSerializer.Registration(p_110504_1_, p_110504_2_, null));
+                new Registration(p_110504_1_, p_110504_2_, null));
         this.gsonBuilder.registerTypeAdapter(p_110504_2_, p_110504_1_);
         this.gson = null;
     }
@@ -65,7 +61,7 @@ public class IMetadataSerializer {
         return this.gson;
     }
 
-    class Registration {
+    static class Registration {
         final IMetadataSectionSerializer field_110502_a;
         final Class field_110500_b;
 

@@ -2,14 +2,12 @@ package net.minecraft.client.entity;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
-
+import gg.mineral.bot.api.entity.living.player.ClientPlayer;
+import gg.mineral.bot.api.inv.Inventory;
+import gg.mineral.bot.api.inv.InventoryContainer;
+import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import lombok.Getter;
-
-import java.io.File;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ImageBufferDownload;
 import net.minecraft.client.renderer.ThreadDownloadImageData;
@@ -24,7 +22,10 @@ import optifine.CapeUtils;
 import optifine.Config;
 import optifine.PlayerConfigurations;
 
-public abstract class AbstractClientPlayer extends EntityPlayer implements SkinManager.SkinAvailableCallback {
+import javax.annotation.Nullable;
+import java.io.File;
+
+public abstract class AbstractClientPlayer extends EntityPlayer implements SkinManager.SkinAvailableCallback, ClientPlayer {
     public static final ResourceLocation locationStevePng = new ResourceLocation("textures/entity/steve.png");
     private ResourceLocation locationSkin;
     private ResourceLocation locationCape;
@@ -32,6 +33,27 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
     private String nameClear = null;
     @Getter
     private final Minecraft mc;
+
+
+    @Override
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    @Override
+    public InventoryContainer getInventoryContainer() {
+        return inventoryContainer;
+    }
+
+    @Override
+    public float getHunger() {
+        return this.foodStats.getFoodLevel();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.nameClear;
+    }
 
     public AbstractClientPlayer(Minecraft mc, World p_i45074_1_, GameProfile p_i45074_2_) {
         super(p_i45074_1_, p_i45074_2_);
@@ -55,6 +77,11 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
         PlayerConfigurations.getPlayerConfiguration(this);
     }
 
+    @Override
+    public PlayerMotionSimulator getMotionSimulator() {
+        return new gg.mineral.bot.base.client.math.simulation.PlayerMotionSimulator(this.mc, this);
+    }
+
     public boolean func_152122_n() {
         return !Config.isShowCapes() ? false : (this.locationOfCape != null ? true : this.locationCape != null);
     }
@@ -73,7 +100,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
 
     @Nullable
     public static ThreadDownloadImageData getDownloadImageSkin(Minecraft mc, ResourceLocation par0ResourceLocation,
-            String par1Str) {
+                                                               String par1Str) {
         TextureManager var2 = mc.getTextureManager();
 
         if (var2 == null)
@@ -84,7 +111,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
         if (var3 == null) {
             var3 = new ThreadDownloadImageData(mc, (File) null,
                     String.format("http://skins.minecraft.net/MinecraftSkins/%s.png",
-                            new Object[] { StringUtils.stripControlCodes(par1Str) }),
+                            new Object[]{StringUtils.stripControlCodes(par1Str)}),
                     locationStevePng, new ImageBufferDownload());
             var2.loadTexture(par0ResourceLocation, (ITextureObject) var3);
         }

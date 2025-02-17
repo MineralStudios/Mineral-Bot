@@ -1,13 +1,12 @@
 package net.minecraft.inventory;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class InventoryMerchant implements IInventory {
     private final IMerchant theMerchant;
@@ -19,6 +18,11 @@ public class InventoryMerchant implements IInventory {
     public InventoryMerchant(EntityPlayer p_i1820_1_, IMerchant p_i1820_2_) {
         this.thePlayer = p_i1820_1_;
         this.theMerchant = p_i1820_2_;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return theInventory;
     }
 
     /**

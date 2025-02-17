@@ -1,13 +1,6 @@
 package net.minecraft.tileentity;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.*;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -15,12 +8,20 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public abstract class MobSpawnerBaseLogic {
-    /** The delay to spawn. */
+    /**
+     * The delay to spawn.
+     */
     public int spawnDelay = 20;
     private String mobID = "Pig";
 
-    /** List of minecart to spawn. */
+    /**
+     * List of minecart to spawn.
+     */
     private List minecartToSpawn;
     private MobSpawnerBaseLogic.WeightedRandomMinecart randomMinecart;
     public double field_98287_c;
@@ -28,15 +29,21 @@ public abstract class MobSpawnerBaseLogic {
     private int minSpawnDelay = 200;
     private int maxSpawnDelay = 800;
 
-    /** A counter for spawn tries. */
+    /**
+     * A counter for spawn tries.
+     */
     private int spawnCount = 4;
     private Entity field_98291_j;
     private int maxNearbyEntities = 6;
 
-    /** The distance from which a player activates the spawner. */
+    /**
+     * The distance from which a player activates the spawner.
+     */
     private int activatingRangeFromPlayer = 16;
 
-    /** The range coefficient for spawning entities around. */
+    /**
+     * The range coefficient for spawning entities around.
+     */
     private int spawnRange = 4;
 
     /**
@@ -120,11 +127,11 @@ public abstract class MobSpawnerBaseLogic {
 
                     var5 = (double) this.getSpawnerX()
                             + (this.getSpawnerWorld().rand.nextDouble() - this.getSpawnerWorld().rand.nextDouble())
-                                    * (double) this.spawnRange;
+                            * (double) this.spawnRange;
                     double var7 = (double) (this.getSpawnerY() + this.getSpawnerWorld().rand.nextInt(3) - 1);
                     double var9 = (double) this.getSpawnerZ()
                             + (this.getSpawnerWorld().rand.nextDouble() - this.getSpawnerWorld().rand.nextDouble())
-                                    * (double) this.spawnRange;
+                            * (double) this.spawnRange;
                     EntityLiving var11 = var13 instanceof EntityLiving ? (EntityLiving) var13 : null;
                     var13.setLocationAndAngles(var5, var7, var9, this.getSpawnerWorld().rand.nextFloat() * 360.0F,
                             0.0F);
@@ -231,7 +238,7 @@ public abstract class MobSpawnerBaseLogic {
             NBTTagList var2 = p_98270_1_.getTagList("SpawnPotentials", 10);
 
             for (int var3 = 0; var3 < var2.tagCount(); ++var3) {
-                this.minecartToSpawn.add(new MobSpawnerBaseLogic.WeightedRandomMinecart(var2.getCompoundTagAt(var3)));
+                this.minecartToSpawn.add(new WeightedRandomMinecart(var2.getCompoundTagAt(var3)));
             }
         } else {
             this.minecartToSpawn = null;
@@ -239,7 +246,7 @@ public abstract class MobSpawnerBaseLogic {
 
         if (p_98270_1_.func_150297_b("SpawnData", 10)) {
             this.setRandomMinecart(
-                    new MobSpawnerBaseLogic.WeightedRandomMinecart(p_98270_1_.getCompoundTag("SpawnData"), this.mobID));
+                    new WeightedRandomMinecart(p_98270_1_.getCompoundTag("SpawnData"), this.mobID));
         } else {
             this.setRandomMinecart((MobSpawnerBaseLogic.WeightedRandomMinecart) null);
         }
@@ -337,7 +344,7 @@ public abstract class MobSpawnerBaseLogic {
 
     public abstract int getSpawnerZ();
 
-    public class WeightedRandomMinecart extends WeightedRandom.Item {
+    public static class WeightedRandomMinecart extends WeightedRandom.Item {
         public final NBTTagCompound field_98222_b;
         public final String minecartName;
 

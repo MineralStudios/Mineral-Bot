@@ -1,16 +1,19 @@
 package net.minecraft.inventory;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class InventoryCrafting implements IInventory {
-    /** List of the stacks in the crafting matrix. */
+    /**
+     * List of the stacks in the crafting matrix.
+     */
     private ItemStack[] stackList;
 
-    /** the width of the crafting inventory */
+    /**
+     * the width of the crafting inventory
+     */
     private int inventoryWidth;
 
     /**
@@ -18,6 +21,11 @@ public class InventoryCrafting implements IInventory {
      * on_CraftMaxtrixChanged.
      */
     private Container eventHandler;
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return stackList;
+    }
 
     public InventoryCrafting(Container p_i1807_1_, int p_i1807_2_, int p_i1807_3_) {
         int var4 = p_i1807_2_ * p_i1807_3_;

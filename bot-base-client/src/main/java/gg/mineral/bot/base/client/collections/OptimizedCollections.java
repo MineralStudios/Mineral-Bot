@@ -1,12 +1,12 @@
 package gg.mineral.bot.base.client.collections;
 
-import java.util.Map;
-import java.util.Set;
-
 import gg.mineral.bot.api.collections.IntSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
+import java.util.Map;
+import java.util.Set;
 
 public class OptimizedCollections implements gg.mineral.bot.api.collections.OptimizedCollections {
 
@@ -25,7 +25,7 @@ public class OptimizedCollections implements gg.mineral.bot.api.collections.Opti
         return new IntHashSet();
     }
 
-    public class IntHashSet extends IntOpenHashSet implements IntSet {
+    public static class IntHashSet extends IntOpenHashSet implements IntSet {
     }
 
 }

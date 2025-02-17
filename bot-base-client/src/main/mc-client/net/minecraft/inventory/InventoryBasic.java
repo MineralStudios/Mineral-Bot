@@ -1,13 +1,12 @@
 package net.minecraft.inventory;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InventoryBasic implements IInventory {
     private String inventoryTitle;
@@ -21,6 +20,11 @@ public class InventoryBasic implements IInventory {
         this.field_94051_e = p_i1561_2_;
         this.slotsCount = p_i1561_3_;
         this.inventoryContents = new ItemStack[p_i1561_3_];
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return inventoryContents;
     }
 
     public void func_110134_a(IInvBasic p_110134_1_) {

@@ -1,34 +1,39 @@
 package net.minecraft.client.renderer;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-import java.util.PriorityQueue;
-
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.client.util.QuadComparator;
 import optifine.Config;
 import optifine.VertexData;
 
+import java.nio.*;
+import java.util.PriorityQueue;
+
 public class Tessellator {
-    /** The byte buffer used for GL allocation. */
+    /**
+     * The byte buffer used for GL allocation.
+     */
     private ByteBuffer byteBuffer;
 
-    /** The same memory as byteBuffer, but referenced as an integer buffer. */
+    /**
+     * The same memory as byteBuffer, but referenced as an integer buffer.
+     */
     private IntBuffer intBuffer;
 
-    /** The same memory as byteBuffer, but referenced as an float buffer. */
+    /**
+     * The same memory as byteBuffer, but referenced as an float buffer.
+     */
     private FloatBuffer floatBuffer;
 
-    /** The same memory as byteBuffer, but referenced as an short buffer. */
+    /**
+     * The same memory as byteBuffer, but referenced as an short buffer.
+     */
     private ShortBuffer shortBuffer;
 
-    /** Raw integer array. */
+    /**
+     * Raw integer array.
+     */
     private int[] rawBuffer;
 
     /**
@@ -37,14 +42,20 @@ public class Tessellator {
      */
     private int vertexCount;
 
-    /** The first coordinate to be used for the texture. */
+    /**
+     * The first coordinate to be used for the texture.
+     */
     private double textureU;
 
-    /** The second coordinate to be used for the texture. */
+    /**
+     * The second coordinate to be used for the texture.
+     */
     private double textureV;
     private int brightness;
 
-    /** The color (RGBA) value to be used for the following draw call. */
+    /**
+     * The color (RGBA) value to be used for the following draw call.
+     */
     private int color;
 
     /**
@@ -63,7 +74,9 @@ public class Tessellator {
      */
     private boolean hasNormals;
 
-    /** The index into the raw buffer to be used for the next data. */
+    /**
+     * The index into the raw buffer to be used for the next data.
+     */
     private int rawBufferIndex;
 
     /**
@@ -73,10 +86,14 @@ public class Tessellator {
      */
     private int addedVertices;
 
-    /** Disables all color information for the following draw call. */
+    /**
+     * Disables all color information for the following draw call.
+     */
     private boolean isColorDisabled;
 
-    /** The draw mode currently being used by the tessellator. */
+    /**
+     * The draw mode currently being used by the tessellator.
+     */
     public int drawMode;
 
     /**
@@ -94,13 +111,19 @@ public class Tessellator {
      */
     public double zOffset;
 
-    /** The normal to be applied to the face being drawn. */
+    /**
+     * The normal to be applied to the face being drawn.
+     */
     private int normal;
 
-    /** Whether this tessellator is currently in draw mode. */
+    /**
+     * Whether this tessellator is currently in draw mode.
+     */
     public boolean isDrawing;
 
-    /** The size of the buffers used (in integers). */
+    /**
+     * The size of the buffers used (in integers).
+     */
     private int bufferSize;
     private boolean renderingChunk;
     private static boolean littleEndianByteOrder = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
@@ -223,15 +246,13 @@ public class Tessellator {
             int var7;
 
             for (var7 = 0; var7 < this.rawBufferIndex; var7 += var6) {
-                var5.add(Integer.valueOf(var7));
+                var5.add(var7);
             }
 
             for (var7 = 0; !var5.isEmpty(); var7 += var6) {
-                int var8 = ((Integer) var5.remove()).intValue();
+                int var8 = (Integer) var5.remove();
 
-                for (int var9 = 0; var9 < var6; ++var9) {
-                    var4[var7 + var9] = this.rawBuffer[var8 + var9];
-                }
+                System.arraycopy(this.rawBuffer, var8 + 0, var4, var7 + 0, var6);
             }
 
             System.arraycopy(var4, 0, this.rawBuffer, 0, var4.length);

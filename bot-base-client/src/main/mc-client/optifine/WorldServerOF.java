@@ -1,17 +1,5 @@
 package optifine;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import gg.mineral.bot.api.util.MathUtil;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.client.Minecraft;
@@ -30,6 +18,11 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.ISaveHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.lang.reflect.Field;
+import java.util.*;
 
 public class WorldServerOF extends WorldServer {
     private NextTickHashSet pendingTickListEntriesHashSet;
@@ -42,7 +35,7 @@ public class WorldServerOF extends WorldServer {
     private static final Logger logger = LogManager.getLogger(WorldServerOF.class);
 
     public WorldServerOF(Minecraft mc, MinecraftServer par1MinecraftServer, ISaveHandler par2iSaveHandler,
-            String par3Str, int par4, WorldSettings par5WorldSettings, Profiler par6Profiler) {
+                         String par3Str, int par4, WorldSettings par5WorldSettings, Profiler par6Profiler) {
         super(mc, par1MinecraftServer, par2iSaveHandler, par3Str, par4, par5WorldSettings, par6Profiler);
         this.fixSetNextTicks();
     }

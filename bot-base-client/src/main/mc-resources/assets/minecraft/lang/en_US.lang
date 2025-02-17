@@ -1039,7 +1039,6 @@ entity.FallingSand.name=Falling Block
 entity.Minecart.name=Minecart
 entity.Boat.name=Boat
 
-entity.Arrow.name=arrow
 entity.generic.name=unknown
 
 death.fell.accident.ladder=%1$s fell off a ladder

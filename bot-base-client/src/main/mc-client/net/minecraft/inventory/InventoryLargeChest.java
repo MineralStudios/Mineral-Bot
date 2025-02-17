@@ -1,19 +1,25 @@
 package net.minecraft.inventory;
 
-import org.eclipse.jdt.annotation.Nullable;
-
+import lombok.val;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class InventoryLargeChest implements IInventory {
-    /** Name of the chest. */
+    /**
+     * Name of the chest.
+     */
     private String name;
 
-    /** Inventory object corresponding to double chest upper part */
+    /**
+     * Inventory object corresponding to double chest upper part
+     */
     private IInventory upperChest;
 
-    /** Inventory object corresponding to double chest lower part */
+    /**
+     * Inventory object corresponding to double chest lower part
+     */
     private IInventory lowerChest;
 
     public InventoryLargeChest(String p_i1559_1_, IInventory p_i1559_2_, IInventory p_i1559_3_) {
@@ -27,6 +33,16 @@ public class InventoryLargeChest implements IInventory {
 
         this.upperChest = p_i1559_2_;
         this.lowerChest = p_i1559_3_;
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        val items1 = upperChest.getItems();
+        val items2 = lowerChest.getItems();
+        val items = new gg.mineral.bot.api.inv.item.ItemStack[items1.length + items2.length];
+        System.arraycopy(items1, 0, items, 0, items1.length);
+        System.arraycopy(items2, 0, items, items1.length, items2.length);
+        return items;
     }
 
     /**

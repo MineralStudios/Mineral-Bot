@@ -5,14 +5,6 @@ import com.google.common.collect.Lists;
 import io.netty.buffer.Unpooled;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.concurrent.Callable;
 import net.minecraft.block.material.Material;
 import net.minecraft.command.server.CommandBlockLogic;
 import net.minecraft.crash.CrashReport;
@@ -27,45 +19,14 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerBeacon;
-import net.minecraft.inventory.ContainerMerchant;
-import net.minecraft.inventory.ContainerRepair;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.*;
 import net.minecraft.item.ItemEditableBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemWritableBook;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.play.INetHandlerPlayServer;
-import net.minecraft.network.play.client.C00PacketKeepAlive;
-import net.minecraft.network.play.client.C01PacketChatMessage;
-import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.network.play.client.C09PacketHeldItemChange;
-import net.minecraft.network.play.client.C0APacketAnimation;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
-import net.minecraft.network.play.client.C0CPacketInput;
-import net.minecraft.network.play.client.C0DPacketCloseWindow;
-import net.minecraft.network.play.client.C0EPacketClickWindow;
-import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
-import net.minecraft.network.play.client.C10PacketCreativeInventoryAction;
-import net.minecraft.network.play.client.C11PacketEnchantItem;
-import net.minecraft.network.play.client.C12PacketUpdateSign;
-import net.minecraft.network.play.client.C13PacketPlayerAbilities;
-import net.minecraft.network.play.client.C14PacketTabComplete;
-import net.minecraft.network.play.client.C15PacketClientSettings;
-import net.minecraft.network.play.client.C16PacketClientStatus;
-import net.minecraft.network.play.client.C17PacketCustomPayload;
-import net.minecraft.network.play.server.S00PacketKeepAlive;
-import net.minecraft.network.play.server.S02PacketChat;
-import net.minecraft.network.play.server.S08PacketPlayerPosLook;
-import net.minecraft.network.play.server.S23PacketBlockChange;
-import net.minecraft.network.play.server.S2FPacketSetSlot;
-import net.minecraft.network.play.server.S32PacketConfirmTransaction;
-import net.minecraft.network.play.server.S3APacketTabComplete;
-import net.minecraft.network.play.server.S40PacketDisconnect;
+import net.minecraft.network.play.client.*;
+import net.minecraft.network.play.server.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.UserListBansEntry;
 import net.minecraft.stats.AchievementList;
@@ -73,18 +34,19 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntitySign;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatAllowedCharacters;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.IntHashMap;
-import net.minecraft.util.ReportedException;
+import net.minecraft.util.*;
 import net.minecraft.world.WorldServer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Random;
 
 public class NetHandlerPlayServer implements INetHandlerPlayServer {
     private static final Logger logger = LogManager.getLogger(NetHandlerPlayServer.class);
@@ -153,7 +115,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
 
         if (this.playerEntity.func_154331_x() > 0L && this.serverController.func_143007_ar() > 0
                 && MinecraftServer.getSystemTimeMillis() - this.playerEntity
-                        .func_154331_x() > (long) (this.serverController.func_143007_ar() * 1000 * 60)) {
+                .func_154331_x() > (long) (this.serverController.func_143007_ar() * 1000 * 60)) {
             this.kickPlayerFromServer("You have been idle for too long!");
         }
     }
@@ -168,7 +130,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
     public void kickPlayerFromServer(String p_147360_1_) {
         final ChatComponentText var2 = new ChatComponentText(p_147360_1_);
         this.netManager.scheduleOutboundPacket(new S40PacketDisconnect(var2),
-                new GenericFutureListener[] { new GenericFutureListener() {
+                new GenericFutureListener[]{new GenericFutureListener() {
 
                     public void operationComplete(Future p_operationComplete_1_) {
                         NetHandlerPlayServer.this.netManager.closeChannel(var2);
@@ -322,7 +284,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
 
                 float var27 = 0.0625F;
                 boolean var28 = var2.getCollidingBoundingBoxes(this.playerEntity,
-                        this.playerEntity.boundingBox.copy().contract((double) var27, (double) var27, (double) var27))
+                                this.playerEntity.boundingBox.copy().contract((double) var27, (double) var27, (double) var27))
                         .isEmpty();
 
                 if (this.playerEntity.onGround && !p_147347_1_.isOnGround() && var15 > 0.0D) {
@@ -352,7 +314,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
 
                 this.playerEntity.setPositionAndRotation(var5, var7, var9, var11, var12);
                 boolean var32 = var2.getCollidingBoundingBoxes(this.playerEntity,
-                        this.playerEntity.boundingBox.copy().contract((double) var27, (double) var27, (double) var27))
+                                this.playerEntity.boundingBox.copy().contract((double) var27, (double) var27, (double) var27))
                         .isEmpty();
 
                 if (var28 && (var31 || !var32) && !this.playerEntity.isPlayerSleeping()) {
@@ -390,7 +352,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
     }
 
     public void setPlayerLocation(double p_147364_1_, double p_147364_3_, double p_147364_5_, float p_147364_7_,
-            float p_147364_8_) {
+                                  float p_147364_8_) {
         this.hasMoved = false;
         this.lastPosX = p_147364_1_;
         this.lastPosY = p_147364_3_;
@@ -498,16 +460,16 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
             this.playerEntity.theItemInWorldManager.tryUseItem(this.playerEntity, var2, var3);
         } else if (p_147346_1_.getY() >= this.serverController.getBuildLimit() - 1
                 && (p_147346_1_.getDirection() == 1
-                        || p_147346_1_.getY() >= this.serverController.getBuildLimit())) {
+                || p_147346_1_.getY() >= this.serverController.getBuildLimit())) {
             ChatComponentTranslation var9 = new ChatComponentTranslation("build.tooHigh",
-                    new Object[] { Integer.valueOf(this.serverController.getBuildLimit()) });
+                    new Object[]{Integer.valueOf(this.serverController.getBuildLimit())});
             var9.getChatStyle().setColor(EnumChatFormatting.RED);
             this.playerEntity.playerNetServerHandler.sendPacket(new S02PacketChat(var9));
             var4 = true;
         } else {
             if (this.hasMoved
                     && this.playerEntity.getDistanceSq((double) var5 + 0.5D, (double) var6 + 0.5D,
-                            (double) var7 + 0.5D) < 64.0D
+                    (double) var7 + 0.5D) < 64.0D
                     && !this.serverController.isBlockProtected(var2, var5, var6, var7, this.playerEntity)) {
                 this.playerEntity.theItemInWorldManager.activateBlockOrUseItem(this.playerEntity, var2, var3, var5,
                         var6, var7, var8, p_147346_1_.getCursorX(), p_147346_1_.getCursorY(),
@@ -579,7 +541,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
         logger.info(this.playerEntity.getCommandSenderName() + " lost connection: " + p_147231_1_);
         this.serverController.func_147132_au();
         ChatComponentTranslation var2 = new ChatComponentTranslation("multiplayer.player.left",
-                new Object[] { this.playerEntity.func_145748_c_() });
+                new Object[]{this.playerEntity.func_145748_c_()});
         var2.getChatStyle().setColor(EnumChatFormatting.YELLOW);
         this.serverController.getConfigurationManager().func_148539_a(var2);
         this.playerEntity.mountEntityAndWakeUp();
@@ -652,7 +614,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
                 this.handleSlashCommand(var2);
             } else {
                 ChatComponentTranslation var5 = new ChatComponentTranslation("chat.type.text",
-                        new Object[] { this.playerEntity.func_145748_c_(), var2 });
+                        new Object[]{this.playerEntity.func_145748_c_(), var2});
                 this.serverController.getConfigurationManager().func_148544_a(var5, false);
             }
 
@@ -1125,7 +1087,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
                             var46.func_145752_a(var49);
                             var46.func_145756_e();
                             this.playerEntity.addChatMessage(
-                                    new ChatComponentTranslation("advMode.setCommand.success", new Object[] { var49 }));
+                                    new ChatComponentTranslation("advMode.setCommand.success", new Object[]{var49}));
                         }
                     } catch (Exception var33) {
                         logger.error("Couldn\'t set command block", var33);

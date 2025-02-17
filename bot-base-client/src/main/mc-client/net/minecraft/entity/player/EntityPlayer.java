@@ -2,9 +2,6 @@ package net.minecraft.entity.player;
 
 import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
-import gg.mineral.bot.api.entity.living.player.ClientPlayer;
-import gg.mineral.bot.api.inv.Inventory;
-import gg.mineral.bot.api.inv.InventoryContainer;
 import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
@@ -54,21 +51,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class EntityPlayer extends EntityLivingBase implements ICommandSender, ClientPlayer {
+public abstract class EntityPlayer extends EntityLivingBase implements ICommandSender {
     /**
      * Inventory of the player
      */
     public InventoryPlayer inventory = new InventoryPlayer(this);
-
-    @Override
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    @Override
-    public InventoryContainer getInventoryContainer() {
-        return inventoryContainer;
-    }
 
     private InventoryEnderChest theInventoryEnderChest = new InventoryEnderChest();
 
@@ -197,16 +184,6 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
         this.fireResistance = 20;
     }
 
-    @Override
-    public float getHunger() {
-        return this.foodStats.getFoodLevel();
-    }
-
-    @Override
-    public String getUsername() {
-        return this.field_146106_i.getName();
-    }
-
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(1.0D);
@@ -215,9 +192,9 @@ public abstract class EntityPlayer extends EntityLivingBase implements ICommandS
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, Byte.valueOf((byte) 0));
-        this.dataWatcher.addObject(17, Float.valueOf(0.0F));
-        this.dataWatcher.addObject(18, Integer.valueOf(0));
+        this.dataWatcher.addObject(16, (byte) 0);
+        this.dataWatcher.addObject(17, 0.0F);
+        this.dataWatcher.addObject(18, 0);
     }
 
     /**

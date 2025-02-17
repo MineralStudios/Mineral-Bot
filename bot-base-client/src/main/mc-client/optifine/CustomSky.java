@@ -1,16 +1,16 @@
 package optifine;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Properties;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Properties;
 
 public class CustomSky {
     private static CustomSkyLayer[][] worldSkyLayers = (CustomSkyLayer[][]) null;
@@ -40,7 +40,8 @@ public class CustomSky {
 
             while (true) {
                 if (sls < 1000) {
-                    label69: {
+                    label69:
+                    {
                         String path = wslsTrim + sls + ".properties";
 
                         try {
@@ -99,9 +100,7 @@ public class CustomSky {
             worldCount = lastWorldId + 1;
             CustomSkyLayer[][] var17 = new CustomSkyLayer[worldCount][0];
 
-            for (int var18 = 0; var18 < var17.length; ++var18) {
-                var17[var18] = wsls[var18];
-            }
+            System.arraycopy(wsls, 0, var17, 0, var17.length);
 
             return var17;
         }

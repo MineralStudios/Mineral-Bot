@@ -1,22 +1,29 @@
 package net.minecraft.entity.ai;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import net.minecraft.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class EntityAITasks {
     private static final Logger logger = LogManager.getLogger(EntityAITasks.class);
 
-    /** A list of EntityAITaskEntrys in EntityAITasks. */
+    /**
+     * A list of EntityAITaskEntrys in EntityAITasks.
+     */
     private List taskEntries = new ArrayList();
 
-    /** A list of EntityAITaskEntrys that are currently being executed. */
+    /**
+     * A list of EntityAITaskEntrys that are currently being executed.
+     */
     private List executingTaskEntries = new ArrayList();
 
-    /** Instance of Profiler. */
+    /**
+     * Instance of Profiler.
+     */
     private final Profiler theProfiler;
     private int tickCount;
     private int tickRate = 3;
@@ -26,7 +33,7 @@ public class EntityAITasks {
     }
 
     public void addTask(int p_75776_1_, EntityAIBase p_75776_2_) {
-        this.taskEntries.add(new EntityAITasks.EntityAITaskEntry(p_75776_1_, p_75776_2_));
+        this.taskEntries.add(new EntityAITaskEntry(p_75776_1_, p_75776_2_));
     }
 
     /**
@@ -154,11 +161,11 @@ public class EntityAITasks {
      * Returns whether two EntityAITaskEntries can be executed concurrently
      */
     private boolean areTasksCompatible(EntityAITasks.EntityAITaskEntry p_75777_1_,
-            EntityAITasks.EntityAITaskEntry p_75777_2_) {
+                                       EntityAITasks.EntityAITaskEntry p_75777_2_) {
         return (p_75777_1_.action.getMutexBits() & p_75777_2_.action.getMutexBits()) == 0;
     }
 
-    class EntityAITaskEntry {
+    static class EntityAITaskEntry {
         public EntityAIBase action;
         public int priority;
 

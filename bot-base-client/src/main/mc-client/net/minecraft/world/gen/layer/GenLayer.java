@@ -1,6 +1,5 @@
 package net.minecraft.world.gen.layer;
 
-import java.util.concurrent.Callable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.util.ReportedException;
@@ -8,10 +7,14 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 
 public abstract class GenLayer {
-    /** seed from World#getWorldSeed that is used in the LCG prng */
+    /**
+     * seed from World#getWorldSeed that is used in the LCG prng
+     */
     private long worldGenSeed;
 
-    /** parent GenLayer that was provided via the constructor */
+    /**
+     * parent GenLayer that was provided via the constructor
+     */
     protected GenLayer parent;
 
     /**
@@ -21,7 +24,9 @@ public abstract class GenLayer {
      */
     private long chunkSeed;
 
-    /** base seed to the LCG prng provided via the constructor */
+    /**
+     * base seed to the LCG prng provided via the constructor
+     */
     protected long baseSeed;
 
     /**
@@ -94,7 +99,7 @@ public abstract class GenLayer {
         GenLayerVoronoiZoom var10 = new GenLayerVoronoiZoom(10L, var26);
         var26.initWorldGenSeed(p_75901_0_);
         var10.initWorldGenSeed(p_75901_0_);
-        return new GenLayer[] { var26, var10, var26 };
+        return new GenLayer[]{var26, var10, var26};
     }
 
     public GenLayer(long p_i2125_1_) {
@@ -173,9 +178,9 @@ public abstract class GenLayer {
             try {
                 return BiomeGenBase.func_150568_d(p_151616_0_) != null
                         && BiomeGenBase.func_150568_d(p_151616_1_) != null
-                                ? BiomeGenBase.func_150568_d(p_151616_0_)
-                                        .func_150569_a(BiomeGenBase.func_150568_d(p_151616_1_))
-                                : false;
+                        ? BiomeGenBase.func_150568_d(p_151616_0_)
+                        .func_150569_a(BiomeGenBase.func_150568_d(p_151616_1_))
+                        : false;
             } catch (Throwable var5) {
                 CrashReport var3 = CrashReport.makeCrashReport(var5, "Comparing biomes");
                 CrashReportCategory var4 = var3.makeCategory("Biomes being compared");
@@ -203,27 +208,27 @@ public abstract class GenLayer {
     protected int func_151617_b(int p_151617_1_, int p_151617_2_, int p_151617_3_, int p_151617_4_) {
         return p_151617_2_ == p_151617_3_ && p_151617_3_ == p_151617_4_ ? p_151617_2_
                 : (p_151617_1_ == p_151617_2_ && p_151617_1_ == p_151617_3_ ? p_151617_1_
-                        : (p_151617_1_ == p_151617_2_ && p_151617_1_ == p_151617_4_ ? p_151617_1_
-                                : (p_151617_1_ == p_151617_3_ && p_151617_1_ == p_151617_4_ ? p_151617_1_
-                                        : (p_151617_1_ == p_151617_2_ && p_151617_3_ != p_151617_4_ ? p_151617_1_
-                                                : (p_151617_1_ == p_151617_3_ && p_151617_2_ != p_151617_4_
-                                                        ? p_151617_1_
-                                                        : (p_151617_1_ == p_151617_4_ && p_151617_2_ != p_151617_3_
-                                                                ? p_151617_1_
-                                                                : (p_151617_2_ == p_151617_3_
-                                                                        && p_151617_1_ != p_151617_4_
-                                                                                ? p_151617_2_
-                                                                                : (p_151617_2_ == p_151617_4_
-                                                                                        && p_151617_1_ != p_151617_3_
-                                                                                                ? p_151617_2_
-                                                                                                : (p_151617_3_ == p_151617_4_
-                                                                                                        && p_151617_1_ != p_151617_2_
-                                                                                                                ? p_151617_3_
-                                                                                                                : this.func_151619_a(
-                                                                                                                        new int[] {
-                                                                                                                                p_151617_1_,
-                                                                                                                                p_151617_2_,
-                                                                                                                                p_151617_3_,
-                                                                                                                                p_151617_4_ }))))))))));
+                : (p_151617_1_ == p_151617_2_ && p_151617_1_ == p_151617_4_ ? p_151617_1_
+                : (p_151617_1_ == p_151617_3_ && p_151617_1_ == p_151617_4_ ? p_151617_1_
+                : (p_151617_1_ == p_151617_2_ && p_151617_3_ != p_151617_4_ ? p_151617_1_
+                : (p_151617_1_ == p_151617_3_ && p_151617_2_ != p_151617_4_
+                ? p_151617_1_
+                : (p_151617_1_ == p_151617_4_ && p_151617_2_ != p_151617_3_
+                ? p_151617_1_
+                : (p_151617_2_ == p_151617_3_
+                && p_151617_1_ != p_151617_4_
+                ? p_151617_2_
+                : (p_151617_2_ == p_151617_4_
+                && p_151617_1_ != p_151617_3_
+                ? p_151617_2_
+                : (p_151617_3_ == p_151617_4_
+                && p_151617_1_ != p_151617_2_
+                ? p_151617_3_
+                : this.func_151619_a(
+                new int[]{
+                        p_151617_1_,
+                        p_151617_2_,
+                        p_151617_3_,
+                        p_151617_4_}))))))))));
     }
 }

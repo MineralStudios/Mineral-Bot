@@ -2,13 +2,7 @@ package net.minecraft.client.renderer.texture;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.Callable;
-
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -18,10 +12,14 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import optifine.Config;
 import optifine.RandomMobs;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class TextureManager implements ITickable, IResourceManagerReloadListener {
     private static final Logger logger = LogManager.getLogger(TextureManager.class);
@@ -66,7 +64,7 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
     }
 
     public boolean loadTickableTexture(ResourceLocation par1ResourceLocation,
-            ITickableTextureObject par2TickableTextureObject) {
+                                       ITickableTextureObject par2TickableTextureObject) {
         if (this.loadTexture(par1ResourceLocation, par2TickableTextureObject)) {
             this.listTickables.add(par2TickableTextureObject);
             return true;
@@ -120,7 +118,7 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
         }
 
         this.mapTextureCounters.put(par1Str, var3);
-        ResourceLocation var4 = new ResourceLocation(String.format("dynamic/%s_%d", new Object[] { par1Str, var3 }));
+        ResourceLocation var4 = new ResourceLocation(String.format("dynamic/%s_%d", new Object[]{par1Str, var3}));
         if (par2DynamicTexture != null)
             this.loadTexture(var4, par2DynamicTexture);
         return var4;

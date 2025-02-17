@@ -1,7 +1,6 @@
 package gg.mineral.bot.base.client.player;
 
 import gg.mineral.bot.api.instance.ClientInstance;
-import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -22,10 +21,5 @@ public class FakePlayer extends EntityClientPlayerMP implements gg.mineral.bot.a
     @Nullable
     public ClientInstance getClientInstance() {
         return this.mc instanceof ClientInstance instance ? instance : null;
-    }
-
-    @Override
-    public PlayerMotionSimulator getMotionSimulator() {
-        return new gg.mineral.bot.base.client.math.simulation.PlayerMotionSimulator(this.mc, this);
     }
 }

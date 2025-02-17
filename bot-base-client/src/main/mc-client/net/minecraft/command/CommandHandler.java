@@ -1,26 +1,25 @@
 package net.minecraft.command;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.*;
+import java.util.Map.Entry;
+
 public class CommandHandler implements ICommandManager {
     private static final Logger logger = LogManager.getLogger(CommandHandler.class);
 
-    /** Map of Strings to the ICommand objects they represent */
+    /**
+     * Map of Strings to the ICommand objects they represent
+     */
     private final Map commandMap = new HashMap();
 
-    /** The set of ICommand objects currently loaded. */
+    /**
+     * The set of ICommand objects currently loaded.
+     */
     private final Set commandSet = new HashSet();
 
     public int executeCommand(ICommandSender p_71556_1_, String p_71556_2_) {
@@ -84,7 +83,7 @@ public class CommandHandler implements ICommandManager {
             }
         } catch (WrongUsageException var18) {
             var9 = new ChatComponentTranslation("commands.generic.usage",
-                    new Object[] { new ChatComponentTranslation(var18.getMessage(), var18.getErrorOjbects()) });
+                    new Object[]{new ChatComponentTranslation(var18.getMessage(), var18.getErrorOjbects())});
             var9.getChatStyle().setColor(EnumChatFormatting.RED);
             p_71556_1_.addChatMessage(var9);
         } catch (CommandException var19) {
@@ -133,9 +132,7 @@ public class CommandHandler implements ICommandManager {
     private static String[] dropFirstString(String[] p_71559_0_) {
         String[] var1 = new String[p_71559_0_.length - 1];
 
-        for (int var2 = 1; var2 < p_71559_0_.length; ++var2) {
-            var1[var2 - 1] = p_71559_0_[var2];
-        }
+        System.arraycopy(p_71559_0_, 1, var1, 0, p_71559_0_.length - 1);
 
         return var1;
     }

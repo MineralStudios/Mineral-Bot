@@ -910,7 +910,7 @@ public class Config {
             list.add(strs);
         }
 
-        String[] strs1 = (String[]) ((String[]) list.toArray(new String[list.size()]));
+        String[] strs1 = (String[]) list.toArray(new String[list.size()]);
         return strs1;
     }
 
@@ -936,13 +936,11 @@ public class Config {
             }
 
             DisplayMode[] var5 = (DisplayMode[]) ((DisplayMode[]) list.toArray(new DisplayMode[list.size()]));
-            Comparator var6 = new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    DisplayMode dm1 = (DisplayMode) o1;
-                    DisplayMode dm2 = (DisplayMode) o2;
-                    return dm1.getWidth() != dm2.getWidth() ? dm2.getWidth() - dm1.getWidth()
-                            : (dm1.getHeight() != dm2.getHeight() ? dm2.getHeight() - dm1.getHeight() : 0);
-                }
+            Comparator var6 = (o1, o2) -> {
+                DisplayMode dm1 = (DisplayMode) o1;
+                DisplayMode dm2 = (DisplayMode) o2;
+                return dm1.getWidth() != dm2.getWidth() ? dm2.getWidth() - dm1.getWidth()
+                        : (dm1.getHeight() != dm2.getHeight() ? dm2.getHeight() - dm1.getHeight() : 0);
             };
             Arrays.sort(var5, var6);
             return var5;
@@ -1547,8 +1545,7 @@ public class Config {
             int[] newArray = new int[newLen];
             System.arraycopy(intArray, 0, newArray, 0, arrLen);
 
-            for (int index = 0; index < copyFrom.length; ++index)
-                newArray[index + arrLen] = copyFrom[index];
+            System.arraycopy(copyFrom, 0, newArray, 0 + arrLen, copyFrom.length);
 
             return newArray;
         } else {

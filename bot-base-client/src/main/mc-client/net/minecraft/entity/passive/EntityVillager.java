@@ -1,37 +1,11 @@
 package net.minecraft.entity.passive;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
-
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.IMerchant;
-import net.minecraft.entity.INpc;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAvoidEntity;
-import net.minecraft.entity.ai.EntityAIFollowGolem;
-import net.minecraft.entity.ai.EntityAILookAtTradePlayer;
-import net.minecraft.entity.ai.EntityAIMoveIndoors;
-import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIPlay;
-import net.minecraft.entity.ai.EntityAIRestrictOpenDoor;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAITradePlayer;
-import net.minecraft.entity.ai.EntityAIVillagerMate;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.ai.EntityAIWatchClosest2;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,32 +25,49 @@ import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.village.Village;
 import net.minecraft.world.World;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
+
 public class EntityVillager extends EntityAgeable implements IMerchant, INpc {
     private int randomTickDivider;
     private boolean isMating;
     private boolean isPlaying;
     Village villageObj;
 
-    /** This villager's current customer. */
+    /**
+     * This villager's current customer.
+     */
     private EntityPlayer buyingPlayer;
 
-    /** Initialises the MerchantRecipeList.java */
+    /**
+     * Initialises the MerchantRecipeList.java
+     */
     private MerchantRecipeList buyingList;
     private int timeUntilReset;
 
-    /** addDefaultEquipmentAndRecipies is called if this is true */
+    /**
+     * addDefaultEquipmentAndRecipies is called if this is true
+     */
     private boolean needsInitilization;
     private int wealth;
 
-    /** Last player to trade with this villager, used for aggressivity. */
+    /**
+     * Last player to trade with this villager, used for aggressivity.
+     */
     private String lastBuyingPlayer;
     private boolean isLookingForHome;
     private float field_82191_bN;
 
-    /** Selling list of Villagers items. */
+    /**
+     * Selling list of Villagers items.
+     */
     private static final Map<Item, Tuple> villagersSellingList = new Object2ObjectOpenHashMap<>();
 
-    /** Selling list of Blacksmith items. */
+    /**
+     * Selling list of Blacksmith items.
+     */
     private static final Map<Item, Tuple> blacksmithSellingList = new Object2ObjectOpenHashMap<>();
 
     public EntityVillager(World p_i1747_1_) {
@@ -453,9 +444,9 @@ public class EntityVillager extends EntityAgeable implements IMerchant, INpc {
                 func_146089_b(var2, Items.experience_bottle, this.rand, this.adjustProbability(0.2F));
                 func_146089_b(var2, Items.redstone, this.rand, this.adjustProbability(0.4F));
                 func_146089_b(var2, Item.getItemFromBlock(Blocks.glowstone), this.rand, this.adjustProbability(0.3F));
-                Item[] var3 = new Item[] { Items.iron_sword, Items.diamond_sword, Items.iron_chestplate,
+                Item[] var3 = new Item[]{Items.iron_sword, Items.diamond_sword, Items.iron_chestplate,
                         Items.diamond_chestplate, Items.iron_axe, Items.diamond_axe, Items.iron_pickaxe,
-                        Items.diamond_pickaxe };
+                        Items.diamond_pickaxe};
                 Item[] var4 = var3;
                 int var5 = var3.length;
                 var6 = 0;
@@ -538,7 +529,7 @@ public class EntityVillager extends EntityAgeable implements IMerchant, INpc {
     }
 
     private static void func_146091_a(MerchantRecipeList p_146091_0_, Item p_146091_1_, Random p_146091_2_,
-            float p_146091_3_) {
+                                      float p_146091_3_) {
         if (p_146091_2_.nextFloat() < p_146091_3_) {
             p_146091_0_.add(new MerchantRecipe(func_146088_a(p_146091_1_, p_146091_2_), Items.emerald));
         }
@@ -552,13 +543,13 @@ public class EntityVillager extends EntityAgeable implements IMerchant, INpc {
         Tuple var2 = (Tuple) villagersSellingList.get(p_146092_0_);
         return var2 == null ? 1
                 : (((Integer) var2.getFirst()).intValue() >= ((Integer) var2.getSecond()).intValue()
-                        ? ((Integer) var2.getFirst()).intValue()
-                        : ((Integer) var2.getFirst()).intValue() + p_146092_1_.nextInt(
-                                ((Integer) var2.getSecond()).intValue() - ((Integer) var2.getFirst()).intValue()));
+                ? ((Integer) var2.getFirst()).intValue()
+                : ((Integer) var2.getFirst()).intValue() + p_146092_1_.nextInt(
+                ((Integer) var2.getSecond()).intValue() - ((Integer) var2.getFirst()).intValue()));
     }
 
     private static void func_146089_b(MerchantRecipeList p_146089_0_, Item p_146089_1_, Random p_146089_2_,
-            float p_146089_3_) {
+                                      float p_146089_3_) {
         if (p_146089_2_.nextFloat() < p_146089_3_) {
             int var4 = func_146090_c(p_146089_1_, p_146089_2_);
             ItemStack var5;
@@ -580,9 +571,9 @@ public class EntityVillager extends EntityAgeable implements IMerchant, INpc {
         Tuple var2 = (Tuple) blacksmithSellingList.get(p_146090_0_);
         return var2 == null ? 1
                 : (((Integer) var2.getFirst()).intValue() >= ((Integer) var2.getSecond()).intValue()
-                        ? ((Integer) var2.getFirst()).intValue()
-                        : ((Integer) var2.getFirst()).intValue() + p_146090_1_.nextInt(
-                                ((Integer) var2.getSecond()).intValue() - ((Integer) var2.getFirst()).intValue()));
+                ? ((Integer) var2.getFirst()).intValue()
+                : ((Integer) var2.getFirst()).intValue() + p_146090_1_.nextInt(
+                ((Integer) var2.getSecond()).intValue() - ((Integer) var2.getFirst()).intValue()));
     }
 
     public void handleHealthUpdate(byte p_70103_1_) {

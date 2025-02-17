@@ -1,26 +1,9 @@
 package net.minecraft.entity.monster;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.command.IEntitySelector;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAttackOnCollide;
-import net.minecraft.entity.ai.EntityAIBreakDoor;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveThroughVillage;
-import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -39,6 +22,10 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
 
 public class EntityZombie extends EntityMob {
     protected static final IAttribute field_110186_bp = (new RangedAttribute("zombie.spawnReinforcements", 0.0D, 0.0D,
@@ -188,7 +175,7 @@ public class EntityZombie extends EntityMob {
 
             if (var1 > 0.5F && this.rand.nextFloat() * 30.0F < (var1 - 0.4F) * 2.0F
                     && this.worldObj.canBlockSeeTheSky(MathHelper.floor_double(this.posX),
-                            MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))) {
+                    MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))) {
                 boolean var2 = true;
                 ItemStack var3 = this.getEquipmentInSlot(4);
 
@@ -445,7 +432,7 @@ public class EntityZombie extends EntityMob {
         this.setCanPickUpLoot(this.rand.nextFloat() < 0.55F * var2);
 
         if (p_110161_1_1 == null) {
-            p_110161_1_1 = new EntityZombie.GroupData(this.worldObj.rand.nextFloat() < 0.05F,
+            p_110161_1_1 = new GroupData(this.worldObj.rand.nextFloat() < 0.05F,
                     this.worldObj.rand.nextFloat() < 0.05F, null);
         }
 
@@ -648,13 +635,11 @@ public class EntityZombie extends EntityMob {
         super.setSize(this.field_146074_bv * p_146069_1_, this.field_146073_bw * p_146069_1_);
     }
 
-    class GroupData implements IEntityLivingData {
+    static class GroupData implements IEntityLivingData {
         public boolean field_142048_a;
         public boolean field_142046_b;
 
         private GroupData(boolean p_i2348_2_, boolean p_i2348_3_) {
-            this.field_142048_a = false;
-            this.field_142046_b = false;
             this.field_142048_a = p_i2348_2_;
             this.field_142046_b = p_i2348_3_;
         }

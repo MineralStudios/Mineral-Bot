@@ -20,6 +20,11 @@ public abstract class EntityMinecartContainer extends EntityMinecart implements 
      */
     private boolean dropContentsWhenDead = true;
 
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return minecartContainerItems;
+    }
+
     public EntityMinecartContainer(World p_i1716_1_) {
         super(p_i1716_1_);
     }

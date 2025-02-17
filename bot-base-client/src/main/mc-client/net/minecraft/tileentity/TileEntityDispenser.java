@@ -1,20 +1,24 @@
 package net.minecraft.tileentity;
 
-import java.util.Random;
-
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.Random;
 
 public class TileEntityDispenser extends TileEntity implements IInventory {
     private ItemStack[] field_146022_i = new ItemStack[9];
     private Random field_146021_j = new Random();
     protected String field_146020_a;
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return field_146022_i;
+    }
 
     /**
      * Returns the number of slots in the inventory.
@@ -184,7 +188,7 @@ public class TileEntityDispenser extends TileEntity implements IInventory {
         return this.worldObj.getTileEntity(this.field_145851_c, this.field_145848_d, this.field_145849_e) != this
                 ? false
                 : p_70300_1_.getDistanceSq((double) this.field_145851_c + 0.5D, (double) this.field_145848_d + 0.5D,
-                        (double) this.field_145849_e + 0.5D) <= 64.0D;
+                (double) this.field_145849_e + 0.5D) <= 64.0D;
     }
 
     public void openInventory() {

@@ -1,16 +1,5 @@
 package net.minecraft.world.chunk;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.Callable;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -31,6 +20,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.*;
 
 public class Chunk {
     private static final Logger logger = LogManager.getLogger(Chunk.class);
@@ -58,24 +51,36 @@ public class Chunk {
      */
     public int[] precipitationHeightMap;
 
-    /** Which columns need their skylightMaps updated. */
+    /**
+     * Which columns need their skylightMaps updated.
+     */
     public boolean[] updateSkylightColumns;
 
-    /** Whether or not this Chunk is currently loaded into the World */
+    /**
+     * Whether or not this Chunk is currently loaded into the World
+     */
     public boolean isChunkLoaded;
 
-    /** Reference to the World object. */
+    /**
+     * Reference to the World object.
+     */
     public World worldObj;
     public int[] heightMap;
 
-    /** The x coordinate of the chunk. */
+    /**
+     * The x coordinate of the chunk.
+     */
     public final int xPosition;
 
-    /** The z coordinate of the chunk. */
+    /**
+     * The z coordinate of the chunk.
+     */
     public final int zPosition;
     private boolean isGapLightingUpdated;
 
-    /** A Map of ChunkPositions to TileEntities in this chunk */
+    /**
+     * A Map of ChunkPositions to TileEntities in this chunk
+     */
     public Map<ChunkPosition, TileEntity> chunkTileEntityMap;
 
     /**
@@ -84,7 +89,9 @@ public class Chunk {
      */
     public List[] entityLists;
 
-    /** Boolean value indicating if the terrain is populated. */
+    /**
+     * Boolean value indicating if the terrain is populated.
+     */
     public boolean isTerrainPopulated;
     public boolean isLightPopulated;
     public boolean field_150815_m;
@@ -100,7 +107,9 @@ public class Chunk {
      */
     public boolean hasEntities;
 
-    /** The time according to World.worldTime when this chunk was last saved */
+    /**
+     * The time according to World.worldTime when this chunk was last saved
+     */
     public long lastSaveTime;
 
     /**
@@ -110,10 +119,14 @@ public class Chunk {
      */
     public boolean sendUpdates;
 
-    /** Lowest value in the heightmap. */
+    /**
+     * Lowest value in the heightmap.
+     */
     public int heightMapMinimum;
 
-    /** the cumulative number of ticks players have been in this chunk */
+    /**
+     * the cumulative number of ticks players have been in this chunk
+     */
     public long inhabitedTime;
 
     /**
@@ -545,7 +558,7 @@ public class Chunk {
     }
 
     public boolean func_150807_a(int p_150807_1_, int p_150807_2_, int p_150807_3_, Block p_150807_4_,
-            int p_150807_5_) {
+                                 int p_150807_5_) {
         int var6 = p_150807_3_ << 4 | p_150807_1_;
 
         if (p_150807_2_ >= this.precipitationHeightMap[var6] - 1)
@@ -604,7 +617,7 @@ public class Chunk {
             if (var14 != var15 && (var14 < var15
                     || this.getSavedLightValue(EnumSkyBlock.Sky, p_150807_1_, p_150807_2_, p_150807_3_) > 0
                     || this.getSavedLightValue(EnumSkyBlock.Block, p_150807_1_, p_150807_2_,
-                            p_150807_3_) > 0)) {
+                    p_150807_3_) > 0)) {
                 this.propagateSkylightOcclusion(p_150807_1_, p_150807_3_);
             }
         }
@@ -679,11 +692,11 @@ public class Chunk {
         return var5 == null
                 ? (this.canBlockSeeTheSky(p_76614_2_, p_76614_3_, p_76614_4_) ? p_76614_1_.defaultLightValue : 0)
                 : (p_76614_1_ == EnumSkyBlock.Sky
-                        ? (this.worldObj.provider.hasNoSky ? 0
-                                : var5.getExtSkylightValue(p_76614_2_, p_76614_3_ & 15, p_76614_4_))
-                        : (p_76614_1_ == EnumSkyBlock.Block
-                                ? var5.getExtBlocklightValue(p_76614_2_, p_76614_3_ & 15, p_76614_4_)
-                                : p_76614_1_.defaultLightValue));
+                ? (this.worldObj.provider.hasNoSky ? 0
+                : var5.getExtSkylightValue(p_76614_2_, p_76614_3_ & 15, p_76614_4_))
+                : (p_76614_1_ == EnumSkyBlock.Block
+                ? var5.getExtBlocklightValue(p_76614_2_, p_76614_3_ & 15, p_76614_4_)
+                : p_76614_1_.defaultLightValue));
     }
 
     /**
@@ -915,7 +928,7 @@ public class Chunk {
      * Args: entity, aabb, listToFill
      */
     public void getEntitiesWithinAABBForEntity(Entity p_76588_1_, AxisAlignedBB p_76588_2_, List p_76588_3_,
-            IEntitySelector p_76588_4_) {
+                                               IEntitySelector p_76588_4_) {
         int var5 = MathHelper.floor_double((p_76588_2_.minY - 2.0D) / 16.0D);
         int var6 = MathHelper.floor_double((p_76588_2_.maxY + 2.0D) / 16.0D);
         var5 = MathHelper.clamp_int(var5, 0, this.entityLists.length - 1);
@@ -952,7 +965,7 @@ public class Chunk {
      * entityClass, aabb, listToFill
      */
     public void getEntitiesOfTypeWithinAAAB(Class p_76618_1_, AxisAlignedBB p_76618_2_, List p_76618_3_,
-            IEntitySelector p_76618_4_) {
+                                            IEntitySelector p_76618_4_) {
         int var5 = MathHelper.floor_double((p_76618_2_.minY - 2.0D) / 16.0D);
         int var6 = MathHelper.floor_double((p_76618_2_.maxY + 2.0D) / 16.0D);
         var5 = MathHelper.clamp_int(var5, 0, this.entityLists.length - 1);
@@ -1269,7 +1282,7 @@ public class Chunk {
                 if (this.storageArrays[var2] == null
                         && (var7 == 0 || var7 == 15 || var3 == 0 || var3 == 15 || var4 == 0 || var4 == 15)
                         || this.storageArrays[var2] != null && this.storageArrays[var2].getBlockAt(var3, var7, var4)
-                                .getMaterial() == Material.air) {
+                        .getMaterial() == Material.air) {
                     if (this.worldObj.getBlock(var5, var8 - 1, var6).getLightValue() > 0) {
                         this.worldObj.func_147451_t(var5, var8 - 1, var6);
                     }

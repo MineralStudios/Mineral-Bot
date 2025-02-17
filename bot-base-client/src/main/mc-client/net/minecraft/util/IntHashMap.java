@@ -1,25 +1,38 @@
 package net.minecraft.util;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class IntHashMap {
-    /** An array of HashEntries representing the heads of hash slot lists */
+    /**
+     * An array of HashEntries representing the heads of hash slot lists
+     */
     private transient IntHashMap.Entry[] slots = new IntHashMap.Entry[16];
 
-    /** The number of items stored in this map */
+    /**
+     * The number of items stored in this map
+     */
     private transient int count;
 
-    /** The grow threshold */
+    /**
+     * The grow threshold
+     */
     private int threshold = 12;
 
-    /** The scale factor used to determine when to grow the table */
+    /**
+     * The scale factor used to determine when to grow the table
+     */
     private final float growFactor = 0.75F;
 
-    /** A serial stamp used to mark changes */
+    /**
+     * A serial stamp used to mark changes
+     */
     private transient volatile int versionStamp;
 
-    /** The set of all the keys stored in this MCHash object */
+    /**
+     * The set of all the keys stored in this MCHash object
+     */
     private Set keySet = new HashSet();
 
     /**
@@ -80,7 +93,7 @@ public class IntHashMap {
      * Adds a key and associated value to this map
      */
     public void addKey(int p_76038_1_, Object p_76038_2_) {
-        this.keySet.add(Integer.valueOf(p_76038_1_));
+        this.keySet.add(p_76038_1_);
         int var3 = computeHash(p_76038_1_);
         int var4 = getSlotIndex(var3, this.slots.length);
 
@@ -185,9 +198,7 @@ public class IntHashMap {
         ++this.versionStamp;
         IntHashMap.Entry[] var1 = this.slots;
 
-        for (int var2 = 0; var2 < var1.length; ++var2) {
-            var1[var2] = null;
-        }
+        Arrays.fill(var1, null);
 
         this.count = 0;
     }

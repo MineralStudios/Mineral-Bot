@@ -1,8 +1,5 @@
 package gg.mineral.bot.plugin.network;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator;
 import gg.mineral.server.combat.BacktrackSystem;
@@ -11,12 +8,10 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.val;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.v1_8_R3.EnumProtocolDirection;
-import net.minecraft.server.v1_8_R3.NetworkManager;
-import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayInFlying;
-import net.minecraft.server.v1_8_R3.PacketPlayInKeepAlive;
-import net.minecraft.server.v1_8_R3.PlayerConnection;
+import net.minecraft.server.v1_8_R3.*;
+
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ServerNetworkManager extends NetworkManager {
 
@@ -41,7 +36,7 @@ public class ServerNetworkManager extends NetworkManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handle(@SuppressWarnings("rawtypes") Packet packet) {
+    public void handle(Packet packet) {
         if (!started) {
             packetQueue.add(packet);
             return;
@@ -57,7 +52,7 @@ public class ServerNetworkManager extends NetworkManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void a(ChannelHandlerContext channelhandlercontext, @SuppressWarnings("rawtypes") Packet packet)
+    public void a(ChannelHandlerContext channelhandlercontext, Packet packet)
             throws Exception {
         val packetListener = this.getPacketListener();
 
@@ -96,9 +91,9 @@ public class ServerNetworkManager extends NetworkManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void a(@SuppressWarnings("rawtypes") Packet packet,
-            GenericFutureListener<? extends Future<? super Void>> genericfuturelistener,
-            GenericFutureListener<? extends Future<? super Void>>... agenericfuturelistener) {
+    public void a(Packet packet,
+                  GenericFutureListener<? extends Future<? super Void>> genericfuturelistener,
+                  GenericFutureListener<? extends Future<? super Void>>... agenericfuturelistener) {
         handle(packet);
     }
 

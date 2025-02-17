@@ -1,10 +1,5 @@
 package net.minecraft.tileentity;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,6 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
+import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class TileEntityChest extends TileEntity implements IInventory {
     private ItemStack[] field_145985_p = new ItemStack[36];
@@ -30,6 +29,11 @@ public class TileEntityChest extends TileEntity implements IInventory {
     private int field_145983_q;
     private int field_145982_r;
     private String field_145981_s;
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return field_145985_p;
+    }
 
     public TileEntityChest() {
         this.field_145982_r = -1;
@@ -183,7 +187,7 @@ public class TileEntityChest extends TileEntity implements IInventory {
         return this.worldObj.getTileEntity(this.field_145851_c, this.field_145848_d, this.field_145849_e) != this
                 ? false
                 : p_70300_1_.getDistanceSq((double) this.field_145851_c + 0.5D, (double) this.field_145848_d + 0.5D,
-                        (double) this.field_145849_e + 0.5D) <= 64.0D;
+                (double) this.field_145849_e + 0.5D) <= 64.0D;
     }
 
     public void updateContainingBlockInfo() {

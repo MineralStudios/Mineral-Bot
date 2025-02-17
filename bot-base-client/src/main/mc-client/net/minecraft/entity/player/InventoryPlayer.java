@@ -1,7 +1,5 @@
 package net.minecraft.entity.player;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -12,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ReportedException;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class InventoryPlayer implements IInventory {
     /**
@@ -20,18 +19,31 @@ public class InventoryPlayer implements IInventory {
      */
     public ItemStack[] mainInventory = new ItemStack[36];
 
-    /** An array of 4 item stacks containing the currently worn armor pieces. */
+    /**
+     * An array of 4 item stacks containing the currently worn armor pieces.
+     */
     public ItemStack[] armorInventory = new ItemStack[4];
 
-    /** The index of the currently held item (0-8). */
+    /**
+     * The index of the currently held item (0-8).
+     */
     public int currentItem;
 
-    /** The current ItemStack. */
+    /**
+     * The current ItemStack.
+     */
     private ItemStack currentItemStack;
 
-    /** The player whose inventory this is. */
+    /**
+     * The player whose inventory this is.
+     */
     public EntityPlayer player;
     private ItemStack itemStack;
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return mainInventory;
+    }
 
     /**
      * Set true whenever the inventory changes. Nothing sets it false so you will
@@ -85,7 +97,7 @@ public class InventoryPlayer implements IInventory {
                     && this.mainInventory[var2].stackSize < this.mainInventory[var2].getMaxStackSize()
                     && this.mainInventory[var2].stackSize < this.getInventoryStackLimit()
                     && (!this.mainInventory[var2].getHasSubtypes()
-                            || this.mainInventory[var2].getItemDamage() == p_70432_1_.getItemDamage())
+                    || this.mainInventory[var2].getItemDamage() == p_70432_1_.getItemDamage())
                     && ItemStack.areItemStackTagsEqual(this.mainInventory[var2], p_70432_1_)) {
                 return var2;
             }
@@ -199,7 +211,7 @@ public class InventoryPlayer implements IInventory {
         if (p_70439_1_ != null) {
             if (this.currentItemStack != null && this.currentItemStack.isItemEnchantable()
                     && this.findSlot(this.currentItemStack.getItem(),
-                            this.currentItemStack.getItemDamageForDisplay()) == this.currentItem) {
+                    this.currentItemStack.getItemDamageForDisplay()) == this.currentItem) {
                 return;
             }
 

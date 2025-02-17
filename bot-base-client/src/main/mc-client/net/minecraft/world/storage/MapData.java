@@ -1,16 +1,12 @@
 package net.minecraft.world.storage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
+
+import java.util.*;
 
 public class MapData extends WorldSavedData {
     public int xCenter;
@@ -18,7 +14,9 @@ public class MapData extends WorldSavedData {
     public byte dimension;
     public byte scale;
 
-    /** colours */
+    /**
+     * colours
+     */
     public byte[] colors = new byte[16384];
 
     /**
@@ -135,7 +133,7 @@ public class MapData extends WorldSavedData {
     }
 
     private void func_82567_a(int p_82567_1_, World p_82567_2_, String p_82567_3_, double p_82567_4_, double p_82567_6_,
-            double p_82567_8_) {
+                              double p_82567_8_) {
         int var10 = 1 << this.scale;
         float var11 = (float) (p_82567_4_ - (double) this.xCenter) / (float) var10;
         float var12 = (float) (p_82567_6_ - (double) this.zCenter) / (float) var10;
@@ -179,7 +177,7 @@ public class MapData extends WorldSavedData {
             }
         }
 
-        this.playersVisibleOnMap.put(p_82567_3_, new MapData.MapCoord((byte) p_82567_1_, var13, var14, var15));
+        this.playersVisibleOnMap.put(p_82567_3_, new MapCoord((byte) p_82567_1_, var13, var14, var15));
     }
 
     /**
@@ -234,7 +232,7 @@ public class MapData extends WorldSavedData {
                 byte var8 = p_76192_1_[var2 * 3 + 2];
                 byte var5 = p_76192_1_[var2 * 3 + 3];
                 byte var6 = (byte) (p_76192_1_[var2 * 3 + 1] & 15);
-                this.playersVisibleOnMap.put("icon-" + var2, new MapData.MapCoord(var7, var8, var5, var6));
+                this.playersVisibleOnMap.put("icon-" + var2, new MapCoord(var7, var8, var5, var6));
             }
         } else if (p_76192_1_[0] == 2) {
             this.scale = p_76192_1_[1];
@@ -253,7 +251,7 @@ public class MapData extends WorldSavedData {
         return var2;
     }
 
-    public class MapCoord {
+    public static class MapCoord {
         public byte iconSize;
         public byte centerX;
         public byte centerZ;
@@ -290,7 +288,7 @@ public class MapData extends WorldSavedData {
             byte[] var2;
 
             if (!this.field_82570_i) {
-                var2 = new byte[] { (byte) 2, MapData.this.scale };
+                var2 = new byte[]{(byte) 2, MapData.this.scale};
                 this.field_82570_i = true;
                 return var2;
             } else {

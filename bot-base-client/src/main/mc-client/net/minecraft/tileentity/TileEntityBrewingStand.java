@@ -1,9 +1,5 @@
 package net.minecraft.tileentity;
 
-import java.util.List;
-
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ISidedInventory;
@@ -13,15 +9,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionHelper;
+import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.List;
 
 public class TileEntityBrewingStand extends TileEntity implements ISidedInventory {
-    private static final int[] field_145941_a = new int[] { 3 };
-    private static final int[] field_145947_i = new int[] { 0, 1, 2 };
+    private static final int[] field_145941_a = new int[]{3};
+    private static final int[] field_145947_i = new int[]{0, 1, 2};
     private ItemStack[] field_145945_j = new ItemStack[4];
     private int field_145946_k;
     private int field_145943_l;
     private Item field_145944_m;
     private String field_145942_n;
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return field_145945_j;
+    }
 
     /**
      * Returns the name of the inventory
@@ -155,8 +159,8 @@ public class TileEntityBrewingStand extends TileEntity implements ISidedInventor
     private int func_145936_c(int p_145936_1_, ItemStack p_145936_2_) {
         return p_145936_2_ == null ? p_145936_1_
                 : (p_145936_2_.getItem().isPotionIngredient(p_145936_2_)
-                        ? PotionHelper.applyIngredient(p_145936_1_, p_145936_2_.getItem().getPotionEffect(p_145936_2_))
-                        : p_145936_1_);
+                ? PotionHelper.applyIngredient(p_145936_1_, p_145936_2_.getItem().getPotionEffect(p_145936_2_))
+                : p_145936_1_);
     }
 
     public void readFromNBT(NBTTagCompound p_145839_1_) {
@@ -263,7 +267,7 @@ public class TileEntityBrewingStand extends TileEntity implements ISidedInventor
         return this.worldObj.getTileEntity(this.field_145851_c, this.field_145848_d, this.field_145849_e) != this
                 ? false
                 : p_70300_1_.getDistanceSq((double) this.field_145851_c + 0.5D, (double) this.field_145848_d + 0.5D,
-                        (double) this.field_145849_e + 0.5D) <= 64.0D;
+                (double) this.field_145849_e + 0.5D) <= 64.0D;
     }
 
     public void openInventory() {

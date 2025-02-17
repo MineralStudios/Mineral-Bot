@@ -19,7 +19,7 @@ public class ContainerBeacon extends Container {
 
     public ContainerBeacon(InventoryPlayer p_i1802_1_, TileEntityBeacon p_i1802_2_) {
         this.theBeacon = p_i1802_2_;
-        this.addSlotToContainer(this.beaconSlot = new ContainerBeacon.BeaconSlot(p_i1802_2_, 0, 136, 110));
+        this.addSlotToContainer(this.beaconSlot = new BeaconSlot(p_i1802_2_, 0, 136, 110));
         byte var3 = 36;
         short var4 = 137;
         int var5;
@@ -118,7 +118,7 @@ public class ContainerBeacon extends Container {
         return var3;
     }
 
-    class BeaconSlot extends Slot {
+    static class BeaconSlot extends Slot {
 
         public BeaconSlot(IInventory p_i1801_2_, int p_i1801_3_, int p_i1801_4_, int p_i1801_5_) {
             super(p_i1801_2_, p_i1801_3_, p_i1801_4_, p_i1801_5_);
@@ -127,7 +127,7 @@ public class ContainerBeacon extends Container {
         public boolean isItemValid(ItemStack p_75214_1_) {
             return p_75214_1_ == null ? false
                     : p_75214_1_.getItem() == Items.emerald || p_75214_1_.getItem() == Items.diamond
-                            || p_75214_1_.getItem() == Items.gold_ingot || p_75214_1_.getItem() == Items.iron_ingot;
+                    || p_75214_1_.getItem() == Items.gold_ingot || p_75214_1_.getItem() == Items.iron_ingot;
         }
 
         public int getSlotStackLimit() {

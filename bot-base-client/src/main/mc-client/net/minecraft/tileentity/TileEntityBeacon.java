@@ -1,10 +1,5 @@
 package net.minecraft.tileentity;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -19,10 +14,14 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.util.AxisAlignedBB;
+import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class TileEntityBeacon extends TileEntity implements IInventory {
-    public static final Potion[][] field_146009_a = new Potion[][] { { Potion.moveSpeed, Potion.digSpeed },
-            { Potion.resistance, Potion.jump }, { Potion.damageBoost }, { Potion.regeneration } };
+    public static final Potion[][] field_146009_a = new Potion[][]{{Potion.moveSpeed, Potion.digSpeed},
+            {Potion.resistance, Potion.jump}, {Potion.damageBoost}, {Potion.regeneration}};
     private long field_146016_i;
     private float field_146014_j;
     private boolean field_146015_k;
@@ -37,6 +36,11 @@ public class TileEntityBeacon extends TileEntity implements IInventory {
             this.func_146003_y();
             this.func_146000_x();
         }
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return new gg.mineral.bot.api.inv.item.ItemStack[]{field_146011_o};
     }
 
     private void func_146000_x() {
@@ -116,11 +120,11 @@ public class TileEntityBeacon extends TileEntity implements IInventory {
 
         if (!this.worldObj.isClient && this.field_146012_l == 4 && var1 < this.field_146012_l) {
             Iterator var8 = this.worldObj.getEntitiesWithinAABB(EntityPlayer.class,
-                    AxisAlignedBB
-                            .getBoundingBox((double) this.field_145851_c, (double) this.field_145848_d,
-                                    (double) this.field_145849_e, (double) this.field_145851_c,
-                                    (double) (this.field_145848_d - 4), (double) this.field_145849_e)
-                            .expand(10.0D, 5.0D, 10.0D))
+                            AxisAlignedBB
+                                    .getBoundingBox((double) this.field_145851_c, (double) this.field_145848_d,
+                                            (double) this.field_145849_e, (double) this.field_145851_c,
+                                            (double) (this.field_145848_d - 4), (double) this.field_145849_e)
+                                    .expand(10.0D, 5.0D, 10.0D))
                     .iterator();
 
             while (var8.hasNext()) {
@@ -328,7 +332,7 @@ public class TileEntityBeacon extends TileEntity implements IInventory {
         return this.worldObj.getTileEntity(this.field_145851_c, this.field_145848_d, this.field_145849_e) != this
                 ? false
                 : p_70300_1_.getDistanceSq((double) this.field_145851_c + 0.5D, (double) this.field_145848_d + 0.5D,
-                        (double) this.field_145849_e + 0.5D) <= 64.0D;
+                (double) this.field_145849_e + 0.5D) <= 64.0D;
     }
 
     public void openInventory() {

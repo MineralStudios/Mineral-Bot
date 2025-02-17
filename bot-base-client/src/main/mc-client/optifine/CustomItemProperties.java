@@ -1,18 +1,12 @@
 package optifine;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-
 import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.*;
 
 public class CustomItemProperties {
     public String name = null;

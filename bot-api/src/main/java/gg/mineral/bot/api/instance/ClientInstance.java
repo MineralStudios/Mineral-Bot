@@ -19,7 +19,8 @@ public interface ClientInstance extends EventHandler {
      *
      * @param goals the goals
      */
-    <T extends Goal> void startGoals(@SuppressWarnings("unchecked") T... goals);
+    @SuppressWarnings("unchecked")
+    <T extends Goal> void startGoals(T... goals);
 
     /**
      * Gets the current latency.

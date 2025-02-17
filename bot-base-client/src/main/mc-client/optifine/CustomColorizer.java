@@ -1,16 +1,5 @@
 package optifine;
 
-import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
-import javax.imageio.ImageIO;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStem;
 import net.minecraft.block.material.Material;
@@ -27,6 +16,13 @@ import net.minecraft.world.ColorizerFoliage;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 public class CustomColorizer {
     private static int[] grassColors = null;
@@ -90,29 +86,29 @@ public class CustomColorizer {
         String mcpColormap = "mcpatcher/colormap/";
         grassColors = getCustomColors("textures/colormap/grass.png", 65536);
         foliageColors = getCustomColors("textures/colormap/foliage.png", 65536);
-        String[] waterPaths = new String[] { "water.png", "watercolorX.png" };
+        String[] waterPaths = new String[]{"water.png", "watercolorX.png"};
         waterColors = getCustomColors(mcpColormap, waterPaths, 65536);
 
         if (Config.isCustomColors()) {
-            String[] pinePaths = new String[] { "pine.png", "pinecolor.png" };
+            String[] pinePaths = new String[]{"pine.png", "pinecolor.png"};
             foliagePineColors = getCustomColors(mcpColormap, pinePaths, 65536);
-            String[] birchPaths = new String[] { "birch.png", "birchcolor.png" };
+            String[] birchPaths = new String[]{"birch.png", "birchcolor.png"};
             foliageBirchColors = getCustomColors(mcpColormap, birchPaths, 65536);
-            String[] swampGrassPaths = new String[] { "swampgrass.png", "swampgrasscolor.png" };
+            String[] swampGrassPaths = new String[]{"swampgrass.png", "swampgrasscolor.png"};
             swampGrassColors = getCustomColors(mcpColormap, swampGrassPaths, 65536);
-            String[] swampFoliagePaths = new String[] { "swampfoliage.png", "swampfoliagecolor.png" };
+            String[] swampFoliagePaths = new String[]{"swampfoliage.png", "swampfoliagecolor.png"};
             swampFoliageColors = getCustomColors(mcpColormap, swampFoliagePaths, 65536);
-            String[] sky0Paths = new String[] { "sky0.png", "skycolor0.png" };
+            String[] sky0Paths = new String[]{"sky0.png", "skycolor0.png"};
             skyColors = getCustomColors(mcpColormap, sky0Paths, 65536);
-            String[] fog0Paths = new String[] { "fog0.png", "fogcolor0.png" };
+            String[] fog0Paths = new String[]{"fog0.png", "fogcolor0.png"};
             fogColors = getCustomColors(mcpColormap, fog0Paths, 65536);
-            String[] underwaterPaths = new String[] { "underwater.png", "underwatercolor.png" };
+            String[] underwaterPaths = new String[]{"underwater.png", "underwatercolor.png"};
             underwaterColors = getCustomColors(mcpColormap, underwaterPaths, 65536);
-            String[] redstonePaths = new String[] { "redstone.png", "redstonecolor.png" };
+            String[] redstonePaths = new String[]{"redstone.png", "redstonecolor.png"};
             redstoneColors = getCustomColors(mcpColormap, redstonePaths, 16);
-            String[] stemPaths = new String[] { "stem.png", "stemcolor.png" };
+            String[] stemPaths = new String[]{"stem.png", "stemcolor.png"};
             stemColors = getCustomColors(mcpColormap, stemPaths, 8);
-            String[] myceliumPaths = new String[] { "myceliumparticle.png", "myceliumparticlecolor.png" };
+            String[] myceliumPaths = new String[]{"myceliumparticle.png", "myceliumparticlecolor.png"};
             myceliumParticleColors = getCustomColors(mcpColormap, myceliumPaths, -1);
             int[][] lightMapsColors = new int[3][];
             lightMapsColorsRgb = new float[3][][];
@@ -179,7 +175,7 @@ public class CustomColorizer {
             Properties props = new Properties();
             props.load(in);
             lilyPadColor = readColor(props, "lilypad");
-            particleWaterColor = readColor(props, new String[] { "particle.water", "drop.water" });
+            particleWaterColor = readColor(props, new String[]{"particle.water", "drop.water"});
             particlePortalColor = readColor(props, "particle.portal");
             fogColorNether = readColorVec3(props, "fog.nether");
             fogColorEnd = readColorVec3(props, "fog.end");
@@ -461,7 +457,7 @@ public class CustomColorizer {
     }
 
     private static int getSmoothColorMultiplier(Block block, IBlockAccess blockAccess, int x, int y, int z,
-            int[] colors, int[] swampColors, int type, int metadata) {
+                                                int[] colors, int[] swampColors, int type, int metadata) {
         int sumRed = 0;
         int sumGreen = 0;
         int sumBlue = 0;
@@ -518,13 +514,13 @@ public class CustomColorizer {
     public static int getFluidColor(Block block, IBlockAccess blockAccess, int x, int y, int z) {
         return block
                 .getMaterial() != Material.water
-                        ? block.colorMultiplier(blockAccess, x, y, z)
-                        : (waterColors != null
-                                ? (Config.isSmoothBiomes()
-                                        ? getSmoothColor(waterColors, blockAccess, (double) x, (double) y, (double) z,
-                                                3, 1)
-                                        : getCustomColor(waterColors, blockAccess, x, y, z))
-                                : (!Config.isSwampColors() ? 16777215 : block.colorMultiplier(blockAccess, x, y, z)));
+                ? block.colorMultiplier(blockAccess, x, y, z)
+                : (waterColors != null
+                ? (Config.isSmoothBiomes()
+                ? getSmoothColor(waterColors, blockAccess, (double) x, (double) y, (double) z,
+                3, 1)
+                : getCustomColor(waterColors, blockAccess, x, y, z))
+                : (!Config.isSwampColors() ? 16777215 : block.colorMultiplier(blockAccess, x, y, z)));
     }
 
     private static int getCustomColor(int[] colors, IBlockAccess blockAccess, int x, int y, int z) {
@@ -743,7 +739,7 @@ public class CustomColorizer {
     }
 
     public static int getSmoothColor(int[] colors, IBlockAccess blockAccess, double x, double y, double z, int samples,
-            int step) {
+                                     int step) {
         if (colors == null) {
             return -1;
         } else {
@@ -920,9 +916,7 @@ public class CustomColorizer {
                 float[] var15 = origMap[offset + var14 * width + xLow];
                 float[] var16 = colRgb[var14];
 
-                for (int var17 = 0; var17 < 3; ++var17) {
-                    var16[var17] = var15[var17];
-                }
+                System.arraycopy(var15, 0, var16, 0, 3);
             }
         } else {
             float dLow = 1.0F - (x - (float) xLow);
@@ -961,7 +955,7 @@ public class CustomColorizer {
     }
 
     public static Vec3 getWorldSkyColor(Minecraft mc, Vec3 skyVec, WorldClient world, EntityLivingBase renderViewEntity,
-            float partialTicks) {
+                                        float partialTicks) {
         int worldType = world.provider.dimensionId;
 
         switch (worldType) {

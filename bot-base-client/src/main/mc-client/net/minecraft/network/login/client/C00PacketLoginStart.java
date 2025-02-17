@@ -1,20 +1,17 @@
 package net.minecraft.network.login.client;
 
 import com.mojang.authlib.GameProfile;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.io.IOException;
-import java.util.UUID;
-
-import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.login.INetHandlerLoginServer;
+
+import java.io.IOException;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor

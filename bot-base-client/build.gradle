@@ -1,4 +1,3 @@
-
 repositories {
     maven {
         url 'https://libraries.minecraft.net/'
@@ -53,7 +52,7 @@ apply plugin: 'application'
 
 mainClassName = 'gg.mineral.bot.base.client.StandaloneLauncher'
 
-task runMinecraftClient {
+tasks.register('runMinecraftClient') {
     doLast {
         def tempDir = System.getProperty("java.io.tmpdir")
         def minecraftDir = new File(tempDir, "minecraft_temp")

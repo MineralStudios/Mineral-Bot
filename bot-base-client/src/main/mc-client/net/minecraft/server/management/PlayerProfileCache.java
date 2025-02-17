@@ -49,7 +49,7 @@ public class PlayerProfileCache {
         this.field_152665_g = p_i1171_2_;
         GsonBuilder var3 = new GsonBuilder();
         var3.registerTypeHierarchyAdapter(PlayerProfileCache.ProfileEntry.class,
-                new PlayerProfileCache.Serializer(null));
+                new Serializer(null));
         this.field_152660_b = var3.create();
         this.func_152657_b();
     }
@@ -93,7 +93,7 @@ public class PlayerProfileCache {
         }
 
         String var10 = p_152651_1_.getName().toLowerCase(Locale.ROOT);
-        PlayerProfileCache.ProfileEntry var5 = new PlayerProfileCache.ProfileEntry(p_152651_1_, p_152651_2_, null);
+        PlayerProfileCache.ProfileEntry var5 = new ProfileEntry(p_152651_1_, p_152651_2_, null);
         LinkedList var6 = this.field_152663_e;
 
         synchronized (this.field_152663_e) {
@@ -256,7 +256,7 @@ public class PlayerProfileCache {
         return var2;
     }
 
-    class ProfileEntry {
+    static class ProfileEntry {
         private final GameProfile field_152672_b;
         private final Date field_152673_c;
 
@@ -278,7 +278,7 @@ public class PlayerProfileCache {
         }
     }
 
-    class Serializer implements JsonDeserializer, JsonSerializer {
+    static class Serializer implements JsonDeserializer, JsonSerializer {
 
         private Serializer() {
         }
@@ -323,7 +323,7 @@ public class PlayerProfileCache {
                             return null;
                         }
 
-                        PlayerProfileCache.ProfileEntry var12 = PlayerProfileCache.this.new ProfileEntry(
+                        PlayerProfileCache.ProfileEntry var12 = new ProfileEntry(
                                 new GameProfile(var11, var9), var10, null);
                         return var12;
                     } else {

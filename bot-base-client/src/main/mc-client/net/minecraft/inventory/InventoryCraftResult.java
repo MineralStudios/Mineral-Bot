@@ -1,14 +1,20 @@
 package net.minecraft.inventory;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class InventoryCraftResult implements IInventory {
-    /** A list of one item containing the result of the crafting formula */
-    private ItemStack[] stackResult = new ItemStack[1];
+    /**
+     * A list of one item containing the result of the crafting formula
+     */
+    private final ItemStack[] stackResult = new ItemStack[1];
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return stackResult;
+    }
 
     /**
      * Returns the number of slots in the inventory.

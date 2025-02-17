@@ -1,26 +1,7 @@
 package net.minecraft.client.renderer;
 
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.Callable;
-
-import javax.annotation.Nullable;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.lwjgl.BufferUtils;
-
-import org.lwjgl.opengl.ARBOcclusionQuery;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Maps;
-
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
@@ -32,33 +13,7 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.particle.EntityAuraFX;
-import net.minecraft.client.particle.EntityBlockDustFX;
-import net.minecraft.client.particle.EntityBreakingFX;
-import net.minecraft.client.particle.EntityBubbleFX;
-import net.minecraft.client.particle.EntityCloudFX;
-import net.minecraft.client.particle.EntityCritFX;
-import net.minecraft.client.particle.EntityDiggingFX;
-import net.minecraft.client.particle.EntityDropParticleFX;
-import net.minecraft.client.particle.EntityEnchantmentTableParticleFX;
-import net.minecraft.client.particle.EntityExplodeFX;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.particle.EntityFireworkSparkFX;
-import net.minecraft.client.particle.EntityFishWakeFX;
-import net.minecraft.client.particle.EntityFlameFX;
-import net.minecraft.client.particle.EntityFootStepFX;
-import net.minecraft.client.particle.EntityHeartFX;
-import net.minecraft.client.particle.EntityHugeExplodeFX;
-import net.minecraft.client.particle.EntityLargeExplodeFX;
-import net.minecraft.client.particle.EntityLavaFX;
-import net.minecraft.client.particle.EntityNoteFX;
-import net.minecraft.client.particle.EntityPortalFX;
-import net.minecraft.client.particle.EntityReddustFX;
-import net.minecraft.client.particle.EntitySmokeFX;
-import net.minecraft.client.particle.EntitySnowShovelFX;
-import net.minecraft.client.particle.EntitySpellParticleFX;
-import net.minecraft.client.particle.EntitySplashFX;
-import net.minecraft.client.particle.EntitySuspendFX;
+import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -82,25 +37,18 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntitySign;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.ReportedException;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraft.world.IWorldAccess;
 import net.minecraft.world.WorldProvider;
-import optifine.CompactArrayList;
-import optifine.Config;
-import optifine.CustomColorizer;
-import optifine.CustomSky;
-import optifine.EntitySorterFast;
-import optifine.RandomMobs;
-import optifine.Reflector;
-import optifine.WrDisplayListAllocator;
-import optifine.WrUpdates;
+import optifine.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBOcclusionQuery;
+
+import javax.annotation.Nullable;
+import java.nio.IntBuffer;
+import java.util.*;
 
 public class RenderGlobal implements IWorldAccess {
     private static final Logger logger = LogManager.getLogger(RenderGlobal.class);
@@ -112,7 +60,9 @@ public class RenderGlobal implements IWorldAccess {
     public List tileEntities = new ArrayList();
     public WorldClient theWorld;
 
-    /** The RenderEngine instance used by RenderGlobal */
+    /**
+     * The RenderEngine instance used by RenderGlobal
+     */
     public final TextureManager renderEngine;
     public CompactArrayList worldRenderersToUpdate = new CompactArrayList(100, 0.8F);
     private WorldRenderer[] sortedWorldRenderers;
@@ -121,17 +71,25 @@ public class RenderGlobal implements IWorldAccess {
     private int renderChunksTall;
     private int renderChunksDeep;
 
-    /** OpenGL render lists base */
+    /**
+     * OpenGL render lists base
+     */
     public int glRenderListBase;
 
-    /** A reference to the Minecraft object. */
+    /**
+     * A reference to the Minecraft object.
+     */
     public Minecraft mc;
     public RenderBlocks renderBlocksRg;
 
-    /** OpenGL occlusion query base */
+    /**
+     * OpenGL occlusion query base
+     */
     private IntBuffer glOcclusionQueryBase;
 
-    /** Is occlusion testing enabled */
+    /**
+     * Is occlusion testing enabled
+     */
     private boolean occlusionEnabled;
 
     /**
@@ -139,31 +97,49 @@ public class RenderGlobal implements IWorldAccess {
      */
     private int cloudTickCounter;
 
-    /** The star GL Call list */
+    /**
+     * The star GL Call list
+     */
     private int starGLCallList;
 
-    /** OpenGL sky list */
+    /**
+     * OpenGL sky list
+     */
     private int glSkyList;
 
-    /** OpenGL sky list 2 */
+    /**
+     * OpenGL sky list 2
+     */
     private int glSkyList2;
 
-    /** Minimum block X */
+    /**
+     * Minimum block X
+     */
     private int minBlockX;
 
-    /** Minimum block Y */
+    /**
+     * Minimum block Y
+     */
     private int minBlockY;
 
-    /** Minimum block Z */
+    /**
+     * Minimum block Z
+     */
     private int minBlockZ;
 
-    /** Maximum block X */
+    /**
+     * Maximum block X
+     */
     private int maxBlockX;
 
-    /** Maximum block Y */
+    /**
+     * Maximum block Y
+     */
     private int maxBlockY;
 
-    /** Maximum block Z */
+    /**
+     * Maximum block Z
+     */
     private int maxBlockZ;
 
     /**
@@ -178,31 +154,49 @@ public class RenderGlobal implements IWorldAccess {
     private int displayListEntities;
     private int renderDistanceChunks = -1;
 
-    /** Render entities startup counter (init value=2) */
+    /**
+     * Render entities startup counter (init value=2)
+     */
     private int renderEntitiesStartupCounter = 2;
 
-    /** Count entities total */
+    /**
+     * Count entities total
+     */
     private int countEntitiesTotal;
 
-    /** Count entities rendered */
+    /**
+     * Count entities rendered
+     */
     private int countEntitiesRendered;
 
-    /** Count entities hidden */
+    /**
+     * Count entities hidden
+     */
     private int countEntitiesHidden;
 
-    /** Occlusion query result */
+    /**
+     * Occlusion query result
+     */
     IntBuffer occlusionResult = GLAllocation.createDirectIntBuffer(64);
 
-    /** How many renderers are loaded this frame that try to be rendered */
+    /**
+     * How many renderers are loaded this frame that try to be rendered
+     */
     private int renderersLoaded;
 
-    /** How many renderers are being clipped by the frustrum this frame */
+    /**
+     * How many renderers are being clipped by the frustrum this frame
+     */
     private int renderersBeingClipped;
 
-    /** How many renderers are being occluded this frame */
+    /**
+     * How many renderers are being occluded this frame
+     */
     private int renderersBeingOccluded;
 
-    /** How many renderers are actually being rendered this frame */
+    /**
+     * How many renderers are actually being rendered this frame
+     */
     private int renderersBeingRendered;
 
     /**
@@ -211,18 +205,26 @@ public class RenderGlobal implements IWorldAccess {
      */
     private int renderersSkippingRenderPass;
 
-    /** Dummy render int */
+    /**
+     * Dummy render int
+     */
     private int dummyRenderInt;
 
-    /** World renderers check index */
+    /**
+     * World renderers check index
+     */
     private int worldRenderersCheckIndex;
 
-    /** List of OpenGL lists for the current render pass */
+    /**
+     * List of OpenGL lists for the current render pass
+     */
     private List glRenderLists = new ArrayList();
 
-    /** All render lists (fixed length 4) */
-    private RenderList[] allRenderLists = new RenderList[] { new RenderList(), new RenderList(), new RenderList(),
-            new RenderList() };
+    /**
+     * All render lists (fixed length 4)
+     */
+    private RenderList[] allRenderLists = new RenderList[]{new RenderList(), new RenderList(), new RenderList(),
+            new RenderList()};
 
     /**
      * Previous x position when the renderers were sorted. (Once the distance moves
@@ -631,7 +633,7 @@ public class RenderGlobal implements IWorldAccess {
                 var19 = (Entity) this.theWorld.weatherEffects.get(var25);
 
                 if (!hasEntityShouldRenderInPass || Reflector.callBoolean(var19,
-                        Reflector.ForgeEntity_shouldRenderInPass, new Object[] { Integer.valueOf(pass) })) {
+                        Reflector.ForgeEntity_shouldRenderInPass, new Object[]{Integer.valueOf(pass)})) {
                     ++this.countEntitiesRendered;
 
                     if (var19.isInRangeToRender3d(var4, var6, var8))
@@ -649,10 +651,10 @@ public class RenderGlobal implements IWorldAccess {
                 var19 = (Entity) var24.get(var25);
 
                 if (!hasEntityShouldRenderInPass || Reflector.callBoolean(var19,
-                        Reflector.ForgeEntity_shouldRenderInPass, new Object[] { Integer.valueOf(pass) })) {
+                        Reflector.ForgeEntity_shouldRenderInPass, new Object[]{Integer.valueOf(pass)})) {
                     boolean te = var19.isInRangeToRender3d(var4, var6, var8)
                             && (var19.ignoreFrustumCheck || p_147589_2_.isBoundingBoxInFrustum(var19.boundingBox)
-                                    || var19.riddenByEntity == this.mc.thePlayer);
+                            || var19.riddenByEntity == this.mc.thePlayer);
 
                     if (!te && var19 instanceof EntityLiving) {
                         EntityLiving var28 = (EntityLiving) var19;
@@ -666,7 +668,7 @@ public class RenderGlobal implements IWorldAccess {
                     if (te && (var19 != this.mc.renderViewEntity || this.mc.gameSettings.thirdPersonView != 0
                             || this.mc.renderViewEntity.isPlayerSleeping())
                             && this.theWorld.blockExists(MathHelper.floor_double(var19.posX), 0,
-                                    MathHelper.floor_double(var19.posZ))) {
+                            MathHelper.floor_double(var19.posZ))) {
                         ++this.countEntitiesRendered;
 
                         if (var19.getClass() == EntityItemFrame.class) {
@@ -691,7 +693,7 @@ public class RenderGlobal implements IWorldAccess {
                 TileEntity var27 = (TileEntity) this.tileEntities.get(var25);
 
                 if (!hasTileEntityShouldRenderInPass || Reflector.callBoolean(var27,
-                        Reflector.ForgeTileEntity_shouldRenderInPass, new Object[] { Integer.valueOf(pass) })) {
+                        Reflector.ForgeTileEntity_shouldRenderInPass, new Object[]{Integer.valueOf(pass)})) {
                     AxisAlignedBB var29 = this.getTileEntityBoundingBox(var27);
 
                     if (var29 == AABB_INFINITE || p_147589_2_.isBoundingBoxInFrustum(var29)) {
@@ -1388,7 +1390,7 @@ public class RenderGlobal implements IWorldAccess {
 
             if (var3 != null) {
                 Reflector.callVoid(var3, Reflector.IRenderHandler_render,
-                        new Object[] { Float.valueOf(par1), this.theWorld, this.mc });
+                        new Object[]{Float.valueOf(par1), this.theWorld, this.mc});
                 return;
             }
         }
@@ -1662,12 +1664,12 @@ public class RenderGlobal implements IWorldAccess {
                 WorldProvider partialTicks = this.mc.theWorld != null ? this.mc.theWorld.provider : null;
                 Object var2 = partialTicks != null
                         ? Reflector.call(partialTicks, Reflector.ForgeWorldProvider_getCloudRenderer,
-                                new Object[0])
+                        new Object[0])
                         : null;
 
                 if (var2 != null) {
                     Reflector.callVoid(var2, Reflector.IRenderHandler_render,
-                            new Object[] { Float.valueOf(par1), this.theWorld, this.mc });
+                            new Object[]{Float.valueOf(par1), this.theWorld, this.mc});
                     return;
                 }
             }
@@ -2196,7 +2198,7 @@ public class RenderGlobal implements IWorldAccess {
      * itemStack, partialTickTime
      */
     public void drawSelectionBox(EntityPlayer par1EntityPlayer, MovingObjectPosition par2MovingObjectPosition, int par3,
-            float par4) {
+                                 float par4) {
         if (par3 == 0 && par2MovingObjectPosition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             GL11.glEnable(GL11.GL_BLEND);
             OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -2219,7 +2221,7 @@ public class RenderGlobal implements IWorldAccess {
                         + (par1EntityPlayer.posZ - par1EntityPlayer.lastTickPosZ) * (double) par4;
                 drawOutlinedBoundingBox(
                         this.mc, var6.getSelectedBoundingBoxFromPool(this.theWorld, par2MovingObjectPosition.blockX,
-                                par2MovingObjectPosition.blockY, par2MovingObjectPosition.blockZ)
+                                        par2MovingObjectPosition.blockY, par2MovingObjectPosition.blockZ)
                                 .expand((double) var5, (double) var5, (double) var5)
                                 .getOffsetBoundingBox(-var7, -var9, -var11),
                         -1);
@@ -2345,7 +2347,7 @@ public class RenderGlobal implements IWorldAccess {
      * min z, max x, max y, max z
      */
     public void markBlockRangeForRenderUpdate(int p_147585_1_, int p_147585_2_, int p_147585_3_, int p_147585_4_,
-            int p_147585_5_, int p_147585_6_) {
+                                              int p_147585_5_, int p_147585_6_) {
         this.markBlocksForUpdate(p_147585_1_ - 1, p_147585_2_ - 1, p_147585_3_ - 1, p_147585_4_ + 1, p_147585_5_ + 1,
                 p_147585_6_ + 1);
     }
@@ -2397,7 +2399,7 @@ public class RenderGlobal implements IWorldAccess {
 
             if (Reflector.ForgeItemRecord_getRecordResource.exists() && var7 != null) {
                 resource = (ResourceLocation) Reflector.call(var7, Reflector.ForgeItemRecord_getRecordResource,
-                        new Object[] { par1Str });
+                        new Object[]{par1Str});
             }
 
             if (resource == null) {
@@ -2423,14 +2425,14 @@ public class RenderGlobal implements IWorldAccess {
      * Plays sound to all near players except the player reference given
      */
     public void playSoundToNearExcept(EntityPlayer par1EntityPlayer, String par2Str, double par3, double par5,
-            double par7, float par9, float par10) {
+                                      double par7, float par9, float par10) {
     }
 
     /**
      * Spawns a particle. Arg: particleType, x, y, z, velX, velY, velZ
      */
     public void spawnParticle(String par1Str, final double par2, final double par4, final double par6, double par8,
-            double par10, double par12) {
+                              double par10, double par12) {
         try {
             this.doSpawnParticle(par1Str, par2, par4, par6, par8, par10, par12);
         } catch (Throwable var17) {
@@ -2446,7 +2448,7 @@ public class RenderGlobal implements IWorldAccess {
      * Spawns a particle. Arg: particleType, x, y, z, velX, velY, velZ
      */
     public EntityFX doSpawnParticle(String par1Str, double par2, double par4, double par6, double par8, double par10,
-            double par12) {
+                                    double par12) {
         if (this.mc != null && this.mc.renderViewEntity != null && this.mc.effectRenderer != null) {
             int var14 = this.mc.gameSettings.particleSetting;
 
@@ -2988,7 +2990,7 @@ public class RenderGlobal implements IWorldAccess {
      * value
      */
     public void destroyBlockPartially(int p_147587_1_, int p_147587_2_, int p_147587_3_, int p_147587_4_,
-            int p_147587_5_) {
+                                      int p_147587_5_) {
         if (p_147587_5_ >= 0 && p_147587_5_ < 10) {
             DestroyBlockProgress var6 = (DestroyBlockProgress) this.damagedBlocks.get(Integer.valueOf(p_147587_1_));
 
@@ -3036,12 +3038,12 @@ public class RenderGlobal implements IWorldAccess {
         double maxDiff = 0.001D;
         return entityliving.isSneaking() ? true
                 : ((double) entityliving.prevSwingProgress > maxDiff ? true
-                        : (this.mc.mouseHelper.deltaX != 0 ? true
-                                : (this.mc.mouseHelper.deltaY != 0 ? true
-                                        : (Math.abs(entityliving.posX - entityliving.prevPosX) > maxDiff ? true
-                                                : (Math.abs(entityliving.posY - entityliving.prevPosY) > maxDiff ? true
-                                                        : Math.abs(entityliving.posZ
-                                                                - entityliving.prevPosZ) > maxDiff)))));
+                : (this.mc.mouseHelper.deltaX != 0 ? true
+                : (this.mc.mouseHelper.deltaY != 0 ? true
+                : (Math.abs(entityliving.posX - entityliving.prevPosX) > maxDiff ? true
+                : (Math.abs(entityliving.posY - entityliving.prevPosY) > maxDiff ? true
+                : Math.abs(entityliving.posZ
+                - entityliving.prevPosZ) > maxDiff)))));
     }
 
     public boolean isActing() {

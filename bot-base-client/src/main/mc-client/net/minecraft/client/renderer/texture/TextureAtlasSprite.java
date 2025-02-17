@@ -1,13 +1,7 @@
 package net.minecraft.client.renderer.texture;
 
 import com.google.common.collect.Lists;
-import java.awt.image.BufferedImage;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Callable;
-
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.data.AnimationFrame;
@@ -19,7 +13,11 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import optifine.Mipmaps;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import java.awt.image.BufferedImage;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class TextureAtlasSprite implements IIcon {
     private final String iconName;
@@ -233,9 +231,9 @@ public class TextureAtlasSprite implements IIcon {
                 if (var7 > 0 && (var12.getWidth() != var4 >> var7 || var12.getHeight() != var5 >> var7)) {
                     throw new RuntimeException(
                             String.format("Unable to load miplevel: %d, image is size: %dx%d, expected %dx%d",
-                                    new Object[] { Integer.valueOf(var7), Integer.valueOf(var12.getWidth()),
+                                    new Object[]{Integer.valueOf(var7), Integer.valueOf(var12.getWidth()),
                                             Integer.valueOf(var12.getHeight()), Integer.valueOf(var4 >> var7),
-                                            Integer.valueOf(var5 >> var7) }));
+                                            Integer.valueOf(var5 >> var7)}));
                 }
 
                 var6[var7] = new int[var12.getWidth() * var12.getHeight()];

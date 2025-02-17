@@ -10,7 +10,9 @@ import net.minecraft.tileentity.TileEntityBrewingStand;
 public class ContainerBrewingStand extends Container {
     private TileEntityBrewingStand tileBrewingStand;
 
-    /** Instance of Slot. */
+    /**
+     * Instance of Slot.
+     */
     private final Slot theSlot;
     private int brewTime;
 
@@ -19,7 +21,7 @@ public class ContainerBrewingStand extends Container {
         this.addSlotToContainer(new ContainerBrewingStand.Potion(p_i1805_1_.player, p_i1805_2_, 0, 56, 46));
         this.addSlotToContainer(new ContainerBrewingStand.Potion(p_i1805_1_.player, p_i1805_2_, 1, 79, 53));
         this.addSlotToContainer(new ContainerBrewingStand.Potion(p_i1805_1_.player, p_i1805_2_, 2, 102, 46));
-        this.theSlot = this.addSlotToContainer(new ContainerBrewingStand.Ingredient(p_i1805_2_, 3, 79, 17));
+        this.theSlot = this.addSlotToContainer(new Ingredient(p_i1805_2_, 3, 79, 17));
         int var3;
 
         for (var3 = 0; var3 < 3; ++var3) {
@@ -121,7 +123,7 @@ public class ContainerBrewingStand extends Container {
         return var3;
     }
 
-    class Ingredient extends Slot {
+    static class Ingredient extends Slot {
 
         public Ingredient(IInventory p_i1803_2_, int p_i1803_3_, int p_i1803_4_, int p_i1803_5_) {
             super(p_i1803_2_, p_i1803_3_, p_i1803_4_, p_i1803_5_);
@@ -137,7 +139,7 @@ public class ContainerBrewingStand extends Container {
     }
 
     static class Potion extends Slot {
-        private EntityPlayer player;
+        private final EntityPlayer player;
 
         public Potion(EntityPlayer p_i1804_1_, IInventory p_i1804_2_, int p_i1804_3_, int p_i1804_4_, int p_i1804_5_) {
             super(p_i1804_2_, p_i1804_3_, p_i1804_4_, p_i1804_5_);

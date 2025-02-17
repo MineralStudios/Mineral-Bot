@@ -5,8 +5,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufProcessor;
 import io.netty.util.ByteProcessor;
-import io.netty.util.ReferenceCounted;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTSizeTracker;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,11 +21,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTSizeTracker;
-import net.minecraft.nbt.NBTTagCompound;
 
 @RequiredArgsConstructor
 public class PacketBuffer extends ByteBuf {
@@ -35,7 +34,7 @@ public class PacketBuffer extends ByteBuf {
     public static int getVarIntSize(int p_150790_0_) {
         return (p_150790_0_ & -128) == 0 ? 1
                 : ((p_150790_0_ & -16384) == 0 ? 2
-                        : ((p_150790_0_ & -2097152) == 0 ? 3 : ((p_150790_0_ & -268435456) == 0 ? 4 : 5)));
+                : ((p_150790_0_ & -2097152) == 0 ? 3 : ((p_150790_0_ & -268435456) == 0 ? 4 : 5)));
     }
 
     /**
@@ -654,7 +653,7 @@ public class PacketBuffer extends ByteBuf {
     }
 
     public int forEachByteDesc(int p_forEachByteDesc_1_, int p_forEachByteDesc_2_,
-            ByteBufProcessor p_forEachByteDesc_3_) {
+                               ByteBufProcessor p_forEachByteDesc_3_) {
         return this.buf.forEachByteDesc(p_forEachByteDesc_1_, p_forEachByteDesc_2_, p_forEachByteDesc_3_);
     }
 

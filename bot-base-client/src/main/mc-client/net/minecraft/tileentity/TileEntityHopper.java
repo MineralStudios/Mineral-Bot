@@ -1,9 +1,5 @@
 package net.minecraft.tileentity;
 
-import java.util.List;
-
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockHopper;
@@ -21,6 +17,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Facing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.List;
 
 public class TileEntityHopper extends TileEntity implements IHopper {
     private ItemStack[] field_145900_a = new ItemStack[5];
@@ -177,7 +176,7 @@ public class TileEntityHopper extends TileEntity implements IHopper {
         return this.worldObj.getTileEntity(this.field_145851_c, this.field_145848_d, this.field_145849_e) != this
                 ? false
                 : p_70300_1_.getDistanceSq((double) this.field_145851_c + 0.5D, (double) this.field_145848_d + 0.5D,
-                        (double) this.field_145849_e + 0.5D) <= 64.0D;
+                (double) this.field_145849_e + 0.5D) <= 64.0D;
     }
 
     public void openInventory() {
@@ -382,7 +381,7 @@ public class TileEntityHopper extends TileEntity implements IHopper {
     }
 
     private static boolean func_145892_a(IHopper p_145892_0_, IInventory p_145892_1_, int p_145892_2_,
-            int p_145892_3_) {
+                                         int p_145892_3_) {
         ItemStack var4 = p_145892_1_.getStackInSlot(p_145892_2_);
 
         if (var4 != null && func_145890_b(p_145892_1_, var4, p_145892_2_, p_145892_3_)) {
@@ -444,20 +443,20 @@ public class TileEntityHopper extends TileEntity implements IHopper {
     }
 
     private static boolean func_145885_a(IInventory p_145885_0_, ItemStack p_145885_1_, int p_145885_2_,
-            int p_145885_3_) {
+                                         int p_145885_3_) {
         return !p_145885_0_.isItemValidForSlot(p_145885_2_, p_145885_1_) ? false
                 : !(p_145885_0_ instanceof ISidedInventory)
-                        || ((ISidedInventory) p_145885_0_).canInsertItem(p_145885_2_, p_145885_1_, p_145885_3_);
+                || ((ISidedInventory) p_145885_0_).canInsertItem(p_145885_2_, p_145885_1_, p_145885_3_);
     }
 
     private static boolean func_145890_b(IInventory p_145890_0_, ItemStack p_145890_1_, int p_145890_2_,
-            int p_145890_3_) {
+                                         int p_145890_3_) {
         return !(p_145890_0_ instanceof ISidedInventory)
                 || ((ISidedInventory) p_145890_0_).canExtractItem(p_145890_2_, p_145890_1_, p_145890_3_);
     }
 
     private static ItemStack func_145899_c(IInventory p_145899_0_, ItemStack p_145899_1_, int p_145899_2_,
-            int p_145899_3_) {
+                                           int p_145899_3_) {
         ItemStack var4 = p_145899_0_.getStackInSlot(p_145899_2_);
 
         if (func_145885_a(p_145899_0_, p_145899_1_, p_145899_2_, p_145899_3_)) {
@@ -501,7 +500,7 @@ public class TileEntityHopper extends TileEntity implements IHopper {
     }
 
     public static EntityItem func_145897_a(World p_145897_0_, double p_145897_1_, double p_145897_3_,
-            double p_145897_5_) {
+                                           double p_145897_5_) {
         List var7 = p_145897_0_
                 .selectEntitiesWithinAABB(
                         EntityItem.class, AxisAlignedBB.getBoundingBox(p_145897_1_, p_145897_3_, p_145897_5_,
@@ -511,7 +510,7 @@ public class TileEntityHopper extends TileEntity implements IHopper {
     }
 
     public static IInventory func_145893_b(World p_145893_0_, double p_145893_1_, double p_145893_3_,
-            double p_145893_5_) {
+                                           double p_145893_5_) {
         IInventory var7 = null;
         int var8 = MathHelper.floor_double(p_145893_1_);
         int var9 = MathHelper.floor_double(p_145893_3_);
@@ -547,8 +546,8 @@ public class TileEntityHopper extends TileEntity implements IHopper {
     private static boolean func_145894_a(ItemStack p_145894_0_, ItemStack p_145894_1_) {
         return p_145894_0_.getItem() != p_145894_1_.getItem() ? false
                 : (p_145894_0_.getItemDamage() != p_145894_1_.getItemDamage() ? false
-                        : (p_145894_0_.stackSize > p_145894_0_.getMaxStackSize() ? false
-                                : ItemStack.areItemStackTagsEqual(p_145894_0_, p_145894_1_)));
+                : (p_145894_0_.stackSize > p_145894_0_.getMaxStackSize() ? false
+                : ItemStack.areItemStackTagsEqual(p_145894_0_, p_145894_1_)));
     }
 
     /**
@@ -604,6 +603,11 @@ public class TileEntityHopper extends TileEntity implements IHopper {
     public int findSlot(int id) {
         Item item = Item.getItemById(id);
         return item == null ? -1 : findSlot(item);
+    }
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return field_145900_a;
     }
 
     @Override

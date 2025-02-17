@@ -1,9 +1,5 @@
 package net.minecraft.village;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeMap;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.passive.EntityVillager;
@@ -17,10 +13,17 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeMap;
+
 public class Village {
     private World worldObj;
 
-    /** list of VillageDoorInfo objects */
+    /**
+     * list of VillageDoorInfo objects
+     */
     private final List<VillageDoorInfo> villageDoorInfoList = new ArrayList<>();
 
     /**
@@ -30,17 +33,23 @@ public class Village {
      */
     private final ChunkCoordinates centerHelper = new ChunkCoordinates(0, 0, 0);
 
-    /** This is the actual village center. */
+    /**
+     * This is the actual village center.
+     */
     private final ChunkCoordinates center = new ChunkCoordinates(0, 0, 0);
     private int villageRadius;
     private int lastAddDoorTimestamp;
     private int tickCounter;
     private int numVillagers;
 
-    /** Timestamp of tick count when villager last bred */
+    /**
+     * Timestamp of tick count when villager last bred
+     */
     private int noBreedTicks;
 
-    /** List of player reputations with this village */
+    /**
+     * List of player reputations with this village
+     */
     private TreeMap playerReputation = new TreeMap();
     private List villageAgressors = new ArrayList();
     private int numIronGolems;
@@ -94,7 +103,7 @@ public class Village {
      * failing and returning null.
      */
     private Vec3 tryGetIronGolemSpawningLocation(int p_75559_1_, int p_75559_2_, int p_75559_3_, int p_75559_4_,
-            int p_75559_5_, int p_75559_6_) {
+                                                 int p_75559_5_, int p_75559_6_) {
         for (int var7 = 0; var7 < 10; ++var7) {
             int var8 = p_75559_1_ + this.worldObj.rand.nextInt(16) - 8;
             int var9 = p_75559_2_ + this.worldObj.rand.nextInt(6) - 3;
@@ -110,7 +119,7 @@ public class Village {
     }
 
     private boolean isValidIronGolemSpawningLocation(int p_75563_1_, int p_75563_2_, int p_75563_3_, int p_75563_4_,
-            int p_75563_5_, int p_75563_6_) {
+                                                     int p_75563_5_, int p_75563_6_) {
         if (!World.doesBlockHaveSolidTopSurface(this.worldObj, p_75563_1_, p_75563_2_ - 1, p_75563_3_)) {
             return false;
         } else {
@@ -286,7 +295,7 @@ public class Village {
 
         do {
             if (!var2.hasNext()) {
-                this.villageAgressors.add(new Village.VillageAgressor(p_75575_1_, this.tickCounter));
+                this.villageAgressors.add(new VillageAgressor(p_75575_1_, this.tickCounter));
                 return;
             }
 
@@ -530,7 +539,7 @@ public class Village {
         }
     }
 
-    class VillageAgressor {
+    static class VillageAgressor {
         public EntityLivingBase agressor;
         public int agressionTime;
 

@@ -1,15 +1,9 @@
 package net.minecraft.client.multiplayer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import lombok.val;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.IProgressUpdate;
-import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
@@ -18,6 +12,10 @@ import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class ChunkProviderClient implements IChunkProvider {
     private static final Logger logger = LogManager.getLogger(ChunkProviderClient.class);
@@ -43,7 +41,9 @@ public class ChunkProviderClient implements IChunkProvider {
      */
     private List<Chunk> chunkListing = new ArrayList<>();
 
-    /** Reference to the World object. */
+    /**
+     * Reference to the World object.
+     */
     private World worldObj;
 
     public ChunkProviderClient(World p_i1184_1_) {
@@ -91,7 +91,7 @@ public class ChunkProviderClient implements IChunkProvider {
      * specified chunk from the map seed and chunk seed
      */
     public Chunk provideChunk(int p_73154_1_, int p_73154_2_) {
-        return this.chunkMapping.getOrDefault(ChunkCoordIntPair.chunkXZ2Int(p_73154_1_, p_73154_2_),this.blankChunk);
+        return this.chunkMapping.getOrDefault(ChunkCoordIntPair.chunkXZ2Int(p_73154_1_, p_73154_2_), this.blankChunk);
     }
 
     /**
@@ -129,7 +129,7 @@ public class ChunkProviderClient implements IChunkProvider {
 
         if (System.currentTimeMillis() - var1 > 100L) {
             logger.info("Warning: Clientside chunk ticking took {} ms",
-                    new Object[] { Long.valueOf(System.currentTimeMillis() - var1) });
+                    new Object[]{Long.valueOf(System.currentTimeMillis() - var1)});
         }
 
         return false;
@@ -164,7 +164,7 @@ public class ChunkProviderClient implements IChunkProvider {
     }
 
     public ChunkPosition func_147416_a(World p_147416_1_, String p_147416_2_, int p_147416_3_, int p_147416_4_,
-            int p_147416_5_) {
+                                       int p_147416_5_) {
         return null;
     }
 

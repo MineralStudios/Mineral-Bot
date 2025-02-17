@@ -1,7 +1,5 @@
 package net.minecraft.tileentity;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.material.Material;
@@ -9,25 +7,26 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemHoe;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.item.ItemTool;
+import net.minecraft.item.*;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class TileEntityFurnace extends TileEntity implements ISidedInventory {
-    private static final int[] field_145962_k = new int[] { 0 };
-    private static final int[] field_145959_l = new int[] { 2, 1 };
-    private static final int[] field_145960_m = new int[] { 1 };
+    private static final int[] field_145962_k = new int[]{0};
+    private static final int[] field_145959_l = new int[]{2, 1};
+    private static final int[] field_145960_m = new int[]{1};
     private ItemStack[] field_145957_n = new ItemStack[3];
     public int field_145956_a;
     public int field_145963_i;
     public int field_145961_j;
     private String field_145958_o;
+
+    @Override
+    public gg.mineral.bot.api.inv.item.ItemStack[] getItems() {
+        return field_145957_n;
+    }
 
     /**
      * Returns the number of slots in the inventory.
@@ -242,12 +241,12 @@ public class TileEntityFurnace extends TileEntity implements ISidedInventory {
             ItemStack var1 = FurnaceRecipes.smelting().func_151395_a(this.field_145957_n[0]);
             return var1 == null ? false
                     : (this.field_145957_n[2] == null ? true
-                            : (!this.field_145957_n[2].isItemEqual(var1) ? false
-                                    : (this.field_145957_n[2].stackSize < this.getInventoryStackLimit()
-                                            && this.field_145957_n[2].stackSize < this.field_145957_n[2]
-                                                    .getMaxStackSize() ? true
-                                                            : this.field_145957_n[2].stackSize < var1
-                                                                    .getMaxStackSize())));
+                    : (!this.field_145957_n[2].isItemEqual(var1) ? false
+                    : (this.field_145957_n[2].stackSize < this.getInventoryStackLimit()
+                    && this.field_145957_n[2].stackSize < this.field_145957_n[2]
+                    .getMaxStackSize() ? true
+                    : this.field_145957_n[2].stackSize < var1
+                    .getMaxStackSize())));
         }
     }
 
@@ -293,12 +292,12 @@ public class TileEntityFurnace extends TileEntity implements ISidedInventory {
 
             return var1 instanceof ItemTool && ((ItemTool) var1).getToolMaterialName().equals("WOOD") ? 200
                     : (var1 instanceof ItemSword && ((ItemSword) var1).func_150932_j().equals("WOOD") ? 200
-                            : (var1 instanceof ItemHoe && ((ItemHoe) var1).getMaterialName().equals("WOOD") ? 200
-                                    : (var1 == Items.stick ? 100
-                                            : (var1 == Items.coal ? 1600
-                                                    : (var1 == Items.lava_bucket ? 20000
-                                                            : (var1 == Item.getItemFromBlock(Blocks.sapling) ? 100
-                                                                    : (var1 == Items.blaze_rod ? 2400 : 0)))))));
+                    : (var1 instanceof ItemHoe && ((ItemHoe) var1).getMaterialName().equals("WOOD") ? 200
+                    : (var1 == Items.stick ? 100
+                    : (var1 == Items.coal ? 1600
+                    : (var1 == Items.lava_bucket ? 20000
+                    : (var1 == Item.getItemFromBlock(Blocks.sapling) ? 100
+                    : (var1 == Items.blaze_rod ? 2400 : 0)))))));
         }
     }
 
@@ -314,7 +313,7 @@ public class TileEntityFurnace extends TileEntity implements ISidedInventory {
         return this.worldObj.getTileEntity(this.field_145851_c, this.field_145848_d, this.field_145849_e) != this
                 ? false
                 : p_70300_1_.getDistanceSq((double) this.field_145851_c + 0.5D, (double) this.field_145848_d + 0.5D,
-                        (double) this.field_145849_e + 0.5D) <= 64.0D;
+                (double) this.field_145849_e + 0.5D) <= 64.0D;
     }
 
     public void openInventory() {

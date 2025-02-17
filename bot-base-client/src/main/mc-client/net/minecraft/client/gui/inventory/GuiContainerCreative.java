@@ -38,7 +38,7 @@ import java.util.Map;
 public class GuiContainerCreative extends InventoryEffectRenderer {
     private static final ResourceLocation field_147061_u = new ResourceLocation(
             "textures/gui/container/creative_inventory/tabs.png");
-    private static InventoryBasic field_147060_v = new InventoryBasic("tmp", true, 45);
+    private static final InventoryBasic field_147060_v = new InventoryBasic("tmp", true, 45);
     private static int field_147058_w = CreativeTabs.tabBlock.getTabIndex();
     private float field_147067_x;
     private boolean field_147066_y;
@@ -441,7 +441,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
             if (var4 != null)
                 for (int var5 = 0; var5 < var4.inventorySlots.size(); ++var5) {
-                    GuiContainerCreative.CreativeSlot var6 = new GuiContainerCreative.CreativeSlot(
+                    GuiContainerCreative.CreativeSlot var6 = new CreativeSlot(
                             (Slot) var4.inventorySlots.get(var5), var5);
                     var3.inventorySlots.add(var6);
                     int var7;
@@ -868,7 +868,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
         }
     }
 
-    class CreativeSlot extends Slot {
+    static class CreativeSlot extends Slot {
         private final Slot field_148332_b;
 
         public CreativeSlot(Slot p_i46313_2_, int p_i46313_3_) {

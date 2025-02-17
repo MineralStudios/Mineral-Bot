@@ -164,4 +164,11 @@ public interface Inventory {
         }
         return false;
     }
+
+    /**
+     * Get all the items in the inventory.
+     *
+     * @return all the items in the inventory
+     */
+    ItemStack[] getItems();
 }

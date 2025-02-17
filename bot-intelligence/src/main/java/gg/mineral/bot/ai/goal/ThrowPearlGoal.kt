@@ -235,7 +235,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         d -= d % 0.8
         val xMulti: Double
         val zMulti: Double
-        val sprint = entity.isSprinting();
+        val sprint = entity.isSprinting()
         xMulti = d / 0.8 * xDelta * (if (sprint) 1.25 else 1.0)
         zMulti = d / 0.8 * zDelta * (if (sprint) 1.25 else 1.0)
         val x: Double = entity.x + xMulti - player.x

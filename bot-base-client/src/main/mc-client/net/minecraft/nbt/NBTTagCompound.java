@@ -1,5 +1,12 @@
 package net.minecraft.nbt;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.util.ReportedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -7,15 +14,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.Callable;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.util.ReportedException;
 
 public class NBTTagCompound extends NBTBase {
     private static final Logger logger = LogManager.getLogger(NBTTagCompound.class);
@@ -182,7 +180,7 @@ public class NBTTagCompound extends NBTBase {
         byte var3 = this.func_150299_b(p_150297_1_);
         return var3 == p_150297_2_ ? true
                 : (p_150297_2_ != 99 ? false
-                        : var3 == 1 || var3 == 2 || var3 == 3 || var3 == 4 || var3 == 5 || var3 == 6);
+                : var3 == 1 || var3 == 2 || var3 == 3 || var3 == 4 || var3 == 5 || var3 == 6);
     }
 
     /**
@@ -370,7 +368,7 @@ public class NBTTagCompound extends NBTBase {
      * Create a crash report which indicates a NBT read error.
      */
     private CrashReport createCrashReport(final String p_82581_1_, final int p_82581_2_,
-            ClassCastException p_82581_3_) {
+                                          ClassCastException p_82581_3_) {
         CrashReport var4 = CrashReport.makeCrashReport(p_82581_3_, "Reading NBT data");
         CrashReportCategory var5 = var4.makeCategoryDepth("Corrupt NBT tag", 1);
         var5.addCrashSectionCallable("Tag type found",
@@ -427,7 +425,7 @@ public class NBTTagCompound extends NBTBase {
     }
 
     static NBTBase func_152449_a(byte p_152449_0_, String p_152449_1_, DataInput p_152449_2_, int p_152449_3_,
-            NBTSizeTracker p_152449_4_) {
+                                 NBTSizeTracker p_152449_4_) {
         NBTBase var5 = NBTBase.func_150284_a(p_152449_0_);
 
         try {

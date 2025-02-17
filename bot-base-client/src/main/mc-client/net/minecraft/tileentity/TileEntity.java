@@ -1,8 +1,5 @@
 package net.minecraft.tileentity;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockJukebox;
 import net.minecraft.crash.CrashReportCategory;
@@ -12,6 +9,9 @@ import net.minecraft.network.Packet;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TileEntity {
     private static final Logger logger = LogManager.getLogger(TileEntity.class);
@@ -28,7 +28,9 @@ public class TileEntity {
      */
     private static Map classToNameMap = new HashMap();
 
-    /** the instance of the world the tile entity is in. */
+    /**
+     * the instance of the world the tile entity is in.
+     */
     protected World worldObj;
     public int field_145851_c;
     public int field_145848_d;
@@ -36,7 +38,9 @@ public class TileEntity {
     protected boolean tileEntityInvalid;
     public int blockMetadata = -1;
 
-    /** the Block type that this TileEntity is contained within */
+    /**
+     * the Block type that this TileEntity is contained within
+     */
     public Block blockType;
 
     private static void func_145826_a(Class p_145826_0_, String p_145826_1_) {
@@ -213,8 +217,8 @@ public class TileEntity {
 
             try {
                 return String.format("ID #%d (%s // %s)",
-                        new Object[] { Integer.valueOf(var1), Block.getBlockById(var1).getUnlocalizedName(),
-                                Block.getBlockById(var1).getClass().getCanonicalName() });
+                        new Object[]{Integer.valueOf(var1), Block.getBlockById(var1).getUnlocalizedName(),
+                                Block.getBlockById(var1).getClass().getCanonicalName()});
             } catch (Throwable var3) {
                 return "ID #" + var1;
             }
@@ -226,8 +230,8 @@ public class TileEntity {
             if (var1 < 0) {
                 return "Unknown? (Got " + var1 + ")";
             } else {
-                String var2 = String.format("%4s", new Object[] { Integer.toBinaryString(var1) }).replace(" ", "0");
-                return String.format("%1$d / 0x%1$X / 0b%2$s", new Object[] { Integer.valueOf(var1), var2 });
+                String var2 = String.format("%4s", new Object[]{Integer.toBinaryString(var1)}).replace(" ", "0");
+                return String.format("%1$d / 0x%1$X / 0b%2$s", new Object[]{Integer.valueOf(var1), var2});
             }
         });
     }

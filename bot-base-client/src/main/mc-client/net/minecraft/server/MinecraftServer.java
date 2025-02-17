@@ -10,25 +10,6 @@ import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
 import lombok.Getter;
-
-import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.Proxy;
-import java.security.KeyPair;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import javax.imageio.ImageIO;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandManager;
@@ -44,20 +25,8 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.server.management.ServerConfigurationManager;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.IProgressUpdate;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ReportedException;
-import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.MinecraftException;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldManager;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.WorldServerMulti;
-import net.minecraft.world.WorldSettings;
-import net.minecraft.world.WorldType;
+import net.minecraft.util.*;
+import net.minecraft.world.*;
 import net.minecraft.world.chunk.storage.AnvilSaveConverter;
 import net.minecraft.world.demo.DemoWorldServer;
 import net.minecraft.world.storage.ISaveFormat;
@@ -67,11 +36,22 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.Proxy;
+import java.security.KeyPair;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 public abstract class MinecraftServer implements ICommandSender, Runnable {
     private static final Logger logger = LogManager.getLogger(MinecraftServer.class);
     public static final File field_152367_a = new File("usercache.json");
 
-    /** Instance of Minecraft Server. */
+    /**
+     * Instance of Minecraft Server.
+     */
     private static MinecraftServer mcServer;
     private final ISaveFormat anvilConverterForAnvilFile;
 
@@ -87,13 +67,19 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
     private final ServerStatusResponse field_147147_p = new ServerStatusResponse();
     private final Random field_147146_q = new Random();
 
-    /** The server's port. */
+    /**
+     * The server's port.
+     */
     private int serverPort = -1;
 
-    /** The server world instances. */
+    /**
+     * The server world instances.
+     */
     public WorldServer[] worldServers;
 
-    /** The ServerConfigurationManager instance. */
+    /**
+     * The ServerConfigurationManager instance.
+     */
     private ServerConfigurationManager serverConfigManager;
 
     /**
@@ -103,10 +89,14 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
     @Getter
     private boolean serverRunning = true;
 
-    /** Indicates to other classes that the server is safely stopped. */
+    /**
+     * Indicates to other classes that the server is safely stopped.
+     */
     private boolean serverStopped;
 
-    /** Incremented every tick. */
+    /**
+     * Incremented every tick.
+     */
     private int tickCounter;
     protected final Proxy serverProxy;
 
@@ -116,35 +106,53 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
      */
     public String currentTask;
 
-    /** The percentage of the current task finished so far. */
+    /**
+     * The percentage of the current task finished so far.
+     */
     public int percentDone;
 
-    /** True if the server is in online mode. */
+    /**
+     * True if the server is in online mode.
+     */
     private boolean onlineMode;
 
-    /** True if the server has animals turned on. */
+    /**
+     * True if the server has animals turned on.
+     */
     private boolean canSpawnAnimals;
     private boolean canSpawnNPCs;
 
-    /** Indicates whether PvP is active on the server or not. */
+    /**
+     * Indicates whether PvP is active on the server or not.
+     */
     private boolean pvpEnabled;
 
-    /** Determines if flight is allowed or not. */
+    /**
+     * Determines if flight is allowed or not.
+     */
     private boolean allowFlight;
 
-    /** The server MOTD string. */
+    /**
+     * The server MOTD string.
+     */
     private String motd;
 
-    /** Maximum build height. */
+    /**
+     * Maximum build height.
+     */
     private int buildLimit;
     private int field_143008_E = 0;
     public final long[] tickTimeArray = new long[100];
 
-    /** Stats are [dimension][tick%100] system.nanoTime is stored. */
+    /**
+     * Stats are [dimension][tick%100] system.nanoTime is stored.
+     */
     public long[][] timeOfLastDimensionTick;
     private KeyPair serverKeyPair;
 
-    /** Username of the server owner (for integrated servers) */
+    /**
+     * Username of the server owner (for integrated servers)
+     */
     private String serverOwner;
     private String folderName;
     private String worldName;
@@ -234,7 +242,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
     }
 
     protected void loadAllWorlds(String p_71247_1_, String p_71247_2_, long p_71247_3_, WorldType p_71247_5_,
-            String p_71247_6_) {
+                                 String p_71247_6_) {
         this.convertMapIfNeeded(p_71247_1_);
         this.setUserMessage("menu.loadingLevel");
         this.worldServers = new WorldServer[3];
@@ -429,7 +437,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
                     if (var7 > 2000L && var1 - this.timeOfLastWarning >= 15000L) {
                         logger.warn(
                                 "Can\'t keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)",
-                                new Object[] { Long.valueOf(var7), Long.valueOf(var7 / 50L) });
+                                new Object[]{Long.valueOf(var7), Long.valueOf(var7 / 50L)});
                         var7 = 2000L;
                         this.timeOfLastWarning = var1;
                     }
@@ -1073,7 +1081,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
      * given coordinates.
      */
     public boolean isBlockProtected(World p_96290_1_, int p_96290_2_, int p_96290_3_, int p_96290_4_,
-            EntityPlayer p_96290_5_) {
+                                    EntityPlayer p_96290_5_) {
         return false;
     }
 
