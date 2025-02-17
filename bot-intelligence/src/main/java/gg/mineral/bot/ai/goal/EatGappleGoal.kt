@@ -27,7 +27,7 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
 
         val shouldExecute =
             canSeeEnemy() && hasGapple() && !hasRegen && (fakePlayer.health < 10 || distanceAwayFromEnemies() in 8.0..16.0)
-        info(this, "Checking shouldExecute: $shouldExecute")
+        logger.debug( "Checking shouldExecute: $shouldExecute")
         return shouldExecute
     }
 
@@ -36,7 +36,7 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
     }
 
     init {
-        info(this, "EatGappleGoal initialized")
+        logger.debug( "EatGappleGoal initialized")
     }
 
     private fun hasGapple(): Boolean {
@@ -44,12 +44,12 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
         val inventory = fakePlayer.inventory
 
         if (inventory == null) {
-            warn(this, "Inventory is null")
+            logger.debug( "Inventory is null")
             return false
         }
 
         val hasGapple = inventory.contains(Item.GOLDEN_APPLE)
-        info(this, "Has golden apple: $hasGapple")
+        logger.debug( "Has golden apple: $hasGapple")
         return hasGapple
     }
 
@@ -58,7 +58,7 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
         val world = fakePlayer.world
 
         if (world == null) {
-            warn(this, "World is null")
+            logger.debug( "World is null")
             return false
         }
 
@@ -66,21 +66,21 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
             it is ClientPlayer
                     && !clientInstance.configuration.friendlyUUIDs.contains(it.getUuid())
         }
-        info(this, "Checking canSeeEnemy: $canSeeEnemy")
+        logger.debug( "Checking canSeeEnemy: $canSeeEnemy")
         return canSeeEnemy
     }
 
     private fun eatGapple() {
         this.eating = true
-        success(this, "Started eating golden apple")
+        logger.debug( "Started eating golden apple")
     }
 
     private fun switchToGapple() {
         eating = false
-        info(this, "Switching to golden apple")
+        logger.debug( "Switching to golden apple")
         var gappleSlot = -1
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return warn(this, "Inventory is null")
+        val inventory = fakePlayer.inventory ?: return logger.debug( "Inventory is null")
 
         for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
@@ -96,17 +96,17 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            info(this, "Closing inventory after switching to golden apple")
+            logger.debug( "Closing inventory after switching to golden apple")
             return
         }
 
         pressKey(10, Key.Type.valueOf("KEY_" + (gappleSlot + 1)))
-        success(this, "Switched to golden apple slot: " + (gappleSlot + 1))
+        logger.debug( "Switched to golden apple slot: " + (gappleSlot + 1))
     }
 
     private fun angleAwayFromEnemies(): Float {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return warn(this, "World is null").let { fakePlayer.yaw }
+        val world = fakePlayer.world ?: return logger.debug( "World is null").let { fakePlayer.yaw }
 
         val enemy = world.entities
             .minByOrNull {
@@ -125,7 +125,7 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
 
     private fun distanceAwayFromEnemies(): Double {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return warn(this, "World is null").let { Double.MAX_VALUE }
+        val world = fakePlayer.world ?: return logger.debug( "World is null").let { Double.MAX_VALUE }
 
         return world.entities
             .minOfOrNull {
@@ -137,7 +137,7 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
 
     override fun onTick() {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return warn(this, "Inventory is null on tick")
+        val inventory = fakePlayer.inventory ?: return logger.debug( "Inventory is null on tick")
 
         pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
         unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
@@ -153,13 +153,13 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
 
         if (eating && hasRegen) {
             eating = false
-            info(this, "Stopped eating as regeneration is active")
+            logger.debug( "Stopped eating as regeneration is active")
         }
 
         if (!eating) {
             unpressButton(MouseButton.Type.RIGHT_CLICK)
             unpressKey(Key.Type.KEY_SPACE)
-            info(this, "Unpressed RIGHT_CLICK as eating stopped")
+            logger.debug( "Unpressed RIGHT_CLICK as eating stopped")
         }
 
         if (hasRegen) return
@@ -170,7 +170,7 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
                 pressKey(Key.Type.KEY_SPACE)
             }
             pressButton(MouseButton.Type.RIGHT_CLICK)
-            info(this, "Pressed RIGHT_CLICK for eating golden apple")
+            logger.debug( "Pressed RIGHT_CLICK for eating golden apple")
         }
 
         if (!delayedTasks.isEmpty()) return
@@ -179,17 +179,17 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
 
         if (itemStack != null && itemStack.item.id == Item.GOLDEN_APPLE && !inventoryOpen) {
             this.eatGapple()
-            info(this, "Scheduled eatGapple task")
+            logger.debug( "Scheduled eatGapple task")
         } else {
             schedule({ this.switchToGapple() }, 100)
-            info(this, "Scheduled switchToGapple task")
+            logger.debug( "Scheduled switchToGapple task")
         }
     }
 
     override fun onEvent(event: Event): Boolean {
         if (event is MouseButtonEvent) {
             if (eating && event.type == MouseButton.Type.RIGHT_CLICK && !event.isPressed) {
-                info(this, "Ignoring RIGHT_CLICK release event while eating")
+                logger.debug( "Ignoring RIGHT_CLICK release event while eating")
                 return true
             }
         }

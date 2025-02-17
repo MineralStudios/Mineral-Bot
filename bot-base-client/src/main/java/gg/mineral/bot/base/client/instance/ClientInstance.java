@@ -197,9 +197,9 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
     public final <T extends Goal> void startGoals(T... goals) {
         for (val goal : goals) {
             if (this.goals.add(goal))
-                info(this, "Added goal: " + goal.getClass().getSimpleName());
+                logger.debug("Added goal: {}", goal.getClass().getSimpleName());
             else
-                info(this, "Failed to add goal: " + goal.getClass().getSimpleName());
+                logger.debug("Failed to add goal: {}", goal.getClass().getSimpleName());
         }
     }
 
@@ -212,7 +212,7 @@ public class ClientInstance extends Minecraft implements gg.mineral.bot.api.inst
 
         this.running = false;
 
-        info(this, "Stopping!");
+        logger.debug( "Stopping!");
 
         try {
             this.loadWorld((WorldClient) null);

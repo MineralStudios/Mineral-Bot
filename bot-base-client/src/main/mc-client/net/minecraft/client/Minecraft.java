@@ -116,7 +116,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-public class Minecraft implements gg.mineral.bot.api.debug.Logger {
+public class Minecraft  {
     public static final Logger logger = LogManager.getLogger(Minecraft.class);
     private static final ResourceLocation locationMojangPng = new ResourceLocation("textures/gui/title/mojang.png");
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
@@ -422,8 +422,8 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
                 : (new YggdrasilAuthenticationService(p_i1103_9_, UUID.randomUUID().toString()))
                 .createMinecraftSessionService();
         this.session = p_i1103_1_;
-        info(this, "Setting user: " + p_i1103_1_.getUsername());
-        info(this, "(Session ID is " + p_i1103_1_.getSessionID() + ")");
+        logger.debug( "Setting user: " + p_i1103_1_.getUsername());
+        logger.debug( "(Session ID is " + p_i1103_1_.getSessionID() + ")");
         this.isDemo = p_i1103_5_;
         this.displayWidth = p_i1103_2_;
         this.displayHeight = p_i1103_3_;
@@ -537,7 +537,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
         Display.setResizable(true);
         Display.setTitle("Mineral Bot Client 1.7.10");
 
-        info(this, "LWJGL Version: " + Sys.getVersion());
+        logger.debug( "LWJGL Version: " + Sys.getVersion());
 
         val osType = Util.getOSType();
 
@@ -711,7 +711,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
             this.gameSettings.saveOptions();
         }
 
-        info(this, "Game has been started successfully!");
+        logger.debug( "Game has been started successfully!");
     }
 
     public boolean func_152349_b() {
@@ -968,7 +968,7 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
     public void shutdownMinecraftApplet() {
         ThreadManager.shutdown();
         try {
-            info(this, "Stopping!");
+            logger.debug( "Stopping!");
 
             try {
                 this.loadWorld((WorldClient) null);
@@ -2567,15 +2567,5 @@ public class Minecraft implements gg.mineral.bot.api.debug.Logger {
 
     public boolean isMainThread() {
         return Thread.currentThread() == this.mainThread;
-    }
-
-    @Override
-    public UUID getIdentifier() {
-        if (this instanceof ClientInstance clientInstance) {
-            val configuration = clientInstance.getConfiguration();
-            if (configuration != null)
-                return configuration.getUuid();
-        }
-        return this.getSession().getGameProfile().getId();
     }
 }

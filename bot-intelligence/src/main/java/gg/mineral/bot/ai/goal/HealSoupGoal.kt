@@ -41,7 +41,7 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            info(this, "Closing inventory after switching to soup")
+            logger.debug( "Closing inventory after switching to soup")
             return
         }
 

@@ -1,19 +1,20 @@
 package gg.mineral.bot.impl.controls;
 
 import gg.mineral.bot.api.controls.Key.Type;
-import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.api.event.peripherals.KeyboardKeyEvent;
 import gg.mineral.bot.api.instance.ClientInstance;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.val;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.Queue;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Keyboard implements gg.mineral.bot.api.controls.Keyboard, Logger {
+public class Keyboard implements gg.mineral.bot.api.controls.Keyboard {
+    private static final Logger logger = LogManager.getLogger(Keyboard.class);
     private final Key[] keys;
     private final Queue<Log> logs = new ConcurrentLinkedQueue<>();
     private Log eventLog = null, currentLog = null;
@@ -77,7 +78,7 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard, Logger {
             if (eventHandler.callEvent(event))
                 continue;
 
-            info(this, "Pressing key: " + type + " for " + durationMillis + "ms");
+            logger.debug("Pressing key: {} for {}ms", type, durationMillis);
             key.setPressed(true);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -100,7 +101,7 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard, Logger {
             if (eventHandler.callEvent(event))
                 continue;
 
-            info(this, "Unpressing key: " + type + " for " + durationMillis + "ms");
+            logger.debug("Unpressing key: {} for {}ms", type, durationMillis);
             key.setPressed(false);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -171,12 +172,5 @@ public class Keyboard implements gg.mineral.bot.api.controls.Keyboard, Logger {
     }
 
     public record Log(Key.Type type, boolean pressed) {
-    }
-
-    @Override
-    public UUID getIdentifier() {
-        if (eventHandler instanceof ClientInstance clientInstance)
-            return clientInstance.getConfiguration().getUuid();
-        return UUID.randomUUID();
     }
 }

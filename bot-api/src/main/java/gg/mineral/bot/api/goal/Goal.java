@@ -4,25 +4,29 @@ import gg.mineral.bot.api.controls.Key;
 import gg.mineral.bot.api.controls.Keyboard;
 import gg.mineral.bot.api.controls.Mouse;
 import gg.mineral.bot.api.controls.MouseButton;
-import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.util.MathUtil;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.annotation.NonNull;
 
 import java.util.Queue;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Getter
-@RequiredArgsConstructor
-public abstract class Goal implements MathUtil, Logger {
+public abstract class Goal implements MathUtil {
+    protected final Logger logger;
     @NonNull
     protected final ClientInstance clientInstance;
     protected Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
+
+    public Goal(ClientInstance clientInstance) {
+        this.clientInstance = clientInstance;
+        this.logger = LogManager.getLogger(this.getClass());
+    }
 
     protected static long timeMillis() {
         return System.nanoTime() / 1000000;
@@ -154,10 +158,5 @@ public abstract class Goal implements MathUtil, Logger {
 
             break;
         }
-    }
-
-    @Override
-    public UUID getIdentifier() {
-        return clientInstance.getConfiguration().getUuid();
     }
 }

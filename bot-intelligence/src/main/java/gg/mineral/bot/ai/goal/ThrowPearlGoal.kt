@@ -15,7 +15,6 @@ import gg.mineral.bot.api.math.trajectory.throwable.EnderPearlTrajectory
 import gg.mineral.bot.api.util.MathUtil
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
-import lombok.RequiredArgsConstructor
 import org.apache.commons.math3.analysis.MultivariateFunction
 import org.apache.commons.math3.analysis.UnivariateFunction
 import org.apache.commons.math3.optim.InitialGuess
@@ -36,7 +35,6 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
     private var lastPearledTick = 0
     private var type = Type.FORWARD
 
-    @RequiredArgsConstructor
     private enum class Type : MathUtil {
         RETREAT {
             // TODO: retreat when opponent is agro
@@ -77,7 +75,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            info(this, "Closing inventory after switching to pearl")
+            logger.debug( "Closing inventory after switching to pearl")
             return
         }
 

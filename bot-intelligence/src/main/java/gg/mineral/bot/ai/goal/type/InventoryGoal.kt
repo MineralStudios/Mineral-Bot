@@ -10,24 +10,24 @@ abstract class InventoryGoal(clientInstance: ClientInstance) : Goal(clientInstan
     var inventoryOpen = false
 
     fun moveItemToHotbar(index: Int, inventory: Inventory) {
-        val fakePlayer = clientInstance.fakePlayer ?: return warn(this, "Fake player is null")
+        val fakePlayer = clientInstance.fakePlayer ?: return logger.debug( "Fake player is null")
         if (!inventoryOpen) {
             inventoryOpen = true
             pressKey(10, Key.Type.KEY_E)
-            return info(this, "Opened inventory")
+            return logger.debug( "Opened inventory")
         }
 
-        val screen = clientInstance.currentScreen ?: return warn(this, "Screen is null; closing inventory")
+        val screen = clientInstance.currentScreen ?: return logger.debug( "Screen is null; closing inventory")
 
         val inventoryContainer = fakePlayer.inventoryContainer ?: run {
             inventoryOpen = false
-            return warn(this, "Inventory container is null; closing inventory")
+            return logger.debug( "Inventory container is null; closing inventory")
         }
 
         val slot = inventoryContainer.getSlot(inventory, index) ?: run {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            return warn(this, "Slot is null; closing inventory")
+            return logger.debug( "Slot is null; closing inventory")
         }
 
         if (screen is ContainerScreen) {
@@ -39,10 +39,10 @@ abstract class InventoryGoal(clientInstance: ClientInstance) : Goal(clientInstan
 
             if (currentX != guiSlotX || currentY != guiSlotY) {
                 clientInstance.mouse.setCursorPosition(guiSlotX, guiSlotY)
-                info(this, "Moving mouse to slot at ($guiSlotX, $guiSlotY)")
+                logger.debug( "Moving mouse to slot at ($guiSlotX, $guiSlotY)")
             } else {
                 pressKey(10, Key.Type.KEY_8)
-                success(this, "Swapped item to hotbar slot.")
+                logger.debug( "Swapped item to hotbar slot.")
             }
         }
     }

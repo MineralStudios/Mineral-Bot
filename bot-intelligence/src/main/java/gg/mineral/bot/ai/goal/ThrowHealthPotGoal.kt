@@ -75,7 +75,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
     private fun angleAwayFromEnemies(): Float {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return warn(this, "World is null").let { fakePlayer.yaw }
+        val world = fakePlayer.world ?: return logger.debug( "World is null").let { fakePlayer.yaw }
 
         val enemy = world.entities
             .minByOrNull {
@@ -94,7 +94,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
     private fun distanceAwayFromEnemies(): Double {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return warn(this, "World is null").let { Double.MAX_VALUE }
+        val world = fakePlayer.world ?: return logger.debug( "World is null").let { Double.MAX_VALUE }
 
         return world.entities
             .minOfOrNull {

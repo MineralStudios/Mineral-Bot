@@ -50,7 +50,7 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            info(this, "Closing inventory after switching to best melee weapon")
+            logger.debug( "Closing inventory after switching to best melee weapon")
             return
         }
 

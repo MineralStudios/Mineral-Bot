@@ -68,7 +68,7 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            info(this, "Closing inventory after switching to armor")
+            logger.debug( "Closing inventory after switching to armor")
             return
         }
 

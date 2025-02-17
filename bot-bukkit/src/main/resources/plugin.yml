@@ -8,4 +8,5 @@ api: '1.8.9'
 commands:
   mineralbot:
     description: Mineral Bot Command
+    permission: mineralbot.admin
     usage: /mineralbot

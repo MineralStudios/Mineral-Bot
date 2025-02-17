@@ -1,7 +1,6 @@
 package gg.mineral.bot.impl.controls;
 
 import gg.mineral.bot.api.controls.MouseButton.Type;
-import gg.mineral.bot.api.debug.Logger;
 import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent;
 import gg.mineral.bot.api.instance.ClientInstance;
@@ -9,14 +8,16 @@ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
-
+public class Mouse implements gg.mineral.bot.api.controls.Mouse {
+    private static final Logger logger = LogManager.getLogger(Mouse.class);
     private final MouseButton[] mouseButtons;
     @Getter
     @Setter
@@ -75,7 +76,7 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
             if (eventHandler.callEvent(event))
                 continue;
 
-            info(this, "Pressing button: " + type);
+            logger.debug("Pressing button: {}", type);
             button.setPressed(true);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -99,7 +100,7 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
             if (eventHandler.callEvent(event))
                 continue;
 
-            info(this, "Unpressing button: " + type);
+            logger.debug("Unpressing button: {}", type);
             button.setPressed(false);
             if (currentLog != null)
                 logs.add(currentLog);
@@ -248,12 +249,5 @@ public class Mouse implements gg.mineral.bot.api.controls.Mouse, Logger {
         val deltaY = -dPitch / (sensitivity * sensitivity * sensitivity * 8.0F /* * inverted */
         );
         this.setDY((int) (deltaY / 0.15));
-    }
-
-    @Override
-    public UUID getIdentifier() {
-        if (eventHandler instanceof ClientInstance clientInstance)
-            return clientInstance.getConfiguration().getUuid();
-        return UUID.randomUUID();
     }
 }
