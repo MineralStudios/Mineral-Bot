@@ -8,9 +8,10 @@ import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 
 class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance) {
+    override val isExecuting = false
     override fun shouldExecute(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return false
+        val inventory = fakePlayer.inventory
 
         for (i in 0..8) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
@@ -20,14 +21,12 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance) {
         return false
     }
 
-    override fun isExecuting() = false
-
     private fun dropBowl() = pressKey(10, Key.Type.KEY_Q)
 
     private fun switchToBowl() {
         var bowlSlot = -1
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
         for (i in 0..8) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
@@ -49,7 +48,7 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance) {
      */
     private fun getOptimalTarget(): ClientPlayer? {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return null
+        val world = fakePlayer.world
         val targetSearchRange = clientInstance.configuration.targetSearchRange
         var bestTarget: ClientPlayer? = null
         var closestDistance = Double.MAX_VALUE
@@ -83,7 +82,7 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance) {
 
     override fun onTick() {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
         pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
         aimAtOptimalTarget()

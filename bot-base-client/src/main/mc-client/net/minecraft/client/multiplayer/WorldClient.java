@@ -133,7 +133,7 @@ public class WorldClient extends World implements ClientWorld {
     }
 
     protected void func_147456_g() {
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return;
         super.func_147456_g();
         this.previousActiveChunkSet.retainAll(this.activeChunkSet);

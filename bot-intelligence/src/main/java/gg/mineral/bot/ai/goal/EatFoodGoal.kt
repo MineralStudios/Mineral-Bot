@@ -11,45 +11,38 @@ import gg.mineral.bot.api.inv.item.Item
 
 class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     private var eating = false
+    override val isExecuting: Boolean
+        get() = eating || inventoryOpen
 
     override fun shouldExecute(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
         // TODO: config how conservative to be with food
         val shouldExecute = hasFood() && fakePlayer.hunger < 19 && fakePlayer.health > 16.0
-        logger.debug( "Checking shouldExecute: $shouldExecute")
+        logger.debug("Checking shouldExecute: $shouldExecute")
         return shouldExecute
     }
 
-    override fun isExecuting(): Boolean {
-        return eating || inventoryOpen
-    }
-
     init {
-        logger.debug( "EatFoodGoal initialized")
+        logger.debug("EatFoodGoal initialized")
     }
 
     private fun hasFood(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        if (inventory == null) {
-            logger.debug( "Inventory is null")
-            return false
-        }
-
         val hasFood = inventory.contains(Item.Type.FOOD)
-        logger.debug( "Has food: $hasFood")
+        logger.debug("Has food: $hasFood")
         return hasFood
     }
 
     private fun eatFood() {
         this.eating = true
-        logger.debug( "Started eating")
+        logger.debug("Started eating")
     }
 
     private fun angleAwayFromEnemies(): Float {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return logger.debug( "World is null").let { fakePlayer.yaw }
+        val world = fakePlayer.world
 
         val enemy = world.entities
             .minByOrNull {
@@ -68,7 +61,7 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
 
     private fun distanceAwayFromEnemies(): Double {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return logger.debug( "World is null").let { Double.MAX_VALUE }
+        val world = fakePlayer.world
 
         return world.entities
             .minOfOrNull {
@@ -80,10 +73,10 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
 
     private fun switchToFood() {
         eating = false
-        logger.debug( "Switching to food")
+        logger.debug("Switching to food")
         var foodSlot = -1
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return logger.debug( "Inventory is null")
+        val inventory = fakePlayer.inventory
 
         // TODO: Choose best availible food
         for (i in 0..35) {
@@ -100,17 +93,17 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug( "Closing inventory after switching to food")
+            logger.debug("Closing inventory after switching to food")
             return
         }
 
         pressKey(10, Key.Type.valueOf("KEY_" + (foodSlot + 1)))
-        logger.debug( "Switched to food slot: " + (foodSlot + 1))
+        logger.debug("Switched to food slot: " + (foodSlot + 1))
     }
 
     override fun onTick() {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return logger.debug( "Inventory is null on tick")
+        val inventory = fakePlayer.inventory
 
         pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
         unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
@@ -119,13 +112,13 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
 
         if (eating && isHungerSatisfied) {
             eating = false
-            logger.debug( "Stopped eating as hunger is satisfied")
+            logger.debug("Stopped eating as hunger is satisfied")
         }
 
         if (!eating) {
             unpressButton(MouseButton.Type.RIGHT_CLICK)
             unpressKey(Key.Type.KEY_SPACE)
-            logger.debug( "Unpressed RIGHT_CLICK as eating stopped")
+            logger.debug("Unpressed RIGHT_CLICK as eating stopped")
         }
 
         if (isHungerSatisfied) return
@@ -136,7 +129,7 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
                 pressKey(Key.Type.KEY_SPACE)
             }
             pressButton(MouseButton.Type.RIGHT_CLICK)
-            logger.debug( "Pressed RIGHT_CLICK for eating")
+            logger.debug("Pressed RIGHT_CLICK for eating")
         }
 
         if (!delayedTasks.isEmpty()) return
@@ -145,17 +138,17 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
 
         if (itemStack != null && Item.Type.FOOD.isType(itemStack.item.id) && !inventoryOpen) {
             this.eatFood()
-            logger.debug( "Scheduled eatFood task")
+            logger.debug("Scheduled eatFood task")
         } else {
             schedule({ this.switchToFood() }, 100)
-            logger.debug( "Scheduled switchToFood task")
+            logger.debug("Scheduled switchToFood task")
         }
     }
 
     override fun onEvent(event: Event): Boolean {
         if (event is MouseButtonEvent) {
-            if (eating && event.type == MouseButton.Type.RIGHT_CLICK && !event.isPressed) {
-                logger.debug( "Ignoring RIGHT_CLICK release event while eating")
+            if (eating && event.type == MouseButton.Type.RIGHT_CLICK && !event.pressed) {
+                logger.debug("Ignoring RIGHT_CLICK release event while eating")
                 return true
             }
         }

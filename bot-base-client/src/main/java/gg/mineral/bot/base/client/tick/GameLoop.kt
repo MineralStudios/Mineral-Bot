@@ -1,63 +1,60 @@
-package gg.mineral.bot.base.client.tick;
+package gg.mineral.bot.base.client.tick
 
-import gg.mineral.bot.api.BotAPI;
-import gg.mineral.bot.base.client.BotImpl;
-import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.impl.config.BotGlobalConfig;
-import gg.mineral.bot.impl.thread.ThreadManager;
-import lombok.val;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiMemoryErrorScreen;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.util.MinecraftError;
-import net.minecraft.util.ReportedException;
+import gg.mineral.bot.api.BotAPI
+import gg.mineral.bot.base.client.BotImpl
+import gg.mineral.bot.base.client.manager.InstanceManager.instances
+import gg.mineral.bot.impl.config.BotGlobalConfig
+import gg.mineral.bot.impl.thread.ThreadManager.gameLoopExecutor
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiMemoryErrorScreen
+import net.minecraft.crash.CrashReport
+import net.minecraft.util.MinecraftError
+import net.minecraft.util.ReportedException
+import java.util.concurrent.TimeUnit
 
-public class GameLoop {
-    static {
-        ThreadManager.getGameLoopExecutor().scheduleAtFixedRate(() -> {
-
-            for (val instance : InstanceManager.getInstances().values()) {
+object GameLoop {
+    init {
+        gameLoopExecutor.scheduleAtFixedRate({
+            for (instance in instances.values) {
                 try {
                     if (instance.running) {
                         if (!instance.hasCrashed || instance.crashReporter == null) {
                             try {
-                                instance.runGameLoop();
-                            } catch (OutOfMemoryError var10) {
-                                instance.freeMemory();
-                                instance.displayGuiScreen(new GuiMemoryErrorScreen(instance));
-                                if (BotGlobalConfig.isManualGarbageCollection())
-                                    System.gc();
+                                instance.runGameLoop()
+                            } catch (var10: OutOfMemoryError) {
+                                instance.freeMemory()
+                                instance.displayGuiScreen(GuiMemoryErrorScreen(instance))
+                                if (BotGlobalConfig.manualGarbageCollection) System.gc()
                             }
                         } else {
-                            instance.displayCrashReport(instance.crashReporter);
-                            instance.running = false;
+                            instance.displayCrashReport(instance.crashReporter)
+                            instance.running = false
                         }
                     }
-                } catch (MinecraftError var12) {
+                } catch (var12: MinecraftError) {
                     // Handle Minecraft-specific errors
-                } catch (ReportedException var13) {
-                    instance.addGraphicsAndWorldToCrashReport(var13.getCrashReport());
-                    instance.freeMemory();
-                    Minecraft.logger.fatal("Reported exception thrown!", var13);
-                    instance.displayCrashReport(var13.getCrashReport());
-                } catch (Throwable var14) {
-                    val headlessCrashReport = instance.addGraphicsAndWorldToCrashReport(
-                            new CrashReport("Unexpected error", var14));
-                    instance.freeMemory();
-                    Minecraft.logger.fatal("Unreported exception thrown!", var14);
-                    instance.displayCrashReport(headlessCrashReport);
+                } catch (var13: ReportedException) {
+                    instance.addGraphicsAndWorldToCrashReport(var13.crashReport)
+                    instance.freeMemory()
+                    Minecraft.logger.fatal("Reported exception thrown!", var13)
+                    instance.displayCrashReport(var13.crashReport)
+                } catch (var14: Throwable) {
+                    val headlessCrashReport =
+                        instance.addGraphicsAndWorldToCrashReport(
+                            CrashReport("Unexpected error", var14)
+                        )
+                    instance.freeMemory()
+                    Minecraft.logger.fatal("Unreported exception thrown!", var14)
+                    instance.displayCrashReport(headlessCrashReport)
                 } finally {
-                    if (!instance.running)
-                        instance.shutdownMinecraftApplet();
+                    if (!instance.running) instance.shutdownMinecraftApplet()
                 }
             }
-
-            if (BotAPI.INSTANCE != null && BotAPI.INSTANCE instanceof BotImpl botImpl)
-                botImpl.printSpawnInfo();
-        }, 0, BotGlobalConfig.getGameLoopDelay(), java.util.concurrent.TimeUnit.MILLISECONDS);
+            if (BotAPI.INSTANCE is BotImpl) (BotAPI.INSTANCE as BotImpl).printSpawnInfo()
+        }, 0, BotGlobalConfig.gameLoopDelay.toLong(), TimeUnit.MILLISECONDS)
     }
 
-    public static void start() {
-
+    @JvmStatic
+    fun start() {
     }
 }

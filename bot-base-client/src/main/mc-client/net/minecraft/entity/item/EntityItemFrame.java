@@ -12,7 +12,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.MapData;
 
 public class EntityItemFrame extends EntityHanging {
-    /** Chance for this item frame's item to drop from the frame. */
+    /**
+     * Chance for this item frame's item to drop from the frame.
+     */
     private float itemDropChance = 1.0F;
 
     public EntityItemFrame(World p_i1590_1_) {
@@ -26,7 +28,7 @@ public class EntityItemFrame extends EntityHanging {
 
     protected void entityInit() {
         this.getDataWatcher().addObjectByDataType(2, 5);
-        this.getDataWatcher().addObject(3, Byte.valueOf((byte) 0));
+        this.getDataWatcher().addObject(3, (byte) 0);
     }
 
     /**

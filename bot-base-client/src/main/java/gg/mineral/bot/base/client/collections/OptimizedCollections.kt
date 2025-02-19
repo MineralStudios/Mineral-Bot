@@ -1,31 +1,23 @@
-package gg.mineral.bot.base.client.collections;
+package gg.mineral.bot.base.client.collections
 
-import gg.mineral.bot.api.collections.IntSet;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import gg.mineral.bot.api.collections.IntSet
+import gg.mineral.bot.api.collections.OptimizedCollections
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 
-import java.util.Map;
-import java.util.Set;
-
-public class OptimizedCollections implements gg.mineral.bot.api.collections.OptimizedCollections {
-
-    @Override
-    public <T> Set<T> newSet() {
-        return new ObjectOpenHashSet<>();
+class OptimizedCollections : OptimizedCollections {
+    override fun <T> newSet(): Set<T> {
+        return ObjectOpenHashSet()
     }
 
-    @Override
-    public <K, V> Map<K, V> newMap() {
-        return new Object2ObjectOpenHashMap<>();
+    override fun <K, V> newMap(): Map<K, V> {
+        return Object2ObjectOpenHashMap()
     }
 
-    @Override
-    public IntSet newIntSet() {
-        return new IntHashSet();
+    override fun newIntSet(): IntSet {
+        return IntHashSet()
     }
 
-    public static class IntHashSet extends IntOpenHashSet implements IntSet {
-    }
-
+    class IntHashSet : IntOpenHashSet(), IntSet
 }

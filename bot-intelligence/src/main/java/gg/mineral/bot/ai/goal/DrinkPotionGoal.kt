@@ -13,54 +13,52 @@ import java.util.function.Function
 
 class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     private var drinking = false
+    override val isExecuting: Boolean
+        get() = drinking || inventoryOpen
 
     override fun shouldExecute(): Boolean {
         val shouldExecute = canSeeEnemy() && hasDrinkablePotion()
-        logger.debug( "Checking shouldExecute: $shouldExecute")
+        logger.debug("Checking shouldExecute: $shouldExecute")
         return shouldExecute
     }
 
-    override fun isExecuting(): Boolean {
-        return drinking || inventoryOpen
-    }
-
     init {
-        logger.debug( "DrinkPotionGoal initialized")
+        logger.debug("DrinkPotionGoal initialized")
     }
 
     private fun hasDrinkablePotion(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return logger.debug( "Inventory is null").let { false }
+        val inventory = fakePlayer.inventory
 
         val hasDrinkablePotion = inventory.containsPotion(Function {
             for (effect in it.effects) if (fakePlayer.isPotionActive(effect.potionID)) return@Function false
             !it.isSplash && it.effects.isNotEmpty()
         })
-        logger.debug( "Has drinkable potion: $hasDrinkablePotion")
+        logger.debug("Has drinkable potion: $hasDrinkablePotion")
         return hasDrinkablePotion
     }
 
     private fun canSeeEnemy(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return logger.debug( "World is null").let { false }
+        val world = fakePlayer.world
 
         val canSeeEnemy = world.entities
             .any {
                 it is ClientPlayer
-                        && !clientInstance.configuration.friendlyUUIDs.contains(it.getUuid())
+                        && !clientInstance.configuration.friendlyUUIDs.contains(it.uuid)
             }
-        logger.debug( "Checking canSeeEnemy: $canSeeEnemy")
+        logger.debug("Checking canSeeEnemy: $canSeeEnemy")
         return canSeeEnemy
     }
 
     private fun drinkPotion() {
         drinking = true
-        logger.debug( "Started drinking potion")
+        logger.debug("Started drinking potion")
     }
 
     private fun angleAwayFromEnemies(): Float {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return logger.debug( "World is null").let { fakePlayer.yaw }
+        val world = fakePlayer.world
 
         val enemy = world.entities
             .minByOrNull {
@@ -79,7 +77,7 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
 
     private fun distanceAwayFromEnemies(): Double {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return logger.debug( "World is null").let { Double.MAX_VALUE }
+        val world = fakePlayer.world
 
         return world.entities
             .minOfOrNull {
@@ -90,17 +88,17 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
     }
 
     private fun switchToDrinkablePotion() {
-        logger.debug( "Switching to a drinkable potion")
+        logger.debug("Switching to a drinkable potion")
         var potionSlot = -1
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return logger.debug( "Inventory is null")
+        val inventory = fakePlayer.inventory
 
         // Look for a non-splash potion in one of the 36 slots
         invLoop@ for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
             val item = itemStack.item
             if (item.id == Item.POTION) {
-                val potion = itemStack.potion
+                val potion = itemStack.potion ?: continue
                 for (effect in potion.effects) if (fakePlayer.isPotionActive(effect.potionID)) continue@invLoop
 
                 // TODO: stop drinking negative potions
@@ -119,18 +117,18 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug( "Closing inventory after switching potion")
+            logger.debug("Closing inventory after switching potion")
             return
         }
 
         pressKey(10, Key.Type.valueOf("KEY_" + (potionSlot + 1)))
-        logger.debug( "Switched to potion slot: " + (potionSlot + 1))
+        logger.debug("Switched to potion slot: " + (potionSlot + 1))
     }
 
 
     override fun onTick() {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return logger.debug( "Inventory is null on tick")
+        val inventory = fakePlayer.inventory
 
         pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
         unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
@@ -139,7 +137,7 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
 
         if (drinking && (itemStack == null || itemStack.item.id != Item.POTION)) {
             drinking = false
-            logger.debug( "Stopped drinking as no potion is held")
+            logger.debug("Stopped drinking as no potion is held")
         }
 
         if (drinking) {
@@ -148,30 +146,30 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
                 pressKey(Key.Type.KEY_SPACE)
             }
             pressButton(MouseButton.Type.RIGHT_CLICK)
-            logger.debug( "Pressed RIGHT_CLICK for drinking")
+            logger.debug("Pressed RIGHT_CLICK for drinking")
         }
 
         if (!drinking) {
             unpressButton(MouseButton.Type.RIGHT_CLICK)
             unpressKey(Key.Type.KEY_SPACE)
-            logger.debug( "Unpressed RIGHT_CLICK as drinking stopped")
+            logger.debug("Unpressed RIGHT_CLICK as drinking stopped")
         }
 
         if (drinking || !delayedTasks.isEmpty()) return
 
         if (itemStack != null && itemStack.item.id == Item.POTION && !inventoryOpen) {
             this.drinkPotion()
-            logger.debug( "Scheduled drinkPotion task")
+            logger.debug("Scheduled drinkPotion task")
         } else {
             schedule({ this.switchToDrinkablePotion() }, 100)
-            logger.debug( "Scheduled switchToDrinkablePotion task")
+            logger.debug("Scheduled switchToDrinkablePotion task")
         }
     }
 
     override fun onEvent(event: Event): Boolean {
         if (event is MouseButtonEvent) {
-            if (drinking && event.type == MouseButton.Type.RIGHT_CLICK && !event.isPressed) {
-                logger.debug( "Ignoring RIGHT_CLICK release event while drinking")
+            if (drinking && event.type == MouseButton.Type.RIGHT_CLICK && !event.pressed) {
+                logger.debug("Ignoring RIGHT_CLICK release event while drinking")
                 return true
             }
         }

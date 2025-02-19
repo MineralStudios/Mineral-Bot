@@ -1,17 +1,18 @@
-package gg.mineral.bot.base.lwjgl.util.glu;
+package gg.mineral.bot.base.lwjgl.util.glu
 
-import gg.mineral.bot.impl.config.BotGlobalConfig;
+import gg.mineral.bot.impl.config.BotGlobalConfig
+import org.lwjgl.util.glu.GLU
 
-public class Project {
+object Project {
+    @JvmStatic
+    fun gluPerspective(
+        fovy: Float,
+        aspect: Float,
+        zNear: Float,
+        zFar: Float
+    ) {
+        if (BotGlobalConfig.headless) return
 
-    public static void gluPerspective(float fovy,
-            float aspect,
-            float zNear,
-            float zFar) {
-        if (BotGlobalConfig.isHeadless())
-            return;
-
-        org.lwjgl.util.glu.GLU.gluPerspective(fovy, aspect, zNear, zFar);
+        GLU.gluPerspective(fovy, aspect, zNear, zFar)
     }
-
 }

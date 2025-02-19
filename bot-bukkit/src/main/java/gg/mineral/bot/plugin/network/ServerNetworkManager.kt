@@ -1,100 +1,85 @@
-package gg.mineral.bot.plugin.network;
+package gg.mineral.bot.plugin.network
 
-import gg.mineral.bot.base.client.instance.ClientInstance;
-import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator;
-import gg.mineral.server.combat.BacktrackSystem;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-import lombok.val;
-import net.minecraft.client.Minecraft;
-import net.minecraft.server.v1_8_R3.*;
+import gg.mineral.bot.base.client.instance.ClientInstance
+import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator
+import gg.mineral.server.combat.BacktrackSystem.PacketRecieveTask
+import io.netty.channel.ChannelHandlerContext
+import io.netty.util.concurrent.Future
+import io.netty.util.concurrent.GenericFutureListener
+import net.minecraft.client.Minecraft
+import net.minecraft.server.v1_8_R3.*
+import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+class ServerNetworkManager(private val translator: Server2ClientTranslator, private val mc: Minecraft) :
+    NetworkManager(EnumProtocolDirection.SERVERBOUND) {
+    private var started = false
 
-public class ServerNetworkManager extends NetworkManager {
+    private val packetQueue: Queue<Packet<*>> = ConcurrentLinkedQueue()
 
-    private boolean started = false;
-
-    private final Server2ClientTranslator translator;
-    private final Minecraft mc;
-    private final Queue<Packet<?>> packetQueue = new ConcurrentLinkedQueue<>();
-
-    public ServerNetworkManager(Server2ClientTranslator translator, Minecraft mc) {
-        super(EnumProtocolDirection.SERVERBOUND);
-        this.translator = translator;
-        this.mc = mc;
+    fun releasePacketQueue() {
+        started = true
+        var packet: Packet<*>
+        while ((packetQueue.poll().also { packet = it }) != null) handle(packet)
     }
 
-    public void releasePacketQueue() {
-        started = true;
-        Packet<?> packet;
-        while ((packet = packetQueue.poll()) != null)
-            handle(packet);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void handle(Packet packet) {
+    @Suppress("UNCHECKED_CAST")
+    override fun handle(packet: Packet<*>) {
         if (!started) {
-            packetQueue.add(packet);
-            return;
+            packetQueue.add(packet)
+            return
         }
 
-        if (mc instanceof ClientInstance instance && (!mc.isMainThread() || instance.getLatency() > 0))
-            instance.scheduleTask(() -> translator.handlePacket(packet),
-                    instance.getLatency());
-        else
-            translator.handlePacket(packet);
-
+        if (mc is ClientInstance && (!mc.isMainThread() || mc.latency > 0)) mc.scheduleTask(
+            Runnable { translator.handlePacket(packet as Packet<PacketListenerPlayOut>) },
+            mc.latency.toLong()
+        )
+        else translator.handlePacket(packet as Packet<PacketListenerPlayOut>)
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void a(ChannelHandlerContext channelhandlercontext, Packet packet)
-            throws Exception {
-        val packetListener = this.getPacketListener();
+    @Throws(Exception::class)
+    @Suppress("UNCHECKED_CAST")
+    override fun a(channelhandlercontext: ChannelHandlerContext, packet: Packet<*>) {
+        val packetListener = this.packetListener
 
-        if (packetListener instanceof PlayerConnection playerConnection) {
-            val player = playerConnection.player;
-            val backtrackSystem = player.getBacktrackSystem();
-            int currentDelay = backtrackSystem.isEnabled() && packet instanceof PacketPlayInFlying
-                    ? backtrackSystem.getCurrentDelay()
-                    : 0;
+        if (packetListener is PlayerConnection) {
+            val player = packetListener.player
+            val backtrackSystem = player.backtrackSystem
+            val currentDelay = if (backtrackSystem.isEnabled && packet is PacketPlayInFlying)
+                backtrackSystem.currentDelay
+            else
+                0
 
             // System.out.println("Receiving packet with delay: " + currentDelay + "ms");
-
-            if ((currentDelay > 0 || !backtrackSystem.getPacketReadTasks().isEmpty())
-                    && !(packet instanceof PacketPlayInKeepAlive))
-                backtrackSystem.getPacketReadTasks()
-                        .add(new BacktrackSystem.PacketRecieveTask(packet, playerConnection,
-                                System.currentTimeMillis() + currentDelay));
-            else
-                packet.a(playerConnection);
+            if ((currentDelay > 0 || !backtrackSystem.packetReadTasks.isEmpty())
+                && packet !is PacketPlayInKeepAlive
+            ) backtrackSystem.packetReadTasks
+                .add(
+                    PacketRecieveTask(
+                        packet as Packet<PacketListenerPlayIn>, packetListener,
+                        System.currentTimeMillis() + currentDelay
+                    )
+                )
+            else (packet as Packet<PacketListenerPlayIn>).a(packetListener)
         }
     }
 
-    @Override
-    public boolean isConnected() {
-        return true;
+    override fun isConnected(): Boolean {
+        return true
     }
 
-    @Override
-    public boolean g() {
-        return true;
+    override fun g(): Boolean {
+        return true
     }
 
-    @Override
-    public void k() {
+    override fun k() {
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void a(Packet packet,
-                  GenericFutureListener<? extends Future<? super Void>> genericfuturelistener,
-                  GenericFutureListener<? extends Future<? super Void>>... agenericfuturelistener) {
-        handle(packet);
+    override fun a(
+        packet: Packet<*>,
+        genericfuturelistener: GenericFutureListener<out Future<in Void>>,
+        vararg agenericfuturelistener: GenericFutureListener<out Future<in Void>>
+    ) {
+        handle(packet)
     }
-
 }

@@ -1,20 +1,5 @@
 package net.minecraft.client.gui;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
-import org.apache.commons.io.Charsets;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GLContext;
 import gg.mineral.bot.base.lwjgl.util.glu.Project;
@@ -31,21 +16,42 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.demo.DemoWorldServer;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.WorldInfo;
+import org.apache.commons.io.Charsets;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 
 public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
     private static final Logger logger = LogManager.getLogger(GuiMainMenu.class);
 
-    /** The RNG used by the Main Menu Screen. */
+    /**
+     * The RNG used by the Main Menu Screen.
+     */
     private static final Random rand = new Random();
 
-    /** Counts the number of screen updates. */
+    /**
+     * Counts the number of screen updates.
+     */
     private float updateCounter;
 
-    /** The splash message. */
+    /**
+     * The splash message.
+     */
     private String splashText;
     private GuiButton buttonResetDemo;
 
-    /** Timer used to rotate the panorama, increases every tick. */
+    /**
+     * Timer used to rotate the panorama, increases every tick.
+     */
     private int panoramaTimer;
 
     /**
@@ -62,14 +68,16 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
     private static final ResourceLocation minecraftTitleTextures = new ResourceLocation(
             "textures/gui/title/minecraft.png");
 
-    /** An array of all the paths to the panorama pictures. */
-    private static final ResourceLocation[] titlePanoramaPaths = new ResourceLocation[] {
+    /**
+     * An array of all the paths to the panorama pictures.
+     */
+    private static final ResourceLocation[] titlePanoramaPaths = new ResourceLocation[]{
             new ResourceLocation("textures/gui/title/background/panorama_0.png"),
             new ResourceLocation("textures/gui/title/background/panorama_1.png"),
             new ResourceLocation("textures/gui/title/background/panorama_2.png"),
             new ResourceLocation("textures/gui/title/background/panorama_3.png"),
             new ResourceLocation("textures/gui/title/background/panorama_4.png"),
-            new ResourceLocation("textures/gui/title/background/panorama_5.png") };
+            new ResourceLocation("textures/gui/title/background/panorama_5.png")};
     public static final String field_96138_a = "Please click " + EnumChatFormatting.UNDERLINE + "here"
             + EnumChatFormatting.RESET + " for more information.";
     private int field_92024_r;
@@ -85,7 +93,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         super(mc);
         this.field_146972_A = field_96138_a;
         this.splashText = "missingno";
-        if (!BotGlobalConfig.isOptimizedGameLoop()) {
+        if (!BotGlobalConfig.optimizedGameLoop) {
             BufferedReader var1 = null;
 
             try {
@@ -284,8 +292,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
                 try {
                     Class<?> var3 = Class.forName("java.awt.Desktop");
                     Object var4 = var3.getMethod("getDesktop", new Class[0]).invoke((Object) null, new Object[0]);
-                    var3.getMethod("browse", new Class[] { URI.class }).invoke(var4,
-                            new Object[] { new URI(this.field_104024_v) });
+                    var3.getMethod("browse", new Class[]{URI.class}).invoke(var4,
+                            new Object[]{new URI(this.field_104024_v)});
                 } catch (Throwable var5) {
                     logger.error("Couldn\'t open link", var5);
                 }

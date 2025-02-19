@@ -2512,7 +2512,7 @@ public abstract class World implements IBlockAccess, MathUtil {
     protected abstract int getViewDistance();
 
     protected void moodSoundAndCheckLight(int p_147467_1_, int p_147467_2_, Chunk p_147467_3_) {
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return;
         this.theProfiler.endStartSection("moodSound");
 

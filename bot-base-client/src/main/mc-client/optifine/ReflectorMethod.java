@@ -1,8 +1,8 @@
 package optifine;
 
-import java.lang.reflect.Method;
-
 import gg.mineral.bot.impl.config.BotGlobalConfig;
+
+import java.lang.reflect.Method;
 
 public class ReflectorMethod {
     private ReflectorClass reflectorClass;
@@ -20,7 +20,7 @@ public class ReflectorMethod {
     }
 
     public ReflectorMethod(ReflectorClass reflectorClass, String targetMethodName, Class[] targetMethodParameterTypes,
-            boolean lazyResolve) {
+                           boolean lazyResolve) {
         this.reflectorClass = null;
         this.targetMethodName = null;
         this.targetMethodParameterTypes = null;
@@ -36,7 +36,7 @@ public class ReflectorMethod {
     }
 
     public Method getTargetMethod() {
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return null;
         if (this.checked) {
             return this.targetMethod;

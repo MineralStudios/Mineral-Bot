@@ -1,191 +1,196 @@
-package gg.mineral.bot.plugin.impl;
+package gg.mineral.bot.plugin.impl
 
-import com.google.common.collect.HashMultimap;
-import gg.mineral.bot.api.BotAPI;
-import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.bot.api.math.ServerLocation;
-import gg.mineral.bot.base.client.BotImpl;
-import gg.mineral.bot.base.client.gui.GuiConnecting;
-import gg.mineral.bot.base.client.instance.ClientInstance;
-import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.base.client.network.ClientNetHandler;
-import gg.mineral.bot.impl.thread.ThreadManager;
-import gg.mineral.bot.plugin.impl.player.NMSServerPlayer;
-import gg.mineral.bot.plugin.network.ClientNetworkManager;
-import gg.mineral.bot.plugin.network.ServerNetworkManager;
-import gg.mineral.bot.plugin.network.packet.Client2ServerTranslator;
-import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator;
-import lombok.Getter;
-import lombok.val;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.server.v1_8_R3.*;
-import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
-import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
-import org.eclipse.jdt.annotation.NonNull;
+import com.google.common.collect.HashMultimap
+import gg.mineral.bot.api.configuration.BotConfiguration
+import gg.mineral.bot.api.math.ServerLocation
+import gg.mineral.bot.base.client.BotImpl
+import gg.mineral.bot.base.client.gui.GuiConnecting
+import gg.mineral.bot.base.client.instance.ClientInstance
+import gg.mineral.bot.base.client.manager.InstanceManager
+import gg.mineral.bot.base.client.network.ClientNetHandler
+import gg.mineral.bot.impl.thread.ThreadManager
+import gg.mineral.bot.plugin.impl.player.NMSServerPlayer
+import gg.mineral.bot.plugin.network.ClientNetworkManager
+import gg.mineral.bot.plugin.network.ServerNetworkManager
+import gg.mineral.bot.plugin.network.packet.Client2ServerTranslator
+import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator
+import lombok.Getter
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.server.v1_8_R3.*
+import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode
+import org.bukkit.Bukkit
+import org.bukkit.event.Listener
+import java.io.File
+import java.net.Proxy
+import java.util.*
+import kotlin.math.min
 
-import java.io.File;
-import java.util.UUID;
+class ServerBotImpl : BotImpl(), Listener {
+    override fun spawn(configuration: BotConfiguration, location: ServerLocation): ClientInstance {
+        val startTime = System.nanoTime() / 1000000
+        val file = configuration.runDirectory
 
-public class ServerBotImpl extends BotImpl implements Listener {
+        if (!file.exists()) file.mkdirs()
 
-    public static void init() {
-        BotAPI.INSTANCE = new ServerBotImpl();
-    }
+        val c2sTranslator = Client2ServerTranslator()
+        val s2cTranslator = Server2ClientTranslator()
 
-    @Override
-    public @NonNull ClientInstance spawn(@NonNull BotConfiguration configuration, @NonNull ServerLocation location) {
-        val startTime = System.nanoTime() / 1000000;
-        val file = configuration.getRunDirectory();
+        val instance = getClientInstance(configuration, file)
 
-        if (!file.exists())
-            file.mkdirs();
+        val name = configuration.fullUsername
 
-        val c2sTranslator = new Client2ServerTranslator();
-        val s2cTranslator = new Server2ClientTranslator();
+        val serverSide = NMSServerPlayer(
+            location.world,
+            configuration.uuid, name, configuration.skin.value,
+            configuration.skin.signature
+        )
 
-        final var instance = getClientInstance(configuration, file);
+        serverSide.setPosition(location.x, location.y, location.z)
+        serverSide.setYawPitch(location.yaw, location.pitch)
+        serverSide.spawnInWorld(location.world)
 
-        val name = configuration.getFullUsername();
+        val cNetworkManager = ClientNetworkManager(
+            c2sTranslator,
+            instance
+        )
+        val sNetworkManager = ServerNetworkManager(s2cTranslator, instance)
 
-        val serverSide = new NMSServerPlayer(location.getWorld(),
-                configuration.getUuid(), name, configuration.getSkin().getValue(),
-                configuration.getSkin().getSignature());
+        val netHandlerPlayClient = ClientNetHandler(
+            instance, null,
+            cNetworkManager
+        )
 
-        serverSide.setPosition(location.getX(), location.getY(), location.getZ());
-        serverSide.setYawPitch(location.getYaw(), location.getPitch());
-        serverSide.spawnInWorld(location.getWorld());
+        s2cTranslator.netHandlerPlayClient = netHandlerPlayClient
 
-        val cNetworkManager = new ClientNetworkManager(c2sTranslator,
-                instance);
-        val sNetworkManager = new ServerNetworkManager(s2cTranslator, instance);
-
-        val netHandlerPlayClient = new ClientNetHandler(instance, null,
-                cNetworkManager);
-
-        s2cTranslator.setNetHandlerPlayClient(netHandlerPlayClient);
-
-        val playerConnection = new PlayerConnection(MinecraftServer.getServer(), sNetworkManager,
-                serverSide) {
+        val playerConnection: PlayerConnection = object : PlayerConnection(
+            MinecraftServer.getServer(), sNetworkManager,
+            serverSide
+        ) {
             @Getter
-            private boolean disconnected = false;
+            private var disconnected = false
 
-            @Override
-            public void disconnect(String s) {
-                if (disconnected)
-                    return;
-                disconnected = true;
-                despawn(configuration.getUuid());
+            override fun disconnect(s: String) {
+                if (disconnected) return
+                disconnected = true
+                despawn(configuration.uuid)
                 // TODO: cancellable kick event
-                super.disconnect(s);
+                super.disconnect(s)
             }
 
-            @Override
             // TODO: Temporary fix for the issue with the player's ping
-            public void a(PacketPlayInKeepAlive packetplayinkeepalive) {
-                this.player.ping = instance.getLatency();
+            override fun a(packetplayinkeepalive: PacketPlayInKeepAlive) {
+                player.ping = instance.latency
             }
+        }
 
-        };
+        c2sTranslator.playerConnection = playerConnection
 
-        c2sTranslator.setPlayerConnection(playerConnection);
+        serverSide.callSpawnEvents()
 
-        serverSide.callSpawnEvents();
+        playerConnection.sendPacket(
+            PacketPlayOutLogin(
+                serverSide.id,
+                EnumGamemode.getById(serverSide.gameModeId), serverSide.isWorldHardcore,
+                serverSide.dimensionId, EnumDifficulty.getById(serverSide.difficultyId),
+                min(serverSide.maxPlayers.toDouble(), 60.0).toInt(),
+                WorldType.getType(serverSide.worldTypeName),
+                serverSide.isReducedDebugInfo
+            )
+        )
 
-        playerConnection.sendPacket(new PacketPlayOutLogin(serverSide.getId(),
-                EnumGamemode.getById(serverSide.getGameModeId()), serverSide.isWorldHardcore(),
-                serverSide.getDimensionId(), EnumDifficulty.getById(serverSide.getDifficultyId()),
-                Math.min(serverSide.getMaxPlayers(), 60),
-                WorldType.getType(serverSide.getWorldTypeName()),
-                serverSide.isReducedDebugInfo()));
+        val spawn = serverSide.worldSpawn
+        serverSide.initializeGameMode()
 
-        val spawn = serverSide.getWorldSpawn();
-        serverSide.initializeGameMode();
-
-        serverSide.sendSupportedChannels();
+        serverSide.sendSupportedChannels()
 
         // playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|Brand",
         // new PacketDataSerializer(
         // Unpooled.wrappedBuffer(ByteUtil.stringToBytes(serverSide.getServerModName())))));
+        playerConnection.sendPacket(
+            PacketPlayOutServerDifficulty(
+                EnumDifficulty.getById(serverSide.difficultyId), serverSide.isDifficultyLocked
+            )
+        )
 
-        playerConnection.sendPacket(new PacketPlayOutServerDifficulty(
-                EnumDifficulty.getById(serverSide.getDifficultyId()), serverSide.isDifficultyLocked()));
+        playerConnection.sendPacket(PacketPlayOutSpawnPosition(BlockPosition(spawn[0], spawn[1], spawn[2])))
 
-        playerConnection.sendPacket(new PacketPlayOutSpawnPosition(new BlockPosition(spawn[0], spawn[1], spawn[2])));
+        playerConnection.sendPacket(PacketPlayOutAbilities(serverSide.abilities))
 
-        playerConnection.sendPacket(new PacketPlayOutAbilities(serverSide.abilities));
+        playerConnection.sendPacket(PacketPlayOutHeldItemSlot(serverSide.itemInHandIndex))
 
-        playerConnection.sendPacket(new PacketPlayOutHeldItemSlot(serverSide.getItemInHandIndex()));
+        serverSide.sendScoreboard()
+        serverSide.resetPlayerSampleUpdateTimer()
 
-        serverSide.sendScoreboard();
-        serverSide.resetPlayerSampleUpdateTimer();
-
-        serverSide.onJoin();
+        serverSide.onJoin()
 
         // Send location to client
-        serverSide.sendLocationToClient();
+        serverSide.sendLocationToClient()
 
         // World border, time, weather
-        serverSide.initWorld();
+        serverSide.initWorld()
 
-        serverSide.initResourcePack();
+        serverSide.initResourcePack()
 
         // serverSide.getEffectPackets().forEach(packet ->
         // getServerConnection().queuePacket(packet));
-        serverSide.syncInventory();
+        serverSide.syncInventory()
 
-        InstanceManager.getPendingInstances().put(configuration.getUuid(), instance);
+        InstanceManager.pendingInstances[configuration.uuid] = instance
 
-        ThreadManager.getAsyncExecutor().execute(() -> {
+        ThreadManager.asyncExecutor.execute {
             try {
-                instance.run();
-                InstanceManager.getPendingInstances().remove(configuration.getUuid());
-                InstanceManager.getInstances().put(configuration.getUuid(), instance);
-                MinecraftServer.getServer().postToMainThread(sNetworkManager::releasePacketQueue);
-            } catch (Exception e) {
-                e.printStackTrace();
+                instance.run()
+                InstanceManager.pendingInstances.remove(configuration.uuid)
+                InstanceManager.instances[configuration.uuid] = instance
+                MinecraftServer.getServer()
+                    .postToMainThread { sNetworkManager.releasePacketQueue() }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        });
+        }
 
-        spawnRecords.add(new SpawnRecord(configuration.getUsername(), (System.nanoTime() / 1000000) - startTime));
+        spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
 
-        return instance;
+        return instance
     }
 
-    private static ClientInstance getClientInstance(BotConfiguration configuration, File file) {
-        val instance = new ClientInstance(configuration, 1280, 720,
+    override fun despawn(uuid: UUID): Boolean {
+        val isBot = super.despawn(uuid)
+
+        if (isBot) {
+            val player = Bukkit.getPlayer(uuid)
+            player?.kickPlayer("Despawned")
+        }
+
+        return isBot
+    }
+
+    companion object {
+        fun init() {
+            INSTANCE = ServerBotImpl()
+        }
+
+        private fun getClientInstance(configuration: BotConfiguration, file: File): ClientInstance {
+            val instance: ClientInstance = object : ClientInstance(
+                configuration, 1280, 720,
                 false,
                 false,
                 file,
-                new File(file, "assets"),
-                new File(file, "resourcepacks"),
-                java.net.Proxy.NO_PROXY,
-                "Mineral-Bot-Client", HashMultimap.create(),
-                "1.7.10") {
-            @Override
-            public void displayGuiScreen(GuiScreen guiScreen) {
-                if (guiScreen instanceof GuiConnecting connecting)
-                    connecting.setConnectFunction((ip, port) -> {
-                    });
+                File(file, "assets"),
+                File(file, "resourcepacks"),
+                Proxy.NO_PROXY,
+                "Mineral-Bot-Client", HashMultimap.create<Any, Any>(),
+                "1.7.10"
+            ) {
+                override fun displayGuiScreen(guiScreen: GuiScreen) {
+                    if (guiScreen is GuiConnecting) guiScreen.connectFunction =
+                        GuiConnecting.ConnectFunction { _: String?, _: Int -> }
 
-                super.displayGuiScreen(guiScreen);
+                    super.displayGuiScreen(guiScreen)
+                }
             }
-        };
-        instance.setServer("127.0.0.1", Bukkit.getServer().getPort());
-        return instance;
-    }
-
-    @Override
-    public boolean despawn(UUID uuid) {
-        val isBot = super.despawn(uuid);
-
-        if (isBot) {
-            val player = Bukkit.getPlayer(uuid);
-            if (player != null)
-                player.kickPlayer("Despawned");
+            instance.setServer("127.0.0.1", Bukkit.getServer().port)
+            return instance
         }
-
-        return isBot;
     }
-
 }

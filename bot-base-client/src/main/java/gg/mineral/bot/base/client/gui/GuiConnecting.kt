@@ -1,223 +1,259 @@
-package gg.mineral.bot.base.client.gui;
+package gg.mineral.bot.base.client.gui
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import gg.mineral.bot.base.client.gui.GuiConnecting.ConnectFunction
+import gg.mineral.bot.impl.thread.ThreadManager.asyncExecutor
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiButton
+import net.minecraft.client.gui.GuiDisconnected
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.multiplayer.ServerAddress
+import net.minecraft.client.multiplayer.ServerData
+import net.minecraft.client.multiplayer.WorldClient
+import net.minecraft.client.network.NetHandlerLoginClient
+import net.minecraft.client.resources.I18n
+import net.minecraft.network.EnumConnectionState
+import net.minecraft.network.NetworkManager
+import net.minecraft.network.handshake.client.C00Handshake
+import net.minecraft.network.login.client.C00PacketLoginStart
+import net.minecraft.util.ChatComponentText
+import net.minecraft.util.ChatComponentTranslation
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
+import java.net.InetAddress
+import java.net.UnknownHostException
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.eclipse.jdt.annotation.Nullable;
+open class GuiConnecting : GuiScreen {
+    var networkManager: NetworkManager? = null
 
-import gg.mineral.bot.impl.thread.ThreadManager;
-import net.minecraft.client.Minecraft;
-import io.netty.util.concurrent.GenericFutureListener;
-import lombok.Getter;
-import lombok.Setter;
+    var cancelled: Boolean = false
+    private val previousScreen: GuiScreen
+    private val ip: String
+    private val port: Int
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiDisconnected;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.multiplayer.ServerAddress;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.network.NetHandlerLoginClient;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.network.EnumConnectionState;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.handshake.client.C00Handshake;
-import net.minecraft.network.login.client.C00PacketLoginStart;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
+    var connectFunction: ConnectFunction
+    private var serverData: ServerData? = null
 
-public class GuiConnecting extends GuiScreen {
-    @Getter
-    private static final Logger logger = LogManager.getLogger(GuiConnecting.class);
-    @Nullable
-    public NetworkManager networkManager;
-    @Getter
-    protected boolean cancelled;
-    public final GuiScreen previousScreen;
-    private final String ip;
-    private final int port;
-    @Setter
-    private ConnectFunction connectFunction;
-    private ServerData serverData;
+    constructor(previousScreen: GuiScreen, mc: Minecraft?, serverData: ServerData) : super(mc) {
+        val socketAddress = ServerAddress.fromServerIp(serverData.serverIP)
+        this.serverData = serverData
+        this.previousScreen = previousScreen
+        this.ip = socketAddress.ip
+        this.port = socketAddress.port
 
-    public GuiConnecting(GuiScreen previousScreen, Minecraft mc, ServerData serverData) {
-        super(mc);
-        ServerAddress socketAddress = ServerAddress.fromServerIp(serverData.serverIP);
-        this.serverData = serverData;
-        this.previousScreen = previousScreen;
-        this.ip = socketAddress.getIP();
-        this.port = socketAddress.getPort();
-
-        this.connectFunction = (ip, port) -> {
-            logger.info("Connecting to " + ip + ", " + port);
-            ThreadManager.getAsyncExecutor().execute(() -> {
-                InetAddress iNetAddress = null;
-
+        this.connectFunction = ConnectFunction { ip: String, port: Int ->
+            logger.info("Connecting to $ip, $port")
+            asyncExecutor.execute {
+                var iNetAddress: InetAddress? = null
                 try {
-                    if (GuiConnecting.this.cancelled)
-                        return;
+                    if (this@GuiConnecting.cancelled) return@execute
 
-                    iNetAddress = InetAddress.getByName(ip);
-                    GuiConnecting.this.networkManager = NetworkManager.provideLanClient(mc, iNetAddress, port);
-                    GuiConnecting.this.networkManager
-                            .setNetHandler(new NetHandlerLoginClient(GuiConnecting.this.networkManager,
-                                    GuiConnecting.this.mc, GuiConnecting.this.previousScreen));
-                    GuiConnecting.this.networkManager.scheduleOutboundPacket(
-                            new C00Handshake(5, ip, port, EnumConnectionState.LOGIN),
-                            new GenericFutureListener[0]);
-                    GuiConnecting.this.networkManager.scheduleOutboundPacket(
-                            new C00PacketLoginStart(GuiConnecting.this.mc.getSession().getGameProfile()),
-                            new GenericFutureListener[0]);
-                } catch (UnknownHostException var5) {
-                    if (GuiConnecting.this.cancelled)
-                        return;
+                    iNetAddress = InetAddress.getByName(ip)
 
-                    GuiConnecting.logger.error("Couldn\'t connect to server", var5);
-                    GuiConnecting.this.mc.displayGuiScreen(new GuiDisconnected(GuiConnecting.this.mc,
-                            GuiConnecting.this.previousScreen,
+                    NetworkManager.provideLanClient(mc, iNetAddress, port).let {
+                        this@GuiConnecting.networkManager = it
+                        it
+                            .setNetHandler(
+                                NetHandlerLoginClient(
+                                    it,
+                                    this@GuiConnecting.mc, this@GuiConnecting.previousScreen
+                                )
+                            )
+                        it.scheduleOutboundPacket(
+                            C00Handshake(
+                                5,
+                                ip,
+                                port,
+                                EnumConnectionState.LOGIN
+                            ),
+                            *arrayOfNulls(0)
+                        )
+                        it.scheduleOutboundPacket(
+                            C00PacketLoginStart(this@GuiConnecting.mc.session.gameProfile),
+                            *arrayOfNulls(0)
+                        )
+
+                    }
+
+                } catch (var5: UnknownHostException) {
+                    if (this@GuiConnecting.cancelled) return@execute
+
+                    logger.error("Couldn\'t connect to server", var5)
+                    this@GuiConnecting.mc.displayGuiScreen(
+                        GuiDisconnected(
+                            this@GuiConnecting.mc,
+                            this@GuiConnecting.previousScreen,
                             "connect.failed",
-                            new ChatComponentTranslation("disconnect.genericReason", new Object[] { "Unknown host" })));
-                } catch (Exception e) {
-                    if (GuiConnecting.this.cancelled)
-                        return;
+                            ChatComponentTranslation(
+                                "disconnect.genericReason",
+                                "Unknown host"
+                            )
+                        )
+                    )
+                } catch (e: Exception) {
+                    if (this@GuiConnecting.cancelled) return@execute
 
-                    GuiConnecting.logger.error("Couldn\'t connect to server", e);
-                    var errorMessage = e.toString();
+                    logger.error("Couldn\'t connect to server", e)
+                    var errorMessage = e.toString()
 
-                    if (iNetAddress != null)
-                        errorMessage = errorMessage.replaceAll(iNetAddress.toString() + ":" + port, "");
+                    if (iNetAddress != null) errorMessage = errorMessage.replace(("$iNetAddress:$port").toRegex(), "")
 
-                    GuiConnecting.this.mc
-                            .displayGuiScreen(new GuiDisconnected(GuiConnecting.this.mc,
-                                    GuiConnecting.this.previousScreen, "connect.failed",
-                                    new ChatComponentTranslation("disconnect.genericReason",
-                                            new Object[] { errorMessage })));
+                    this@GuiConnecting.mc
+                        .displayGuiScreen(
+                            GuiDisconnected(
+                                this@GuiConnecting.mc,
+                                this@GuiConnecting.previousScreen, "connect.failed",
+                                ChatComponentTranslation(
+                                    "disconnect.genericReason",
+                                    errorMessage
+                                )
+                            )
+                        )
                 }
-            });
-        };
-
-    }
-
-    @FunctionalInterface
-    public interface ConnectFunction {
-        void connect(String ip, int port);
-    }
-
-    public GuiConnecting(GuiScreen previousScreen, Minecraft mc, String ipArg, int portArg) {
-        super(mc);
-        this.previousScreen = previousScreen;
-        this.ip = ipArg;
-        this.port = portArg;
-
-        this.connectFunction = (ip, port) -> {
-            logger.info("Connecting to " + ip + ", " + port);
-            ThreadManager.getAsyncExecutor().execute(() -> {
-                InetAddress iNetAddress = null;
-
-                try {
-                    if (GuiConnecting.this.cancelled)
-                        return;
-
-                    iNetAddress = InetAddress.getByName(ip);
-                    GuiConnecting.this.networkManager = NetworkManager.provideLanClient(mc, iNetAddress, port);
-                    GuiConnecting.this.networkManager
-                            .setNetHandler(new NetHandlerLoginClient(GuiConnecting.this.networkManager,
-                                    GuiConnecting.this.mc, GuiConnecting.this.previousScreen));
-                    GuiConnecting.this.networkManager.scheduleOutboundPacket(
-                            new C00Handshake(5, ip, port, EnumConnectionState.LOGIN),
-                            new GenericFutureListener[0]);
-                    GuiConnecting.this.networkManager.scheduleOutboundPacket(
-                            new C00PacketLoginStart(GuiConnecting.this.mc.getSession().getGameProfile()),
-                            new GenericFutureListener[0]);
-                } catch (UnknownHostException var5) {
-                    if (GuiConnecting.this.cancelled)
-                        return;
-
-                    GuiConnecting.logger.error("Couldn\'t connect to server", var5);
-                    GuiConnecting.this.mc.displayGuiScreen(new GuiDisconnected(GuiConnecting.this.mc,
-                            GuiConnecting.this.previousScreen,
-                            "connect.failed",
-                            new ChatComponentTranslation("disconnect.genericReason", new Object[] { "Unknown host" })));
-                } catch (Exception e) {
-                    if (GuiConnecting.this.cancelled)
-                        return;
-
-                    GuiConnecting.logger.error("Couldn\'t connect to server", e);
-                    var errorMessage = e.toString();
-
-                    if (iNetAddress != null)
-                        errorMessage = errorMessage.replaceAll(iNetAddress.toString() + ":" + port, "");
-
-                    GuiConnecting.this.mc
-                            .displayGuiScreen(new GuiDisconnected(GuiConnecting.this.mc,
-                                    GuiConnecting.this.previousScreen, "connect.failed",
-                                    new ChatComponentTranslation("disconnect.genericReason",
-                                            new Object[] { errorMessage })));
-                }
-            });
-        };
-    }
-
-    public void initConnectingGui() {
-        if (serverData != null)
-            mc.setServerData(serverData);
-
-        mc.loadWorld((WorldClient) null);
-        this.connect(ip, port);
-    }
-
-    protected void connect(final String ip, final int port) {
-        this.connectFunction.connect(ip, port);
-    }
-
-    @Override
-    public void updateScreen() {
-        if (this.networkManager == null)
-            return;
-
-        if (this.networkManager.isChannelOpen())
-            this.networkManager.processReceivedPackets();
-        else if (this.networkManager.getExitMessage() != null)
-            this.networkManager.getNetHandler().onDisconnect(this.networkManager.getExitMessage());
-    }
-
-    @Override
-    protected void keyTyped(char character, int p_73869_2_) {
-    }
-
-    @Override
-    public void initGui() {
-        this.buttonList.clear();
-        this.buttonList.add(
-                new GuiButton(this.mc, 0, this.width / 2 - 100, this.height / 2 + 50,
-                        I18n.format("gui.cancel", new Object[0])));
-    }
-
-    @Override
-    protected void actionPerformed(GuiButton button) {
-        if (button.id == 0) {
-            this.cancelled = true;
-
-            if (this.networkManager != null)
-                this.networkManager.closeChannel(new ChatComponentText("Aborted"));
-
-            this.mc.displayGuiScreen(this.previousScreen);
+            }
         }
     }
 
-    @Override
-    public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
-        this.drawDefaultBackground();
+    fun interface ConnectFunction {
+        fun connect(ip: String, port: Int)
+    }
 
-        if (this.networkManager == null)
-            this.drawCenteredString(this.fontRendererObj, I18n.format("connect.connecting", new Object[0]),
-                    this.width / 2, this.height / 2 - 50, 16777215);
-        else
-            this.drawCenteredString(this.fontRendererObj, I18n.format("connect.authorizing", new Object[0]),
-                    this.width / 2, this.height / 2 - 50, 16777215);
+    constructor(previousScreen: GuiScreen, mc: Minecraft?, ipArg: String, portArg: Int) : super(mc) {
+        this.previousScreen = previousScreen
+        this.ip = ipArg
+        this.port = portArg
 
-        super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
+        this.connectFunction = ConnectFunction { ip: String, port: Int ->
+            logger.info("Connecting to $ip, $port")
+            asyncExecutor.execute {
+                var iNetAddress: InetAddress? = null
+                try {
+                    if (this@GuiConnecting.cancelled) return@execute
+
+                    iNetAddress = InetAddress.getByName(ip)
+                    NetworkManager.provideLanClient(mc, iNetAddress, port).let {
+                        this@GuiConnecting.networkManager = it
+                        it
+                            .setNetHandler(
+                                NetHandlerLoginClient(
+                                    it,
+                                    this@GuiConnecting.mc, this@GuiConnecting.previousScreen
+                                )
+                            )
+                        it.scheduleOutboundPacket(
+                            C00Handshake(
+                                5,
+                                ip,
+                                port,
+                                EnumConnectionState.LOGIN
+                            ),
+                            *arrayOfNulls(0)
+                        )
+                        it.scheduleOutboundPacket(
+                            C00PacketLoginStart(this@GuiConnecting.mc.session.gameProfile),
+                            *arrayOfNulls(0)
+                        )
+
+                    }
+                } catch (var5: UnknownHostException) {
+                    if (this@GuiConnecting.cancelled) return@execute
+
+                    logger.error("Couldn\'t connect to server", var5)
+                    this@GuiConnecting.mc.displayGuiScreen(
+                        GuiDisconnected(
+                            this@GuiConnecting.mc,
+                            this@GuiConnecting.previousScreen,
+                            "connect.failed",
+                            ChatComponentTranslation(
+                                "disconnect.genericReason",
+                                "Unknown host"
+                            )
+                        )
+                    )
+                } catch (e: Exception) {
+                    if (this@GuiConnecting.cancelled) return@execute
+
+                    logger.error("Couldn\'t connect to server", e)
+                    var errorMessage = e.toString()
+
+                    if (iNetAddress != null) errorMessage = errorMessage.replace(("$iNetAddress:$port").toRegex(), "")
+
+                    this@GuiConnecting.mc
+                        .displayGuiScreen(
+                            GuiDisconnected(
+                                this@GuiConnecting.mc,
+                                this@GuiConnecting.previousScreen, "connect.failed",
+                                ChatComponentTranslation(
+                                    "disconnect.genericReason",
+                                    errorMessage
+                                )
+                            )
+                        )
+                }
+            }
+        }
+    }
+
+    fun initConnectingGui() {
+        if (serverData != null) mc.setServerData(serverData)
+
+        mc.loadWorld(null as WorldClient?)
+        this.connect(ip, port)
+    }
+
+    protected fun connect(ip: String, port: Int) {
+        connectFunction.connect(ip, port)
+    }
+
+    override fun updateScreen() {
+        if (this.networkManager == null) return
+
+        if (networkManager!!.isChannelOpen) networkManager!!.processReceivedPackets()
+        else if (networkManager!!.exitMessage != null) networkManager!!.netHandler.onDisconnect(
+            networkManager!!.exitMessage
+        )
+    }
+
+    override fun keyTyped(character: Char, p_73869_2_: Int) {
+    }
+
+    override fun initGui() {
+        buttonList.clear()
+        buttonList.add(
+            GuiButton(
+                this.mc, 0, this.width / 2 - 100, this.height / 2 + 50,
+                I18n.format("gui.cancel", *arrayOfNulls(0))
+            )
+        )
+    }
+
+    override fun actionPerformed(button: GuiButton) {
+        if (button.id == 0) {
+            this.cancelled = true
+
+            if (this.networkManager != null) networkManager!!.closeChannel(ChatComponentText("Aborted"))
+
+            mc.displayGuiScreen(this.previousScreen)
+        }
+    }
+
+    override fun drawScreen(p_73863_1_: Int, p_73863_2_: Int, p_73863_3_: Float) {
+        this.drawDefaultBackground()
+
+        if (this.networkManager == null) this.drawCenteredString(
+            this.fontRendererObj, I18n.format("connect.connecting", *arrayOfNulls(0)),
+            this.width / 2, this.height / 2 - 50, 16777215
+        )
+        else this.drawCenteredString(
+            this.fontRendererObj, I18n.format("connect.authorizing", *arrayOfNulls(0)),
+            this.width / 2, this.height / 2 - 50, 16777215
+        )
+
+        super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_)
+    }
+
+    companion object {
+        private val logger: Logger = LogManager.getLogger(
+            GuiConnecting::class.java
+        )
     }
 }

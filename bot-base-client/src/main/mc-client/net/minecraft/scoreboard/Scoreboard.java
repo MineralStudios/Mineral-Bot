@@ -1,26 +1,28 @@
 package net.minecraft.scoreboard;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.val;
 
+import java.util.*;
+
 public class Scoreboard {
-    /** Map of objective names to ScoreObjective objects. */
+    /**
+     * Map of objective names to ScoreObjective objects.
+     */
     private final Object2ObjectOpenHashMap<String, ScoreObjective> scoreObjectives = new Object2ObjectOpenHashMap<>();
     private final Object2ObjectOpenHashMap<IScoreObjectiveCriteria, List<ScoreObjective>> scoreObjectiveCriterias = new Object2ObjectOpenHashMap<>();
     private final Object2ObjectOpenHashMap<String, Object2ObjectOpenHashMap<ScoreObjective, Score>> field_96544_c = new Object2ObjectOpenHashMap<>();
     private final ScoreObjective[] field_96541_d = new ScoreObjective[3];
 
-    /** Map of teamnames to ScorePlayerTeam instances */
+    /**
+     * Map of teamnames to ScorePlayerTeam instances
+     */
     private final Object2ObjectOpenHashMap<String, ScorePlayerTeam> teams = new Object2ObjectOpenHashMap<>();
 
-    /** Map of usernames to ScorePlayerTeam objects. */
+    /**
+     * Map of usernames to ScorePlayerTeam objects.
+     */
     private final Object2ObjectOpenHashMap<String, ScorePlayerTeam> teamMemberships = new Object2ObjectOpenHashMap<>();
 
     /**
@@ -34,7 +36,7 @@ public class Scoreboard {
         var var3 = this.getObjective(p_96535_1_);
 
         if (var3 != null) {
-            if (!BotGlobalConfig.isHeadless())
+            if (!BotGlobalConfig.headless)
                 throw new IllegalArgumentException("An objective with the name \'" + p_96535_1_ + "\' already exists!");
             return var3;
         }
@@ -179,7 +181,7 @@ public class Scoreboard {
         var var2 = this.getTeam(p_96527_1_);
 
         if (var2 != null) {
-            if (!BotGlobalConfig.isHeadless())
+            if (!BotGlobalConfig.headless)
                 throw new IllegalArgumentException("A team with the name \'" + p_96527_1_ + "\' already exists!");
             return var2;
         } else {
@@ -239,7 +241,7 @@ public class Scoreboard {
      */
     public void removePlayerFromTeam(String p_96512_1_, ScorePlayerTeam p_96512_2_) {
         if (this.getPlayersTeam(p_96512_1_) != p_96512_2_) {
-            if (!BotGlobalConfig.isHeadless())
+            if (!BotGlobalConfig.headless)
                 throw new IllegalStateException(
                         "Player is either on another team or not on any team. Cannot remove from team \'"
                                 + p_96512_2_.getRegisteredName() + "\'.");

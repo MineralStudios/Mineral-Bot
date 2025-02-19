@@ -8,7 +8,7 @@ public class ReflectorClass {
     private Class targetClass = null;
 
     public ReflectorClass(String targetClassName) {
-        this.targetClassNames = new String[] { targetClassName };
+        this.targetClassNames = new String[]{targetClassName};
         Class cls = this.getTargetClass();
     }
 
@@ -19,12 +19,12 @@ public class ReflectorClass {
 
     public ReflectorClass(Class targetClass) {
         this.targetClass = targetClass;
-        this.targetClassNames = new String[] { targetClass.getName() };
+        this.targetClassNames = new String[]{targetClass.getName()};
         this.checked = true;
     }
 
     public Class getTargetClass() {
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return null;
         if (this.checked) {
             return this.targetClass;

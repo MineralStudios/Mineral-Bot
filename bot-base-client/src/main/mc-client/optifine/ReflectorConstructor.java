@@ -1,8 +1,8 @@
 package optifine;
 
-import java.lang.reflect.Constructor;
-
 import gg.mineral.bot.impl.config.BotGlobalConfig;
+
+import java.lang.reflect.Constructor;
 
 public class ReflectorConstructor {
     private ReflectorClass reflectorClass = null;
@@ -17,7 +17,7 @@ public class ReflectorConstructor {
     }
 
     public Constructor getTargetConstructor() {
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return null;
         if (this.checked) {
             return this.targetConstructor;
@@ -64,7 +64,7 @@ public class ReflectorConstructor {
     }
 
     public boolean exists() {
-        return !BotGlobalConfig.isOptimizedGameLoop()
+        return !BotGlobalConfig.optimizedGameLoop
                 && (this.checked ? this.targetConstructor != null : this.getTargetConstructor() != null);
     }
 

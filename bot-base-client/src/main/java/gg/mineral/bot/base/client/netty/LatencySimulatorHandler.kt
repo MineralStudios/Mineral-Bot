@@ -1,29 +1,25 @@
-package gg.mineral.bot.base.client.netty;
+package gg.mineral.bot.base.client.netty
 
-import gg.mineral.bot.base.client.instance.ClientInstance;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOutboundHandlerAdapter;
-import io.netty.channel.ChannelPromise;
-import lombok.RequiredArgsConstructor;
-import net.minecraft.client.Minecraft;
+import gg.mineral.bot.base.client.instance.ClientInstance
+import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.ChannelOutboundHandlerAdapter
+import io.netty.channel.ChannelPromise
+import net.minecraft.client.Minecraft
 
-@RequiredArgsConstructor
-public class LatencySimulatorHandler extends ChannelOutboundHandlerAdapter {
-    private final Minecraft mc;
+class LatencySimulatorHandler(private val mc: Minecraft) : ChannelOutboundHandlerAdapter() {
 
-    @Override
-    public void write(final ChannelHandlerContext ctx, final Object msg, final ChannelPromise promise)
-            throws Exception {
-        if (this.mc instanceof ClientInstance instance) {
-            instance.scheduleTask(() -> {
+    @Throws(Exception::class)
+    override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
+        if (mc is ClientInstance) {
+            mc.scheduleTask(Runnable {
                 try {
-                    super.write(ctx, msg, promise);
-                } catch (Exception e) {
-                    promise.setFailure(e);
+                    super.write(ctx, msg, promise)
+                } catch (e: Exception) {
+                    promise.setFailure(e)
                 }
-            }, instance.getLatency());
+            }, mc.latency.toLong())
         } else {
-            super.write(ctx, msg, promise);
+            super.write(ctx, msg, promise)
         }
     }
 }

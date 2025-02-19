@@ -4,22 +4,34 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PotionEffect implements gg.mineral.bot.api.entity.effect.PotionEffect {
-    /** ID value of the potion this effect matches. */
+    /**
+     * ID value of the potion this effect matches.
+     */
     private int potionID;
 
-    /** The duration of the potion effect */
+    /**
+     * The duration of the potion effect
+     */
     private int duration;
 
-    /** The amplifier of the potion effect */
+    /**
+     * The amplifier of the potion effect
+     */
     private int amplifier;
 
-    /** Whether the potion is a splash potion */
+    /**
+     * Whether the potion is a splash potion
+     */
     private boolean isSplashPotion;
 
-    /** Whether the potion effect came from a beacon */
+    /**
+     * Whether the potion effect came from a beacon
+     */
     private boolean isAmbient;
 
-    /** True if potion effect duration is at maximum, false otherwise. */
+    /**
+     * True if potion effect duration is at maximum, false otherwise.
+     */
     private boolean isPotionDurationMax;
 
     public PotionEffect(int p_i1574_1_, int p_i1574_2_) {

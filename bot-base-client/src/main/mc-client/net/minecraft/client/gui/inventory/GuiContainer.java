@@ -1,10 +1,5 @@
 package net.minecraft.client.gui.inventory;
 
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
 import gg.mineral.bot.api.screen.type.ContainerScreen;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
@@ -24,6 +19,10 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.Set;
 
 public abstract class GuiContainer extends GuiScreen implements ContainerScreen {
     protected static final ResourceLocation field_147001_a = new ResourceLocation(
@@ -546,7 +545,7 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
     }
 
     protected boolean isMouseOver(int slotX, int slotY, int width, int height, int x,
-            int y) {
+                                  int y) {
         int xShift = this.xShift;
         int yShift = this.yShift;
         x -= xShift;
@@ -575,6 +574,7 @@ public abstract class GuiContainer extends GuiScreen implements ContainerScreen 
         if (p_146984_1_ != null)
             p_146984_2_ = p_146984_1_.slotNumber;
 
+        assert this.mc.thePlayer != null;
         this.mc.playerController.windowClick(this.container.windowId, p_146984_2_, p_146984_3_, p_146984_4_,
                 this.mc.thePlayer);
     }

@@ -1,171 +1,158 @@
-package gg.mineral.bot.base.client;
+package gg.mineral.bot.base.client
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
+import com.google.common.collect.HashMultimap
+import gg.mineral.bot.api.BotAPI
+import gg.mineral.bot.api.collections.OptimizedCollections
+import gg.mineral.bot.api.configuration.BotConfiguration
+import gg.mineral.bot.api.entity.living.player.FakePlayer
+import gg.mineral.bot.api.instance.ClientInstance
+import gg.mineral.bot.api.math.ServerLocation
+import gg.mineral.bot.api.message.ChatColor
+import gg.mineral.bot.base.client.manager.InstanceManager
+import gg.mineral.bot.impl.thread.ThreadManager
+import it.unimi.dsi.fastutil.objects.Object2IntMap
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
+import java.io.File
+import java.net.Proxy
+import java.util.*
+import java.util.concurrent.ExecutorService
+import java.util.function.Consumer
 
-import com.google.common.collect.HashMultimap;
+abstract class BotImpl : BotAPI() {
+    private var lastSpawnInfo: Long = 0
 
-import gg.mineral.bot.api.BotAPI;
-import gg.mineral.bot.api.collections.OptimizedCollections;
-import gg.mineral.bot.api.configuration.BotConfiguration;
+    fun printSpawnInfo() {
+        if (spawnRecords.isEmpty() || System.currentTimeMillis() - lastSpawnInfo < 3000) return
 
-import gg.mineral.bot.api.entity.living.player.FakePlayer;
-import gg.mineral.bot.api.instance.ClientInstance;
-import gg.mineral.bot.api.math.ServerLocation;
-import gg.mineral.bot.api.message.ChatColor;
-import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.impl.thread.ThreadManager;
-import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import lombok.val;
+        lastSpawnInfo = System.currentTimeMillis()
 
-public abstract class BotImpl extends BotAPI {
+        val iterator = spawnRecords.iterator()
 
-    private long lastSpawnInfo = 0;
+        var totalTime = 0
+        var amount = 0
 
-    public void printSpawnInfo() {
-        if (spawnRecords.isEmpty() || System.currentTimeMillis() - lastSpawnInfo < 3000)
-            return;
-
-        lastSpawnInfo = System.currentTimeMillis();
-
-        val iterator = spawnRecords.iterator();
-
-        var totalTime = 0;
-        var amount = 0;
-
-        val nameCount = new Object2IntOpenHashMap<String>();
+        val nameCount = Object2IntOpenHashMap<String>()
 
         while (iterator.hasNext()) {
-            SpawnRecord record = iterator.next();
-            nameCount.put(record.name(), nameCount.getInt(record.name()) + 1);
-            amount++;
-            totalTime += record.time();
-            iterator.remove();
+            val record = iterator.next()
+            nameCount.put(record.name, nameCount.getInt(record.name) + 1)
+            amount++
+            totalTime += record.time.toInt()
+            iterator.remove()
         }
 
-        val sb = new StringBuilder();
+        val sb = StringBuilder()
 
-        val newLine = System.lineSeparator();
+        val newLine = System.lineSeparator()
 
-        for (Iterator<Entry<String>> it = nameCount.object2IntEntrySet().iterator(); it.hasNext();) {
-            val e = it.next();
-            val name = e.getKey();
-            val count = e.getIntValue();
+        val it: Iterator<Object2IntMap.Entry<String>> = nameCount.object2IntEntrySet().iterator()
+        while (it.hasNext()) {
+            val e = it.next()
+            val name = e.key
+            val count = e.intValue
 
-            if (it.hasNext())
-                sb.append(newLine);
+            if (it.hasNext()) sb.append(newLine)
 
-            sb.append("• " + name + " x" + count);
+            sb.append("• ").append(name).append(" x").append(count)
         }
 
-        println(ChatColor.WHITE + ChatColor.UNDERLINE + "Recent Spawn Info:" + ChatColor.RESET);
-        println(ChatColor.WHITE + "Amount: " + ChatColor.CYAN + amount + ChatColor.RESET);
-        println(ChatColor.WHITE + "Total Spawn Time: " + ChatColor.CYAN + totalTime + "ms" + ChatColor.RESET);
-        println(ChatColor.WHITE + "Average Spawn Time: " + ChatColor.CYAN + (totalTime / amount) + "ms"
-                + ChatColor.RESET);
-        println(ChatColor.WHITE + "Names: " + sb.toString() + ChatColor.RESET);
+        println(ChatColor.WHITE + ChatColor.UNDERLINE + "Recent Spawn Info:" + ChatColor.RESET)
+        println(ChatColor.WHITE + "Amount: " + ChatColor.CYAN + amount + ChatColor.RESET)
+        println(ChatColor.WHITE + "Total Spawn Time: " + ChatColor.CYAN + totalTime + "ms" + ChatColor.RESET)
+        println(
+            (ChatColor.WHITE + "Average Spawn Time: " + ChatColor.CYAN + (totalTime / amount) + "ms"
+                    + ChatColor.RESET)
+        )
+        println(ChatColor.WHITE + "Names: " + sb.toString() + ChatColor.RESET)
     }
 
-    private void println(String message) {
-        System.out.println(message);
+    private fun println(message: String) {
+        kotlin.io.println(message)
     }
 
-    public static void init() {
-        BotAPI.INSTANCE = new BotImpl() {
-            @Override
-            public ClientInstance spawn(BotConfiguration configuration, ServerLocation location) {
-                return spawn(configuration, "localhost", 25565);
+    override val gameLoopExecutor: ExecutorService
+        get() = ThreadManager.gameLoopExecutor
+
+    override val asyncExecutor: ExecutorService
+        get() = ThreadManager.asyncExecutor
+
+    override fun collections(): OptimizedCollections {
+        return gg.mineral.bot.base.client.collections.OptimizedCollections()
+    }
+
+    override fun spawn(configuration: BotConfiguration, serverIp: String, serverPort: Int): ClientInstance {
+        val startTime = System.nanoTime() / 1000000
+        val file = configuration.runDirectory
+
+        if (!file.exists()) file.mkdirs()
+
+        val instance = gg.mineral.bot.base.client.instance.ClientInstance(
+            configuration, 1280, 720,
+            false,
+            false,
+            file,
+            File(file, "assets"),
+            File(file, "resourcepacks"),
+            Proxy.NO_PROXY,
+            "Mineral-Bot-Client", HashMultimap.create<Any?, Any?>(),
+            "1.7.10"
+        )
+
+        instance.setServer(serverIp, serverPort)
+        ThreadManager.gameLoopExecutor.execute {
+            instance.run()
+            InstanceManager.instances[configuration.uuid] = instance
+        }
+
+        spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
+        return instance
+    }
+
+    override fun despawn(uuid: UUID): Boolean {
+        val instance = InstanceManager.instances[uuid]
+        val running = instance != null && instance.running
+        instance?.shutdown()
+
+        return running
+    }
+
+    override fun despawn(vararg uuids: UUID): BooleanArray {
+        val results = BooleanArray(uuids.size)
+        for (i in uuids.indices) results[i] = despawn(uuids[i])
+        return results
+    }
+
+    override fun isFakePlayer(uuid: UUID): Boolean {
+        val instances = InstanceManager.instances
+        synchronized(instances) {
+            return instances.containsKey(uuid)
+        }
+    }
+
+    override fun despawnAll() {
+        val instances = InstanceManager.instances
+        instances.values.forEach(Consumer { obj: gg.mineral.bot.base.client.instance.ClientInstance -> obj.shutdown() })
+        instances.clear()
+    }
+
+    override val fakePlayers: Collection<FakePlayer>
+        get() {
+            val fakePlayers =
+                ArrayList<FakePlayer>()
+
+            for (instance in InstanceManager.instances.values) fakePlayers.add(
+                instance.fakePlayer
+            )
+            return fakePlayers
+        }
+
+    companion object {
+        fun init() {
+            INSTANCE = object : BotImpl() {
+                override fun spawn(configuration: BotConfiguration, location: ServerLocation): ClientInstance {
+                    return spawn(configuration, "localhost", 25565)
+                }
             }
-        };
-    }
-
-    @Override
-    public ExecutorService getGameLoopExecutor() {
-        return ThreadManager.getGameLoopExecutor();
-    }
-
-    @Override
-    public ExecutorService getAsyncExecutor() {
-        return ThreadManager.getAsyncExecutor();
-    }
-
-    @Override
-    public OptimizedCollections collections() {
-        return new gg.mineral.bot.base.client.collections.OptimizedCollections();
-    }
-
-    @Override
-    public ClientInstance spawn(BotConfiguration configuration, String serverIp, int serverPort) {
-        val startTime = System.nanoTime() / 1000000;
-        val file = configuration.getRunDirectory();
-
-        if (!file.exists())
-            file.mkdirs();
-
-        val instance = new gg.mineral.bot.base.client.instance.ClientInstance(configuration, 1280, 720,
-                false,
-                false,
-                file,
-                new File(file, "assets"),
-                new File(file, "resourcepacks"),
-                java.net.Proxy.NO_PROXY,
-                "Mineral-Bot-Client", HashMultimap.create(),
-                "1.7.10");
-
-        instance.setServer(serverIp, serverPort);
-        ThreadManager.getAsyncExecutor().execute(() -> {
-            instance.run();
-            InstanceManager.getInstances().put(configuration.getUuid(), instance);
-        });
-
-        spawnRecords.add(new SpawnRecord(configuration.getUsername(), (System.nanoTime() / 1000000) - startTime));
-        return instance;
-    }
-
-    @Override
-    public boolean despawn(UUID uuid) {
-        val instance = InstanceManager.getInstances().get(uuid);
-        val running = instance != null && instance.running;
-        if (instance != null)
-            instance.shutdown();
-
-        return running;
-    }
-
-    @Override
-    public boolean[] despawn(UUID... uuids) {
-        val results = new boolean[uuids.length];
-        for (int i = 0; i < uuids.length; i++)
-            results[i] = despawn(uuids[i]);
-        return results;
-    }
-
-    @Override
-    public boolean isFakePlayer(UUID uuid) {
-        val instances = InstanceManager.getInstances();
-        synchronized (instances) {
-            return instances.containsKey(uuid);
         }
-    }
-
-    @Override
-    public void despawnAll() {
-        val instances = InstanceManager.getInstances();
-        instances.values().forEach(ClientInstance::shutdown);
-        instances.clear();
-    }
-
-    @Override
-    public Collection<FakePlayer> getFakePlayers() {
-        val fakePlayers = new ArrayList<FakePlayer>();
-
-        for (val instance : InstanceManager.getInstances().values())
-            fakePlayers.add(instance.getFakePlayer());
-        return fakePlayers;
     }
 }

@@ -1,31 +1,26 @@
 package net.minecraft.client.renderer;
 
+import gg.mineral.bot.impl.thread.ThreadManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.SimpleTexture;
+import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.util.ResourceLocation;
+import optifine.*;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
-import java.net.URL;
 import java.net.Proxy.Type;
+import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.imageio.ImageIO;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
-import optifine.Config;
-import optifine.HttpPipeline;
-import optifine.HttpRequest;
-import optifine.HttpResponse;
-import optifine.TextureUtils;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import gg.mineral.bot.impl.thread.ThreadManager;
 
 public class ThreadDownloadImageData extends SimpleTexture {
     private static final Logger logger = LogManager.getLogger(ThreadDownloadImageData.class);
@@ -40,7 +35,7 @@ public class ThreadDownloadImageData extends SimpleTexture {
     public boolean pipeline = false;
 
     public ThreadDownloadImageData(Minecraft mc, File par1GuiCreateFlatWorld, String p_i1049_2_,
-            ResourceLocation p_i1049_3_, IImageBuffer p_i1049_4_) {
+                                   ResourceLocation p_i1049_3_, IImageBuffer p_i1049_4_) {
         super(mc, p_i1049_3_);
         this.field_152434_e = par1GuiCreateFlatWorld;
         this.imageUrl = p_i1049_2_;
@@ -80,7 +75,7 @@ public class ThreadDownloadImageData extends SimpleTexture {
 
         if (this.imageThread == null) {
             if (this.field_152434_e != null && this.field_152434_e.isFile()) {
-                logger.debug("Loading http texture from local cache ({})", new Object[] { this.field_152434_e });
+                logger.debug("Loading http texture from local cache ({})", new Object[]{this.field_152434_e});
 
                 try {
                     this.bufferedImage = ImageIO.read(this.field_152434_e);
@@ -101,12 +96,12 @@ public class ThreadDownloadImageData extends SimpleTexture {
     }
 
     protected void func_152433_a() {
-        ThreadManager.getAsyncExecutor().execute(() -> {
+        ThreadManager.INSTANCE.getAsyncExecutor().execute(() -> {
             ThreadDownloadImageData.this.imageThread = Thread.currentThread();
             Thread.currentThread().setName("Texture Downloader #" + field_147643_d.incrementAndGet());
             HttpURLConnection var1 = null;
-            ThreadDownloadImageData.logger.debug("Downloading http texture from {} to {}", new Object[] {
-                    ThreadDownloadImageData.this.imageUrl, ThreadDownloadImageData.this.field_152434_e });
+            ThreadDownloadImageData.logger.debug("Downloading http texture from {} to {}", new Object[]{
+                    ThreadDownloadImageData.this.imageUrl, ThreadDownloadImageData.this.field_152434_e});
 
             if (ThreadDownloadImageData.this.shouldPipeline()) {
                 ThreadDownloadImageData.this.loadPipelined();

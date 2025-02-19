@@ -356,7 +356,7 @@ public class RenderGlobal implements IWorldAccess {
     }
 
     private void renderStars() {
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return;
         Random var1 = new Random(10842L);
         Tessellator var2 = this.mc.getTessellator();

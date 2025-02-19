@@ -1,68 +1,67 @@
-package gg.mineral.bot.base.lwjgl.opengl;
+package gg.mineral.bot.base.lwjgl.opengl
 
-import gg.mineral.bot.impl.config.BotGlobalConfig;
+import gg.mineral.bot.impl.config.BotGlobalConfig
+import org.lwjgl.opengl.GL14
 
-public class GL14 {
+object GL14 {
+    const val GL_GENERATE_MIPMAP: Int = 0x8191
+    const val GL_GENERATE_MIPMAP_HINT: Int = 0x8192
+    const val GL_DEPTH_COMPONENT16: Int = 0x81A5
+    const val GL_DEPTH_COMPONENT24: Int = 0x81A6
+    const val GL_DEPTH_COMPONENT32: Int = 0x81A7
+    const val GL_TEXTURE_DEPTH_SIZE: Int = 0x884A
+    const val GL_DEPTH_TEXTURE_MODE: Int = 0x884B
+    const val GL_TEXTURE_COMPARE_MODE: Int = 0x884C
+    const val GL_TEXTURE_COMPARE_FUNC: Int = 0x884D
+    const val GL_COMPARE_R_TO_TEXTURE: Int = 0x884E
+    const val GL_FOG_COORDINATE_SOURCE: Int = 0x8450
+    const val GL_FOG_COORDINATE: Int = 0x8451
+    const val GL_FRAGMENT_DEPTH: Int = 0x8452
+    const val GL_CURRENT_FOG_COORDINATE: Int = 0x8453
+    const val GL_FOG_COORDINATE_ARRAY_TYPE: Int = 0x8454
+    const val GL_FOG_COORDINATE_ARRAY_STRIDE: Int = 0x8455
+    const val GL_FOG_COORDINATE_ARRAY_POINTER: Int = 0x8456
+    const val GL_FOG_COORDINATE_ARRAY: Int = 0x8457
+    const val GL_POINT_SIZE_MIN: Int = 0x8126
+    const val GL_POINT_SIZE_MAX: Int = 0x8127
+    const val GL_POINT_FADE_THRESHOLD_SIZE: Int = 0x8128
+    const val GL_POINT_DISTANCE_ATTENUATION: Int = 0x8129
+    const val GL_COLOR_SUM: Int = 0x8458
+    const val GL_CURRENT_SECONDARY_COLOR: Int = 0x8459
+    const val GL_SECONDARY_COLOR_ARRAY_SIZE: Int = 0x845A
+    const val GL_SECONDARY_COLOR_ARRAY_TYPE: Int = 0x845B
+    const val GL_SECONDARY_COLOR_ARRAY_STRIDE: Int = 0x845C
+    const val GL_SECONDARY_COLOR_ARRAY_POINTER: Int = 0x845D
+    const val GL_SECONDARY_COLOR_ARRAY: Int = 0x845E
+    const val GL_BLEND_DST_RGB: Int = 0x80C8
+    const val GL_BLEND_SRC_RGB: Int = 0x80C9
+    const val GL_BLEND_DST_ALPHA: Int = 0x80CA
+    const val GL_BLEND_SRC_ALPHA: Int = 0x80CB
+    const val GL_INCR_WRAP: Int = 0x8507
+    const val GL_DECR_WRAP: Int = 0x8508
+    const val GL_TEXTURE_FILTER_CONTROL: Int = 0x8500
+    const val GL_TEXTURE_LOD_BIAS: Int = 0x8501
+    const val GL_MAX_TEXTURE_LOD_BIAS: Int = 0x84FD
+    const val GL_MIRRORED_REPEAT: Int = 0x8370
+    const val GL_BLEND_COLOR: Int = 0x8005
+    const val GL_BLEND_EQUATION: Int = 0x8009
+    const val GL_FUNC_ADD: Int = 0x8006
+    const val GL_FUNC_SUBTRACT: Int = 0x800A
+    const val GL_FUNC_REVERSE_SUBTRACT: Int = 0x800B
+    const val GL_MIN: Int = 0x8007
+    const val GL_MAX: Int = 0x8008
 
-    public static final int GL_GENERATE_MIPMAP = 0x8191,
-            GL_GENERATE_MIPMAP_HINT = 0x8192,
-            GL_DEPTH_COMPONENT16 = 0x81A5,
-            GL_DEPTH_COMPONENT24 = 0x81A6,
-            GL_DEPTH_COMPONENT32 = 0x81A7,
-            GL_TEXTURE_DEPTH_SIZE = 0x884A,
-            GL_DEPTH_TEXTURE_MODE = 0x884B,
-            GL_TEXTURE_COMPARE_MODE = 0x884C,
-            GL_TEXTURE_COMPARE_FUNC = 0x884D,
-            GL_COMPARE_R_TO_TEXTURE = 0x884E,
-            GL_FOG_COORDINATE_SOURCE = 0x8450,
-            GL_FOG_COORDINATE = 0x8451,
-            GL_FRAGMENT_DEPTH = 0x8452,
-            GL_CURRENT_FOG_COORDINATE = 0x8453,
-            GL_FOG_COORDINATE_ARRAY_TYPE = 0x8454,
-            GL_FOG_COORDINATE_ARRAY_STRIDE = 0x8455,
-            GL_FOG_COORDINATE_ARRAY_POINTER = 0x8456,
-            GL_FOG_COORDINATE_ARRAY = 0x8457,
-            GL_POINT_SIZE_MIN = 0x8126,
-            GL_POINT_SIZE_MAX = 0x8127,
-            GL_POINT_FADE_THRESHOLD_SIZE = 0x8128,
-            GL_POINT_DISTANCE_ATTENUATION = 0x8129,
-            GL_COLOR_SUM = 0x8458,
-            GL_CURRENT_SECONDARY_COLOR = 0x8459,
-            GL_SECONDARY_COLOR_ARRAY_SIZE = 0x845A,
-            GL_SECONDARY_COLOR_ARRAY_TYPE = 0x845B,
-            GL_SECONDARY_COLOR_ARRAY_STRIDE = 0x845C,
-            GL_SECONDARY_COLOR_ARRAY_POINTER = 0x845D,
-            GL_SECONDARY_COLOR_ARRAY = 0x845E,
-            GL_BLEND_DST_RGB = 0x80C8,
-            GL_BLEND_SRC_RGB = 0x80C9,
-            GL_BLEND_DST_ALPHA = 0x80CA,
-            GL_BLEND_SRC_ALPHA = 0x80CB,
-            GL_INCR_WRAP = 0x8507,
-            GL_DECR_WRAP = 0x8508,
-            GL_TEXTURE_FILTER_CONTROL = 0x8500,
-            GL_TEXTURE_LOD_BIAS = 0x8501,
-            GL_MAX_TEXTURE_LOD_BIAS = 0x84FD,
-            GL_MIRRORED_REPEAT = 0x8370,
-            GL_BLEND_COLOR = 0x8005,
-            GL_BLEND_EQUATION = 0x8009,
-            GL_FUNC_ADD = 0x8006,
-            GL_FUNC_SUBTRACT = 0x800A,
-            GL_FUNC_REVERSE_SUBTRACT = 0x800B,
-            GL_MIN = 0x8007,
-            GL_MAX = 0x8008;
+    @JvmStatic
+    fun glBlendFuncSeparate(sfactorRGB: Int, dfactorRGB: Int, sfactorAlpha: Int, dfactorAlpha: Int) {
+        if (BotGlobalConfig.headless) return
 
-    public static void glBlendFuncSeparate(int sfactorRGB, int dfactorRGB, int sfactorAlpha, int dfactorAlpha) {
-        if (BotGlobalConfig.isHeadless())
-            return;
-
-        org.lwjgl.opengl.GL14.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+        GL14.glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha)
     }
 
-    public static void glBlendEquation(int mode) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    fun glBlendEquation(mode: Int) {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.GL14.glBlendEquation(mode);
+        GL14.glBlendEquation(mode)
     }
-
 }

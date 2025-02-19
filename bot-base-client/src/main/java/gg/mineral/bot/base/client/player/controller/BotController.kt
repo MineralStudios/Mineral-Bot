@@ -1,25 +1,18 @@
-package gg.mineral.bot.base.client.player.controller;
+package gg.mineral.bot.base.client.player.controller
 
-import gg.mineral.bot.base.client.player.FakePlayer;
-import lombok.val;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.stats.StatFileWriter;
-import net.minecraft.world.World;
+import gg.mineral.bot.base.client.player.FakePlayer
+import net.minecraft.client.Minecraft
+import net.minecraft.client.entity.EntityClientPlayerMP
+import net.minecraft.client.multiplayer.PlayerControllerMP
+import net.minecraft.client.network.NetHandlerPlayClient
+import net.minecraft.stats.StatFileWriter
+import net.minecraft.world.World
 
-public class BotController extends PlayerControllerMP {
-
-    public BotController(Minecraft mc, NetHandlerPlayClient netHandler) {
-        super(mc, netHandler);
+class BotController(mc: Minecraft, netHandler: NetHandlerPlayClient) :
+    PlayerControllerMP(mc, netHandler) {
+    override fun createClientPlayerMP(world: World, statFileWriter: StatFileWriter): EntityClientPlayerMP {
+        val mc = this.mc
+        val netClientHandler = this.netClientHandler
+        return FakePlayer(mc, world, mc.session, netClientHandler, statFileWriter)
     }
-
-    @Override
-    public EntityClientPlayerMP createClientPlayerMP(World world, StatFileWriter statFileWriter) {
-        val mc = this.getMc();
-        val netClientHandler = this.getNetClientHandler();
-        return new FakePlayer(mc, world, mc.getSession(), netClientHandler, statFileWriter);
-    }
-
 }

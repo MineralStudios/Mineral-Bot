@@ -3,7 +3,6 @@ package gg.mineral.bot.engine.plugin.impl
 import com.google.common.collect.HashMultimap
 import gg.mineral.api.network.channel.MineralChannelInitializer
 import gg.mineral.api.network.packet.rw.ByteWriter
-import gg.mineral.bot.api.BotAPI
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.math.ServerLocation
@@ -41,7 +40,7 @@ class ServerBotImpl : BotImpl(), ByteWriter {
         val fakeAddress = LocalAddress("Mineral-fake")
 
         fun init() {
-            BotAPI.INSTANCE = ServerBotImpl()
+            INSTANCE = ServerBotImpl()
         }
     }
 
@@ -96,9 +95,10 @@ class ServerBotImpl : BotImpl(), ByteWriter {
                 "1.7.10"
             ) {
                 override fun displayGuiScreen(guiScreen: GuiScreen?) {
-                    if (guiScreen is GuiConnecting) guiScreen.setConnectFunction(GuiConnecting.ConnectFunction { host: String?, port: Int ->
-                        guiScreen.networkManager = serverPacketHandler
-                    })
+                    if (guiScreen is GuiConnecting) guiScreen.connectFunction =
+                        GuiConnecting.ConnectFunction { _: String?, _: Int ->
+                            guiScreen.networkManager = serverPacketHandler
+                        }
 
                     super.displayGuiScreen(guiScreen)
                 }
@@ -106,7 +106,7 @@ class ServerBotImpl : BotImpl(), ByteWriter {
 
         serverPacketHandler = BotNetworkManager(instance)
 
-        InstanceManager.getPendingInstances()[configuration.uuid] = instance
+        InstanceManager.pendingInstances[configuration.uuid] = instance
         instance.setServer(fakeAddress.id(), 25565)
 
         val channel = Bootstrap()
@@ -166,11 +166,11 @@ class ServerBotImpl : BotImpl(), ByteWriter {
         channel.unsafe().write(byteBuf, channel.voidPromise())
         channel.unsafe().flush()
 
-        ThreadManager.getAsyncExecutor().execute {
+        ThreadManager.gameLoopExecutor.execute {
             try {
                 instance.run()
-                InstanceManager.getPendingInstances().remove(configuration.uuid)
-                InstanceManager.getInstances()[configuration.uuid] = instance
+                InstanceManager.pendingInstances.remove(configuration.uuid)
+                InstanceManager.instances[configuration.uuid] = instance
             } catch (e: Exception) {
                 e.printStackTrace()
             }

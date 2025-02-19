@@ -1,187 +1,195 @@
-package gg.mineral.bot.base.lwjgl.opengl;
+package gg.mineral.bot.base.lwjgl.opengl
 
-import java.nio.ByteBuffer;
+import gg.mineral.bot.impl.config.BotGlobalConfig
+import org.lwjgl.LWJGLException
+import org.lwjgl.PointerBuffer
+import org.lwjgl.opengl.Display
+import org.lwjgl.opengl.DisplayMode
+import org.lwjgl.opengl.Drawable
+import org.lwjgl.opengl.PixelFormat
+import java.nio.ByteBuffer
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.Drawable;
-import org.lwjgl.opengl.PixelFormat;
+object Display {
+    private val DEFAULT_DISPLAY_MODE = DisplayMode(1280, 720)
 
-import gg.mineral.bot.impl.config.BotGlobalConfig;
+    @JvmStatic
+    val isActive: Boolean
+        get() {
+            if (BotGlobalConfig.headless) return true
 
-public class Display {
+            return Display.isActive()
+        }
 
-    private static final DisplayMode DEFAULT_DISPLAY_MODE = new DisplayMode(1280, 720);
+    @JvmStatic
+    @Throws(LWJGLException::class)
+    fun setFullscreen(fullscreen: Boolean) {
+        if (BotGlobalConfig.headless) return
 
-    public static boolean isActive() {
-        if (BotGlobalConfig.isHeadless())
-            return true;
-
-        return org.lwjgl.opengl.Display.isActive();
+        Display.setFullscreen(fullscreen)
     }
 
-    public static void setFullscreen(boolean fullscreen) throws LWJGLException {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    @set:Throws(LWJGLException::class)
+    var displayMode: DisplayMode
+        get() {
+            if (BotGlobalConfig.headless) return DEFAULT_DISPLAY_MODE
 
-        org.lwjgl.opengl.Display.setFullscreen(fullscreen);
+            return Display.getDisplayMode()
+        }
+        set(displayMode) {
+            if (BotGlobalConfig.headless) return
+
+            Display.setDisplayMode(displayMode)
+        }
+
+    @JvmStatic
+    fun setResizable(resizable: Boolean) {
+        if (BotGlobalConfig.headless) return
+
+        Display.setResizable(resizable)
     }
 
-    public static DisplayMode getDisplayMode() {
-        if (BotGlobalConfig.isHeadless())
-            return DEFAULT_DISPLAY_MODE;
+    @JvmStatic
+    fun setTitle(title: String?) {
+        if (BotGlobalConfig.headless) return
 
-        return org.lwjgl.opengl.Display.getDisplayMode();
+        Display.setTitle(title)
     }
 
-    public static void setDisplayMode(DisplayMode displayMode) throws LWJGLException {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    fun setIcon(byteBuffers: Array<ByteBuffer?>?) {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.Display.setDisplayMode(displayMode);
+        Display.setIcon(byteBuffers)
     }
 
-    public static void setResizable(boolean resizable) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    @Throws(LWJGLException::class)
+    fun create(withDepthBits: PixelFormat) {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.Display.setResizable(resizable);
+        Display.create(withDepthBits)
     }
 
-    public static void setTitle(String title) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    @Throws(LWJGLException::class)
+    fun create() {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.Display.setTitle(title);
+        Display.create()
     }
 
-    public static void setIcon(ByteBuffer[] byteBuffers) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    fun setVSyncEnabled(enableVsync: Boolean) {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.Display.setIcon(byteBuffers);
+        Display.setVSyncEnabled(enableVsync)
     }
 
-    public static void create(PixelFormat withDepthBits) throws LWJGLException {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    @get:Throws(LWJGLException::class)
+    val availableDisplayModes: Array<DisplayMode>
+        get() {
+            if (BotGlobalConfig.headless) return arrayOf(
+                DEFAULT_DISPLAY_MODE
+            )
 
-        org.lwjgl.opengl.Display.create(withDepthBits);
+            return Display.getAvailableDisplayModes()
+        }
+
+    @JvmStatic
+    val desktopDisplayMode: DisplayMode
+        get() {
+            if (BotGlobalConfig.headless) return DEFAULT_DISPLAY_MODE
+
+            return Display.getDesktopDisplayMode()
+        }
+
+    @JvmStatic
+    fun destroy() {
+        if (BotGlobalConfig.headless) return
+
+        Display.destroy()
     }
 
-    public static void create() throws LWJGLException {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    val isCreated: Boolean
+        get() {
+            if (BotGlobalConfig.headless) return true
 
-        org.lwjgl.opengl.Display.create();
+            return Display.isCreated()
+        }
+
+    @JvmStatic
+    val isCloseRequested: Boolean
+        get() {
+            if (BotGlobalConfig.headless) return false
+
+            return Display.isCloseRequested()
+        }
+
+    @JvmStatic
+    fun sync(limitFramerate: Int) {
+        if (BotGlobalConfig.headless) return
+
+        Display.sync(limitFramerate)
     }
 
-    public static void setVSyncEnabled(boolean enableVsync) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    fun update() {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.Display.setVSyncEnabled(enableVsync);
+        Display.update()
     }
 
-    public static DisplayMode[] getAvailableDisplayModes() throws LWJGLException {
-        if (BotGlobalConfig.isHeadless())
-            return new DisplayMode[] { DEFAULT_DISPLAY_MODE };
+    @JvmStatic
+    fun wasResized(): Boolean {
+        if (BotGlobalConfig.headless) return false
 
-        return org.lwjgl.opengl.Display.getAvailableDisplayModes();
+        return Display.wasResized()
     }
 
-    public static DisplayMode getDesktopDisplayMode() {
-        if (BotGlobalConfig.isHeadless())
-            return DEFAULT_DISPLAY_MODE;
+    @JvmStatic
+    val width: Int
+        get() {
+            if (BotGlobalConfig.headless) return DEFAULT_DISPLAY_MODE.width
 
-        return org.lwjgl.opengl.Display.getDesktopDisplayMode();
-    }
+            return Display.getWidth()
+        }
 
-    public static void destroy() {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    val height: Int
+        get() {
+            if (BotGlobalConfig.headless) return DEFAULT_DISPLAY_MODE.height
 
-        org.lwjgl.opengl.Display.destroy();
-    }
+            return Display.getHeight()
+        }
 
-    public static boolean isCreated() {
-        if (BotGlobalConfig.isHeadless())
-            return true;
-
-        return org.lwjgl.opengl.Display.isCreated();
-    }
-
-    public static boolean isCloseRequested() {
-        if (BotGlobalConfig.isHeadless())
-            return false;
-
-        return org.lwjgl.opengl.Display.isCloseRequested();
-    }
-
-    public static void sync(int limitFramerate) {
-        if (BotGlobalConfig.isHeadless())
-            return;
-
-        org.lwjgl.opengl.Display.sync(limitFramerate);
-    }
-
-    public static void update() {
-        if (BotGlobalConfig.isHeadless())
-            return;
-
-        org.lwjgl.opengl.Display.update();
-    }
-
-    public static boolean wasResized() {
-        if (BotGlobalConfig.isHeadless())
-            return false;
-
-        return org.lwjgl.opengl.Display.wasResized();
-    }
-
-    public static int getWidth() {
-        if (BotGlobalConfig.isHeadless())
-            return DEFAULT_DISPLAY_MODE.getWidth();
-
-        return org.lwjgl.opengl.Display.getWidth();
-    }
-
-    public static int getHeight() {
-        if (BotGlobalConfig.isHeadless())
-            return DEFAULT_DISPLAY_MODE.getHeight();
-
-        return org.lwjgl.opengl.Display.getHeight();
-    }
-
-    public static Drawable getDrawable() {
-        if (BotGlobalConfig.isHeadless())
-            return new Drawable() {
-
-                @Override
-                public boolean isCurrent() throws LWJGLException {
-                    return false;
+    @JvmStatic
+    val drawable: Drawable
+        get() {
+            if (BotGlobalConfig.headless) return object : Drawable {
+                @Throws(LWJGLException::class)
+                override fun isCurrent(): Boolean {
+                    return false
                 }
 
-                @Override
-                public void makeCurrent() throws LWJGLException {
+                @Throws(LWJGLException::class)
+                override fun makeCurrent() {
                 }
 
-                @Override
-                public void releaseContext() throws LWJGLException {
+                @Throws(LWJGLException::class)
+                override fun releaseContext() {
                 }
 
-                @Override
-                public void destroy() {
+                override fun destroy() {
                 }
 
-                @Override
-                public void setCLSharingProperties(PointerBuffer properties) throws LWJGLException {
+                @Throws(LWJGLException::class)
+                override fun setCLSharingProperties(properties: PointerBuffer) {
                 }
+            }
 
-            };
-
-        return org.lwjgl.opengl.Display.getDrawable();
-    }
-
+            return Display.getDrawable()
+        }
 }

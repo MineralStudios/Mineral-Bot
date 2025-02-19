@@ -1,10 +1,8 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
@@ -13,8 +11,10 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.impl.config.BotGlobalConfig;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class GuiNewChat extends Gui {
     public GuiNewChat(Minecraft mc) {
@@ -130,8 +130,8 @@ public class GuiNewChat extends Gui {
 
     public void func_146234_a(IChatComponent p_146234_1_, int p_146234_2_) {
         this.func_146237_a(p_146234_1_, p_146234_2_, this.mc.ingameGUI.getUpdateCounter(), false);
-        if (!BotGlobalConfig.isHeadless())
-            logger.info("[CHAT] " + p_146234_1_.getUnformattedText());
+        if (!BotGlobalConfig.headless)
+            logger.info("[CHAT] {}", p_146234_1_.getUnformattedText());
     }
 
     private String func_146235_b(String p_146235_1_) {

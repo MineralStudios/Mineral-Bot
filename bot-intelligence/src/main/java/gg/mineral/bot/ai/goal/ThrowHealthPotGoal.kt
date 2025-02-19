@@ -28,13 +28,15 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
     private var lastPotTick = 0
     private var pottingTicks = 0
     private var thrownYaw = 0f
+    override val isExecuting: Boolean
+        get() = pottingTicks > 0 || inventoryOpen
 
     private var distanceFromEnemy = Double.MAX_VALUE
 
     private fun switchToPot() {
         var potSlot = -1
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
         for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
@@ -62,20 +64,16 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        if (inventory == null || !inventory.contains { it: ItemStack ->
+        if (!inventory.contains { it: ItemStack ->
                 it.item.id == Item.POTION && it.durability == 16421
             }) return false
 
         return fakePlayer.health < 12 && (fakePlayer.health < 5 || distanceAwayFromEnemies() > 3.8)
     }
 
-    override fun isExecuting(): Boolean {
-        return pottingTicks > 0 || inventoryOpen
-    }
-
     private fun angleAwayFromEnemies(): Float {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return logger.debug( "World is null").let { fakePlayer.yaw }
+        val world = fakePlayer.world
 
         val enemy = world.entities
             .minByOrNull {
@@ -94,7 +92,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
     private fun distanceAwayFromEnemies(): Double {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return logger.debug( "World is null").let { Double.MAX_VALUE }
+        val world = fakePlayer.world
 
         return world.entities
             .minOfOrNull {
@@ -106,7 +104,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
     private fun closestEnemy(): ClientPlayer? {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return null
+        val world = fakePlayer.world
         val targetSearchRange = clientInstance.configuration.targetSearchRange
         var bestTarget: ClientPlayer? = null
         var closestDistance = Double.MAX_VALUE
@@ -128,12 +126,12 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
     // Extension functions for adjusting the bot’s aim.
     private fun PlayerMotionSimulator.setMouseYaw(yaw: Float) {
         val rotYaw = this.yaw
-        getMouse().changeYaw(angleDifference(rotYaw, yaw))
+        mouse.changeYaw(angleDifference(rotYaw, yaw))
     }
 
     private fun PlayerMotionSimulator.setMousePitch(pitch: Float) {
         val rotPitch = this.pitch
-        getMouse().changePitch(angleDifference(rotPitch, pitch))
+        mouse.changePitch(angleDifference(rotPitch, pitch))
     }
 
     /**
@@ -142,7 +140,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
      */
     private fun isAtWall(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return false
+        val world = fakePlayer.world
 
         val posX = fakePlayer.x
         val posY = fakePlayer.y + fakePlayer.eyeHeight
@@ -157,7 +155,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         val checkZ = posZ + dir[2] * checkDistance
 
         val block = world.getBlockAt(checkX, checkY, checkZ)
-        return block != null && block.id != Block.AIR
+        return block.id != Block.AIR
     }
 
     override fun onTick() {
@@ -176,7 +174,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             else setMouseYaw(angleAwayFromEnemies())
         }
 
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
         val itemStack: ItemStack? = inventory.heldItemStack
         if (itemStack == null || itemStack.item.id != Item.POTION || itemStack.durability != 16421 || inventoryOpen) switchToPot()
         else {

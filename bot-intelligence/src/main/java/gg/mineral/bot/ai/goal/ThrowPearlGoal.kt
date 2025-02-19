@@ -33,6 +33,8 @@ import kotlin.math.atan2
 
 class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     private var lastPearledTick = 0
+    override val isExecuting: Boolean
+        get() = inventoryOpen
     private var type = Type.FORWARD
 
     private enum class Type : MathUtil {
@@ -55,7 +57,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
     private fun switchToPearl() {
         var pearlSlot = -1
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
         // Search hotbar
         for (i in 0..35) {
@@ -75,7 +77,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug( "Closing inventory after switching to pearl")
+            logger.debug("Closing inventory after switching to pearl")
             return
         }
 
@@ -88,12 +90,12 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        if (inventory == null || !inventory.contains(Item.ENDER_PEARL)) return false
+        if (!inventory.contains(Item.ENDER_PEARL)) return false
 
-        val world = fakePlayer.world ?: return false
+        val world = fakePlayer.world
 
         val entity = world.entities.filterIsInstance<ClientPlayer>().minByOrNull {
-            if (!clientInstance.configuration.friendlyUUIDs.contains(it.getUuid())
+            if (!clientInstance.configuration.friendlyUUIDs.contains(it.uuid)
             ) fakePlayer.distance3DTo(it) else Double.MAX_VALUE
         } ?: return false
 
@@ -102,12 +104,10 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         return false
     }
 
-    override fun isExecuting() = inventoryOpen
-
     private fun canSeeEnemy(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
         val world = fakePlayer.world
-        return world != null && world.entities.any {
+        return world.entities.any {
             !clientInstance.configuration.friendlyUUIDs
                 .contains(it.uuid)
         }
@@ -115,12 +115,12 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
 
     override fun onTick() {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return
+        val world = fakePlayer.world
 
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
         val entity = world.entities.filterIsInstance<ClientPlayer>().minByOrNull {
-            if (!clientInstance.configuration.friendlyUUIDs.contains(it.getUuid())
+            if (!clientInstance.configuration.friendlyUUIDs.contains(it.uuid)
             ) fakePlayer.distance3DTo(it) else Double.MAX_VALUE
         } ?: return
 
@@ -233,7 +233,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         d -= d % 0.8
         val xMulti: Double
         val zMulti: Double
-        val sprint = entity.isSprinting()
+        val sprint = entity.isSprinting
         xMulti = d / 0.8 * xDelta * (if (sprint) 1.25 else 1.0)
         zMulti = d / 0.8 * zDelta * (if (sprint) 1.25 else 1.0)
         val x: Double = entity.x + xMulti - player.x

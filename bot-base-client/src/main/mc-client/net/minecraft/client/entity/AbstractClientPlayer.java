@@ -71,7 +71,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
         if (this.nameClear != null && !this.nameClear.isEmpty())
             this.nameClear = StringUtils.stripControlCodes(this.nameClear);
 
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return;
         CapeUtils.downloadCape(this);
         PlayerConfigurations.getPlayerConfiguration(this);

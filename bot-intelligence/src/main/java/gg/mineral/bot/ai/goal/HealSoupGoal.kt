@@ -9,14 +9,15 @@ import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 
 class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+    override val isExecuting
+        get() = inventoryOpen
+
     override fun shouldExecute(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return false
+        val inventory = fakePlayer.inventory
 
         return fakePlayer.health <= 10 && inventory.contains(Item.MUSHROOM_STEW)
     }
-
-    override fun isExecuting() = inventoryOpen
 
     private fun eatSoup() {
         pressButton(10, MouseButton.Type.RIGHT_CLICK)
@@ -25,7 +26,7 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
     private fun switchToSoup() {
         var soupSlot = -1
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
         for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
@@ -41,7 +42,7 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug( "Closing inventory after switching to soup")
+            logger.debug("Closing inventory after switching to soup")
             return
         }
 
@@ -56,7 +57,7 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
      */
     private fun getOptimalTarget(): ClientPlayer? {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return null
+        val world = fakePlayer.world
         val targetSearchRange = clientInstance.configuration.targetSearchRange
         var bestTarget: ClientPlayer? = null
         var closestDistance = Double.MAX_VALUE
@@ -90,7 +91,7 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
 
     override fun onTick() {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
         // NEW: While healing, continuously aim at the optimal target
         pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)

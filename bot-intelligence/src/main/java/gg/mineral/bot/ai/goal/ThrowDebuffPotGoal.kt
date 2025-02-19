@@ -26,19 +26,20 @@ import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction
 class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     private var lastPotTick = 0
     private var effects: Set<Int> = emptySet()
-    private var distanceFromEnemy = Double.MAX_VALUE
+    override val isExecuting: Boolean
+        get() = inventoryOpen
 
     private fun switchToPot() {
         var potSlot = -1
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
         for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
             val item = itemStack.item
-            if (item.id == Item.POTION && itemStack.potion.effects.any {
+            if (item.id == Item.POTION && itemStack.potion?.effects?.any {
                     effects.contains(it.potionID)
-                }) {
+                } == true) {
                 potSlot = i
                 break
             }
@@ -68,23 +69,20 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         )
 
         val effects = debuffEffects.subtract(closestEnemy.activePotionEffectIds.toSet())
+        if (effects.isEmpty()) return false
 
-        return (inventory?.containsPotion {
+        return (inventory.containsPotion {
             it.effects.any { effect ->
                 effects.contains(effect.potionID)
             }
-        } == true && closestEnemy.distance3DToSq(fakePlayer) < 16.0).apply {
+        } == true && closestEnemy.distance3DToSq(fakePlayer) in 25.0..64.0).apply {
             if (this) this@ThrowDebuffPotGoal.effects = effects
         }
     }
 
-    override fun isExecuting(): Boolean {
-        return inventoryOpen
-    }
-
     private fun angleTowardsFromEnemies(): Float {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return logger.debug( "World is null").let { fakePlayer.yaw }
+        val world = fakePlayer.world
 
         val enemy = world.entities
             .minByOrNull {
@@ -103,7 +101,7 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
     private fun distanceAwayFromEnemies(): Double {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return logger.debug( "World is null").let { Double.MAX_VALUE }
+        val world = fakePlayer.world
 
         return world.entities
             .minOfOrNull {
@@ -115,13 +113,13 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
     private fun closestEnemy(): ClientPlayer? {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return null
+        val world = fakePlayer.world
         val targetSearchRange = clientInstance.configuration.targetSearchRange
         var bestTarget: ClientPlayer? = null
         var closestDistance = Double.MAX_VALUE
 
         for (entity in world.entities) {
-            if (entity is ClientPlayer &&
+            if (entity is ClientPlayer && entity != fakePlayer &&
                 !clientInstance.configuration.friendlyUUIDs.contains(entity.uuid)
             ) {
                 val distance = fakePlayer.distance3DTo(entity)
@@ -137,12 +135,12 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
     // Extension functions for adjusting the bot’s aim.
     private fun PlayerMotionSimulator.setMouseYaw(yaw: Float) {
         val rotYaw = this.yaw
-        getMouse().changeYaw(angleDifference(rotYaw, yaw))
+        mouse.changeYaw(angleDifference(rotYaw, yaw))
     }
 
     private fun PlayerMotionSimulator.setMousePitch(pitch: Float) {
         val rotPitch = this.pitch
-        getMouse().changePitch(angleDifference(rotPitch, pitch))
+        mouse.changePitch(angleDifference(rotPitch, pitch))
     }
 
     /**
@@ -151,7 +149,7 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
      */
     private fun isAtWall(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return false
+        val world = fakePlayer.world
 
         val posX = fakePlayer.x
         val posY = fakePlayer.y + fakePlayer.eyeHeight
@@ -166,7 +164,7 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         val checkZ = posZ + dir[2] * checkDistance
 
         val block = world.getBlockAt(checkX, checkY, checkZ)
-        return block != null && block.id != Block.AIR
+        return block.id != Block.AIR
     }
 
     override fun onTick() {
@@ -181,13 +179,13 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             setMouseYaw(angleTowardsFromEnemies())
         }
 
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
         val itemStack: ItemStack? = inventory.heldItemStack
-        if (itemStack == null || itemStack.item.id != Item.POTION || itemStack.durability != 16421 || inventoryOpen) switchToPot()
+        if (itemStack == null || itemStack.item.id != Item.POTION || itemStack.potion?.effects?.any {
+                effects.contains(it.potionID)
+            } == false || inventoryOpen) switchToPot()
         else {
             val closestEnemy = closestEnemy() ?: return
-            val distanceCondition = closestEnemy.distance3DTo(fakePlayer) >= distanceFromEnemy &&
-                    distanceFromEnemy in 3.6..4.6
 
             val simulator = fakePlayer.motionSimulator.apply {
                 setMouseYaw(fakePlayer.yaw)
@@ -210,7 +208,7 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
                                 else false
                             }
                             && simulator.distance3DToSq(x, y, z)
-                        .let { if (it < 16.0) 1.0 - sqrt(it) / 4.0 == 0.0 else true }
+                        .let { if (it < 16.0) 1.0 - sqrt(it) / 4.0 <= 0.01 else true }
                 }
             ) {
                 override fun tick(): Trajectory.Result {
@@ -220,12 +218,11 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
                 }
             }
 
-            if (trajectory.compute(1000) == Trajectory.Result.VALID && !isAtWall() && distanceCondition) {
+            if (trajectory.compute(1000) == Trajectory.Result.VALID && !isAtWall()) {
                 lastPotTick = clientInstance.currentTick
                 pressButton(10, MouseButton.Type.RIGHT_CLICK)
             }
         }
-        distanceFromEnemy = distanceAwayFromEnemies()
     }
 
     private fun minimizePitch(
@@ -253,7 +250,7 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
                         else false
                     }
                             && simulator.distance3DToSq(x, y, z)
-                        .let { if (it < 16.0) 1.0 - sqrt(it) / 4.0 == 0.0 else true }
+                        .let { if (it < 16.0) 1.0 - sqrt(it) / 4.0 <= 0.01 else true }
                 }
             ) {
                 override fun tick(): Trajectory.Result {

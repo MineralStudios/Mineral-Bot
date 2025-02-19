@@ -11,31 +11,35 @@ import gg.mineral.bot.api.entity.living.player.skin.Skins
 import gg.mineral.bot.api.math.ServerLocation
 import gg.mineral.bot.api.world.ServerWorld
 
-class MineralBotCommand : Command("mineralbot", "") {
+class MineralBotCommand : Command("mineralbot", "mineralbot.admin") {
     override fun execute(commandExecutor: CommandExecutor, arguments: Array<String?>) {
         val count = arguments[0]?.toIntOrNull() ?: 1
 
         repeat(count) {
+            if (commandExecutor !is Player) return
             val instance = BotAPI.INSTANCE.spawn(
-                BotConfiguration.builder().username("EasyBot").skin(Skins.MINERAL_GREEN)
-                    .horizontalAimSpeed(0.3f)
-                    .verticalAimSpeed(0.3f).horizontalAimAccuracy(0.3f).verticalAimAccuracy(0.25f)
-                    .horizontalErraticness(0.3f).averageCps(5f).latency(50).sprintResetAccuracy(0.25f)
-                    .hitSelectAccuracy(0.0f).build(), object : ServerLocation {
-                    override fun getX() = 0.0
-
-                    override fun getY() = 70.0
-
-                    override fun getZ() = 0.0
-
-                    override fun getYaw() = 0.0f
-
-                    override fun getPitch() = 0.0f
-
-                    override fun getWorld(): ServerWorld<World> {
-                        return ServerWorld<World> { if (commandExecutor is Player) commandExecutor.world else null }
-                    }
-
+                BotConfiguration(
+                    username = "EasyBot",
+                    skin = Skins.MINERAL_GREEN,
+                    horizontalAimSpeed = 0.3f,
+                    verticalAimSpeed = 0.3f,
+                    horizontalAimAccuracy = 0.3f,
+                    verticalAimAccuracy = 0.25f,
+                    horizontalErraticness = 0.3f,
+                    averageCps = 5f,
+                    latency = 50,
+                    sprintResetAccuracy = 0.25f,
+                    hitSelectAccuracy = 0.0f
+                ), object : ServerLocation {
+                    override val x: Double = 0.0
+                    override val y: Double = 70.0
+                    override val z: Double = 0.0
+                    override val yaw: Float = 0.0f
+                    override val pitch: Float = 0.0f
+                    override val world: ServerWorld<*> =
+                        object : ServerWorld<World> {
+                            override val handle = commandExecutor.world
+                        }
                 })
 
             instance.startGoals(

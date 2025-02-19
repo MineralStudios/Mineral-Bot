@@ -14,6 +14,8 @@ import gg.mineral.bot.api.world.block.Block
 
 class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     private var target: ClientPlayer? = null
+    override val isExecuting: Boolean
+        get() = inventoryOpen
 
     private val meanDelay = (1000 / clientInstance.configuration.averageCps).toLong()
     private val deviation =
@@ -25,13 +27,11 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
 
     override fun shouldExecute() = true
 
-    override fun isExecuting() = inventoryOpen
-
     private fun switchToBestMeleeWeapon() {
         var bestMeleeWeaponSlot = 0
         var damage = 0.0
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
 
         // Look for a non-splash potion in one of the 36 slots
@@ -50,7 +50,7 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug( "Closing inventory after switching to best melee weapon")
+            logger.debug("Closing inventory after switching to best melee weapon")
             return
         }
 
@@ -64,12 +64,16 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         val targetSearchRange = clientInstance.configuration.targetSearchRange
 
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world ?: return
+        val world = fakePlayer.world
 
         val entities = world.entities
 
-        if (clientInstance.currentTick - lastTargetSwitchTick < 20 && target != null && entities.contains(target)
-            && isTargetValid(target!!, targetSearchRange.toFloat())
+        if (clientInstance.currentTick - lastTargetSwitchTick < 20 && target?.let {
+                entities.contains(it) && isTargetValid(
+                    it,
+                    targetSearchRange.toFloat()
+                )
+            } == true
         ) return
 
         var closestTarget: ClientPlayer? = null
@@ -198,7 +202,7 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
     private val isCollidingWithWall: Boolean
         get() {
             val fakePlayer = clientInstance.fakePlayer
-            val world = fakePlayer.world ?: return false
+            val world = fakePlayer.world
 
             val posX = fakePlayer.x
             val posY = fakePlayer.y + fakePlayer.eyeHeight
@@ -215,13 +219,13 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
             val checkZ = posZ + dir[2] * checkDistance
 
             val block = world.getBlockAt(checkX, checkY, checkZ)
-            return block != null && block.id != Block.AIR
+            return block.id != Block.AIR
         }
 
     private val collisionNormal: DoubleArray?
         get() {
             val fakePlayer = clientInstance.fakePlayer
-            val world = fakePlayer.world ?: return null
+            val world = fakePlayer.world
 
             val posX = fakePlayer.x
             val posY = fakePlayer.y + fakePlayer.eyeHeight
@@ -239,7 +243,7 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
                 val checkZ = fakePlayer.z + dir[2] * checkDistance
 
                 val block = world.getBlockAt(checkX, posY, checkZ)
-                if (block != null && block.id != Block.AIR) {
+                if (block.id != Block.AIR) {
                     // Add the opposite of the direction to the normal
                     normal[0] += -dir[0]
                     normal[1] += 0.0 // We ignore Y for horizontal normal
@@ -374,7 +378,7 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         val dist = fakePlayer.distance3DTo(target)
 
         val inventory = fakePlayer.inventory
-        val itemStack = inventory?.heldItemStack
+        val itemStack = inventory.heldItemStack
 
         resetType =
             if (kb < targetKB) if (dist < 2 && fakePlayer.isOnGround) ResetType.EXTRA_OFFENSIVE else ResetType.OFFENSIVE
@@ -458,7 +462,7 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         val entity = event.attackedEntity
 
         val fakePlayer = clientInstance.fakePlayer
-        if (entity == null || entity.y - fakePlayer.y > 1.5) return false
+        if (entity.y - fakePlayer.y > 1.5) return false
 
         val target = this.target
 

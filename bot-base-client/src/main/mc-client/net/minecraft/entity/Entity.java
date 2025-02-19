@@ -26,6 +26,7 @@ import net.minecraft.util.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Random;
@@ -33,79 +34,247 @@ import java.util.UUID;
 
 public abstract class Entity implements ClientEntity {
     private static int nextEntityID;
-    @Getter
-    @Setter
-    private int entityId;
     public double renderDistanceWeight;
-
     /**
      * Blocks entities from spawning when they do their AABB check to make sure the
      * spot is clear of entities that can
      * prevent spawning.
      */
     public boolean preventEntitySpawning;
-
     /**
      * The entity that is riding this entity
      */
     public Entity riddenByEntity;
-
     /**
      * The entity we are currently riding
      */
     public Entity ridingEntity;
     public boolean forceSpawn;
-
     /**
      * Reference to the World object.
      */
     public World worldObj;
     public double prevPosX, prevPosY, prevPosZ;
-
     /**
      * Entity position X
      */
     public double posX;
-
     /**
      * Entity position Y
      */
     public double posY;
-
     /**
      * Entity position Z
      */
     public double posZ;
-
     /**
      * Entity motion X
      */
-    @Getter
     public double motionX;
-
     /**
      * Entity motion Y
      */
-    @Getter
     public double motionY;
-
     /**
      * Entity motion Z
      */
-    @Getter
     public double motionZ;
-
     /**
      * Entity rotation Yaw
      */
     public float rotationYaw;
-
     /**
      * Entity rotation Pitch
      */
     public float rotationPitch;
     public float prevRotationYaw;
     public float prevRotationPitch;
+    /**
+     * Axis aligned bounding box.
+     */
+    public AxisAlignedBB boundingBox;
+    @Getter
+    public boolean onGround;
+    /**
+     * True if after a move this entity has collided with something on X- or Z-axis
+     */
+    public boolean isCollidedHorizontally;
+    /**
+     * True if after a move this entity has collided with something on Y-axis
+     */
+    public boolean isCollidedVertically;
+    /**
+     * True if after a move this entity has collided with something either
+     * vertically or horizontally
+     */
+    public boolean isCollided;
+    public boolean velocityChanged;
+    public boolean field_70135_K;
+    /**
+     * Gets set by setDead, so this must be the flag whether an Entity is dead
+     * (inactive may be better term)
+     */
+    public boolean isDead;
+    public float yOffset;
+    /**
+     * How wide this entity is considered to be
+     */
+    public float width;
+    /**
+     * How high this entity is considered to be
+     */
+    public float height;
+    /**
+     * The previous ticks distance walked multiplied by 0.6
+     */
+    public float prevDistanceWalkedModified;
+    /**
+     * The distance walked multiplied by 0.6
+     */
+    public float distanceWalkedModified, distanceWalkedOnStepModified, fallDistance;
+    /**
+     * The entity's X coordinate at the previous tick, used to calculate position
+     * during rendering routines
+     */
+    public double lastTickPosX;
+    /**
+     * The entity's Y coordinate at the previous tick, used to calculate position
+     * during rendering routines
+     */
+    public double lastTickPosY;
+    /**
+     * The entity's Z coordinate at the previous tick, used to calculate position
+     * during rendering routines
+     */
+    public double lastTickPosZ;
+    public float ySize;
+    /**
+     * How high this entity can step up when running into a block to try to get over
+     * it (currently make note the entity
+     * will always step up this amount and not just the amount needed)
+     */
+    public float stepHeight;
+    /**
+     * Whether this entity won't clip with collision or not (make note it won't
+     * disable gravity)
+     */
+    public boolean noClip;
+    /**
+     * Reduces the velocity applied by entity collisions by the specified percent.
+     */
+    public float entityCollisionReduction;
+    /**
+     * How many ticks has this entity had ran since being alive
+     */
+    public int ticksExisted;
+    /**
+     * The amount of ticks you have to stand inside of fire before be set on fire
+     */
+    public int fireResistance, fire;
+    /**
+     * Remaining time an entity will be "immune" to further damage after being hurt.
+     */
+    public int hurtResistantTime;
+    /**
+     * Has this entity been added to the chunk its within
+     */
+    public boolean addedToChunk;
+    public int chunkCoordX, chunkCoordY, chunkCoordZ, serverPosX, serverPosY, serverPosZ;
+    /**
+     * Render entity even if it is outside the camera frustum. Only true in
+     * EntityFish for now. Used in RenderGlobal:
+     * render if ignoreFrustumCheck or in frustum.
+     */
+    public boolean ignoreFrustumCheck, isAirBorne;
+    public int timeUntilPortal;
+    /**
+     * Which dimension the player is in (-1 = the Nether, 0 = normal world)
+     */
+    public int dimension;
+    public Entity.EnumEntitySize myEntitySize;
+    protected boolean isInWeb;
+    protected Random rand;
+    /**
+     * Whether this entity is currently inside of water (if it handles water
+     * movement that is)
+     */
+    protected boolean inWater;
+    protected boolean isImmuneToFire;
+    protected DataWatcher dataWatcher;
+    /**
+     * Whether the entity is inside a Portal
+     */
+    protected boolean inPortal;
+    protected int portalCounter;
+    protected int teleportDirection;
+    protected UUID entityUniqueID;
+    @Getter
+    @Setter
+    private int entityId;
+    /**
+     * The distance that has to be exceeded in order to triger a new step sound and
+     * an onEntityWalking event on a block
+     */
+    private int nextStepDistance;
+    private boolean firstUpdate;
+    private double entityRiderPitchDelta, entityRiderYawDelta;
+    private boolean invulnerable;
+
+    public Entity(World p_i1582_1_) {
+        this.entityId = nextEntityID++;
+        this.renderDistanceWeight = 1.0D;
+        this.boundingBox = AxisAlignedBB.getBoundingBox(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+        this.field_70135_K = true;
+        this.width = 0.6F;
+        this.height = 1.8F;
+        this.nextStepDistance = 1;
+        this.rand = new Random();
+        this.fireResistance = 1;
+        this.firstUpdate = true;
+        this.entityUniqueID = UUID.randomUUID();
+        this.myEntitySize = Entity.EnumEntitySize.SIZE_2;
+        this.worldObj = p_i1582_1_;
+        this.setPosition(0.0D, 0.0D, 0.0D);
+
+        if (p_i1582_1_ != null) {
+            this.dimension = p_i1582_1_.provider.dimensionId;
+        }
+
+        this.dataWatcher = new DataWatcher(this);
+        this.dataWatcher.addObject(0, (byte) 0);
+        this.dataWatcher.addObject(1, (short) 300);
+        this.entityInit();
+    }
+
+    @Override
+    public double getMotionX() {
+        return motionX;
+    }
+
+    @Override
+    public void setMotionX(double motionX) {
+        this.motionX = motionX;
+    }
+
+    @Override
+    public double getMotionY() {
+        return motionY;
+    }
+
+    @Override
+    public void setMotionY(double motionY) {
+        this.motionY = motionY;
+    }
+
+    @Override
+    public double getMotionZ() {
+        return motionZ;
+    }
+
+    @Override
+    public void setMotionZ(double motionZ) {
+        this.motionZ = motionZ;
+    }
 
     @Override
     public float getPitch() {
@@ -138,155 +307,11 @@ public abstract class Entity implements ClientEntity {
     }
 
     /**
-     * Axis aligned bounding box.
+     * Sets the reference to the World object.
      */
-    public AxisAlignedBB boundingBox;
-    @Getter
-    public boolean onGround;
-
-    /**
-     * True if after a move this entity has collided with something on X- or Z-axis
-     */
-    public boolean isCollidedHorizontally;
-
-    /**
-     * True if after a move this entity has collided with something on Y-axis
-     */
-    public boolean isCollidedVertically;
-
-    /**
-     * True if after a move this entity has collided with something either
-     * vertically or horizontally
-     */
-    public boolean isCollided;
-    public boolean velocityChanged;
-    protected boolean isInWeb;
-    public boolean field_70135_K;
-
-    /**
-     * Gets set by setDead, so this must be the flag whether an Entity is dead
-     * (inactive may be better term)
-     */
-    public boolean isDead;
-    public float yOffset;
-
-    /**
-     * How wide this entity is considered to be
-     */
-    public float width;
-
-    /**
-     * How high this entity is considered to be
-     */
-    public float height;
-
-    /**
-     * The previous ticks distance walked multiplied by 0.6
-     */
-    public float prevDistanceWalkedModified;
-
-    /**
-     * The distance walked multiplied by 0.6
-     */
-    public float distanceWalkedModified, distanceWalkedOnStepModified, fallDistance;
-
-    /**
-     * The distance that has to be exceeded in order to triger a new step sound and
-     * an onEntityWalking event on a block
-     */
-    private int nextStepDistance;
-
-    /**
-     * The entity's X coordinate at the previous tick, used to calculate position
-     * during rendering routines
-     */
-    public double lastTickPosX;
-
-    /**
-     * The entity's Y coordinate at the previous tick, used to calculate position
-     * during rendering routines
-     */
-    public double lastTickPosY;
-
-    /**
-     * The entity's Z coordinate at the previous tick, used to calculate position
-     * during rendering routines
-     */
-    public double lastTickPosZ;
-    public float ySize;
-
-    /**
-     * How high this entity can step up when running into a block to try to get over
-     * it (currently make note the entity
-     * will always step up this amount and not just the amount needed)
-     */
-    public float stepHeight;
-
-    /**
-     * Whether this entity won't clip with collision or not (make note it won't
-     * disable gravity)
-     */
-    public boolean noClip;
-
-    /**
-     * Reduces the velocity applied by entity collisions by the specified percent.
-     */
-    public float entityCollisionReduction;
-    protected Random rand;
-
-    /**
-     * How many ticks has this entity had ran since being alive
-     */
-    public int ticksExisted;
-
-    /**
-     * The amount of ticks you have to stand inside of fire before be set on fire
-     */
-    public int fireResistance, fire;
-
-    /**
-     * Whether this entity is currently inside of water (if it handles water
-     * movement that is)
-     */
-    protected boolean inWater;
-
-    /**
-     * Remaining time an entity will be "immune" to further damage after being hurt.
-     */
-    public int hurtResistantTime;
-    private boolean firstUpdate;
-    protected boolean isImmuneToFire;
-    protected DataWatcher dataWatcher;
-    private double entityRiderPitchDelta, entityRiderYawDelta;
-
-    /**
-     * Has this entity been added to the chunk its within
-     */
-    public boolean addedToChunk;
-    public int chunkCoordX, chunkCoordY, chunkCoordZ, serverPosX, serverPosY, serverPosZ;
-
-    /**
-     * Render entity even if it is outside the camera frustum. Only true in
-     * EntityFish for now. Used in RenderGlobal:
-     * render if ignoreFrustumCheck or in frustum.
-     */
-    public boolean ignoreFrustumCheck, isAirBorne;
-    public int timeUntilPortal;
-
-    /**
-     * Whether the entity is inside a Portal
-     */
-    protected boolean inPortal;
-    protected int portalCounter;
-
-    /**
-     * Which dimension the player is in (-1 = the Nether, 0 = normal world)
-     */
-    public int dimension;
-    protected int teleportDirection;
-    private boolean invulnerable;
-    protected UUID entityUniqueID;
-    public Entity.EnumEntitySize myEntitySize;
+    public void setWorld(World p_70029_1_) {
+        this.worldObj = p_70029_1_;
+    }
 
     @Override
     public double getX() {
@@ -312,32 +337,6 @@ public abstract class Entity implements ClientEntity {
         return this.rand;
     }
 
-    public Entity(World p_i1582_1_) {
-        this.entityId = nextEntityID++;
-        this.renderDistanceWeight = 1.0D;
-        this.boundingBox = AxisAlignedBB.getBoundingBox(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-        this.field_70135_K = true;
-        this.width = 0.6F;
-        this.height = 1.8F;
-        this.nextStepDistance = 1;
-        this.rand = new Random();
-        this.fireResistance = 1;
-        this.firstUpdate = true;
-        this.entityUniqueID = UUID.randomUUID();
-        this.myEntitySize = Entity.EnumEntitySize.SIZE_2;
-        this.worldObj = p_i1582_1_;
-        this.setPosition(0.0D, 0.0D, 0.0D);
-
-        if (p_i1582_1_ != null) {
-            this.dimension = p_i1582_1_.provider.dimensionId;
-        }
-
-        this.dataWatcher = new DataWatcher(this);
-        this.dataWatcher.addObject(0, (byte) 0);
-        this.dataWatcher.addObject(1, (short) 300);
-        this.entityInit();
-    }
-
     protected abstract void entityInit();
 
     public DataWatcher getDataWatcher() {
@@ -345,7 +344,7 @@ public abstract class Entity implements ClientEntity {
     }
 
     public boolean equals(Object p_equals_1_) {
-        return p_equals_1_ instanceof Entity ? ((Entity) p_equals_1_).entityId == this.entityId : false;
+        return p_equals_1_ instanceof Entity && ((Entity) p_equals_1_).entityId == this.entityId;
     }
 
     public int hashCode() {
@@ -396,7 +395,7 @@ public abstract class Entity implements ClientEntity {
             this.boundingBox.maxY = this.boundingBox.minY + (double) this.height;
 
             if (this.width > var3 && !this.firstUpdate && !this.worldObj.isClient) {
-                this.moveEntity((double) (var3 - this.width), 0.0D, (double) (var3 - this.width));
+                this.moveEntity(var3 - this.width, 0.0D, var3 - this.width);
             }
         }
 
@@ -630,7 +629,7 @@ public abstract class Entity implements ClientEntity {
     public boolean isOffsetPositionInLiquid(double p_70038_1_, double p_70038_3_, double p_70038_5_) {
         AxisAlignedBB var7 = this.boundingBox.getOffsetBoundingBox(p_70038_1_, p_70038_3_, p_70038_5_);
         List var8 = this.worldObj.getCollidingBoundingBoxes(this, var7);
-        return !var8.isEmpty() ? false : !this.worldObj.isAnyLiquid(var7);
+        return var8.isEmpty() && !this.worldObj.isAnyLiquid(var7);
     }
 
     /**
@@ -771,7 +770,7 @@ public abstract class Entity implements ClientEntity {
                 var25 = p_70091_3_;
                 var27 = p_70091_5_;
                 p_70091_1_ = var13;
-                p_70091_3_ = (double) this.stepHeight;
+                p_70091_3_ = this.stepHeight;
                 p_70091_5_ = var17;
                 AxisAlignedBB var29 = this.boundingBox.copy();
                 this.boundingBox.setBB(var19);
@@ -819,7 +818,7 @@ public abstract class Entity implements ClientEntity {
                     p_70091_3_ = 0.0D;
                     p_70091_1_ = 0.0D;
                 } else {
-                    p_70091_3_ = (double) (-this.stepHeight);
+                    p_70091_3_ = -this.stepHeight;
 
                     for (var30 = 0; var30 < var36.size(); ++var30) {
                         p_70091_3_ = ((AxisAlignedBB) var36.get(var30)).calculateYOffset(this.boundingBox, p_70091_3_);
@@ -1020,9 +1019,15 @@ public abstract class Entity implements ClientEntity {
         return null;
     }
 
+    @NotNull
     @Override
     public BoundingBox getBoundingBox() {
         return this.boundingBox;
+    }
+
+    @Override
+    public void setBoundingBox(BoundingBox boundingBox) {
+        this.boundingBox = (AxisAlignedBB) boundingBox;
     }
 
     /**
@@ -1096,7 +1101,7 @@ public abstract class Entity implements ClientEntity {
                 for (var3 = 0; (float) var3 < 1.0F + this.width * 20.0F; ++var3) {
                     var4 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
                     var5 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
-                    this.worldObj.spawnParticle("bubble", this.posX + (double) var4, (double) (var2 + 1.0F),
+                    this.worldObj.spawnParticle("bubble", this.posX + (double) var4, var2 + 1.0F,
                             this.posZ + (double) var5, this.motionX,
                             this.motionY - (double) (this.rand.nextFloat() * 0.2F), this.motionZ);
                 }
@@ -1104,7 +1109,7 @@ public abstract class Entity implements ClientEntity {
                 for (var3 = 0; (float) var3 < 1.0F + this.width * 20.0F; ++var3) {
                     var4 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
                     var5 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
-                    this.worldObj.spawnParticle("splash", this.posX + (double) var4, (double) (var2 + 1.0F),
+                    this.worldObj.spawnParticle("splash", this.posX + (double) var4, var2 + 1.0F,
                             this.posZ + (double) var5, this.motionX, this.motionY, this.motionZ);
                 }
             }
@@ -1174,8 +1179,8 @@ public abstract class Entity implements ClientEntity {
             p_70060_2_ *= var4;
             float var5 = MathHelper.sin(this.rotationYaw * (float) Math.PI / 180.0F);
             float var6 = MathHelper.cos(this.rotationYaw * (float) Math.PI / 180.0F);
-            this.motionX += (double) (p_70060_1_ * var6 - p_70060_2_ * var5);
-            this.motionZ += (double) (p_70060_2_ * var6 + p_70060_1_ * var5);
+            this.motionX += p_70060_1_ * var6 - p_70060_2_ * var5;
+            this.motionZ += p_70060_2_ * var6 + p_70060_1_ * var5;
         }
     }
 
@@ -1209,13 +1214,6 @@ public abstract class Entity implements ClientEntity {
     }
 
     /**
-     * Sets the reference to the World object.
-     */
-    public void setWorld(World p_70029_1_) {
-        this.worldObj = p_70029_1_;
-    }
-
-    /**
      * Sets the entity's position and rotation. Args: posX, posY, posZ, yaw, pitch
      */
     public void setPositionAndRotation(double p_70080_1_, double p_70080_3_, double p_70080_5_, float p_70080_7_,
@@ -1226,7 +1224,7 @@ public abstract class Entity implements ClientEntity {
         this.prevRotationYaw = this.rotationYaw = p_70080_7_;
         this.prevRotationPitch = this.rotationPitch = p_70080_8_;
         this.ySize = 0.0F;
-        double var9 = (double) (this.prevRotationYaw - p_70080_7_);
+        double var9 = this.prevRotationYaw - p_70080_7_;
 
         if (var9 < -180.0D)
             this.prevRotationYaw += 360.0F;
@@ -1278,7 +1276,7 @@ public abstract class Entity implements ClientEntity {
         double var7 = this.posX - p_70011_1_;
         double var9 = this.posY - p_70011_3_;
         double var11 = this.posZ - p_70011_5_;
-        return (double) MathHelper.sqrt_double(var7 * var7 + var9 * var9 + var11 * var11);
+        return MathHelper.sqrt_double(var7 * var7 + var9 * var9 + var11 * var11);
     }
 
     /**
@@ -1308,7 +1306,7 @@ public abstract class Entity implements ClientEntity {
             double var6 = MathHelper.abs_max(var2, var4);
 
             if (var6 >= 0.009999999776482582D) {
-                var6 = (double) MathHelper.sqrt_double(var6);
+                var6 = MathHelper.sqrt_double(var6);
                 var2 /= var6;
                 var4 /= var6;
                 double var8 = 1.0D / var6;
@@ -1321,8 +1319,8 @@ public abstract class Entity implements ClientEntity {
                 var4 *= var8;
                 var2 *= 0.05000000074505806D;
                 var4 *= 0.05000000074505806D;
-                var2 *= (double) (1.0F - this.entityCollisionReduction);
-                var4 *= (double) (1.0F - this.entityCollisionReduction);
+                var2 *= 1.0F - this.entityCollisionReduction;
+                var4 *= 1.0F - this.entityCollisionReduction;
                 this.addVelocity(-var2, 0.0D, -var4);
                 p_70108_1_.addVelocity(var2, 0.0D, var4);
             }
@@ -1443,10 +1441,10 @@ public abstract class Entity implements ClientEntity {
     public void writeToNBT(NBTTagCompound p_70109_1_) {
         try {
             p_70109_1_.setTag("Pos",
-                    this.newDoubleNBTList(new double[]{this.posX, this.posY + (double) this.ySize, this.posZ}));
+                    this.newDoubleNBTList(this.posX, this.posY + (double) this.ySize, this.posZ));
             p_70109_1_.setTag("Motion",
-                    this.newDoubleNBTList(new double[]{this.motionX, this.motionY, this.motionZ}));
-            p_70109_1_.setTag("Rotation", this.newFloatNBTList(new float[]{this.rotationYaw, this.rotationPitch}));
+                    this.newDoubleNBTList(this.motionX, this.motionY, this.motionZ));
+            p_70109_1_.setTag("Rotation", this.newFloatNBTList(this.rotationYaw, this.rotationPitch));
             p_70109_1_.setFloat("FallDistance", this.fallDistance);
             p_70109_1_.setShort("Fire", (short) this.fire);
             p_70109_1_.setShort("Air", (short) this.getAir());
@@ -1670,12 +1668,11 @@ public abstract class Entity implements ClientEntity {
 
             if (this.ridingEntity != null) {
                 this.ridingEntity.updateRiderPosition();
-                this.entityRiderYawDelta += (double) (this.ridingEntity.rotationYaw
-                        - this.ridingEntity.prevRotationYaw);
+                this.entityRiderYawDelta += this.ridingEntity.rotationYaw
+                        - this.ridingEntity.prevRotationYaw;
 
-                for (this.entityRiderPitchDelta += (double) (this.ridingEntity.rotationPitch
-                        - this.ridingEntity.prevRotationPitch); this.entityRiderYawDelta >= 180.0D; this.entityRiderYawDelta -= 360.0D) {
-                    ;
+                for (this.entityRiderPitchDelta += this.ridingEntity.rotationPitch
+                        - this.ridingEntity.prevRotationPitch; this.entityRiderYawDelta >= 180.0D; this.entityRiderYawDelta -= 360.0D) {
                 }
 
                 while (this.entityRiderYawDelta < -180.0D) {
@@ -1695,19 +1692,19 @@ public abstract class Entity implements ClientEntity {
                 float var5 = 10.0F;
 
                 if (var1 > (double) var5) {
-                    var1 = (double) var5;
+                    var1 = var5;
                 }
 
                 if (var1 < (double) (-var5)) {
-                    var1 = (double) (-var5);
+                    var1 = -var5;
                 }
 
                 if (var3 > (double) var5) {
-                    var3 = (double) var5;
+                    var3 = var5;
                 }
 
                 if (var3 < (double) (-var5)) {
-                    var3 = (double) (-var5);
+                    var3 = -var5;
                 }
 
                 this.entityRiderYawDelta -= var1;
@@ -1727,7 +1724,7 @@ public abstract class Entity implements ClientEntity {
      * Returns the Y Offset of this entity.
      */
     public double getYOffset() {
-        return (double) this.yOffset;
+        return this.yOffset;
     }
 
     /**
@@ -1915,6 +1912,10 @@ public abstract class Entity implements ClientEntity {
         return this.getFlag(5);
     }
 
+    public void setInvisible(boolean p_82142_1_) {
+        this.setFlag(5, p_82142_1_);
+    }
+
     /**
      * Only used by renderer in EntityLivingBase subclasses.\nDetermines if an
      * entity is visible or not to a specfic
@@ -1924,10 +1925,6 @@ public abstract class Entity implements ClientEntity {
      */
     public boolean isInvisibleToPlayer(EntityPlayer p_98034_1_) {
         return this.isInvisible();
-    }
-
-    public void setInvisible(boolean p_82142_1_) {
-        this.setFlag(5, p_82142_1_);
     }
 
     public boolean isEating() {
@@ -2035,27 +2032,27 @@ public abstract class Entity implements ClientEntity {
             float var26 = this.rand.nextFloat() * 0.2F + 0.1F;
 
             if (var23 == 0) {
-                this.motionX = (double) (-var26);
+                this.motionX = -var26;
             }
 
             if (var23 == 1) {
-                this.motionX = (double) var26;
+                this.motionX = var26;
             }
 
             if (var23 == 2) {
-                this.motionY = (double) (-var26);
+                this.motionY = -var26;
             }
 
             if (var23 == 3) {
-                this.motionY = (double) var26;
+                this.motionY = var26;
             }
 
             if (var23 == 4) {
-                this.motionZ = (double) (-var26);
+                this.motionZ = -var26;
             }
 
             if (var23 == 5) {
-                this.motionZ = (double) var26;
+                this.motionZ = var26;
             }
 
             return true;
@@ -2123,11 +2120,11 @@ public abstract class Entity implements ClientEntity {
     }
 
     public String toString() {
-        return String.format("%s[\'%s\'/%d, l=\'%s\', x=%.2f, y=%.2f, z=%.2f]",
-                new Object[]{this.getClass().getSimpleName(), this.getCommandSenderName(),
-                        Integer.valueOf(this.entityId),
-                        this.worldObj == null ? "~NULL~" : this.worldObj.getWorldInfo().getWorldName(),
-                        Double.valueOf(this.posX), Double.valueOf(this.posY), Double.valueOf(this.posZ)});
+        return String.format("%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f]",
+                this.getClass().getSimpleName(), this.getCommandSenderName(),
+                Integer.valueOf(this.entityId),
+                this.worldObj == null ? "~NULL~" : this.worldObj.getWorldInfo().getWorldName(),
+                Double.valueOf(this.posX), Double.valueOf(this.posY), Double.valueOf(this.posZ));
     }
 
     /**
@@ -2192,7 +2189,7 @@ public abstract class Entity implements ClientEntity {
                 if (var3 == 1 && p_71027_1_ == 1) {
                     ChunkCoordinates var7 = var5.getSpawnPoint();
                     var7.posY = this.worldObj.getTopSolidOrLiquidBlock(var7.posX, var7.posZ);
-                    var6.setLocationAndAngles((double) var7.posX, (double) var7.posY, (double) var7.posZ,
+                    var6.setLocationAndAngles(var7.posX, var7.posY, var7.posZ,
                             var6.rotationYaw, var6.rotationPitch);
                 }
 
@@ -2238,13 +2235,12 @@ public abstract class Entity implements ClientEntity {
                 () -> EntityList.getEntityString(Entity.this) + " (" + Entity.this.getClass().getCanonicalName() + ")");
         p_85029_1_.addCrashSection("Entity ID", this.entityId);
         p_85029_1_.addCrashSectionCallable("Entity Name", () -> Entity.this.getCommandSenderName());
-        p_85029_1_.addCrashSection("Entity\'s Exact location", String.format("%.2f, %.2f, %.2f",
-                new Object[]{Double.valueOf(this.posX), Double.valueOf(this.posY), Double.valueOf(this.posZ)}));
-        p_85029_1_.addCrashSection("Entity\'s Block location",
+        p_85029_1_.addCrashSection("Entity's Exact location", String.format("%.2f, %.2f, %.2f",
+                Double.valueOf(this.posX), Double.valueOf(this.posY), Double.valueOf(this.posZ)));
+        p_85029_1_.addCrashSection("Entity's Block location",
                 CrashReportCategory.getLocationInfo(MathHelper.floor_double(this.posX),
                         MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)));
-        p_85029_1_.addCrashSection("Entity\'s Momentum", String.format("%.2f, %.2f, %.2f", new Object[]{
-                Double.valueOf(this.motionX), Double.valueOf(this.motionY), Double.valueOf(this.motionZ)}));
+        p_85029_1_.addCrashSection("Entity's Momentum", String.format("%.2f, %.2f, %.2f", Double.valueOf(this.motionX), Double.valueOf(this.motionY), Double.valueOf(this.motionZ)));
     }
 
     /**
@@ -2269,7 +2265,7 @@ public abstract class Entity implements ClientEntity {
     public void func_145781_i(int p_145781_1_) {
     }
 
-    public static enum EnumEntitySize {
+    public enum EnumEntitySize {
         SIZE_1("SIZE_1", 0), SIZE_2("SIZE_2", 1), SIZE_3("SIZE_3", 2), SIZE_4("SIZE_4", 3), SIZE_5("SIZE_5",
                 4),
         SIZE_6("SIZE_6", 5);
@@ -2277,7 +2273,7 @@ public abstract class Entity implements ClientEntity {
         private static final Entity.EnumEntitySize[] $VALUES = new Entity.EnumEntitySize[]{SIZE_1, SIZE_2, SIZE_3,
                 SIZE_4, SIZE_5, SIZE_6};
 
-        private EnumEntitySize(String p_i1581_1_, int p_i1581_2_) {
+        EnumEntitySize(String p_i1581_1_, int p_i1581_2_) {
         }
 
         public int multiplyBy32AndRound(double p_75630_1_) {
@@ -2353,37 +2349,31 @@ public abstract class Entity implements ClientEntity {
             try {
                 field_96565_a[Entity.EnumEntitySize.SIZE_1.ordinal()] = 1;
             } catch (NoSuchFieldError var6) {
-                ;
             }
 
             try {
                 field_96565_a[Entity.EnumEntitySize.SIZE_2.ordinal()] = 2;
             } catch (NoSuchFieldError var5) {
-                ;
             }
 
             try {
                 field_96565_a[Entity.EnumEntitySize.SIZE_3.ordinal()] = 3;
             } catch (NoSuchFieldError var4) {
-                ;
             }
 
             try {
                 field_96565_a[Entity.EnumEntitySize.SIZE_4.ordinal()] = 4;
             } catch (NoSuchFieldError var3) {
-                ;
             }
 
             try {
                 field_96565_a[Entity.EnumEntitySize.SIZE_5.ordinal()] = 5;
             } catch (NoSuchFieldError var2) {
-                ;
             }
 
             try {
                 field_96565_a[Entity.EnumEntitySize.SIZE_6.ordinal()] = 6;
             } catch (NoSuchFieldError var1) {
-                ;
             }
         }
     }

@@ -1,8 +1,8 @@
 package optifine;
 
-import java.lang.reflect.Field;
-
 import gg.mineral.bot.impl.config.BotGlobalConfig;
+
+import java.lang.reflect.Field;
 
 public class ReflectorField {
     private ReflectorClass reflectorClass = null;
@@ -17,7 +17,7 @@ public class ReflectorField {
     }
 
     public Field getTargetField() {
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return null;
         if (this.checked) {
             return this.targetField;

@@ -1,17 +1,5 @@
 package net.minecraft.client.renderer;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import org.lwjgl.opengl.ARBFramebufferObject;
-import org.lwjgl.opengl.ARBMultitexture;
-import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.ARBVertexShader;
-import org.lwjgl.opengl.EXTBlendFuncSeparate;
-import org.lwjgl.opengl.EXTFramebufferObject;
-import org.lwjgl.opengl.GL20;
-
 import gg.mineral.bot.base.lwjgl.opengl.ContextCapabilities;
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL13;
@@ -22,6 +10,11 @@ import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import optifine.Config;
+import org.lwjgl.opengl.*;
+
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 public class OpenGlHelper {
     public static boolean openGL21;
@@ -73,7 +66,7 @@ public class OpenGlHelper {
     public static void initializeTextures() {
         Config.initDisplay();
 
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return;
         ContextCapabilities var0 = GLContext.getCapabilities();
         field_153215_z = var0.GL_ARB_multitexture && !var0.OpenGL13;
@@ -557,7 +550,7 @@ public class OpenGlHelper {
     }
 
     public static void func_153188_a(int p_153188_0_, int p_153188_1_, int p_153188_2_, int p_153188_3_,
-            int p_153188_4_) {
+                                     int p_153188_4_) {
         if (framebufferSupported) {
             switch (field_153212_w) {
                 case 0:

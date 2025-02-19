@@ -114,7 +114,7 @@ public class Config {
             if (Display.isCreated()) {
                 initialized = true;
                 checkOpenGlCaps();
-                if (BotGlobalConfig.isOptimizedGameLoop())
+                if (BotGlobalConfig.optimizedGameLoop)
                     return;
                 startVersionCheckThread();
             }
@@ -122,7 +122,7 @@ public class Config {
     }
 
     private static void checkOpenGlCaps() {
-        if (!BotGlobalConfig.isDebug())
+        if (!BotGlobalConfig.debug)
             return;
         log("");
         log(getVersion());
@@ -207,7 +207,7 @@ public class Config {
     }
 
     public static void updateThreadPriorities() {
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return;
         try {
             ThreadGroup e = Thread.currentThread().getThreadGroup();
@@ -1260,7 +1260,7 @@ public class Config {
 
     public static void checkDisplaySettings() {
 
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return;
         int samples = getAntialiasingLevel();
 
@@ -1328,7 +1328,7 @@ public class Config {
     }
 
     public static void checkDisplayMode() {
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return;
         try {
             if (minecraft.isFullScreen()) {

@@ -123,7 +123,7 @@ public class ChunkProviderClient implements IChunkProvider {
             Chunk var4 = (Chunk) var3.next();
             var4.func_150804_b(System.currentTimeMillis() - var1 > 5L);
 
-            if (BotGlobalConfig.isOptimizedGameLoop())
+            if (BotGlobalConfig.optimizedGameLoop)
                 break;
         }
 

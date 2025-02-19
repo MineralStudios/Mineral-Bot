@@ -11,7 +11,6 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import gg.mineral.bot.api.event.Event;
 import gg.mineral.bot.api.event.EventHandler;
 import gg.mineral.bot.base.client.gui.GuiConnecting;
-import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.base.client.manager.InstanceManager;
 import gg.mineral.bot.base.lwjgl.Sys;
 import gg.mineral.bot.base.lwjgl.input.Keyboard;
@@ -116,7 +115,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-public class Minecraft  {
+public class Minecraft {
     public static final Logger logger = LogManager.getLogger(Minecraft.class);
     private static final ResourceLocation locationMojangPng = new ResourceLocation("textures/gui/title/mojang.png");
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
@@ -124,7 +123,7 @@ public class Minecraft  {
     /**
      * A 10MiB preallocation to ensure the heap is reasonably sized.
      */
-    public static byte[] memoryReserve = BotGlobalConfig.isOptimizedGameLoop() ? new byte[0] : new byte[10485760];
+    public static byte[] memoryReserve = BotGlobalConfig.optimizedGameLoop ? new byte[0] : new byte[10485760];
     private static final List<DisplayMode> macDisplayModes = Lists
             .newArrayList(new DisplayMode[]{new DisplayMode(2560, 1600), new DisplayMode(2880, 1800)});
     private final File fileResourcepacks;
@@ -367,7 +366,7 @@ public class Minecraft  {
 
     static {
         jvm64bit = isJvm64bit();
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.optimizedGameLoop)
             startTimerHackThread();
         Bootstrap.func_151354_b();
     }
@@ -400,37 +399,37 @@ public class Minecraft  {
 
         this.mcDataDir = p_i1103_6_;
         this.fileAssets = p_i1103_7_;
-        this.renderManager = !BotGlobalConfig.isOptimizedGameLoop() ? new RenderManager(this) : null;
+        this.renderManager = !BotGlobalConfig.optimizedGameLoop ? new RenderManager(this) : null;
 
-        this.tileEntityRendererDispatcher = !BotGlobalConfig.isOptimizedGameLoop()
+        this.tileEntityRendererDispatcher = !BotGlobalConfig.optimizedGameLoop
                 ? new TileEntityRendererDispatcher(this)
                 : null;
-        this.tileEntityRendererChestHelper = !BotGlobalConfig.isOptimizedGameLoop()
+        this.tileEntityRendererChestHelper = !BotGlobalConfig.optimizedGameLoop
                 ? new TileEntityRendererChestHelper(this)
                 : null;
 
         this.fileResourcepacks = p_i1103_8_;
         this.launchedVersion = p_i1103_10_;
         this.field_152356_J = p_i1103_11_;
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.optimizedGameLoop)
             this.mcDefaultResourcePack = new DefaultResourcePack(
-                    BotGlobalConfig.isOptimizedGameLoop() ? new Object2ObjectOpenHashMap<String, File>()
+                    BotGlobalConfig.optimizedGameLoop ? new Object2ObjectOpenHashMap<String, File>()
                             : (new ResourceIndex(p_i1103_7_, p_i1103_12_)).func_152782_a());
         this.addDefaultResourcePack();
         this.proxy = p_i1103_9_ == null ? Proxy.NO_PROXY : p_i1103_9_;
-        this.authenticationService = BotGlobalConfig.isDisableConnection() ? null
+        this.authenticationService = BotGlobalConfig.disableConnection ? null
                 : (new YggdrasilAuthenticationService(p_i1103_9_, UUID.randomUUID().toString()))
                 .createMinecraftSessionService();
         this.session = p_i1103_1_;
-        logger.debug( "Setting user: " + p_i1103_1_.getUsername());
-        logger.debug( "(Session ID is " + p_i1103_1_.getSessionID() + ")");
+        logger.debug("Setting user: " + p_i1103_1_.getUsername());
+        logger.debug("(Session ID is " + p_i1103_1_.getSessionID() + ")");
         this.isDemo = p_i1103_5_;
         this.displayWidth = p_i1103_2_;
         this.displayHeight = p_i1103_3_;
         this.tempDisplayWidth = p_i1103_2_;
         this.tempDisplayHeight = p_i1103_3_;
         this.fullscreen = p_i1103_4_;
-        if (!BotGlobalConfig.isOptimizedGameLoop()) {
+        if (!BotGlobalConfig.optimizedGameLoop) {
             ImageIO.setUseCache(false);
             this.tessellator = new Tessellator(524288);
         }
@@ -512,7 +511,7 @@ public class Minecraft  {
      */
     private void startGame() throws LWJGLException {
         this.gameSettings = new GameSettings(this, this.mcDataDir);
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.optimizedGameLoop)
             this.textureUtil = new TextureUtil(this);
 
         if (this.gameSettings.overrideHeight > 0 && this.gameSettings.overrideWidth > 0) {
@@ -537,7 +536,7 @@ public class Minecraft  {
         Display.setResizable(true);
         Display.setTitle("Mineral Bot Client 1.7.10");
 
-        logger.debug( "LWJGL Version: " + Sys.getVersion());
+        logger.debug("LWJGL Version: " + Sys.getVersion());
 
         val osType = Util.getOSType();
 
@@ -562,7 +561,7 @@ public class Minecraft  {
         } catch (LWJGLException var7) {
             logger.error("Couldn\'t set pixel format", var7);
 
-            if (!BotGlobalConfig.isOptimizedGameLoop()) {
+            if (!BotGlobalConfig.optimizedGameLoop) {
                 try {
                     Thread.sleep(1000L);
                 } catch (InterruptedException var6) {
@@ -580,7 +579,7 @@ public class Minecraft  {
 
         this.mcFramebuffer = new Framebuffer(this, this.displayWidth, this.displayHeight, true);
         this.mcFramebuffer.setFramebufferColor(0.0F, 0.0F, 0.0F, 0.0F);
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.optimizedGameLoop)
             this.guiAchievement = new GuiAchievement(this);
         this.metadataSerializer_.registerMetadataSectionType(new TextureMetadataSectionSerializer(),
                 TextureMetadataSection.class);
@@ -598,21 +597,21 @@ public class Minecraft  {
                 this.gameSettings);
         this.mcResourceManager = new SimpleReloadableResourceManager(this.metadataSerializer_);
         this.mcLanguageManager = new LanguageManager(this.metadataSerializer_, this.gameSettings.language);
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.optimizedGameLoop)
             this.mcResourceManager.registerReloadListener(this.mcLanguageManager);
         this.refreshResources();
-        if (!BotGlobalConfig.isOptimizedGameLoop()) {
+        if (!BotGlobalConfig.optimizedGameLoop) {
             this.renderEngine = new TextureManager(this, this.mcResourceManager);
             this.mcResourceManager.registerReloadListener(this.renderEngine);
             this.skinManager = new SkinManager(this, this.renderEngine, new File(this.fileAssets, "skins"),
                     this.authenticationService);
         }
         this.loadScreen();
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.optimizedGameLoop)
             this.mcSoundHandler = new SoundHandler(this, this.mcResourceManager, this.gameSettings);
-        if (!BotGlobalConfig.isHeadless() && !BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.headless && !BotGlobalConfig.optimizedGameLoop)
             this.mcResourceManager.registerReloadListener(this.mcSoundHandler);
-        if (!BotGlobalConfig.isOptimizedGameLoop()) {
+        if (!BotGlobalConfig.optimizedGameLoop) {
             this.mcMusicTicker = new MusicTicker(this);
 
             this.fontRenderer = new FontRenderer(this, this.gameSettings,
@@ -640,7 +639,7 @@ public class Minecraft  {
         if (renderManager != null)
             renderManager.itemRenderer = new ItemRenderer(this);
         this.entityRenderer = new EntityRenderer(this, this.mcResourceManager);
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.optimizedGameLoop)
             this.mcResourceManager.registerReloadListener(this.entityRenderer);
         AchievementList.openInventory.setStatStringFormatter(new IStatStringFormat() {
 
@@ -668,7 +667,7 @@ public class Minecraft  {
         GL11.glLoadIdentity();
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         this.checkGLError("Startup");
-        if (!BotGlobalConfig.isOptimizedGameLoop()) {
+        if (!BotGlobalConfig.optimizedGameLoop) {
             this.renderGlobal = new RenderGlobal(this);
 
             this.textureMapBlocks = new TextureMap(this, 0, "textures/blocks");
@@ -686,7 +685,7 @@ public class Minecraft  {
             }
         }
         GL11.glViewport(0, 0, this.displayWidth, this.displayHeight);
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.optimizedGameLoop)
             this.effectRenderer = new EffectRenderer(this, this.theWorld, this.renderEngine);
         this.checkGLError("Post startup");
         this.ingameGUI = new GuiIngame(this);
@@ -711,7 +710,7 @@ public class Minecraft  {
             this.gameSettings.saveOptions();
         }
 
-        logger.debug( "Game has been started successfully!");
+        logger.debug("Game has been started successfully!");
     }
 
     public boolean func_152349_b() {
@@ -719,7 +718,7 @@ public class Minecraft  {
     }
 
     public void refreshResources() {
-        if (BotGlobalConfig.isOptimizedGameLoop())
+        if (BotGlobalConfig.optimizedGameLoop)
             return;
         val var1 = Lists.newArrayList(this.defaultResourcePacks);
 
@@ -841,7 +840,7 @@ public class Minecraft  {
         val renderEngine = this.renderEngine;
         val textureUtil = this.textureUtil;
 
-        if (!BotGlobalConfig.isOptimizedGameLoop() && renderEngine != null && textureUtil != null
+        if (!BotGlobalConfig.optimizedGameLoop && renderEngine != null && textureUtil != null
                 && this.mcDefaultResourcePack != null) {
             try {
                 this.minecraftLogoTexture = renderEngine.getDynamicTextureLocation("logo",
@@ -968,7 +967,7 @@ public class Minecraft  {
     public void shutdownMinecraftApplet() {
         ThreadManager.shutdown();
         try {
-            logger.debug( "Stopping!");
+            logger.debug("Stopping!");
 
             try {
                 this.loadWorld((WorldClient) null);
@@ -991,7 +990,7 @@ public class Minecraft  {
                 System.exit(0);
         }
 
-        if (BotGlobalConfig.isManualGarbageCollection())
+        if (BotGlobalConfig.manualGarbageCollection)
             System.gc();
     }
 
@@ -1094,7 +1093,7 @@ public class Minecraft  {
         this.mcProfiler.startSection("display");
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-        if (!BotGlobalConfig.isOptimizedGameLoop() && this.thePlayer != null
+        if (!BotGlobalConfig.optimizedGameLoop && this.thePlayer != null
                 && this.thePlayer.isEntityInsideOpaqueBlock())
             this.gameSettings.thirdPersonView = 0;
 
@@ -1141,7 +1140,7 @@ public class Minecraft  {
 
         this.mcProfiler.startSection("root");
         this.func_147120_f();
-        if (!BotGlobalConfig.isOptimizedGameLoop())
+        if (!BotGlobalConfig.optimizedGameLoop)
             Thread.yield();
         this.mcProfiler.startSection("stream");
         this.mcProfiler.startSection("update");
@@ -1209,21 +1208,21 @@ public class Minecraft  {
         }
 
         try {
-            if (BotGlobalConfig.isManualGarbageCollection())
+            if (BotGlobalConfig.manualGarbageCollection)
                 System.gc();
         } catch (Throwable var3) {
             ;
         }
 
         try {
-            if (BotGlobalConfig.isManualGarbageCollection())
+            if (BotGlobalConfig.manualGarbageCollection)
                 System.gc();
             this.loadWorld((WorldClient) null);
         } catch (Throwable var2) {
             ;
         }
 
-        if (BotGlobalConfig.isManualGarbageCollection())
+        if (BotGlobalConfig.manualGarbageCollection)
             System.gc();
     }
 
@@ -1963,7 +1962,7 @@ public class Minecraft  {
             }
         }
 
-        if (!BotGlobalConfig.isOptimizedGameLoop() && !BotGlobalConfig.isHeadless() && !this.isGamePaused) {
+        if (!BotGlobalConfig.optimizedGameLoop && !BotGlobalConfig.headless && !this.isGamePaused) {
             if (this.mcMusicTicker != null)
                 this.mcMusicTicker.update();
 
@@ -1995,7 +1994,7 @@ public class Minecraft  {
 
             this.mcProfiler.endStartSection("animateTick");
 
-            if (!BotGlobalConfig.isOptimizedGameLoop() && !this.isGamePaused && this.theWorld != null
+            if (!BotGlobalConfig.optimizedGameLoop && !this.isGamePaused && this.theWorld != null
                     && thePlayer != null)
                 this.theWorld.doVoidFogParticles(MathHelper.floor_double(thePlayer.posX),
                         MathHelper.floor_double(thePlayer.posY), MathHelper.floor_double(thePlayer.posZ));
@@ -2022,7 +2021,7 @@ public class Minecraft  {
      */
     public void launchIntegratedServer(String p_71371_1_, String p_71371_2_, WorldSettings p_71371_3_) {
         this.loadWorld((WorldClient) null);
-        if (BotGlobalConfig.isManualGarbageCollection())
+        if (BotGlobalConfig.manualGarbageCollection)
             System.gc();
         ISaveHandler var4 = this.saveLoader.getSaveLoader(p_71371_1_, false);
         WorldInfo var5 = var4.loadWorldInfo();
@@ -2148,7 +2147,7 @@ public class Minecraft  {
             this.thePlayer = null;
         }
 
-        if (BotGlobalConfig.isManualGarbageCollection())
+        if (BotGlobalConfig.manualGarbageCollection)
             System.gc();
         this.systemTime = 0L;
     }

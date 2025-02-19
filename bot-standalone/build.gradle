@@ -1,32 +1,38 @@
-
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
 repositories {
     maven {
         url 'https://libraries.minecraft.net/'
     }
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.36'
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
     implementation 'org.apache.logging.log4j:log4j-api:2.24.3'
     implementation 'org.apache.logging.log4j:log4j-core:2.24.3'
     implementation project(':bot-base-client')
     compileOnly project(':bot-api')
     compileOnly project(':bot-shared-library')
+    compileOnly 'com.google.guava:guava:33.4.0-jre'
     implementation 'org.jline:jline:3.29.0'
     implementation 'io.netty:netty-all:4.1.118.Final'
     implementation 'it.unimi.dsi:fastutil:8.5.15'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 jar {
     manifest {
         attributes(
-            'Multi-Release': 'true',
-            'Main-Class': 'gg.mineral.bot.standalone.launcher.StandaloneLauncher'
+                'Multi-Release': 'true',
+                'Main-Class': 'gg.mineral.bot.standalone.launcher.StandaloneLauncher'
         )
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+}
+kotlin {
+    jvmToolchain(21)
 }

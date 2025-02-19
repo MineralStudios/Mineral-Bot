@@ -79,15 +79,12 @@ public class SoundManager {
     private synchronized void func_148608_i() {
         if (!this.field_148617_f) {
             try {
-                ThreadManager.getAsyncExecutor().execute(new Runnable() {
-
-                    public void run() {
-                        SoundManager.this.field_148620_e = new SoundSystemStarterThread(null);
-                        SoundManager.this.field_148617_f = true;
-                        SoundManager.this.field_148620_e
-                                .setMasterVolume(SoundManager.this.field_148619_d.getSoundLevel(SoundCategory.MASTER));
-                        SoundManager.logger.info(SoundManager.field_148623_a, "Sound engine started");
-                    }
+                ThreadManager.INSTANCE.getAsyncExecutor().execute(() -> {
+                    SoundManager.this.field_148620_e = new SoundSystemStarterThread(null);
+                    SoundManager.this.field_148617_f = true;
+                    SoundManager.this.field_148620_e
+                            .setMasterVolume(SoundManager.this.field_148619_d.getSoundLevel(SoundCategory.MASTER));
+                    SoundManager.logger.info(SoundManager.field_148623_a, "Sound engine started");
                 });
             } catch (RuntimeException var2) {
                 logger.error(field_148623_a, "Error starting SoundSystem. Turning off sounds & music", var2);

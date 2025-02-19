@@ -1,114 +1,158 @@
-package gg.mineral.bot.plugin.network.packet.chunk;
+package gg.mineral.bot.plugin.network.packet.chunk
 
-import java.util.concurrent.TimeUnit;
+import com.github.benmanes.caffeine.cache.Caffeine
+import net.minecraft.world.chunk.NibbleArray
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage
+import java.util.concurrent.TimeUnit
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+object ChunkDataDecoder {
+    private val chunkCache = Caffeine.newBuilder()
+        .maximumSize(100)
+        .expireAfterWrite(5, TimeUnit.MINUTES)
+        .build<ChunkParams, ChunkFillData>()
 
-import lombok.val;
-import net.minecraft.world.chunk.NibbleArray;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+    fun decode(data: ByteArray, primaryBitMask: Int, groundUpContinuous: Boolean): ChunkFillData {
+        val chunkParams = ChunkParams(data, primaryBitMask, groundUpContinuous)
+        return chunkCache[chunkParams, {
+            var i = 0
+            val hasSky = true
 
-public class ChunkDataDecoder {
-    private static Cache<ChunkParams, ChunkFillData> chunkCache = Caffeine.newBuilder()
-            .maximumSize(100)
-            .expireAfterWrite(5, TimeUnit.MINUTES)
-            .build();
+            val storageArrays =
+                arrayOfNulls<ExtendedBlockStorage>(16)
+            val blockBiomeArray = ByteArray(256)
 
-    public static ChunkFillData decode(byte[] data, int primaryBitMask, boolean groundUpContinuous) {
-        val chunkParams = new ChunkParams(data, primaryBitMask, groundUpContinuous);
-        return chunkCache.get(chunkParams,
-                key -> {
-                    var i = 0;
-                    val hasSky = true;
+            // Process each section of the chunk
+            for (j in storageArrays.indices) {
+                if ((primaryBitMask and (1 shl j)) != 0) {
+                    if (storageArrays[j] == null) storageArrays[j] =
+                        ExtendedBlockStorage(j shl 4, hasSky)
 
-                    val storageArrays = new ExtendedBlockStorage[16];
-                    val blockBiomeArray = new byte[256];
+                    val storage = storageArrays[j]
 
-                    // Process each section of the chunk
-                    for (int j = 0; j < storageArrays.length; ++j) {
-                        if ((primaryBitMask & (1 << j)) != 0) {
-                            if (storageArrays[j] == null)
-                                storageArrays[j] = new ExtendedBlockStorage(j << 4, hasSky);
+                    // Iterate through the block storage and directly assign values
+                    for (k in 0..4095) {
+                        if (i + 1 >= data.size) break
 
-                            val storage = storageArrays[j];
+                        val x = k and 15
+                        val y = (k shr 8) and 15
+                        val z = (k shr 4) and 15
 
-                            // Iterate through the block storage and directly assign values
-                            for (int k = 0; k < 4096; ++k) {
-                                if (i + 1 >= data.length)
-                                    break;
+                        // Retrieve block ID and metadata from the data array
+                        var blockId =
+                            ((data[i + 1].toInt() and 255) shl 8) or (data[i].toInt() and 255)
+                        val metadata = blockId and 15 // The last 4 bits are the metadata
+                        blockId = blockId shr 4 // The remaining bits are the block ID
 
-                                val x = k & 15;
-                                val y = (k >> 8) & 15;
-                                val z = (k >> 4) & 15;
+                        // Set the block ID and metadata directly into the storage arrays
+                        storage!!.blockLSBArray[k] = (blockId and 255).toByte()
 
-                                // Retrieve block ID and metadata from the data array
-                                var blockId = ((data[i + 1] & 255) << 8) | (data[i] & 255);
-                                val metadata = blockId & 15; // The last 4 bits are the metadata
-                                blockId >>= 4; // The remaining bits are the block ID
+                        if (blockId > 255) {
+                            if (storage.blockMSBArray == null) storage.blockMSBArray =
+                                NibbleArray(4096, 4)
 
-                                // Set the block ID and metadata directly into the storage arrays
-                                storage.getBlockLSBArray()[k] = (byte) (blockId & 255);
+                            storage.blockMSBArray[x, y, z] = (blockId shr 8) and 15
+                        } else if (storage.blockMSBArray != null) storage.blockMSBArray[x, y, z] = 0
 
-                                if (blockId > 255) {
-                                    if (storage.getBlockMSBArray() == null)
-                                        storage.setBlockMSBArray(new NibbleArray(4096, 4));
+                        storage.metadataArray[x, y, z] = metadata
 
-                                    storage.getBlockMSBArray().set(x, y, z, (blockId >> 8) & 15);
-                                } else if (storage.getBlockMSBArray() != null)
-                                    storage.getBlockMSBArray().set(x, y, z, 0);
-
-                                storage.getMetadataArray().set(x, y, z, metadata);
-
-                                i += 2;
-                            }
-                        } else if (groundUpContinuous && storageArrays[j] != null)
-                            storageArrays[j] = null;
+                        i += 2
                     }
+                } else if (groundUpContinuous && storageArrays[j] != null) storageArrays[j] = null
+            }
 
-                    // Copy block light array data
-                    for (int l = 0; l < storageArrays.length; ++l) {
-                        if ((primaryBitMask & (1 << l)) != 0 && storageArrays[l] != null) {
-                            val blocklightArray = storageArrays[l].getBlocklightArray();
-                            if (i + blocklightArray.getData().length > data.length)
-                                break;
+            // Copy block light array data
+            for (l in storageArrays.indices) {
+                if ((primaryBitMask and (1 shl l)) != 0 && storageArrays[l] != null) {
+                    val blocklightArray = storageArrays[l]!!.blocklightArray
+                    if (i + blocklightArray.getData().size > data.size) break
 
-                            System.arraycopy(data, i, blocklightArray.getData(), 0, blocklightArray.getData().length);
-                            i += blocklightArray.getData().length;
-                        }
+                    System.arraycopy(
+                        data,
+                        i,
+                        blocklightArray.getData(),
+                        0,
+                        blocklightArray.getData().size
+                    )
+                    i += blocklightArray.getData().size
+                }
+            }
+
+            // Copy sky light array data if applicable
+            if (hasSky) {
+                for (m in storageArrays.indices) {
+                    if ((primaryBitMask and (1 shl m)) != 0 && storageArrays[m] != null) {
+                        val skylightArray = storageArrays[m]!!.skylightArray
+                        if (i + skylightArray.getData().size > data.size) break
+
+                        System.arraycopy(
+                            data,
+                            i,
+                            skylightArray.getData(),
+                            0,
+                            skylightArray.getData().size
+                        )
+                        i += skylightArray.getData().size
                     }
+                }
+            }
 
-                    // Copy sky light array data if applicable
-                    if (hasSky) {
-                        for (int m = 0; m < storageArrays.length; ++m) {
-                            if ((primaryBitMask & (1 << m)) != 0 && storageArrays[m] != null) {
-                                val skylightArray = storageArrays[m].getSkylightArray();
-                                if (i + skylightArray.getData().length > data.length)
-                                    break;
+            // Copy biome data if ground-up continuous
+            if (groundUpContinuous) if (i + blockBiomeArray.size <= data.size) System.arraycopy(
+                data,
+                i,
+                blockBiomeArray,
+                0,
+                blockBiomeArray.size
+            )
 
-                                System.arraycopy(data, i, skylightArray.getData(), 0, skylightArray.getData().length);
-                                i += skylightArray.getData().length;
-                            }
-                        }
-                    }
-
-                    // Copy biome data if ground-up continuous
-                    if (groundUpContinuous)
-                        if (i + blockBiomeArray.length <= data.length)
-                            System.arraycopy(data, i, blockBiomeArray, 0, blockBiomeArray.length);
-
-                    // Recalculate reference counts for each section
-                    for (int n = 0; n < storageArrays.length; ++n)
-                        if (storageArrays[n] != null && (primaryBitMask & (1 << n)) != 0)
-                            storageArrays[n].removeInvalidBlocks();
-
-                    return new ChunkFillData(storageArrays, blockBiomeArray);
-                });
+            // Recalculate reference counts for each section
+            for (n in storageArrays.indices) if (storageArrays[n] != null && (primaryBitMask and (1 shl n)) != 0) storageArrays[n]!!
+                .removeInvalidBlocks()
+            ChunkFillData(storageArrays, blockBiomeArray)
+        }]
     }
 
-    public static record ChunkFillData(ExtendedBlockStorage[] storageArrays, byte[] blockBiomeArray) {
+    @JvmRecord
+    data class ChunkFillData(val storageArrays: Array<ExtendedBlockStorage?>, val blockBiomeArray: ByteArray) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as ChunkFillData
+
+            if (!storageArrays.contentEquals(other.storageArrays)) return false
+            if (!blockBiomeArray.contentEquals(other.blockBiomeArray)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = storageArrays.contentHashCode()
+            result = 31 * result + blockBiomeArray.contentHashCode()
+            return result
+        }
     }
 
-    private static record ChunkParams(byte[] data, int primaryBitMask, boolean groundUpContinuous) {
+    @JvmRecord
+    private data class ChunkParams(val data: ByteArray, val primaryBitMask: Int, val groundUpContinuous: Boolean) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as ChunkParams
+
+            if (primaryBitMask != other.primaryBitMask) return false
+            if (groundUpContinuous != other.groundUpContinuous) return false
+            if (!data.contentEquals(other.data)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = primaryBitMask
+            result = 31 * result + groundUpContinuous.hashCode()
+            result = 31 * result + data.contentHashCode()
+            return result
+        }
     }
 }

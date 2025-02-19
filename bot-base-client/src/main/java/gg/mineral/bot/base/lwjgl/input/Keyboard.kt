@@ -1,92 +1,73 @@
-package gg.mineral.bot.base.lwjgl.input;
+package gg.mineral.bot.base.lwjgl.input
 
-import gg.mineral.bot.api.controls.Key;
-import gg.mineral.bot.api.controls.Key.Type;
-import gg.mineral.bot.api.event.EventHandler;
-import gg.mineral.bot.impl.config.BotGlobalConfig;
-import lombok.val;
+import gg.mineral.bot.api.controls.Key
+import gg.mineral.bot.api.controls.Key.Type.Companion.fromKeyCode
+import gg.mineral.bot.api.event.EventHandler
+import gg.mineral.bot.impl.config.BotGlobalConfig
+import gg.mineral.bot.impl.controls.Keyboard
 
-public class Keyboard extends gg.mineral.bot.impl.controls.Keyboard {
+class Keyboard(eventHandler: EventHandler) : Keyboard(eventHandler) {
+    private var repeatEvents = false
 
-    public Keyboard(EventHandler eventHandler) {
-        super(eventHandler);
+    override fun next(): Boolean {
+        if (BotGlobalConfig.headless || BotGlobalConfig.control) return super.next()
+        return org.lwjgl.input.Keyboard.next()
     }
 
-    private boolean repeatEvents = false;
-
-    @Override
-    public boolean next() {
-        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl())
-            return super.next();
-        return org.lwjgl.input.Keyboard.next();
+    override fun isKeyDown(type: Key.Type): Boolean {
+        if (BotGlobalConfig.headless || BotGlobalConfig.control) return super.isKeyDown(type)
+        return org.lwjgl.input.Keyboard.isKeyDown(type.keyCode)
     }
 
-    @Override
-    public boolean isKeyDown(Key.Type type) {
-        assert type != null;
-        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl())
-            return super.isKeyDown(type);
-        return org.lwjgl.input.Keyboard.isKeyDown(type.getKeyCode());
+    fun isKeyDown(keyCode: Int): Boolean {
+        val type = fromKeyCode(keyCode)
+        return isKeyDown(type)
     }
 
-    public boolean isKeyDown(int keyCode) {
-        val type = Key.Type.fromKeyCode(keyCode);
-        if (type == null)
-            return false;
-        return isKeyDown(type);
-    }
-
-    @Override
-    public Type getEventKeyType() {
-        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl())
-            return super.getEventKeyType();
-        return Key.Type.fromKeyCode(org.lwjgl.input.Keyboard.getEventKey());
-    }
-
-    @Override
-    public int getEventKey() {
-        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl())
-            return super.getEventKey();
-        return org.lwjgl.input.Keyboard.getEventKey();
-    }
-
-    @Override
-    public boolean getEventKeyState() {
-        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl())
-            return super.getEventKeyState();
-        return org.lwjgl.input.Keyboard.getEventKeyState();
-    }
-
-    public boolean isRepeatEvent() {
-        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl())
-            return repeatEvents;
-        return org.lwjgl.input.Keyboard.isRepeatEvent();
-    }
-
-    public void enableRepeatEvents(boolean enable) {
-        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl())
-            repeatEvents = enable;
-        else
-            org.lwjgl.input.Keyboard.enableRepeatEvents(enable);
-    }
-
-    public boolean isCreated() {
-        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl())
-            return true;
-
-        return org.lwjgl.input.Keyboard.isCreated();
-    }
-
-    public char getEventCharacter() {
-        if (BotGlobalConfig.isHeadless() || BotGlobalConfig.isControl()) {
-            val type = getEventKeyType();
-
-            if (type == null)
-                return '\0';
-
-            return type.getCharacter();
+    override val eventKeyType: Key.Type?
+        get() {
+            if (BotGlobalConfig.headless || BotGlobalConfig.control) return super.eventKeyType
+            return fromKeyCode(org.lwjgl.input.Keyboard.getEventKey())
         }
 
-        return org.lwjgl.input.Keyboard.getEventCharacter();
+    override val eventKey: Int
+        get() {
+            if (BotGlobalConfig.headless || BotGlobalConfig.control) return super.eventKey
+            return org.lwjgl.input.Keyboard.getEventKey()
+        }
+
+    override val eventKeyState: Boolean
+        get() {
+            if (BotGlobalConfig.headless || BotGlobalConfig.control) return super.eventKeyState
+            return org.lwjgl.input.Keyboard.getEventKeyState()
+        }
+
+    val isRepeatEvent: Boolean
+        get() {
+            if (BotGlobalConfig.headless || BotGlobalConfig.control) return repeatEvents
+            return org.lwjgl.input.Keyboard.isRepeatEvent()
+        }
+
+    fun enableRepeatEvents(enable: Boolean) {
+        if (BotGlobalConfig.headless || BotGlobalConfig.control) repeatEvents = enable
+        else org.lwjgl.input.Keyboard.enableRepeatEvents(enable)
     }
+
+    val isCreated: Boolean
+        get() {
+            if (BotGlobalConfig.headless || BotGlobalConfig.control) return true
+
+            return org.lwjgl.input.Keyboard.isCreated()
+        }
+
+    val eventCharacter: Char?
+        get() {
+            if (BotGlobalConfig.headless || BotGlobalConfig.control) {
+                val type = eventKeyType
+
+                return type?.character
+            }
+
+            return org.lwjgl.input.Keyboard.getEventCharacter()
+        }
 }

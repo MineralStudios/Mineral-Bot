@@ -1,307 +1,99 @@
-package gg.mineral.bot.plugin.network.packet;
+package gg.mineral.bot.plugin.network.packet
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.mojang.authlib.GameProfile
+import gg.mineral.bot.plugin.network.packet.chunk.ChunkDataDecoder
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
+import lombok.Cleanup
+import lombok.SneakyThrows
+import net.minecraft.block.Block
+import net.minecraft.client.network.NetHandlerPlayClient
+import net.minecraft.entity.DataWatcher
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityAgeable
+import net.minecraft.entity.ai.attributes.AttributeModifier
+import net.minecraft.item.Item
+import net.minecraft.nbt.*
+import net.minecraft.nbt.NBTBase
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagList
+import net.minecraft.nbt.NBTTagString
+import net.minecraft.network.play.server.*
+import net.minecraft.server.v1_8_R3.*
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction
+import net.minecraft.server.v1_8_R3.PacketPlayOutPosition.EnumPlayerTeleportFlags
+import net.minecraft.stats.StatBase
+import net.minecraft.stats.StatList
+import net.minecraft.util.ChunkCoordinates
+import net.minecraft.util.IChatComponent
+import net.minecraft.world.*
+import net.minecraft.world.ChunkCoordIntPair
+import net.minecraft.world.EnumDifficulty
+import net.minecraft.world.WorldSettings
+import net.minecraft.world.WorldType
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage
+import org.bukkit.Material
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemFactory
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
+import java.io.*
+import java.nio.ByteBuffer
 
-import javax.annotation.Nullable;
+class Server2ClientTranslator : PacketListenerPlayOut, PacketLoginOutListener, PacketStatusOutListener {
+    @Suppress("DEPRECATION")
+    private fun asNMCCopy(original: ItemStack): net.minecraft.item.ItemStack? {
+        if (original.typeId > 0) {
+            val item = getItem(original.type) ?: return null
 
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemFactory;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.meta.ItemMeta;
+            val stack = net.minecraft.item.ItemStack(
+                item,
+                original.amount, original.durability.toInt()
+            )
+            if (original.hasItemMeta()) setItemMeta(stack, original.itemMeta)
 
-import com.mojang.authlib.GameProfile;
-
-import gg.mineral.bot.plugin.network.packet.chunk.ChunkDataDecoder;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-
-import lombok.Cleanup;
-import lombok.Setter;
-import lombok.SneakyThrows;
-import lombok.val;
-import net.minecraft.block.Block;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.entity.DataWatcher;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.network.play.server.S00PacketKeepAlive;
-import net.minecraft.network.play.server.S01PacketJoinGame;
-import net.minecraft.network.play.server.S02PacketChat;
-import net.minecraft.network.play.server.S03PacketTimeUpdate;
-import net.minecraft.network.play.server.S04PacketEntityEquipment;
-import net.minecraft.network.play.server.S05PacketSpawnPosition;
-import net.minecraft.network.play.server.S06PacketUpdateHealth;
-import net.minecraft.network.play.server.S07PacketRespawn;
-import net.minecraft.network.play.server.S08PacketPlayerPosLook;
-import net.minecraft.network.play.server.S09PacketHeldItemChange;
-import net.minecraft.network.play.server.S0APacketUseBed;
-import net.minecraft.network.play.server.S0BPacketAnimation;
-import net.minecraft.network.play.server.S0CPacketSpawnPlayer;
-import net.minecraft.network.play.server.S0DPacketCollectItem;
-import net.minecraft.network.play.server.S0EPacketSpawnObject;
-import net.minecraft.network.play.server.S0FPacketSpawnMob;
-import net.minecraft.network.play.server.S10PacketSpawnPainting;
-import net.minecraft.network.play.server.S11PacketSpawnExperienceOrb;
-import net.minecraft.network.play.server.S12PacketEntityVelocity;
-import net.minecraft.network.play.server.S13PacketDestroyEntities;
-import net.minecraft.network.play.server.S14PacketEntity;
-import net.minecraft.network.play.server.S18PacketEntityTeleport;
-import net.minecraft.network.play.server.S19PacketEntityHeadLook;
-import net.minecraft.network.play.server.S19PacketEntityStatus;
-import net.minecraft.network.play.server.S1BPacketEntityAttach;
-import net.minecraft.network.play.server.S1CPacketEntityMetadata;
-import net.minecraft.network.play.server.S1DPacketEntityEffect;
-import net.minecraft.network.play.server.S1EPacketRemoveEntityEffect;
-import net.minecraft.network.play.server.S1FPacketSetExperience;
-import net.minecraft.network.play.server.S20PacketEntityProperties;
-import net.minecraft.network.play.server.S21PacketChunkData;
-import net.minecraft.network.play.server.S22PacketMultiBlockChange;
-import net.minecraft.network.play.server.S23PacketBlockChange;
-import net.minecraft.network.play.server.S24PacketBlockAction;
-import net.minecraft.network.play.server.S25PacketBlockBreakAnim;
-import net.minecraft.network.play.server.S26PacketMapChunkBulk;
-import net.minecraft.network.play.server.S27PacketExplosion;
-import net.minecraft.network.play.server.S28PacketEffect;
-import net.minecraft.network.play.server.S29PacketSoundEffect;
-import net.minecraft.network.play.server.S2APacketParticles;
-import net.minecraft.network.play.server.S2BPacketChangeGameState;
-import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity;
-import net.minecraft.network.play.server.S2DPacketOpenWindow;
-import net.minecraft.network.play.server.S2EPacketCloseWindow;
-import net.minecraft.network.play.server.S2FPacketSetSlot;
-import net.minecraft.network.play.server.S30PacketWindowItems;
-import net.minecraft.network.play.server.S31PacketWindowProperty;
-import net.minecraft.network.play.server.S32PacketConfirmTransaction;
-import net.minecraft.network.play.server.S33PacketUpdateSign;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.network.play.server.S36PacketSignEditorOpen;
-import net.minecraft.network.play.server.S37PacketStatistics;
-import net.minecraft.network.play.server.S38PacketPlayerListItem;
-import net.minecraft.network.play.server.S39PacketPlayerAbilities;
-import net.minecraft.network.play.server.S3APacketTabComplete;
-import net.minecraft.network.play.server.S3BPacketScoreboardObjective;
-import net.minecraft.network.play.server.S3CPacketUpdateScore;
-import net.minecraft.network.play.server.S3DPacketDisplayScoreboard;
-import net.minecraft.network.play.server.S3EPacketTeams;
-import net.minecraft.network.play.server.S3FPacketCustomPayload;
-import net.minecraft.network.play.server.S40PacketDisconnect;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.NBTCompressedStreamTools;
-import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketListenerPlayOut;
-import net.minecraft.server.v1_8_R3.PacketLoginOutDisconnect;
-import net.minecraft.server.v1_8_R3.PacketLoginOutEncryptionBegin;
-import net.minecraft.server.v1_8_R3.PacketLoginOutListener;
-import net.minecraft.server.v1_8_R3.PacketLoginOutSetCompression;
-import net.minecraft.server.v1_8_R3.PacketLoginOutSuccess;
-import net.minecraft.server.v1_8_R3.PacketPlayOutAbilities;
-import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
-import net.minecraft.server.v1_8_R3.PacketPlayOutAttachEntity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutBed;
-import net.minecraft.server.v1_8_R3.PacketPlayOutBlockAction;
-import net.minecraft.server.v1_8_R3.PacketPlayOutBlockBreakAnimation;
-import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
-import net.minecraft.server.v1_8_R3.PacketPlayOutCamera;
-import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
-import net.minecraft.server.v1_8_R3.PacketPlayOutCloseWindow;
-import net.minecraft.server.v1_8_R3.PacketPlayOutCollect;
-import net.minecraft.server.v1_8_R3.PacketPlayOutCombatEvent;
-import net.minecraft.server.v1_8_R3.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityEffect;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityEquipment;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityHeadRotation;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityStatus;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityTeleport;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityVelocity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutExperience;
-import net.minecraft.server.v1_8_R3.PacketPlayOutExplosion;
-import net.minecraft.server.v1_8_R3.PacketPlayOutGameStateChange;
-import net.minecraft.server.v1_8_R3.PacketPlayOutHeldItemSlot;
-import net.minecraft.server.v1_8_R3.PacketPlayOutKeepAlive;
-import net.minecraft.server.v1_8_R3.PacketPlayOutKickDisconnect;
-import net.minecraft.server.v1_8_R3.PacketPlayOutLogin;
-import net.minecraft.server.v1_8_R3.PacketPlayOutMap;
-import net.minecraft.server.v1_8_R3.PacketPlayOutMapChunk;
-import net.minecraft.server.v1_8_R3.PacketPlayOutMapChunkBulk;
-import net.minecraft.server.v1_8_R3.PacketPlayOutMultiBlockChange;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
-import net.minecraft.server.v1_8_R3.PacketPlayOutOpenSignEditor;
-import net.minecraft.server.v1_8_R3.PacketPlayOutOpenWindow;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPosition;
-import net.minecraft.server.v1_8_R3.PacketPlayOutRemoveEntityEffect;
-import net.minecraft.server.v1_8_R3.PacketPlayOutResourcePackSend;
-import net.minecraft.server.v1_8_R3.PacketPlayOutRespawn;
-import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardDisplayObjective;
-import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardObjective;
-import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardScore;
-import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardTeam;
-import net.minecraft.server.v1_8_R3.PacketPlayOutServerDifficulty;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSetCompression;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSetSlot;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityExperienceOrb;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityPainting;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityWeather;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnPosition;
-import net.minecraft.server.v1_8_R3.PacketPlayOutStatistic;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTabComplete;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTileEntityData;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTransaction;
-import net.minecraft.server.v1_8_R3.PacketPlayOutUpdateAttributes;
-import net.minecraft.server.v1_8_R3.PacketPlayOutUpdateEntityNBT;
-import net.minecraft.server.v1_8_R3.PacketPlayOutUpdateHealth;
-import net.minecraft.server.v1_8_R3.PacketPlayOutUpdateSign;
-import net.minecraft.server.v1_8_R3.PacketPlayOutUpdateTime;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWindowData;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWindowItems;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldBorder;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
-import net.minecraft.server.v1_8_R3.PacketStatusOutListener;
-import net.minecraft.server.v1_8_R3.PacketStatusOutPong;
-import net.minecraft.server.v1_8_R3.PacketStatusOutServerInfo;
-import net.minecraft.stats.StatBase;
-import net.minecraft.stats.StatList;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.ChunkPosition;
-import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.WorldSettings;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-
-public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLoginOutListener, PacketStatusOutListener {
-
-    public static final Object2IntOpenHashMap<String> WINDOW_TYPE_REGISTRY = new Object2IntOpenHashMap<>();
-
-    static {
-        WINDOW_TYPE_REGISTRY.put("minecraft:container", 0);
-        WINDOW_TYPE_REGISTRY.put("minecraft:chest", 0);
-        WINDOW_TYPE_REGISTRY.put("minecraft:crafting_table", 1);
-        WINDOW_TYPE_REGISTRY.put("minecraft:furnace", 2);
-        WINDOW_TYPE_REGISTRY.put("minecraft:dispenser", 3);
-        WINDOW_TYPE_REGISTRY.put("minecraft:enchanting_table", 4);
-        WINDOW_TYPE_REGISTRY.put("minecraft:brewing_stand", 5);
-        WINDOW_TYPE_REGISTRY.put("minecraft:villager", 6);
-        WINDOW_TYPE_REGISTRY.put("minecraft:beacon", 7);
-        WINDOW_TYPE_REGISTRY.put("minecraft:anvil", 8);
-        WINDOW_TYPE_REGISTRY.put("minecraft:hopper", 9);
-        WINDOW_TYPE_REGISTRY.put("minecraft:dropper", 10);
-        WINDOW_TYPE_REGISTRY.put("EntityHorse", 11);
-    }
-
-    public static Item getItem(Material material) {
-        @SuppressWarnings("deprecation")
-        val item = Item.getItemById(material.getId());
-        return item;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Nullable
-    public ItemStack asNMCCopy(org.bukkit.inventory.ItemStack original) {
-        if (original != null && original.getTypeId() > 0) {
-            val item = getItem(original.getType());
-            if (item == null)
-                return null;
-
-            val stack = new ItemStack(item,
-                    original.getAmount(), original.getDurability());
-            if (original.hasItemMeta())
-                setItemMeta(stack, original.getItemMeta());
-
-            return stack;
+            return stack
         }
 
-        return null;
+        return null
     }
 
-    public boolean setItemMeta(ItemStack item, ItemMeta itemMeta) {
-        if (item == null)
-            return false;
-        if (CraftItemFactory.instance().equals(itemMeta, (ItemMeta) null)) {
-            item.setTagCompound(null);
-            return true;
+    private fun setItemMeta(item: net.minecraft.item.ItemStack?, itemMeta: ItemMeta?): Boolean {
+        var itemMeta = itemMeta
+        if (item == null) return false
+        if (CraftItemFactory.instance().equals(itemMeta, null as ItemMeta?)) {
+            item.tagCompound = null
+            return true
         }
-        if (!CraftItemFactory.instance().isApplicable(itemMeta, getType(item)))
-            return false;
+        if (!CraftItemFactory.instance().isApplicable(itemMeta, getType(item))) return false
 
-        itemMeta = CraftItemFactory.instance().asMetaFor(itemMeta, getType(item));
-        if (itemMeta == null)
-            return true;
+        itemMeta = CraftItemFactory.instance().asMetaFor(itemMeta, getType(item))
+        if (itemMeta == null) return true
 
-        val tag = new NBTTagCompound();
-        item.setTagCompound(tag);
-        applyToItem(itemMeta, tag);
-        return true;
+        val tag = NBTTagCompound()
+        item.tagCompound = tag
+        applyToItem(itemMeta, tag)
+        return true
     }
 
-    static Material getType(ItemStack item) {
-        if (item == null)
-            return Material.AIR;
-        @SuppressWarnings("deprecation")
-        val material = Material.getMaterial(Item.getIdFromItem(item.getItem()));
-        return material == null ? Material.AIR : material;
+    private fun setDisplayTag(tag: NBTTagCompound, key: String?, value: NBTBase?) {
+        val display = tag.getCompoundTag("display")
+        if (!tag.hasKey("display")) tag.setTag("display", display)
+
+        display.setTag(key, value)
     }
 
-    void setDisplayTag(NBTTagCompound tag, String key, NBTBase value) {
-        val display = tag.getCompoundTag("display");
-        if (!tag.hasKey("display"))
-            tag.setTag("display", display);
+    private fun applyToItem(meta: ItemMeta, itemTag: NBTTagCompound) {
+        if (meta.hasDisplayName()) setDisplayTag(itemTag, "Name", NBTTagString(meta.displayName))
 
-        display.setTag(key, value);
-    }
+        if (meta.hasLore()) setDisplayTag(itemTag, "Lore", createStringList(meta.lore))
 
-    static NBTTagList createStringList(List<String> list) {
-        if (list == null || list.isEmpty())
-            return null;
+        val hideFlag = getHideFlagFromSet(meta.itemFlags)
+        if (hideFlag != 0) itemTag.setInteger("HideFlags", hideFlag)
 
-        val tagList = new NBTTagList();
-        for (val value : list)
-            tagList.appendTag(new NBTTagString(value));
-
-        return tagList;
-    }
-
-    void applyToItem(ItemMeta meta, NBTTagCompound itemTag) {
-        if (meta.hasDisplayName())
-            setDisplayTag(itemTag, "Name", new NBTTagString(meta.getDisplayName()));
-
-        if (meta.hasLore())
-            setDisplayTag(itemTag, "Lore", createStringList(meta.getLore()));
-
-        val hideFlag = getHideFlagFromSet(meta.getItemFlags());
-        if (hideFlag != 0)
-            itemTag.setInteger("HideFlags", hideFlag);
-
-        applyEnchantments(meta.getEnchants(), itemTag);
-        if (meta.spigot().isUnbreakable())
-            itemTag.setBoolean("Unbreakable", true);
+        applyEnchantments(meta.enchants, itemTag)
+        if (meta.spigot().isUnbreakable) itemTag.setBoolean("Unbreakable", true)
 
         // TODO: if (meta.hasRepairCost())
         // itemTag.setInt(REPAIR.NBT, this.repairCost);
@@ -312,876 +104,885 @@ public class Server2ClientTranslator implements PacketListenerPlayOut, PacketLog
         // Entry<String, NBTBase> e = (Entry) var2.next();
         // itemTag.set((String) e.getKey(), (NBTBase) e.getValue());
         // }
-
     }
 
-    @SuppressWarnings("deprecation")
-    static void applyEnchantments(Map<org.bukkit.enchantments.Enchantment, Integer> enchantments, NBTTagCompound tag) {
-        if (enchantments == null)
-            return;
+    private fun getHideFlagFromSet(itemFlags: Set<ItemFlag>): Int {
+        var hideFlag = 0 // Start with no flags
 
-        val list = new NBTTagList();
+        for (flag in itemFlags) hideFlag = hideFlag or getBitModifier(flag).toInt()
 
-        for (val entry : enchantments.entrySet()) {
-            val subtag = new NBTTagCompound();
-
-            subtag.setShort("id", (short) entry.getKey().getId());
-            subtag.setShort("lvl", entry.getValue().shortValue());
-
-            list.appendTag(subtag);
-        }
-
-        tag.setTag("ench", list);
+        return hideFlag
     }
 
-    public int getHideFlagFromSet(Set<ItemFlag> itemFlags) {
-        int hideFlag = 0; // Start with no flags
-
-        for (val flag : itemFlags)
-            hideFlag |= getBitModifier(flag);
-
-        return hideFlag;
+    private fun getBitModifier(hideFlag: ItemFlag): Byte {
+        return (1 shl hideFlag.ordinal).toByte()
     }
 
-    private byte getBitModifier(ItemFlag hideFlag) {
-        return (byte) (1 << hideFlag.ordinal());
+    private fun fromNMS(itemNMS: net.minecraft.server.v1_8_R3.ItemStack?): net.minecraft.item.ItemStack? {
+        if (itemNMS == null) return null
+
+        val itemStack = CraftItemStack
+            .asBukkitCopy(itemNMS)
+
+        return if (itemStack == null) null else asNMCCopy(itemStack)
     }
 
-    @Nullable
-    private ItemStack fromNMS(@Nullable net.minecraft.server.v1_8_R3.ItemStack itemNMS) {
-        if (itemNMS == null)
-            return null;
+    private fun fromNMS(
+        watchableObject: net.minecraft.server.v1_8_R3.DataWatcher.WatchableObject, entity: Entity
+    ): DataWatcher.WatchableObject? {
+        val id = watchableObject.a()
+        var value = watchableObject.b()
+        var type = watchableObject.c()
 
-        val itemStack = org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack
-                .asBukkitCopy(itemNMS);
-
-        return itemStack == null ? null : asNMCCopy(itemStack);
-    }
-
-    @Nullable
-    private DataWatcher.WatchableObject fromNMS(
-            net.minecraft.server.v1_8_R3.DataWatcher.WatchableObject watchableObject, Entity entity) {
-        val id = watchableObject.a();
-        var value = watchableObject.b();
-        var type = watchableObject.c();
-
-        switch (id) {
-            case 12 -> {
-                if (entity != null && entity instanceof EntityAgeable && value instanceof Byte byteValue) {
-                    type = 2;
-                    value = Integer.valueOf(byteValue.intValue());
+        when (id) {
+            12 -> {
+                if (entity is EntityAgeable && value is Byte) {
+                    type = 2
+                    value = value.toInt()
                 }
             }
         }
 
-        value = switch (type) {
-            case 5 -> fromNMS((net.minecraft.server.v1_8_R3.ItemStack) value);// ItemStack
-            case 6 -> {
-                val blockPosition = (net.minecraft.server.v1_8_R3.BlockPosition) value;
-                yield new ChunkCoordinates(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
-            }// BlockPos
-            default -> null;
-        };
+        value = when (type) {
+            5 -> fromNMS(value as net.minecraft.server.v1_8_R3.ItemStack)
+            6 -> {
+                val blockPosition = value as BlockPosition
+                ChunkCoordinates(blockPosition.x, blockPosition.y, blockPosition.z)
+            }
 
-        if (value == null)
-            return null;
+            else -> null
+        }
 
-        val dataWatcher = new DataWatcher.WatchableObject(type, id, value);
+        if (value == null) return null
 
-        dataWatcher.setWatched(watchableObject.d());
+        val dataWatcher = DataWatcher.WatchableObject(type, id, value)
 
-        return dataWatcher;
+        dataWatcher.isWatched = watchableObject.d()
+
+        return dataWatcher
     }
 
-    @Setter
-    private NetHandlerPlayClient netHandlerPlayClient;
+    lateinit var netHandlerPlayClient: NetHandlerPlayClient
 
-    public void handlePacket(Packet<PacketListenerPlayOut> packet) {
-        packet.a(this);
+    fun handlePacket(packet: Packet<PacketListenerPlayOut>) {
+        packet.a(this)
     }
 
-    @Override
-    public void a(IChatBaseComponent serverPacket) {
-        val text = IChatBaseComponent.ChatSerializer.a(serverPacket);
-        val chatComponent = IChatComponent.Serializer.fromJson(text);
-        netHandlerPlayClient.onDisconnect(chatComponent);
+    override fun a(serverPacket: IChatBaseComponent) {
+        val text = IChatBaseComponent.ChatSerializer.a(serverPacket)
+        val chatComponent = IChatComponent.Serializer.fromJson(text)
+        netHandlerPlayClient.onDisconnect(chatComponent)
     }
 
-    @Override
-    public void a(PacketPlayOutSpawnEntity serverPacket) {
-        val packet = new S0EPacketSpawnObject(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                serverPacket.getD(),
-                serverPacket.getE(), serverPacket.getF(), serverPacket.getG(), serverPacket.getH(), serverPacket.getI(),
-                serverPacket.getJ(), serverPacket.getK());
-        netHandlerPlayClient.handleSpawnObject(packet);
+    override fun a(serverPacket: PacketPlayOutSpawnEntity) {
+        val packet = S0EPacketSpawnObject(
+            serverPacket.a, serverPacket.b, serverPacket.c,
+            serverPacket.d,
+            serverPacket.e, serverPacket.f, serverPacket.g, serverPacket.h, serverPacket.i,
+            serverPacket.j, serverPacket.k
+        )
+        netHandlerPlayClient.handleSpawnObject(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutSpawnEntityExperienceOrb serverPacket) {
-        val packet = new S11PacketSpawnExperienceOrb(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                serverPacket.getD(), serverPacket.getE());
-        netHandlerPlayClient.handleSpawnExperienceOrb(packet);
+    override fun a(serverPacket: PacketPlayOutSpawnEntityExperienceOrb) {
+        val packet = S11PacketSpawnExperienceOrb(
+            serverPacket.a, serverPacket.b, serverPacket.c,
+            serverPacket.d, serverPacket.e
+        )
+        netHandlerPlayClient.handleSpawnExperienceOrb(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutSpawnEntityWeather serverPacket) {
-        val packet = new S2CPacketSpawnGlobalEntity(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                serverPacket.getD(), serverPacket.getE());
-        netHandlerPlayClient.handleSpawnGlobalEntity(packet);
+    override fun a(serverPacket: PacketPlayOutSpawnEntityWeather) {
+        val packet = S2CPacketSpawnGlobalEntity(
+            serverPacket.a, serverPacket.b, serverPacket.c,
+            serverPacket.d, serverPacket.e
+        )
+        netHandlerPlayClient.handleSpawnGlobalEntity(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutSpawnEntityLiving serverPacket) {
-        val entityTypeId = serverPacket.getB();
+    override fun a(serverPacket: PacketPlayOutSpawnEntityLiving) {
+        val entityTypeId = serverPacket.b
 
-        if (entityTypeId == 101) // TODO: Rabbit
-            return;
+        if (entityTypeId == 101)  // TODO: Rabbit
+            return
 
-        val dataWatcherListNMS = serverPacket.getM();
-        val dataWatcherList = new ArrayList<>();
+        val dataWatcherListNMS = serverPacket.m
+        val dataWatcherList = ArrayList<Any?>()
 
-        val entityId = serverPacket.getA();
+        val entityId = serverPacket.a
 
-        val entity = netHandlerPlayClient.getClientWorldController().getEntityByID(entityId);
+        val entity = netHandlerPlayClient.clientWorldController.getEntityByID(entityId)
 
         if (dataWatcherListNMS != null) {
-            for (val watchableObjectNMS : dataWatcherListNMS) {
-                val watchableObject = fromNMS(watchableObjectNMS, entity);
+            for (watchableObjectNMS in dataWatcherListNMS) {
+                val watchableObject = fromNMS(
+                    watchableObjectNMS,
+                    entity!!
+                )!!
 
-                if (watchableObject == null)
-                    continue;
-
-                dataWatcherList.add(watchableObject);
+                dataWatcherList.add(watchableObject)
             }
         }
 
-        val packet = new S0FPacketSpawnMob(entityId, entityTypeId, serverPacket.getC(), serverPacket.getD(),
-                serverPacket.getE(), serverPacket.getF(), serverPacket.getG(), serverPacket.getH(), serverPacket.getI(),
-                serverPacket.getJ(), serverPacket.getK(), null,
-                dataWatcherList);
+        val packet = S0FPacketSpawnMob(
+            entityId, entityTypeId, serverPacket.c, serverPacket.d,
+            serverPacket.e, serverPacket.f, serverPacket.g, serverPacket.h, serverPacket.i,
+            serverPacket.j, serverPacket.k, null,
+            dataWatcherList
+        )
 
-        netHandlerPlayClient.handleSpawnMob(packet);
+        netHandlerPlayClient.handleSpawnMob(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutScoreboardObjective serverPacket) {
-        val name = serverPacket.getA();
-        val value = serverPacket.getB();
-        val mode = serverPacket.getD();
-        val packet = new S3BPacketScoreboardObjective(name, value, mode);
-        netHandlerPlayClient.handleScoreboardObjective(packet);
+    override fun a(serverPacket: PacketPlayOutScoreboardObjective) {
+        val name = serverPacket.a
+        val value = serverPacket.b
+        val mode = serverPacket.d
+        val packet = S3BPacketScoreboardObjective(name, value, mode)
+        netHandlerPlayClient.handleScoreboardObjective(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutSpawnEntityPainting serverPacket) {
-        val blockPos = serverPacket.getB();
-        val packet = new S10PacketSpawnPainting(serverPacket.getA(), blockPos.getX(), blockPos.getY(),
-                blockPos.getZ(), serverPacket.getC().a(), serverPacket.getD());
-        netHandlerPlayClient.handleSpawnPainting(packet);
+    override fun a(serverPacket: PacketPlayOutSpawnEntityPainting) {
+        val blockPos = serverPacket.b
+        val packet = S10PacketSpawnPainting(
+            serverPacket.a, blockPos.x, blockPos.y,
+            blockPos.z, serverPacket.c.a(), serverPacket.d
+        )
+        netHandlerPlayClient.handleSpawnPainting(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutNamedEntitySpawn serverPacket) {
-        @Nullable
-        val dataWatcherListNMS = serverPacket.getJ();
-        val dataWatcherList = new ArrayList<>();
+    override fun a(serverPacket: PacketPlayOutNamedEntitySpawn) {
+        val dataWatcherListNMS = serverPacket.j
+        val dataWatcherList = ArrayList<Any?>()
 
-        val entityId = serverPacket.getA();
+        val entityId = serverPacket.a
 
-        val entity = netHandlerPlayClient.getClientWorldController().getEntityByID(entityId);
+        val entity = netHandlerPlayClient.clientWorldController.getEntityByID(entityId)
 
         if (dataWatcherListNMS != null) {
-            for (val watchableObjectNMS : dataWatcherListNMS) {
-                val watchableObject = fromNMS(watchableObjectNMS, entity);
+            for (watchableObjectNMS in dataWatcherListNMS) {
+                val watchableObject = fromNMS(
+                    watchableObjectNMS,
+                    entity!!
+                )!!
 
-                if (watchableObject != null)
-                    dataWatcherList.add(watchableObject);
+                dataWatcherList.add(watchableObject)
             }
         }
 
         // TODO: name
-        val packet = new S0CPacketSpawnPlayer(entityId,
-                new GameProfile(serverPacket.getB(), ""),
-                serverPacket.getC(), serverPacket.getD(),
-                serverPacket.getE(), serverPacket.getF(), serverPacket.getG(), serverPacket.getH(), null,
-                dataWatcherList);
-        netHandlerPlayClient.handleSpawnPlayer(packet);
+        val packet = S0CPacketSpawnPlayer(
+            entityId,
+            GameProfile(serverPacket.b, ""),
+            serverPacket.c, serverPacket.d,
+            serverPacket.e, serverPacket.f, serverPacket.g, serverPacket.h, null,
+            dataWatcherList
+        )
+        netHandlerPlayClient.handleSpawnPlayer(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutAnimation serverPacket) {
-        val packet = new S0BPacketAnimation(serverPacket.getA(), serverPacket.getB());
-        netHandlerPlayClient.handleAnimation(packet);
+    override fun a(serverPacket: PacketPlayOutAnimation) {
+        val packet = S0BPacketAnimation(serverPacket.a, serverPacket.b)
+        netHandlerPlayClient.handleAnimation(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutStatistic serverPacket) {
-        val statisticMap = serverPacket.getA();
-        val statMap = new Object2IntOpenHashMap<StatBase>();
+    override fun a(serverPacket: PacketPlayOutStatistic) {
+        val statisticMap = serverPacket.a
+        val statMap = Object2IntOpenHashMap<StatBase>()
 
-        for (val e : statisticMap.object2IntEntrySet()) {
-            val stat = StatList.func_151177_a(e.getKey().name);
-            statMap.put(stat, e.getIntValue());
+        for (e in statisticMap.object2IntEntrySet()) {
+            val stat = StatList.func_151177_a(e.key.name)
+            statMap.put(stat, e.intValue)
         }
 
-        val packet = new S37PacketStatistics(statMap);
-        netHandlerPlayClient.handleStatistics(packet);
+        val packet = S37PacketStatistics(statMap)
+        netHandlerPlayClient.handleStatistics(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutBlockBreakAnimation serverPacket) {
-        val packet = new S25PacketBlockBreakAnim(serverPacket.getA(), serverPacket.getB().getX(),
-                serverPacket.getB().getY(), serverPacket.getB().getZ(), serverPacket.getC());
-        netHandlerPlayClient.handleBlockBreakAnim(packet);
+    override fun a(serverPacket: PacketPlayOutBlockBreakAnimation) {
+        val packet = S25PacketBlockBreakAnim(
+            serverPacket.a, serverPacket.b.x,
+            serverPacket.b.y, serverPacket.b.z, serverPacket.c
+        )
+        netHandlerPlayClient.handleBlockBreakAnim(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutOpenSignEditor serverPacket) {
-        val blockPos = serverPacket.getA();
-        val packet = new S36PacketSignEditorOpen(blockPos.getX(), blockPos.getY(),
-                blockPos.getZ());
-        netHandlerPlayClient.handleSignEditorOpen(packet);
+    override fun a(serverPacket: PacketPlayOutOpenSignEditor) {
+        val blockPos = serverPacket.a
+        val packet = S36PacketSignEditorOpen(
+            blockPos.x, blockPos.y,
+            blockPos.z
+        )
+        netHandlerPlayClient.handleSignEditorOpen(packet)
     }
 
-    @Override
-    @SneakyThrows(IOException.class)
-    public void a(PacketPlayOutTileEntityData serverPacket) {
-        val nmsNbt = serverPacket.getC();
-        @Cleanup
-        val baos = new ByteArrayOutputStream();
-        @Cleanup
-        val buf = new DataOutputStream(baos);
+    @SneakyThrows(IOException::class)
+    override fun a(serverPacket: PacketPlayOutTileEntityData) {
+        val nmsNbt = serverPacket.c
+        @Cleanup val baos = ByteArrayOutputStream()
+        @Cleanup val buf = DataOutputStream(baos)
 
-        NBTCompressedStreamTools.a(nmsNbt, (DataOutput) buf);
+        NBTCompressedStreamTools.a(nmsNbt, buf as DataOutput)
 
-        val bytes = baos.toByteArray();
+        val bytes = baos.toByteArray()
 
-        val dis = new DataInputStream(new ByteArrayInputStream(bytes));
+        val dis = DataInputStream(ByteArrayInputStream(bytes))
 
-        val nbt = CompressedStreamTools.read(dis);
+        val nbt = CompressedStreamTools.read(dis)
 
-        val packet = new S35PacketUpdateTileEntity(serverPacket.getA().getX(), serverPacket.getA().getY(),
-                serverPacket.getA().getZ(), serverPacket.getB(), nbt);
-        netHandlerPlayClient.handleUpdateTileEntity(packet);
+        val packet = S35PacketUpdateTileEntity(
+            serverPacket.a.x, serverPacket.a.y,
+            serverPacket.a.z, serverPacket.b, nbt
+        )
+        netHandlerPlayClient.handleUpdateTileEntity(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutBlockAction serverPacket) {
-        val blockId = net.minecraft.server.v1_8_R3.Block.getId(serverPacket.getD()) & 4095;
-        val block = Block.getBlockById(blockId);
-        val packet = new S24PacketBlockAction(serverPacket.getA().getX(), serverPacket.getA().getY(),
-                serverPacket.getA().getZ(), serverPacket.getB(), serverPacket.getC(), block);
-        netHandlerPlayClient.handleBlockAction(packet);
+    override fun a(serverPacket: PacketPlayOutBlockAction) {
+        val blockId = net.minecraft.server.v1_8_R3.Block.getId(serverPacket.d) and 4095
+        val block = Block.getBlockById(blockId)
+        val packet = S24PacketBlockAction(
+            serverPacket.a.x, serverPacket.a.y,
+            serverPacket.a.z, serverPacket.b, serverPacket.c, block
+        )
+        netHandlerPlayClient.handleBlockAction(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutBlockChange serverPacket) {
-        val idAndMeta = net.minecraft.server.v1_8_R3.Block.d.b(serverPacket.getBlock());
-        val blockId = idAndMeta >> 4;
-        val blockMeta = idAndMeta & 15;
-        val block = Block.getBlockById(blockId);
-        val packet = new S23PacketBlockChange(serverPacket.getA().getX(), serverPacket.getA().getY(),
-                serverPacket.getA().getZ(), block, blockMeta);
-        netHandlerPlayClient.handleBlockChange(packet);
+    override fun a(serverPacket: PacketPlayOutBlockChange) {
+        val idAndMeta = net.minecraft.server.v1_8_R3.Block.d.b(serverPacket.getBlock())
+        val blockId = idAndMeta shr 4
+        val blockMeta = idAndMeta and 15
+        val block = Block.getBlockById(blockId)
+        val packet = S23PacketBlockChange(
+            serverPacket.a.x, serverPacket.a.y,
+            serverPacket.a.z, block, blockMeta
+        )
+        netHandlerPlayClient.handleBlockChange(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutChat serverPacket) {
-        val text = IChatBaseComponent.ChatSerializer.a(serverPacket.getA());
-        val chatComponent = IChatComponent.Serializer.fromJson(text);
-        if (chatComponent == null)
-            return;
-        val packet = new S02PacketChat(chatComponent);
-        netHandlerPlayClient.handleChat(packet);
+    override fun a(serverPacket: PacketPlayOutChat) {
+        val text = IChatBaseComponent.ChatSerializer.a(serverPacket.a)
+        val chatComponent = IChatComponent.Serializer.fromJson(text) ?: return
+        val packet = S02PacketChat(chatComponent)
+        netHandlerPlayClient.handleChat(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutTabComplete serverPacket) {
-        val packet = new S3APacketTabComplete(serverPacket.getA());
-        netHandlerPlayClient.handleTabComplete(packet);
+    override fun a(serverPacket: PacketPlayOutTabComplete) {
+        val packet = S3APacketTabComplete(serverPacket.a)
+        netHandlerPlayClient.handleTabComplete(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutMultiBlockChange serverPacket) {
-        val chunkCoordIntPairNMS = serverPacket.getA();
-        val chunkCoordIntPair = new ChunkCoordIntPair(chunkCoordIntPairNMS.x, chunkCoordIntPairNMS.z);
+    override fun a(serverPacket: PacketPlayOutMultiBlockChange) {
+        val chunkCoordIntPairNMS = serverPacket.a
+        val chunkCoordIntPair = ChunkCoordIntPair(chunkCoordIntPairNMS.x, chunkCoordIntPairNMS.z)
 
-        val recordLength = serverPacket.getB().length;
+        val recordLength = serverPacket.b.size
 
-        val buffer = ByteBuffer.allocate(recordLength * 4);
+        val buffer = ByteBuffer.allocate(recordLength * 4)
 
-        for (int i = 0; i < recordLength; i++) {
-            val record = serverPacket.getB()[i];
-            buffer.putShort(record.b());
-            val idAndMeta = net.minecraft.server.v1_8_R3.Block.d.b(record.c());
-            buffer.putShort((short) (idAndMeta >> 4));
+        for (i in 0..<recordLength) {
+            val record = serverPacket.b[i]
+            buffer.putShort(record.b())
+            val idAndMeta = net.minecraft.server.v1_8_R3.Block.d.b(record.c())
+            buffer.putShort((idAndMeta shr 4).toShort())
         }
 
-        val packet = new S22PacketMultiBlockChange(chunkCoordIntPair, buffer.array(),
-                recordLength);
-        netHandlerPlayClient.handleMultiBlockChange(packet);
+        val packet = S22PacketMultiBlockChange(
+            chunkCoordIntPair, buffer.array(),
+            recordLength
+        )
+        netHandlerPlayClient.handleMultiBlockChange(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutMap serverPacket) {
+    override fun a(serverPacket: PacketPlayOutMap) {
         // TODO: implement
     }
 
-    @Override
-    public void a(PacketPlayOutTransaction serverPacket) {
-        val packet = new S32PacketConfirmTransaction(serverPacket.getA(), serverPacket.getB(), serverPacket.isC());
-        netHandlerPlayClient.handleConfirmTransaction(packet);
+    override fun a(serverPacket: PacketPlayOutTransaction) {
+        val packet = S32PacketConfirmTransaction(serverPacket.a, serverPacket.b, serverPacket.isC)
+        netHandlerPlayClient.handleConfirmTransaction(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutCloseWindow serverPacket) {
-        val packet = new S2EPacketCloseWindow(serverPacket.getA());
-        netHandlerPlayClient.handleCloseWindow(packet);
+    override fun a(serverPacket: PacketPlayOutCloseWindow) {
+        val packet = S2EPacketCloseWindow(serverPacket.a)
+        netHandlerPlayClient.handleCloseWindow(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutWindowItems serverPacket) {
-        val items = new ItemStack[serverPacket.getB().length];
+    override fun a(serverPacket: PacketPlayOutWindowItems) {
+        val items = arrayOfNulls<net.minecraft.item.ItemStack>(serverPacket.b.size)
 
-        for (int i = 0; i < items.length; i++)
-            items[i] = fromNMS(serverPacket.getB()[i]);
+        for (i in items.indices) items[i] = fromNMS(serverPacket.b[i])
 
-        val packet = new S30PacketWindowItems(serverPacket.getA(), items);
-        netHandlerPlayClient.handleWindowItems(packet);
+        val packet = S30PacketWindowItems(serverPacket.a, items)
+        netHandlerPlayClient.handleWindowItems(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutOpenWindow serverPacket) {
-        val packet = new S2DPacketOpenWindow(serverPacket.getA(), WINDOW_TYPE_REGISTRY.getInt(serverPacket.getB()),
-                serverPacket.getC().c(), serverPacket.getD(), true,
-                serverPacket.getE());
-        netHandlerPlayClient.handleOpenWindow(packet);
+    override fun a(serverPacket: PacketPlayOutOpenWindow) {
+        val packet = S2DPacketOpenWindow(
+            serverPacket.a, WINDOW_TYPE_REGISTRY.getInt(serverPacket.b),
+            serverPacket.c.c(), serverPacket.d, true,
+            serverPacket.e
+        )
+        netHandlerPlayClient.handleOpenWindow(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutWindowData serverPacket) {
-        val packet = new S31PacketWindowProperty(serverPacket.getA(), serverPacket.getB(), serverPacket.getC());
-        netHandlerPlayClient.handleWindowProperty(packet);
+    override fun a(serverPacket: PacketPlayOutWindowData) {
+        val packet = S31PacketWindowProperty(serverPacket.a, serverPacket.b, serverPacket.c)
+        netHandlerPlayClient.handleWindowProperty(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutSetSlot serverPacket) {
-        @Nullable
-        val itemNMS = serverPacket.getC();
-        @Nullable
-        val item = fromNMS(itemNMS);
+    override fun a(serverPacket: PacketPlayOutSetSlot) {
+        val itemNMS = serverPacket.c
+        val item = fromNMS(itemNMS)
 
-        val packet = new S2FPacketSetSlot(serverPacket.getA(), serverPacket.getB(),
-                item);
-        netHandlerPlayClient.handleSetSlot(packet);
-
+        val packet = S2FPacketSetSlot(
+            serverPacket.a, serverPacket.b,
+            item
+        )
+        netHandlerPlayClient.handleSetSlot(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutCustomPayload serverPacket) {
-        val packet = new S3FPacketCustomPayload(serverPacket.getA(), serverPacket.getB());
-        netHandlerPlayClient.handleCustomPayload(packet);
+    override fun a(serverPacket: PacketPlayOutCustomPayload) {
+        val packet = S3FPacketCustomPayload(serverPacket.a, serverPacket.b)
+        netHandlerPlayClient.handleCustomPayload(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutKickDisconnect serverPacket) {
-        val text = IChatBaseComponent.ChatSerializer.a(serverPacket.getA());
-        val chatComponent = IChatComponent.Serializer.fromJson(text);
-        val packet = new S40PacketDisconnect(chatComponent);
-        netHandlerPlayClient.handleDisconnect(packet);
+    override fun a(serverPacket: PacketPlayOutKickDisconnect) {
+        val text = IChatBaseComponent.ChatSerializer.a(serverPacket.a)
+        val chatComponent = IChatComponent.Serializer.fromJson(text)
+        val packet = S40PacketDisconnect(chatComponent)
+        netHandlerPlayClient.handleDisconnect(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutBed serverPacket) {
-        val packet = new S0APacketUseBed(serverPacket.getA(), serverPacket.getB().getX(), serverPacket.getB().getY(),
-                serverPacket.getB().getZ());
-        netHandlerPlayClient.handleUseBed(packet);
+    override fun a(serverPacket: PacketPlayOutBed) {
+        val packet = S0APacketUseBed(
+            serverPacket.a, serverPacket.b.x, serverPacket.b.y,
+            serverPacket.b.z
+        )
+        netHandlerPlayClient.handleUseBed(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutEntityStatus serverPacket) {
-        val packet = new S19PacketEntityStatus(serverPacket.getA(), serverPacket.getB());
-        netHandlerPlayClient.handleEntityStatus(packet);
+    override fun a(serverPacket: PacketPlayOutEntityStatus) {
+        val packet = S19PacketEntityStatus(serverPacket.a, serverPacket.b)
+        netHandlerPlayClient.handleEntityStatus(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutAttachEntity serverPacket) {
-        val packet = new S1BPacketEntityAttach(serverPacket.getA(), serverPacket.getB(), serverPacket.getC());
-        netHandlerPlayClient.handleEntityAttach(packet);
+    override fun a(serverPacket: PacketPlayOutAttachEntity) {
+        val packet = S1BPacketEntityAttach(serverPacket.a, serverPacket.b, serverPacket.c)
+        netHandlerPlayClient.handleEntityAttach(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutExplosion serverPacket) {
-        val blockPositionList = serverPacket.getE();
-        val chunkPositionList = new ArrayList<ChunkPosition>();
+    override fun a(serverPacket: PacketPlayOutExplosion) {
+        val blockPositionList = serverPacket.e
+        val chunkPositionList = ArrayList<ChunkPosition>()
 
-        for (val blockPosition : blockPositionList)
-            chunkPositionList.add(new ChunkPosition(blockPosition.getX(), blockPosition.getY(),
-                    blockPosition.getZ()));
+        for (blockPosition in blockPositionList) chunkPositionList.add(
+            ChunkPosition(
+                blockPosition.x, blockPosition.y,
+                blockPosition.z
+            )
+        )
 
-        val packet = new S27PacketExplosion(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                serverPacket.getD(),
-                chunkPositionList, serverPacket.getF(), serverPacket.getG(), serverPacket.getH());
-        netHandlerPlayClient.handleExplosion(packet);
+        val packet = S27PacketExplosion(
+            serverPacket.a, serverPacket.b, serverPacket.c,
+            serverPacket.d,
+            chunkPositionList, serverPacket.f, serverPacket.g, serverPacket.h
+        )
+        netHandlerPlayClient.handleExplosion(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutGameStateChange serverPacket) {
-        val packet = new S2BPacketChangeGameState(serverPacket.getB(), serverPacket.getC());
-        netHandlerPlayClient.handleChangeGameState(packet);
+    override fun a(serverPacket: PacketPlayOutGameStateChange) {
+        val packet = S2BPacketChangeGameState(serverPacket.b, serverPacket.c)
+        netHandlerPlayClient.handleChangeGameState(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutKeepAlive serverPacket) {
-        val packet = new S00PacketKeepAlive(serverPacket.getA());
-        netHandlerPlayClient.handleKeepAlive(packet);
+    override fun a(serverPacket: PacketPlayOutKeepAlive) {
+        val packet = S00PacketKeepAlive(serverPacket.a)
+        netHandlerPlayClient.handleKeepAlive(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutMapChunk serverPacket) {
-        val chunkMap = serverPacket.getC();
+    override fun a(serverPacket: PacketPlayOutMapChunk) {
+        val chunkMap = serverPacket.c
 
-        val data = chunkMap.a;
+        val data = chunkMap.a
 
-        val primaryBitMask = chunkMap.b;
-        val groundUpContinuous = serverPacket.isD();
+        val primaryBitMask = chunkMap.b
+        val groundUpContinuous = serverPacket.isD
 
-        val result = ChunkDataDecoder.decode(data, primaryBitMask, groundUpContinuous);
+        val result = ChunkDataDecoder.decode(data, primaryBitMask, groundUpContinuous)
 
-        val storageArrays = result.storageArrays();
-        val blockBiomeArray = result.blockBiomeArray();
+        val storageArrays = result.storageArrays
+        val blockBiomeArray = result.blockBiomeArray
 
-        val packet = new S21PacketChunkData(netHandlerPlayClient.getGameController(), serverPacket.getA(),
-                serverPacket.getB(), storageArrays, blockBiomeArray,
-                groundUpContinuous, primaryBitMask);
-        netHandlerPlayClient.handleChunkData(packet);
+        val packet = S21PacketChunkData(
+            netHandlerPlayClient.gameController, serverPacket.a,
+            serverPacket.b, storageArrays, blockBiomeArray,
+            groundUpContinuous, primaryBitMask
+        )
+        netHandlerPlayClient.handleChunkData(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutMapChunkBulk serverPacket) {
-        val chunkXArr = serverPacket.getA();
-        val chunkZArr = serverPacket.getB();
-        val chunkMapArr = serverPacket.getC();
-        val groundUpContinuous = serverPacket.isD();
-        val storageArraysArr = new ExtendedBlockStorage[chunkMapArr.length][16];
-        val blockBiomeArrayArr = new byte[chunkMapArr.length][256];
+    override fun a(serverPacket: PacketPlayOutMapChunkBulk) {
+        val chunkXArr = serverPacket.a
+        val chunkZArr = serverPacket.b
+        val chunkMapArr = serverPacket.c
+        val groundUpContinuous = serverPacket.isD
+        val storageArraysArr = Array(chunkMapArr.size) { arrayOfNulls<ExtendedBlockStorage>(16) }
+        val blockBiomeArrayArr = Array(chunkMapArr.size) { ByteArray(256) }
 
-        for (int i = 0; i < chunkMapArr.length; i++) {
-            val chunkMap = chunkMapArr[i];
-            val data = chunkMap.a;
-            val primaryBitMask = chunkMap.b;
+        for (i in chunkMapArr.indices) {
+            val chunkMap = chunkMapArr[i]
+            val data = chunkMap.a
+            val primaryBitMask = chunkMap.b
 
-            val result = ChunkDataDecoder.decode(data, primaryBitMask, groundUpContinuous);
+            val result = ChunkDataDecoder.decode(data, primaryBitMask, groundUpContinuous)
 
-            val storageArrays = result.storageArrays();
-            val blockBiomeArray = result.blockBiomeArray();
+            val storageArrays = result.storageArrays
+            val blockBiomeArray = result.blockBiomeArray
 
-            storageArraysArr[i] = storageArrays;
-            blockBiomeArrayArr[i] = blockBiomeArray;
+            storageArraysArr[i] = storageArrays
+            blockBiomeArrayArr[i] = blockBiomeArray
         }
 
-        val packet = new S26PacketMapChunkBulk(netHandlerPlayClient.getGameController(), chunkXArr,
-                chunkZArr, storageArraysArr,
-                blockBiomeArrayArr, groundUpContinuous);
-        netHandlerPlayClient.handleMapChunkBulk(packet);
-
+        val packet = S26PacketMapChunkBulk(
+            netHandlerPlayClient.gameController, chunkXArr,
+            chunkZArr, storageArraysArr,
+            blockBiomeArrayArr, groundUpContinuous
+        )
+        netHandlerPlayClient.handleMapChunkBulk(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutWorldEvent serverPacket) {
-        val packet = new S28PacketEffect(serverPacket.getA(), serverPacket.getB().getX(), serverPacket.getB().getY(),
-                serverPacket.getB().getZ(), serverPacket.getC(), serverPacket.isD());
-        netHandlerPlayClient.handleEffect(packet);
+    override fun a(serverPacket: PacketPlayOutWorldEvent) {
+        val packet = S28PacketEffect(
+            serverPacket.a, serverPacket.b.x, serverPacket.b.y,
+            serverPacket.b.z, serverPacket.c, serverPacket.isD
+        )
+        netHandlerPlayClient.handleEffect(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutLogin serverPacket) {
-        val enumGamemode = serverPacket.getC();
-        val enumDifficulty = serverPacket.getE();
-        val worldType = serverPacket.getG();
+    override fun a(serverPacket: PacketPlayOutLogin) {
+        val enumGamemode = serverPacket.c
+        val enumDifficulty = serverPacket.e
+        val worldType = serverPacket.g
 
-        val gameType = WorldSettings.GameType.getByID(enumGamemode.getId());
-        val difficulty = EnumDifficulty.getDifficultyEnum(enumDifficulty.a());
-        val worldType1 = WorldType.parseWorldType(worldType.name());
-        val packet = new S01PacketJoinGame(serverPacket.getA(), serverPacket.isB(), gameType, serverPacket.getD(),
-                difficulty, serverPacket.getF(), worldType1);
-        netHandlerPlayClient.handleJoinGame(packet);
+        val gameType = WorldSettings.GameType.getByID(enumGamemode.id)
+        val difficulty = EnumDifficulty.getDifficultyEnum(enumDifficulty.a())
+        val worldType1 = WorldType.parseWorldType(worldType.name())
+        val packet = S01PacketJoinGame(
+            serverPacket.a, serverPacket.isB, gameType, serverPacket.d,
+            difficulty, serverPacket.f, worldType1
+        )
+        netHandlerPlayClient.handleJoinGame(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutEntity serverPacket) {
-        val packet = new S14PacketEntity(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                serverPacket.getD(), serverPacket.getE(),
-                serverPacket.getF(), serverPacket.isG());
-        netHandlerPlayClient.handleEntityMovement(packet);
+    override fun a(serverPacket: PacketPlayOutEntity) {
+        val packet = S14PacketEntity(
+            serverPacket.a, serverPacket.b, serverPacket.c,
+            serverPacket.d, serverPacket.e,
+            serverPacket.f, serverPacket.isG
+        )
+        netHandlerPlayClient.handleEntityMovement(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutPosition serverPacket) {
-        val set = serverPacket.getF();
-        val x = serverPacket.getA();
-        var y = serverPacket.getB();
-        val z = serverPacket.getC();
+    override fun a(serverPacket: PacketPlayOutPosition) {
+        val set = serverPacket.f
+        val x = serverPacket.a
+        var y = serverPacket.b
+        val z = serverPacket.c
 
-        val yaw = serverPacket.getD();
-        val pitch = serverPacket.getE();
+        val yaw = serverPacket.d
+        val pitch = serverPacket.e
 
-        val mc = netHandlerPlayClient.getGameController();
+        val mc = netHandlerPlayClient.gameController
 
-        val thePlayer = mc.thePlayer;
+        val thePlayer = mc.thePlayer ?: return
 
-        if (thePlayer == null)
-            return;
-
-        assert thePlayer.posY - thePlayer.boundingBox.minY == 1.62D;
+        assert(thePlayer.posY - thePlayer.boundingBox.minY == 1.62)
 
         // x, y, and z
-        if (set.contains(net.minecraft.server.v1_8_R3.PacketPlayOutPosition.EnumPlayerTeleportFlags.X))
-            serverPacket.setA(x + thePlayer.posX);
-        if (set.contains(net.minecraft.server.v1_8_R3.PacketPlayOutPosition.EnumPlayerTeleportFlags.Y))
-            y += thePlayer.boundingBox.minY;
+        if (set.contains(EnumPlayerTeleportFlags.X)) serverPacket.a =
+            x + thePlayer.posX
+        if (set.contains(EnumPlayerTeleportFlags.Y)) y += thePlayer.boundingBox.minY
 
-        serverPacket.setB(y + 1.62D + 1e-5);
+        serverPacket.b = y + 1.62 + 1e-5
 
-        if (set.contains(net.minecraft.server.v1_8_R3.PacketPlayOutPosition.EnumPlayerTeleportFlags.Z))
-            serverPacket.setC(z + thePlayer.posZ);
+        if (set.contains(EnumPlayerTeleportFlags.Z)) serverPacket.c =
+            z + thePlayer.posZ
 
         // yaw and pitch
-        if (set.contains(net.minecraft.server.v1_8_R3.PacketPlayOutPosition.EnumPlayerTeleportFlags.X_ROT))
-            serverPacket.setD(yaw + thePlayer.rotationYaw);
-        if (set.contains(net.minecraft.server.v1_8_R3.PacketPlayOutPosition.EnumPlayerTeleportFlags.Y_ROT))
-            serverPacket.setE(pitch + thePlayer.rotationPitch);
+        if (set.contains(EnumPlayerTeleportFlags.X_ROT)) serverPacket.d =
+            yaw + thePlayer.rotationYaw
+        if (set.contains(EnumPlayerTeleportFlags.Y_ROT)) serverPacket.e =
+            pitch + thePlayer.rotationPitch
 
-        val packet = new S08PacketPlayerPosLook(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                serverPacket.getD(),
-                serverPacket.getE(), thePlayer.onGround);
-        netHandlerPlayClient.handlePlayerPosLook(packet);
+        val packet = S08PacketPlayerPosLook(
+            serverPacket.a, serverPacket.b, serverPacket.c,
+            serverPacket.d,
+            serverPacket.e, thePlayer.onGround
+        )
+        netHandlerPlayClient.handlePlayerPosLook(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutWorldParticles serverPacket) {
-        val enumParticle = serverPacket.getA();
-        val particleName = enumParticle.b();
+    override fun a(serverPacket: PacketPlayOutWorldParticles) {
+        val enumParticle = serverPacket.a
+        val particleName = enumParticle.b()
 
-        if (particleName == null || particleName.isEmpty() || particleName.equalsIgnoreCase("blockdust_")
-                || particleName.equalsIgnoreCase("blockcrack_"))
-            return;
-        val packet = new S2APacketParticles(particleName, serverPacket.getB(), serverPacket.getC(), serverPacket.getD(),
-                serverPacket.getE(), serverPacket.getF(), serverPacket.getG(), serverPacket.getH(),
-                serverPacket.getI());
-        netHandlerPlayClient.handleParticles(packet);
+        if (particleName == null || particleName.isEmpty() || particleName.equals("blockdust_", ignoreCase = true)
+            || particleName.equals("blockcrack_", ignoreCase = true)
+        ) return
+        val packet = S2APacketParticles(
+            particleName, serverPacket.b, serverPacket.c, serverPacket.d,
+            serverPacket.e, serverPacket.f, serverPacket.g, serverPacket.h,
+            serverPacket.i
+        )
+        netHandlerPlayClient.handleParticles(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutAbilities serverPacket) {
-        val packet = new S39PacketPlayerAbilities(serverPacket.isA(), serverPacket.isB(), serverPacket.isC(),
-                serverPacket.isD(), serverPacket.getE(), serverPacket.getF());
-        netHandlerPlayClient.handlePlayerAbilities(packet);
+    override fun a(serverPacket: PacketPlayOutAbilities) {
+        val packet = S39PacketPlayerAbilities(
+            serverPacket.isA, serverPacket.isB, serverPacket.isC,
+            serverPacket.isD, serverPacket.e, serverPacket.f
+        )
+        netHandlerPlayClient.handlePlayerAbilities(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutPlayerInfo serverPacket) {
-        val infoAction = serverPacket.getA();
-        val data = serverPacket.getB();
-        val dataCopy = new ArrayList<>(data);
-        for (val playerInfoData : dataCopy) {
-            if (playerInfoData == null)
-                continue;
-            val gameProfile = playerInfoData.a();
-            val name = gameProfile.getName();
-            val ping = playerInfoData.b();
+    override fun a(serverPacket: PacketPlayOutPlayerInfo) {
+        val infoAction = serverPacket.a
+        val data = serverPacket.b
+        val dataCopy = ArrayList(data)
+        for (playerInfoData in dataCopy) {
+            if (playerInfoData == null) continue
+            val gameProfile = playerInfoData.a()
+            val name = gameProfile.name
+            val ping = playerInfoData.b()
 
-            val packet = switch (infoAction) {
-                case ADD_PLAYER -> new S38PacketPlayerListItem(name, true, ping);
-                case REMOVE_PLAYER -> new S38PacketPlayerListItem(name, false, ping);
-                case UPDATE_DISPLAY_NAME, UPDATE_GAME_MODE, UPDATE_LATENCY ->
-                    null;
-            };
+            val packet = when (infoAction) {
+                EnumPlayerInfoAction.ADD_PLAYER -> S38PacketPlayerListItem(name, true, ping)
+                EnumPlayerInfoAction.REMOVE_PLAYER -> S38PacketPlayerListItem(name, false, ping)
+                EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, EnumPlayerInfoAction.UPDATE_GAME_MODE, EnumPlayerInfoAction.UPDATE_LATENCY -> null
+            }
 
-            if (packet != null)
-                netHandlerPlayClient.handlePlayerListItem(packet);
+            if (packet != null) netHandlerPlayClient.handlePlayerListItem(packet)
         }
     }
 
-    @Override
-    public void a(PacketPlayOutEntityDestroy serverPacket) {
-        val packet = new S13PacketDestroyEntities(serverPacket.getA());
-        netHandlerPlayClient.handleDestroyEntities(packet);
+    override fun a(serverPacket: PacketPlayOutEntityDestroy) {
+        val packet = S13PacketDestroyEntities(*serverPacket.a)
+        netHandlerPlayClient.handleDestroyEntities(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutRemoveEntityEffect serverPacket) {
-        val packet = new S1EPacketRemoveEntityEffect(serverPacket.getA(), serverPacket.getB());
-        netHandlerPlayClient.handleRemoveEntityEffect(packet);
+    override fun a(serverPacket: PacketPlayOutRemoveEntityEffect) {
+        val packet = S1EPacketRemoveEntityEffect(serverPacket.a, serverPacket.b)
+        netHandlerPlayClient.handleRemoveEntityEffect(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutRespawn serverPacket) {
-        val enumDifficulty = serverPacket.getB();
-        val enumGamemode = serverPacket.getC();
-        val worldType = serverPacket.getD();
+    override fun a(serverPacket: PacketPlayOutRespawn) {
+        val enumDifficulty = serverPacket.b
+        val enumGamemode = serverPacket.c
+        val worldType = serverPacket.d
 
-        val gameType = WorldSettings.GameType.getByID(enumGamemode.getId());
-        val difficulty = EnumDifficulty.getDifficultyEnum(enumDifficulty.a());
-        val worldType1 = WorldType.parseWorldType(worldType.name());
-        val packet = new S07PacketRespawn(serverPacket.getA(), difficulty, worldType1, gameType);
-        netHandlerPlayClient.handleRespawn(packet);
+        val gameType = WorldSettings.GameType.getByID(enumGamemode.id)
+        val difficulty = EnumDifficulty.getDifficultyEnum(enumDifficulty.a())
+        val worldType1 = WorldType.parseWorldType(worldType.name())
+        val packet = S07PacketRespawn(serverPacket.a, difficulty, worldType1, gameType)
+        netHandlerPlayClient.handleRespawn(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutEntityHeadRotation serverPacket) {
-        val packet = new S19PacketEntityHeadLook(serverPacket.getA(), serverPacket.getB());
-        netHandlerPlayClient.handleEntityHeadLook(packet);
+    override fun a(serverPacket: PacketPlayOutEntityHeadRotation) {
+        val packet = S19PacketEntityHeadLook(serverPacket.a, serverPacket.b)
+        netHandlerPlayClient.handleEntityHeadLook(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutHeldItemSlot serverPacket) {
-        val packet = new S09PacketHeldItemChange(serverPacket.getA());
-        netHandlerPlayClient.handleHeldItemChange(packet);
+    override fun a(serverPacket: PacketPlayOutHeldItemSlot) {
+        val packet = S09PacketHeldItemChange(serverPacket.a)
+        netHandlerPlayClient.handleHeldItemChange(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutScoreboardDisplayObjective serverPacket) {
-        val packet = new S3DPacketDisplayScoreboard(serverPacket.getA(), serverPacket.getB());
-        netHandlerPlayClient.handleDisplayScoreboard(packet);
+    override fun a(serverPacket: PacketPlayOutScoreboardDisplayObjective) {
+        val packet = S3DPacketDisplayScoreboard(serverPacket.a, serverPacket.b)
+        netHandlerPlayClient.handleDisplayScoreboard(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutEntityMetadata serverPacket) {
-        val dataWatcherListNMS = serverPacket.getB();
-        val dataWatcherList = new ArrayList<DataWatcher.WatchableObject>();
+    override fun a(serverPacket: PacketPlayOutEntityMetadata) {
+        val dataWatcherListNMS = serverPacket.b
+        val dataWatcherList = ArrayList<DataWatcher.WatchableObject>()
 
-        val entityId = serverPacket.getA();
+        val entityId = serverPacket.a
 
-        val entity = netHandlerPlayClient.getClientWorldController().getEntityByID(entityId);
+        val entity = netHandlerPlayClient.clientWorldController.getEntityByID(entityId)
 
         if (dataWatcherListNMS != null) {
-            for (val watchableObjectNMS : dataWatcherListNMS) {
-                DataWatcher.WatchableObject watchableObject = fromNMS(watchableObjectNMS, entity);
+            for (watchableObjectNMS in dataWatcherListNMS) {
+                val watchableObject = fromNMS(
+                    watchableObjectNMS,
+                    entity!!
+                )!!
 
-                if (watchableObject != null)
-                    dataWatcherList.add(watchableObject);
+                dataWatcherList.add(watchableObject)
             }
         }
 
-        val packet = new S1CPacketEntityMetadata(entityId, dataWatcherList);
-        netHandlerPlayClient.handleEntityMetadata(packet);
+        val packet = S1CPacketEntityMetadata(entityId, dataWatcherList)
+        netHandlerPlayClient.handleEntityMetadata(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutEntityVelocity serverPacket) {
-        val packet = new S12PacketEntityVelocity(serverPacket.getA(), serverPacket.getB() / 8000D,
-                serverPacket.getC() / 8000D,
-                serverPacket.getD() / 8000D);
-        netHandlerPlayClient.handleEntityVelocity(packet);
+    override fun a(serverPacket: PacketPlayOutEntityVelocity) {
+        val packet = S12PacketEntityVelocity(
+            serverPacket.a, serverPacket.b / 8000.0,
+            serverPacket.c / 8000.0,
+            serverPacket.d / 8000.0
+        )
+        netHandlerPlayClient.handleEntityVelocity(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutEntityEquipment serverPacket) {
+    override fun a(serverPacket: PacketPlayOutEntityEquipment) {
+        val itemNMS = serverPacket.c
+        val item = fromNMS(itemNMS)
 
-        @Nullable
-        val itemNMS = serverPacket.getC();
-        @Nullable
-        val item = fromNMS(itemNMS);
-
-        val packet = new S04PacketEntityEquipment(serverPacket.getA(), serverPacket.getB(),
-                item);
-        netHandlerPlayClient.handleEntityEquipment(packet);
+        val packet = S04PacketEntityEquipment(
+            serverPacket.a, serverPacket.b,
+            item
+        )
+        netHandlerPlayClient.handleEntityEquipment(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutExperience serverPacket) {
-        val packet = new S1FPacketSetExperience(serverPacket.getA(), serverPacket.getB(), serverPacket.getC());
-        netHandlerPlayClient.handleSetExperience(packet);
+    override fun a(serverPacket: PacketPlayOutExperience) {
+        val packet = S1FPacketSetExperience(serverPacket.a, serverPacket.b, serverPacket.c)
+        netHandlerPlayClient.handleSetExperience(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutUpdateHealth serverPacket) {
-        val packet = new S06PacketUpdateHealth(serverPacket.getA(), serverPacket.getB(), serverPacket.getC());
-        netHandlerPlayClient.handleUpdateHealth(packet);
+    override fun a(serverPacket: PacketPlayOutUpdateHealth) {
+        val packet = S06PacketUpdateHealth(serverPacket.a, serverPacket.b, serverPacket.c)
+        netHandlerPlayClient.handleUpdateHealth(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutScoreboardTeam serverPacket) {
-        val packet = new S3EPacketTeams(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                serverPacket.getD(), serverPacket.getG(),
-                serverPacket.getH(), serverPacket.getI());
-        netHandlerPlayClient.handleTeams(packet);
+    override fun a(serverPacket: PacketPlayOutScoreboardTeam) {
+        val packet = S3EPacketTeams(
+            serverPacket.a, serverPacket.b, serverPacket.c,
+            serverPacket.d, serverPacket.g,
+            serverPacket.h, serverPacket.i
+        )
+        netHandlerPlayClient.handleTeams(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutScoreboardScore serverPacket) {
-        val packet = new S3CPacketUpdateScore(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                serverPacket.getD().ordinal());
-        netHandlerPlayClient.handleUpdateScore(packet);
+    override fun a(serverPacket: PacketPlayOutScoreboardScore) {
+        val packet = S3CPacketUpdateScore(
+            serverPacket.a, serverPacket.b, serverPacket.c,
+            serverPacket.d.ordinal
+        )
+        netHandlerPlayClient.handleUpdateScore(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutSpawnPosition serverPacket) {
-        val packet = new S05PacketSpawnPosition(serverPacket.getPosition().getX(),
-                serverPacket.getPosition().getY(), serverPacket.getPosition().getZ());
-        netHandlerPlayClient.handleSpawnPosition(packet);
+    override fun a(serverPacket: PacketPlayOutSpawnPosition) {
+        val packet = S05PacketSpawnPosition(
+            serverPacket.getPosition().x,
+            serverPacket.getPosition().y, serverPacket.getPosition().z
+        )
+        netHandlerPlayClient.handleSpawnPosition(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutUpdateTime serverPacket) {
-        val packet = new S03PacketTimeUpdate(serverPacket.getA(), serverPacket.getB());
-        netHandlerPlayClient.handleTimeUpdate(packet);
+    override fun a(serverPacket: PacketPlayOutUpdateTime) {
+        val packet = S03PacketTimeUpdate(serverPacket.a, serverPacket.b)
+        netHandlerPlayClient.handleTimeUpdate(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutUpdateSign serverPacket) {
-        val nmsChatComponents = serverPacket.getC();
-        val lines = new String[nmsChatComponents.length];
+    override fun a(serverPacket: PacketPlayOutUpdateSign) {
+        val nmsChatComponents = serverPacket.c
+        val lines = arrayOfNulls<String>(nmsChatComponents.size)
 
-        for (int i = 0; i < nmsChatComponents.length; i++) {
-            val text = IChatBaseComponent.ChatSerializer.a(nmsChatComponents[i]);
-            val chatComponent = IChatComponent.Serializer.fromJson(text);
-            lines[i] = chatComponent.getUnformattedText();
+        for (i in nmsChatComponents.indices) {
+            val text = IChatBaseComponent.ChatSerializer.a(nmsChatComponents[i])
+            val chatComponent = IChatComponent.Serializer.fromJson(text)
+            lines[i] = chatComponent.unformattedText
         }
 
-        val packet = new S33PacketUpdateSign(serverPacket.getB().getX(), serverPacket.getB().getY(),
-                serverPacket.getB().getZ(),
-                lines);
-        netHandlerPlayClient.handleUpdateSign(packet);
+        val packet = S33PacketUpdateSign(
+            serverPacket.b.x, serverPacket.b.y,
+            serverPacket.b.z,
+            lines
+        )
+        netHandlerPlayClient.handleUpdateSign(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutNamedSoundEffect serverPacket) {
-        val packet = new S29PacketSoundEffect(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                serverPacket.getD(),
-                serverPacket.getE(), serverPacket.getF());
-        netHandlerPlayClient.handleSoundEffect(packet);
+    override fun a(serverPacket: PacketPlayOutNamedSoundEffect) {
+        val packet = S29PacketSoundEffect(
+            serverPacket.a, serverPacket.b.toDouble(), serverPacket.c.toDouble(),
+            serverPacket.d.toDouble(),
+            serverPacket.e, serverPacket.f.toFloat()
+        )
+        netHandlerPlayClient.handleSoundEffect(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutCollect serverPacket) {
-        val packet = new S0DPacketCollectItem(serverPacket.getA(), serverPacket.getB());
-        netHandlerPlayClient.handleCollectItem(packet);
+    override fun a(serverPacket: PacketPlayOutCollect) {
+        val packet = S0DPacketCollectItem(serverPacket.a, serverPacket.b)
+        netHandlerPlayClient.handleCollectItem(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutEntityTeleport serverPacket) {
-        val packet = new S18PacketEntityTeleport(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                serverPacket.getD(), serverPacket.getE(), serverPacket.getF());
-        netHandlerPlayClient.handleEntityTeleport(packet);
+    override fun a(serverPacket: PacketPlayOutEntityTeleport) {
+        val packet = S18PacketEntityTeleport(
+            serverPacket.a, serverPacket.b, serverPacket.c,
+            serverPacket.d, serverPacket.e, serverPacket.f
+        )
+        netHandlerPlayClient.handleEntityTeleport(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutUpdateAttributes serverPacket) {
-        val snapshotListNMS = serverPacket.getB();
-        val snapshotList = new ArrayList<S20PacketEntityProperties.Snapshot>();
+    override fun a(serverPacket: PacketPlayOutUpdateAttributes) {
+        val snapshotListNMS = serverPacket.b
+        val snapshotList = ArrayList<S20PacketEntityProperties.Snapshot>()
 
-        for (val attributeSnapshot : snapshotListNMS) {
-            val attributeName = attributeSnapshot.a();
-            val baseValue = attributeSnapshot.b();
-            val modifiersNMS = attributeSnapshot.c();
-            val modifiers = new ArrayList<AttributeModifier>();
+        for (attributeSnapshot in snapshotListNMS) {
+            val attributeName = attributeSnapshot.a()
+            val baseValue = attributeSnapshot.b()
+            val modifiersNMS = attributeSnapshot.c()
+            val modifiers = ArrayList<AttributeModifier>()
 
-            for (val attributeModifier : modifiersNMS) {
-                val uuid = attributeModifier.a();
-                val name = attributeModifier.b();
-                val amount = attributeModifier.d();
-                val operation = attributeModifier.c();
-                val modifier = new AttributeModifier(uuid, name, amount, operation);
-                modifiers.add(modifier);
+            for (attributeModifier in modifiersNMS) {
+                val uuid = attributeModifier.a()
+                val name = attributeModifier.b()
+                val amount = attributeModifier.d()
+                val operation = attributeModifier.c()
+                val modifier = AttributeModifier(uuid, name, amount, operation)
+                modifiers.add(modifier)
             }
 
-            val snapshot = new S20PacketEntityProperties.Snapshot(
-                    attributeName, baseValue, modifiers);
-            snapshotList.add(snapshot);
+            val snapshot = S20PacketEntityProperties.Snapshot(
+                attributeName, baseValue, modifiers
+            )
+            snapshotList.add(snapshot)
         }
 
-        val packet = new S20PacketEntityProperties(serverPacket.getA(), snapshotList);
-        netHandlerPlayClient.handleEntityProperties(packet);
+        val packet = S20PacketEntityProperties(serverPacket.a, snapshotList)
+        netHandlerPlayClient.handleEntityProperties(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutEntityEffect serverPacket) {
-        val packet = new S1DPacketEntityEffect(serverPacket.getA(), serverPacket.getB(), serverPacket.getC(),
-                (short) serverPacket.getD());
-        netHandlerPlayClient.handleEntityEffect(packet);
+    override fun a(serverPacket: PacketPlayOutEntityEffect) {
+        val packet = S1DPacketEntityEffect(
+            serverPacket.a, serverPacket.b, serverPacket.c,
+            serverPacket.d.toShort()
+        )
+        netHandlerPlayClient.handleEntityEffect(packet)
     }
 
-    @Override
-    public void a(PacketPlayOutCombatEvent serverPacket) {
+    override fun a(serverPacket: PacketPlayOutCombatEvent) {
         // TODO: implement
     }
 
-    @Override
-    public void a(PacketPlayOutServerDifficulty serverPacket) {
+    override fun a(serverPacket: PacketPlayOutServerDifficulty) {
         // TODO: implement
     }
 
-    @Override
-    public void a(PacketPlayOutCamera serverPacket) {
+    override fun a(serverPacket: PacketPlayOutCamera) {
         // TODO: implement
     }
 
-    @Override
-    public void a(PacketPlayOutWorldBorder serverPacket) {
+    override fun a(serverPacket: PacketPlayOutWorldBorder) {
         // TODO: implement
     }
 
-    @Override
-    public void a(PacketPlayOutTitle serverPacket) {
+    override fun a(serverPacket: PacketPlayOutTitle) {
         // TODO: implement
     }
 
-    @Override
-    public void a(PacketPlayOutSetCompression serverPacket) {
+    override fun a(serverPacket: PacketPlayOutSetCompression) {
         // TODO: implement
     }
 
-    @Override
-    public void a(PacketPlayOutPlayerListHeaderFooter serverPacket) {
+    override fun a(serverPacket: PacketPlayOutPlayerListHeaderFooter) {
         // TODO: implement
     }
 
-    @Override
-    public void a(PacketPlayOutResourcePackSend serverPacket) {
+    override fun a(serverPacket: PacketPlayOutResourcePackSend) {
         // TODO: implement
     }
 
-    @Override
-    public void a(PacketPlayOutUpdateEntityNBT serverPacket) {
+    override fun a(serverPacket: PacketPlayOutUpdateEntityNBT) {
         // TODO: implement
     }
 
-    @Override
-    public void a(PacketStatusOutServerInfo serverPacket) {
+    override fun a(serverPacket: PacketStatusOutServerInfo) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'a'");
+        throw UnsupportedOperationException("Unimplemented method 'a'")
     }
 
-    @Override
-    public void a(PacketStatusOutPong serverPacket) {
+    override fun a(serverPacket: PacketStatusOutPong) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'a'");
+        throw UnsupportedOperationException("Unimplemented method 'a'")
     }
 
-    @Override
-    public void a(PacketLoginOutEncryptionBegin serverPacket) {
+    override fun a(serverPacket: PacketLoginOutEncryptionBegin) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'a'");
+        throw UnsupportedOperationException("Unimplemented method 'a'")
     }
 
-    @Override
-    public void a(PacketLoginOutSuccess serverPacket) {
+    override fun a(serverPacket: PacketLoginOutSuccess) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'a'");
+        throw UnsupportedOperationException("Unimplemented method 'a'")
     }
 
-    @Override
-    public void a(PacketLoginOutDisconnect serverPacket) {
+    override fun a(serverPacket: PacketLoginOutDisconnect) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'a'");
+        throw UnsupportedOperationException("Unimplemented method 'a'")
     }
 
-    @Override
-    public void a(PacketLoginOutSetCompression serverPacket) {
+    override fun a(serverPacket: PacketLoginOutSetCompression) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'a'");
+        throw UnsupportedOperationException("Unimplemented method 'a'")
     }
 
+    companion object {
+        val WINDOW_TYPE_REGISTRY: Object2IntOpenHashMap<String> = Object2IntOpenHashMap()
+
+        init {
+            WINDOW_TYPE_REGISTRY.put("minecraft:container", 0)
+            WINDOW_TYPE_REGISTRY.put("minecraft:chest", 0)
+            WINDOW_TYPE_REGISTRY.put("minecraft:crafting_table", 1)
+            WINDOW_TYPE_REGISTRY.put("minecraft:furnace", 2)
+            WINDOW_TYPE_REGISTRY.put("minecraft:dispenser", 3)
+            WINDOW_TYPE_REGISTRY.put("minecraft:enchanting_table", 4)
+            WINDOW_TYPE_REGISTRY.put("minecraft:brewing_stand", 5)
+            WINDOW_TYPE_REGISTRY.put("minecraft:villager", 6)
+            WINDOW_TYPE_REGISTRY.put("minecraft:beacon", 7)
+            WINDOW_TYPE_REGISTRY.put("minecraft:anvil", 8)
+            WINDOW_TYPE_REGISTRY.put("minecraft:hopper", 9)
+            WINDOW_TYPE_REGISTRY.put("minecraft:dropper", 10)
+            WINDOW_TYPE_REGISTRY.put("EntityHorse", 11)
+        }
+
+        @Suppress("DEPRECATION")
+        fun getItem(material: Material): Item? {
+            val item = Item.getItemById(material.id)
+            return item
+        }
+
+        @Suppress("DEPRECATION")
+        fun getType(item: net.minecraft.item.ItemStack): Material {
+            val material = Material.getMaterial(Item.getIdFromItem(item.item))
+            return material ?: Material.AIR
+        }
+
+        fun createStringList(list: List<String>): NBTTagList {
+            val tagList = NBTTagList()
+            if (list.isEmpty()) return tagList
+
+            for (value in list) tagList.appendTag(NBTTagString(value))
+
+            return tagList
+        }
+
+        @Suppress("DEPRECATION")
+        fun applyEnchantments(enchantments: Map<Enchantment, Int>, tag: NBTTagCompound) {
+
+            val list = NBTTagList()
+
+            for ((key, value) in enchantments) {
+                val subtag = NBTTagCompound()
+
+                subtag.setShort("id", key.id.toShort())
+                subtag.setShort("lvl", value.toShort())
+
+                list.appendTag(subtag)
+            }
+
+            tag.setTag("ench", list)
+        }
+    }
 }

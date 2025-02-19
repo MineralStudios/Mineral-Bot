@@ -1,35 +1,37 @@
-package gg.mineral.bot.base.lwjgl;
+package gg.mineral.bot.base.lwjgl
 
-import gg.mineral.bot.impl.config.BotGlobalConfig;
+import gg.mineral.bot.impl.config.BotGlobalConfig
+import org.lwjgl.Sys
 
-public class Sys {
+object Sys {
+    @JvmStatic
+    fun openURL(string: String) {
+        if (BotGlobalConfig.headless) return
 
-    public static void openURL(String string) {
-        if (BotGlobalConfig.isHeadless())
-            return;
-
-        org.lwjgl.Sys.openURL(string);
+        Sys.openURL(string)
     }
 
-    public static String getVersion() {
-        if (BotGlobalConfig.isHeadless())
-            return "Mineral";
+    @JvmStatic
+    val version: String
+        get() {
+            if (BotGlobalConfig.headless) return "Mineral"
 
-        return org.lwjgl.Sys.getVersion();
-    }
+            return Sys.getVersion()
+        }
 
-    public static long getTime() {
-        if (BotGlobalConfig.isHeadless())
-            return System.nanoTime() / 1000000;
+    @JvmStatic
+    val time: Long
+        get() {
+            if (BotGlobalConfig.headless) return System.nanoTime() / 1000000
 
-        return org.lwjgl.Sys.getTime();
-    }
+            return Sys.getTime()
+        }
 
-    public static long getTimerResolution() {
-        if (BotGlobalConfig.isHeadless())
-            return 1000;
+    @JvmStatic
+    val timerResolution: Long
+        get() {
+            if (BotGlobalConfig.headless) return 1000
 
-        return org.lwjgl.Sys.getTimerResolution();
-    }
-
+            return Sys.getTimerResolution()
+        }
 }

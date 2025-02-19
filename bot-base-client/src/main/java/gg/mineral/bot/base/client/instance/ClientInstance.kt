@@ -1,500 +1,379 @@
-package gg.mineral.bot.base.client.instance;
+package gg.mineral.bot.base.client.instance
 
-import com.google.common.collect.Multimap;
-import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.bot.api.controls.Keyboard;
-import gg.mineral.bot.api.controls.Mouse;
-import gg.mineral.bot.api.entity.living.player.FakePlayer;
-import gg.mineral.bot.api.event.Event;
-import gg.mineral.bot.api.goal.Goal;
-import gg.mineral.bot.api.inv.Inventory;
-import gg.mineral.bot.api.inv.InventoryContainer;
-import gg.mineral.bot.api.math.BoundingBox;
-import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator;
-import gg.mineral.bot.api.screen.Screen;
-import gg.mineral.bot.api.world.ClientWorld;
-import gg.mineral.bot.base.client.gui.GuiConnecting.ConnectFunction;
-import gg.mineral.bot.base.client.manager.InstanceManager;
-import gg.mineral.bot.impl.thread.ThreadManager;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import lombok.val;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.util.Session;
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
+import com.google.common.collect.Multimap
+import gg.mineral.bot.api.configuration.BotConfiguration
+import gg.mineral.bot.api.controls.Keyboard
+import gg.mineral.bot.api.controls.Mouse
+import gg.mineral.bot.api.entity.ClientEntity
+import gg.mineral.bot.api.entity.living.player.FakePlayer
+import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.goal.Goal
+import gg.mineral.bot.api.instance.ClientInstance
+import gg.mineral.bot.api.inv.Inventory
+import gg.mineral.bot.api.inv.InventoryContainer
+import gg.mineral.bot.api.inv.Slot
+import gg.mineral.bot.api.inv.item.Item
+import gg.mineral.bot.api.inv.item.ItemStack
+import gg.mineral.bot.api.math.BoundingBox
+import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator
+import gg.mineral.bot.api.screen.Screen
+import gg.mineral.bot.api.world.ClientWorld
+import gg.mineral.bot.api.world.block.Block
+import gg.mineral.bot.base.client.manager.InstanceManager
+import gg.mineral.bot.impl.thread.ThreadManager
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.multiplayer.WorldClient
+import net.minecraft.util.Session
+import org.apache.logging.log4j.LogManager
+import java.io.File
+import java.net.Proxy
+import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.ScheduledExecutorService
 
-import java.io.File;
-import java.net.Proxy;
-import java.util.Queue;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
+open class ClientInstance(
+    override val configuration: BotConfiguration,
+    width: Int,
+    height: Int,
+    fullscreen: Boolean,
+    demo: Boolean,
+    gameDir: File,
+    assetsDir: File,
+    resourcePackDir: File,
+    proxy: Proxy,
+    version: String,
+    userProperties: Multimap<*, *>,
+    assetIndex: String
+) : Minecraft(
+    Session(configuration.fullUsername, configuration.uuid.toString(), "0", "legacy"),
+    width,
+    height,
+    fullscreen,
+    demo,
+    gameDir,
+    assetsDir,
+    resourcePackDir,
+    proxy,
+    version,
+    userProperties,
+    assetIndex
+), ClientInstance {
 
-public class ClientInstance extends Minecraft implements gg.mineral.bot.api.instance.ClientInstance {
+    // Active goals.
+    private val goals = ObjectLinkedOpenHashSet<Goal>()
 
-    @Getter
-    private final BotConfiguration configuration;
+    // Delayed tasks queue.
+    private val delayedTasks = ConcurrentLinkedQueue<DelayedTask>()
 
-    private final ObjectLinkedOpenHashSet<Goal> goals = new ObjectLinkedOpenHashSet<>();
+    // The thread on which the game loop runs.
+    private var mainThread: Thread? = null
 
-    private final Queue<DelayedTask> delayedTasks = new ConcurrentLinkedQueue<>();
-    private Thread mainThread = null;
-    @Getter
-    private int latency = 0, currentTick;
+    override var latency: Int = 0
 
-    record DelayedTask(Runnable runnable, long sendTime) {
-        public boolean canSend() {
-            return getSystemTime() >= sendTime;
-        }
+    override var currentTick: Int = 0
+
+    override val keyboard: Keyboard
+        get() = super.keyboard
+    override val mouse: Mouse
+        get() = super.mouse
+
+    /**
+     * Internal data class to track delayed tasks.
+     */
+    internal data class DelayedTask(val runnable: Runnable, val sendTime: Long) {
+        fun canSend(currentTime: Long): Boolean = currentTime >= sendTime
     }
 
-    public boolean scheduleTask(Runnable runnable, long delay) {
+    /**
+     * Schedules a task to run after a delay. If called on the main thread with zero delay and no queued tasks,
+     * the task executes immediately.
+     */
+    fun scheduleTask(runnable: Runnable, delay: Long): Boolean {
+        val currentTime = getSystemTime()
         if (isMainThread() && delay <= 0 && delayedTasks.isEmpty()) {
-            runnable.run();
-            return true;
+            runnable.run()
+            return true
         }
-        delayedTasks.add(new DelayedTask(runnable, getSystemTime() + delay));
-        return false;
+        delayedTasks.add(DelayedTask(runnable, currentTime + delay))
+        return false
     }
 
-    public ClientInstance(@NonNull BotConfiguration configuration, int width, int height,
-                          boolean fullscreen,
-                          boolean demo, File gameDir, File assetsDir, File resourcePackDir, Proxy proxy, String version,
-                          @SuppressWarnings("rawtypes") Multimap userProperties, String assetIndex) {
-        super(new Session(configuration.getFullUsername(), configuration.getUuid().toString(),
-                        "0",
-                        "legacy"), width, height, fullscreen, demo, gameDir, assetsDir, resourcePackDir,
-                proxy,
-                version, userProperties, assetIndex);
+    /**
+     * Returns true if the current thread is the main game thread.
+     */
+    override fun isMainThread(): Boolean = Thread.currentThread() === mainThread
 
-        this.configuration = configuration;
-    }
+    override val gameLoopExecutor: ScheduledExecutorService
+        get() = ThreadManager.gameLoopExecutor
 
-    public ClientInstance(BotConfiguration configuration, int width, int height,
-                          boolean fullscreen,
-                          boolean demo, File gameDir, File assetsDir, File resourcePackDir, Proxy proxy, String version,
-                          @SuppressWarnings("rawtypes") Multimap userProperties, String assetIndex, ConnectFunction connectFunction) {
-        this(configuration, width, height, fullscreen, demo, gameDir, assetsDir, resourcePackDir, proxy, version,
-                userProperties, assetIndex);
+    override val asyncExecutor: ExecutorService
+        get() = ThreadManager.asyncExecutor
 
-    }
+    override fun runGameLoop() {
+        if (!running) return
 
-    @Override
-    public boolean isMainThread() {
-        return Thread.currentThread() == this.mainThread;
-    }
+        if (mainThread == null) {
+            mainThread = Thread.currentThread()
+        }
 
-    @Override
-    public ScheduledExecutorService getGameLoopExecutor() {
-        return ThreadManager.getGameLoopExecutor();
-    }
-
-    @Override
-    public ExecutorService getAsyncExecutor() {
-        return ThreadManager.getAsyncExecutor();
-    }
-
-    @Override
-    public void runGameLoop() {
-        if (!this.running)
-            return;
-        if (this.mainThread == null)
-            this.mainThread = Thread.currentThread();
-
-        boolean executing = false;
-        for (val goal : goals)
-            if (goal.isExecuting()) {
-                goal.callGameLoop();
-                executing = true;
-                break;
+        var executing = false
+        for (goal in goals) {
+            if (goal.isExecuting) {
+                goal.callGameLoop()
+                executing = true
+                break
             }
-
-        if (!executing)
-            for (val goal : goals)
+        }
+        if (!executing) {
+            for (goal in goals) {
                 if (goal.shouldExecute()) {
-                    goal.callGameLoop();
-                    break;
+                    goal.callGameLoop()
+                    break
                 }
-
-        while (!delayedTasks.isEmpty()) {
-            val task = delayedTasks.peek();
-            if (task.canSend()) {
-                task.runnable.run();
-                delayedTasks.poll();
-                continue;
             }
-
-            break;
         }
 
-        this.keyboard.onGameLoop(getSystemTime());
-        this.mouse.onGameLoop(getSystemTime());
+        val currentTime = getSystemTime()
+        while (delayedTasks.isNotEmpty()) {
+            val task = delayedTasks.peek()
+            if (task.canSend(currentTime)) {
+                task.runnable.run()
+                delayedTasks.poll()
+            } else {
+                break
+            }
+        }
 
-        super.runGameLoop();
+        // Call game-loop updates for keyboard and mouse.
+        super.keyboard.onGameLoop(getSystemTime())
+        super.mouse.onGameLoop(getSystemTime())
+
+        super.runGameLoop()
     }
 
-    public void ensureMainThread(Runnable runnable) {
-        if (isMainThread())
-            runnable.run();
-        else
-            this.scheduleTask(runnable, 0);
-    }
+    override fun schedule(runnable: Runnable, delay: Long): Boolean = scheduleTask(runnable, delay)
+    override val session: gg.mineral.bot.api.instance.Session
+        get() = super.getSession()
 
-    @Override
-    public boolean schedule(@NotNull Runnable runnable, long delay) {
-        return this.scheduleTask(runnable, delay);
-    }
-
-    @Override
-    public <T extends Event> boolean callEvent(@NotNull T event) {
-        var cancelled = false;
-
-        for (val goal : goals)
-            if (goal.isExecuting())
-                return goal.onEvent(event);
-
-        for (val goal : goals)
+    override fun <T : Event> callEvent(event: T): Boolean {
+        for (goal in goals) {
+            if (goal.isExecuting) {
+                return goal.onEvent(event)
+            }
+        }
+        for (goal in goals) {
             if (goal.shouldExecute()) {
-                cancelled = goal.onEvent(event);
-                break;
+                return goal.onEvent(event)
             }
-
-        return cancelled;
+        }
+        return false
     }
 
-    @Override
-    public void runTick() {
-        super.runTick();
+    override fun runTick() {
+        super.runTick()
+        currentTick++
 
-        val fakePlayer = getFakePlayer();
+        // Update latency using a Gaussian distribution from the fake player's random.
+        val fp = fakePlayer
+        latency = fp.random.nextGaussian(
+            configuration.latency.toDouble(),
+            configuration.latencyDeviation.toDouble()
+        ).toInt()
 
-        currentTick++;
-
-        latency = (int) fakePlayer.getRandom().nextGaussian(getConfiguration().getLatency(),
-                getConfiguration().getLatencyDeviation());
-
-        for (val goal : goals)
-            if (goal.isExecuting()) {
-                goal.onTick();
-                return;
+        for (goal in goals) {
+            if (goal.isExecuting) {
+                goal.onTick()
+                return
             }
-
-        for (val goal : goals)
+        }
+        for (goal in goals) {
             if (goal.shouldExecute()) {
-                goal.onTick();
-                break;
+                goal.onTick()
+                break
             }
+        }
     }
 
     @SafeVarargs
-    @Override
-    public final <T extends Goal> void startGoals(T... goals) {
-        for (val goal : goals) {
-            if (this.goals.add(goal))
-                logger.debug("Added goal: {}", goal.getClass().getSimpleName());
-            else
-                logger.debug("Failed to add goal: {}", goal.getClass().getSimpleName());
+    override fun <T : Goal> startGoals(vararg goals: T) {
+        for (goal in goals) {
+            if (this.goals.add(goal)) {
+                logger.debug("Added goal: {}", goal.javaClass.simpleName)
+            } else {
+                logger.debug("Failed to add goal: {}", goal.javaClass.simpleName)
+            }
         }
     }
 
-    @Override
-    public void shutdownMinecraftApplet() {
-
-        InstanceManager.getInstances().remove(configuration.getUuid());
-
-        goals.clear();
-
-        this.running = false;
-
-        logger.debug( "Stopping!");
-
+    override fun shutdownMinecraftApplet() {
+        InstanceManager.instances.remove(configuration.uuid)
+        goals.clear()
+        running = false
+        logger.debug("Stopping!")
         try {
-            this.loadWorld((WorldClient) null);
-        } catch (Throwable var7) {
-            ;
+            loadWorld(null as WorldClient?)
+        } catch (e: Throwable) {
+            // Ignore any errors during shutdown.
+        }
+        mcSoundHandler?.func_147685_d()
+    }
+
+    override val isRunning: Boolean
+        get() = running
+
+    override fun timeMillis(): Long = getSystemTime()
+
+    override var currentScreen: Screen?
+        get() = super.currentScreen
+        set(value) {
+            super.currentScreen = value as GuiScreen?
         }
 
-        if (this.mcSoundHandler != null)
-            this.mcSoundHandler.func_147685_d();
-    }
+    override val fakePlayer: FakePlayer
+        get() {
+            val player = thePlayer
+            if (player is FakePlayer) {
+                return player
+            }
+            // If the player is not an instance of FakePlayer, return a default FakePlayer.
+            return object : FakePlayer {
+                override val lastReportedX: Double = 0.0
+                override val lastReportedY: Double = 0.0
+                override val lastReportedZ: Double = 0.0
+                override val inventory: Inventory = object : Inventory {
+                    override val heldItemStack: ItemStack? = null
+                    override val heldSlot: Int = 0
 
-    @Override
-    public boolean isRunning() {
-        return this.running;
-    }
+                    override fun getItemStackAt(slot: Int): ItemStack? {
+                        return null
+                    }
 
-    @Override
-    public long timeMillis() {
-        return getSystemTime();
-    }
+                    override val helmet = null
+                    override val chestplate = null
+                    override val leggings = null
+                    override val boots = null
 
-    @Override
-    public Screen getCurrentScreen() {
-        return this.currentScreen;
-    }
+                    override fun findSlot(item: Item): Int {
+                        return -1
+                    }
 
-    @Override
-    @SneakyThrows
-    public FakePlayer getFakePlayer() {
-        if (this.thePlayer instanceof FakePlayer fakePlayer)
-            return fakePlayer;
-        else
-            return new FakePlayer() {
+                    override fun findSlot(id: Int): Int {
+                        return -1
+                    }
 
-                @Override
-                public double getLastReportedX() {
-                    return 0;
+                    override val items: Array<ItemStack?>
+                        get() = emptyArray()
+
+                }
+                override val inventoryContainer = object : InventoryContainer {
+                    override fun getSlot(inventory: Inventory, slot: Int): Slot? {
+                        return null
+                    }
                 }
 
-                @Override
-                public double getLastReportedY() {
-                    return 0;
-                }
+                override val eyeHeight: Float = 0f
+                override val username = configuration.fullUsername
+                override val hunger = 20f
+                override val headY = 0.0
+                override val activePotionEffectIds = intArrayOf()
+                override fun isPotionActive(potionId: Int): Boolean = false
+                override val health = 0f
+                override val uuid = configuration.uuid
+                override val collidingBoundingBox: BoundingBox? get() = null
+                override val entityId = 0
+                override val x = 0.0
+                override val y = 0.0
+                override val z = 0.0
+                override val yaw = 0f
+                override val pitch = 0f
+                override val isOnGround = false
+                override val lastX = 0.0
+                override val lastY = 0.0
+                override val lastZ = 0.0
+                override var motionX = 0.0
+                override var motionY = 0.0
+                override var motionZ = 0.0
+                override val world: ClientWorld
+                    get() = object : ClientWorld {
+                        override val entities: Collection<ClientEntity> = emptyList()
 
-                @Override
-                public double getLastReportedZ() {
-                    return 0;
-                }
-
-                @Override
-                public @Nullable Inventory getInventory() {
-                    return null;
-                }
-
-                @Override
-                public @Nullable InventoryContainer getInventoryContainer() {
-                    return null;
-                }
-
-                @Override
-                public float getEyeHeight() {
-                    return 0;
-                }
-
-                @Override
-                public String getUsername() {
-                    return configuration.getFullUsername();
-                }
-
-                @Override
-                public float getHunger() {
-                    return 20;
-                }
-
-                @Override
-                public double getHeadY() {
-                    return 0;
-                }
-
-                @Override
-                public int[] getActivePotionEffectIds() {
-                    return new int[0];
-                }
-
-                @Override
-                public boolean isPotionActive(int potionId) {
-                    return false;
-                }
-
-                @Override
-                public float getHealth() {
-                    return 0;
-                }
-
-                @Override
-                public UUID getUuid() {
-                    return configuration.getUuid();
-                }
-
-                @Override
-                public @Nullable BoundingBox getCollidingBoundingBox() {
-                    return null;
-                }
-
-                @Override
-                public int getEntityId() {
-                    return 0;
-                }
-
-                @Override
-                public double getX() {
-                    return 0;
-                }
-
-                @Override
-                public double getY() {
-                    return 0;
-                }
-
-                @Override
-                public double getZ() {
-                    return 0;
-                }
-
-                @Override
-                public float getYaw() {
-                    return 0;
-                }
-
-                @Override
-                public float getPitch() {
-                    return 0;
-                }
-
-                @Override
-                public boolean isOnGround() {
-                    return false;
-                }
-
-                @Override
-                public double getLastX() {
-                    return 0;
-                }
-
-                @Override
-                public double getLastY() {
-                    return 0;
-                }
-
-                @Override
-                public double getLastZ() {
-                    return 0;
-                }
-
-                @Override
-                public double getMotionX() {
-                    return 0;
-                }
-
-                @Override
-                public double getMotionY() {
-                    return 0;
-                }
-
-                @Override
-                public double getMotionZ() {
-                    return 0;
-                }
-
-                @Override
-                public @Nullable ClientWorld getWorld() {
-                    return null;
-                }
-
-                @Override
-                public Random getRandom() {
-                    return new Random();
-                }
-
-                @Override
-                public BoundingBox getBoundingBox() {
-                    return new BoundingBox() {
-                        @Override
-                        public void setMinX(double minX) {
-
+                        override fun getEntityByID(entityId: Int): ClientEntity? {
+                            return null
                         }
 
-                        @Override
-                        public void setMinY(double minY) {
+                        override fun getBlockAt(x: Int, y: Int, z: Int): Block {
+                            return object : Block {
+                                override val id: Int = 0
 
+                                override fun getCollisionBoundingBox(
+                                    world: ClientWorld,
+                                    xTile: Int,
+                                    yTile: Int,
+                                    zTile: Int
+                                ): BoundingBox? {
+                                    return null
+                                }
+                            }
                         }
 
-                        @Override
-                        public void setMinZ(double minZ) {
+                        override fun getBlockAt(x: Double, y: Double, z: Double): Block {
+                            return object : Block {
+                                override val id: Int = 0
 
+                                override fun getCollisionBoundingBox(
+                                    world: ClientWorld,
+                                    xTile: Int,
+                                    yTile: Int,
+                                    zTile: Int
+                                ): BoundingBox? {
+                                    return null
+                                }
+                            }
                         }
 
-                        @Override
-                        public void setMaxX(double maxX) {
-
-                        }
-
-                        @Override
-                        public void setMaxY(double maxY) {
-
-                        }
-
-                        @Override
-                        public void setMaxZ(double maxZ) {
-
-                        }
-
-                        @Override
-                        public double getMinX() {
-                            return 0;
-                        }
-
-                        @Override
-                        public double getMinY() {
-                            return 0;
-                        }
-
-                        @Override
-                        public double getMinZ() {
-                            return 0;
-                        }
-
-                        @Override
-                        public double getMaxX() {
-                            return 0;
-                        }
-
-                        @Override
-                        public double getMaxY() {
-                            return 0;
-                        }
-
-                        @Override
-                        public double getMaxZ() {
-                            return 0;
-                        }
-                    };
+                    }
+                override val random: Random get() = Random()
+                override var boundingBox: BoundingBox = object : BoundingBox {
+                    override var minX: Double = 0.0
+                    override var minY: Double = 0.0
+                    override var minZ: Double = 0.0
+                    override var maxX: Double = 0.0
+                    override var maxY: Double = 0.0
+                    override var maxZ: Double = 0.0
                 }
 
-                @Override
-                public boolean isSprinting() {
-                    return false;
-                }
+                override val isSprinting = false
+                override val clientInstance = this@ClientInstance
+                override val motionSimulator: PlayerMotionSimulator
+                    get() {
+                        return gg.mineral.bot.base.client.math.simulation.PlayerMotionSimulator(
+                            this@ClientInstance,
+                            this
+                        )
+                    }
+            }
+        }
 
-                @Override
-                public gg.mineral.bot.api.instance.ClientInstance getClientInstance() {
-                    return ClientInstance.this;
-                }
+    override fun newMouse(): Mouse = gg.mineral.bot.base.lwjgl.input.Mouse(this)
 
-                @Override
-                public PlayerMotionSimulator getMotionSimulator() {
-                    if (getClientInstance() instanceof Minecraft mc)
-                        return new gg.mineral.bot.base.client.math.simulation.PlayerMotionSimulator(mc, this);
-                    else
-                        throw new IllegalStateException("Client instance is not an instance of Minecraft!");
-                }
+    override fun newKeyboard(): Keyboard = gg.mineral.bot.base.lwjgl.input.Keyboard(this)
 
-            };
-    }
+    override var displayHeight: Int
+        get() = super.displayHeight
+        set(value) {
+            super.displayHeight = value
+        }
 
-    @Override
-    public Mouse newMouse() {
-        return new gg.mineral.bot.base.lwjgl.input.Mouse(this);
-    }
+    override var displayWidth: Int
+        get() = super.displayWidth
+        set(value) {
+            super.displayWidth = value
+        }
 
-    @Override
-    public Keyboard newKeyboard() {
-        return new gg.mineral.bot.base.lwjgl.input.Keyboard(this);
-    }
-
-    @Override
-    public int getDisplayHeight() {
-        return this.displayHeight;
-    }
-
-    @Override
-    public int getDisplayWidth() {
-        return this.displayWidth;
+    companion object {
+        private val logger = LogManager.getLogger(ClientInstance::class.java)
     }
 }

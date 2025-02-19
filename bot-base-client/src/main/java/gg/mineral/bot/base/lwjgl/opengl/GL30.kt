@@ -1,77 +1,76 @@
-package gg.mineral.bot.base.lwjgl.opengl;
+package gg.mineral.bot.base.lwjgl.opengl
 
-import gg.mineral.bot.impl.config.BotGlobalConfig;
+import gg.mineral.bot.impl.config.BotGlobalConfig
+import org.lwjgl.opengl.GL30
 
-public class GL30 {
+object GL30 {
+    @JvmStatic
+    fun glBindFramebuffer(target: Int, framebuffer: Int) {
+        if (BotGlobalConfig.headless) return
 
-    public static void glBindFramebuffer(int target, int framebuffer) {
-        if (BotGlobalConfig.isHeadless())
-            return;
-
-        org.lwjgl.opengl.GL30.glBindFramebuffer(target, framebuffer);
+        GL30.glBindFramebuffer(target, framebuffer)
     }
 
-    public static void glBindRenderbuffer(int target, int renderbuffer) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    fun glBindRenderbuffer(target: Int, renderbuffer: Int) {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.GL30.glBindRenderbuffer(target, renderbuffer);
+        GL30.glBindRenderbuffer(target, renderbuffer)
     }
 
-    public static void glDeleteRenderbuffers(int renderbuffer) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    fun glDeleteRenderbuffers(renderbuffer: Int) {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.GL30.glDeleteRenderbuffers(renderbuffer);
+        GL30.glDeleteRenderbuffers(renderbuffer)
     }
 
-    public static void glDeleteFramebuffers(int framebuffer) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    fun glDeleteFramebuffers(framebuffer: Int) {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.GL30.glDeleteFramebuffers(framebuffer);
+        GL30.glDeleteFramebuffers(framebuffer)
     }
 
-    public static int glGenFramebuffers() {
-        if (BotGlobalConfig.isHeadless())
-            return 0;
+    @JvmStatic
+    fun glGenFramebuffers(): Int {
+        if (BotGlobalConfig.headless) return 0
 
-        return org.lwjgl.opengl.GL30.glGenFramebuffers();
+        return GL30.glGenFramebuffers()
     }
 
-    public static int glGenRenderbuffers() {
-        if (BotGlobalConfig.isHeadless())
-            return 0;
+    @JvmStatic
+    fun glGenRenderbuffers(): Int {
+        if (BotGlobalConfig.headless) return 0
 
-        return org.lwjgl.opengl.GL30.glGenRenderbuffers();
+        return GL30.glGenRenderbuffers()
     }
 
-    public static void glRenderbufferStorage(int target, int internalformat, int width, int height) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    fun glRenderbufferStorage(target: Int, internalformat: Int, width: Int, height: Int) {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.GL30.glRenderbufferStorage(target, internalformat, width, height);
+        GL30.glRenderbufferStorage(target, internalformat, width, height)
     }
 
-    public static void glFramebufferRenderbuffer(int target, int attachment, int renderbuffertarget, int renderbuffer) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    fun glFramebufferRenderbuffer(target: Int, attachment: Int, renderbuffertarget: Int, renderbuffer: Int) {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.GL30.glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
+        GL30.glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer)
     }
 
-    public static int glCheckFramebufferStatus(int target) {
-        if (BotGlobalConfig.isHeadless())
-            return 36053;
+    @JvmStatic
+    fun glCheckFramebufferStatus(target: Int): Int {
+        if (BotGlobalConfig.headless) return 36053
 
-        return org.lwjgl.opengl.GL30.glCheckFramebufferStatus(target);
+        return GL30.glCheckFramebufferStatus(target)
     }
 
-    public static void glFramebufferTexture2D(int target, int attachment, int textarget, int texture, int level) {
-        if (BotGlobalConfig.isHeadless())
-            return;
+    @JvmStatic
+    fun glFramebufferTexture2D(target: Int, attachment: Int, textarget: Int, texture: Int, level: Int) {
+        if (BotGlobalConfig.headless) return
 
-        org.lwjgl.opengl.GL30.glFramebufferTexture2D(target, attachment, textarget, texture, level);
+        GL30.glFramebufferTexture2D(target, attachment, textarget, texture, level)
     }
-
 }

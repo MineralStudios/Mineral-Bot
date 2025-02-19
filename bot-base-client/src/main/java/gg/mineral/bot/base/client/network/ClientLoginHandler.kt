@@ -1,28 +1,23 @@
-package gg.mineral.bot.base.client.network;
+package gg.mineral.bot.base.client.network
 
-import lombok.val;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.network.NetHandlerLoginClient;
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.network.NetHandlerLoginClient
+import net.minecraft.network.EnumConnectionState
+import net.minecraft.network.NetworkManager
 
-import net.minecraft.network.EnumConnectionState;
-import net.minecraft.network.NetworkManager;
+class ClientLoginHandler(netManager: NetworkManager, mc: Minecraft, guiScreen: GuiScreen?) :
+    NetHandlerLoginClient(netManager, mc, guiScreen) {
+    override fun onConnectionStateTransition(prevState: EnumConnectionState, newState: EnumConnectionState) {
+        getLogger().debug("Switching protocol from {} to {}", prevState, newState)
 
-public class ClientLoginHandler extends NetHandlerLoginClient {
+        val networkManager = this.networkManager
 
-    public ClientLoginHandler(NetworkManager netManager, Minecraft mc, GuiScreen guiScreen) {
-        super(netManager, mc, guiScreen);
+        if (newState === EnumConnectionState.PLAY) networkManager.netHandler =
+            ClientNetHandler(
+                this.mc,
+                guiScreen,
+                networkManager
+            )
     }
-
-    @Override
-    public void onConnectionStateTransition(EnumConnectionState prevState, EnumConnectionState newState) {
-        getLogger().debug("Switching protocol from " + prevState + " to " + newState);
-
-        val networkManager = this.getNetworkManager();
-
-        if (newState == EnumConnectionState.PLAY)
-            networkManager.setNetHandler(
-                    new ClientNetHandler(this.getMc(), this.getGuiScreen(), networkManager));
-    }
-
 }

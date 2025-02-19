@@ -8,20 +8,21 @@ import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 
 class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+    override val isExecuting: Boolean
+        get() = inventoryOpen
+
     override fun shouldExecute(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return false
+        val inventory = fakePlayer.inventory
 
         val missingArmorPiece = missingArmorPiece()
 
         return canSeeEnemy() && missingArmorPiece != Item.Type.NONE && inventory.contains(missingArmorPiece)
     }
 
-    override fun isExecuting() = inventoryOpen
-
     private fun missingArmorPiece(): Item.Type {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return Item.Type.NONE
+        val inventory = fakePlayer.inventory
 
         val helmet = inventory.helmet
         val chestplate = inventory.chestplate
@@ -38,7 +39,7 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
     private fun canSeeEnemy(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
         val world = fakePlayer.world
-        return world != null && world.entities.any {
+        return world.entities.any {
             !clientInstance.configuration.friendlyUUIDs
                 .contains(it.uuid)
         }
@@ -49,7 +50,7 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
     private fun switchToArmor() {
         var armorSlot = -1
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
         val missingArmorPiece = missingArmorPiece()
 
@@ -68,7 +69,7 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
         if (inventoryOpen) {
             inventoryOpen = false
             pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug( "Closing inventory after switching to armor")
+            logger.debug("Closing inventory after switching to armor")
             return
         }
 
@@ -77,7 +78,7 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
 
     override fun onTick() {
         val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory ?: return
+        val inventory = fakePlayer.inventory
 
         val itemStack = inventory.heldItemStack
 
