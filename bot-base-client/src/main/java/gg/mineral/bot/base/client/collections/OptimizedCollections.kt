@@ -7,11 +7,11 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 
 class OptimizedCollections : OptimizedCollections {
-    override fun <T> newSet(): Set<T> {
+    override fun <T> newSet(): MutableSet<T> {
         return ObjectOpenHashSet()
     }
 
-    override fun <K, V> newMap(): Map<K, V> {
+    override fun <K, V> newMap(): MutableMap<K, V> {
         return Object2ObjectOpenHashMap()
     }
 
