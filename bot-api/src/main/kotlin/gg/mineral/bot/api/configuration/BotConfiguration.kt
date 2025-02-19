@@ -28,7 +28,7 @@ data class BotConfiguration(
     var pearlCooldown: Int = 15,
     var skin: Skins = Skins.MINERAL_DEFAULT,
     var debug: Boolean = false,
-    var friendlyUUIDs: Set<UUID> = BotAPI.INSTANCE.collections().newSet(),
+    var friendlyUUIDs: MutableSet<UUID> = BotAPI.INSTANCE.collections().newSet(),
     var potAccuracy: Double = 0.5
 ) {
     val fullUsername: String
@@ -65,7 +65,7 @@ data class BotConfiguration(
             private var pearlCooldown: Int = 15
             private var skin: Skins = Skins.MINERAL_DEFAULT
             private var debug: Boolean = false
-            private var friendlyUUIDs: Set<UUID> = BotAPI.INSTANCE.collections().newSet()
+            private var friendlyUUIDs: MutableSet<UUID> = BotAPI.INSTANCE.collections().newSet()
             private var potAccuracy: Double = 0.5
 
             fun username(username: String) = apply { this.username = username }
