@@ -8,7 +8,6 @@ import gg.mineral.bot.api.event.network.ClientboundPacketEvent;
 import gg.mineral.bot.base.client.instance.ClientInstance;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.Getter;
 import lombok.Setter;
@@ -69,7 +68,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldProviderSurface;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.MapData;
 import net.minecraft.world.storage.MapStorage;
 import org.apache.logging.log4j.LogManager;
@@ -90,13 +88,39 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
      * distribution/mods)
      */
     private final NetworkManager netManager;
-
     /**
      * Reference to the Minecraft instance, which many handler methods operate on
      */
     @Getter
-    private Minecraft gameController;
-
+    private final Minecraft gameController;
+    /**
+     * A mapping from player names to their respective GuiPlayerInfo (specifies the
+     * clients response time to the server)
+     */
+    private final Map playerInfoMap = new HashMap();
+    /**
+     * Seems to be either null (integrated server) or an instance of either
+     * GuiMultiplayer (when connecting to a server)
+     * or GuiScreenReamlsTOS (when connecting to MCO server)
+     */
+    private final GuiScreen guiScreenServer;
+    /**
+     * Just an ordinary random number generator, used to randomize audio pitch of
+     * item/orb pickup and randomize both
+     * particlespawn offset and velocity
+     */
+    private final Random avRandomizer = new Random();
+    /**
+     * Origin of the central MapStorage serving as a public reference for
+     * WorldClient. Not used in this class
+     */
+    public MapStorage mapStorageOrigin = new MapStorage(null);
+    /**
+     * An ArrayList of GuiPlayerInfo (includes all the players' GuiPlayerInfo on the
+     * current server)
+     */
+    public List playerInfoList = new ArrayList();
+    public int currentServerMaxPlayers = 20;
     /**
      * Reference to the current ClientWorld instance, which many handler methods
      * operate on
@@ -104,47 +128,13 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
     @Getter
     @Setter
     private WorldClient clientWorldController;
-
     /**
      * True if the client has finished downloading terrain and may spawn. Set upon
      * receipt of S08PacketPlayerPosLook,
      * reset upon respawning
      */
     private boolean doneLoadingTerrain;
-
-    /**
-     * Origin of the central MapStorage serving as a public reference for
-     * WorldClient. Not used in this class
-     */
-    public MapStorage mapStorageOrigin = new MapStorage((ISaveHandler) null);
-
-    /**
-     * A mapping from player names to their respective GuiPlayerInfo (specifies the
-     * clients response time to the server)
-     */
-    private Map playerInfoMap = new HashMap();
-
-    /**
-     * An ArrayList of GuiPlayerInfo (includes all the players' GuiPlayerInfo on the
-     * current server)
-     */
-    public List playerInfoList = new ArrayList();
-    public int currentServerMaxPlayers = 20;
-
-    /**
-     * Seems to be either null (integrated server) or an instance of either
-     * GuiMultiplayer (when connecting to a server)
-     * or GuiScreenReamlsTOS (when connecting to MCO server)
-     */
-    private GuiScreen guiScreenServer;
     private boolean field_147308_k = false;
-
-    /**
-     * Just an ordinary random number generator, used to randomize audio pitch of
-     * item/orb pickup and randomize both
-     * particlespawn offset and velocity
-     */
-    private Random avRandomizer = new Random();
 
     public NetHandlerPlayClient(Minecraft p_i45061_1_, GuiScreen p_i45061_2_, NetworkManager p_i45061_3_) {
         this.gameController = p_i45061_1_;
@@ -192,8 +182,8 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         this.gameController.gameSettings.sendSettingsToServer();
         this.netManager.scheduleOutboundPacket(
                 new C17PacketCustomPayload("MC|Brand",
-                        ClientBrandRetriever.getClientModName().getBytes(Charsets.UTF_8)),
-                new GenericFutureListener[0]);
+                        ClientBrandRetriever.getClientModName().getBytes(Charsets.UTF_8))
+        );
     }
 
     /**
@@ -232,7 +222,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         } else if (p_147235_1_.func_148993_l() == 72) {
             var8 = new EntityEnderEye(this.clientWorldController, var2, var4, var6);
         } else if (p_147235_1_.func_148993_l() == 76) {
-            var8 = new EntityFireworkRocket(this.clientWorldController, var2, var4, var6, (ItemStack) null);
+            var8 = new EntityFireworkRocket(this.clientWorldController, var2, var4, var6, null);
         } else if (p_147235_1_.func_148993_l() == 63) {
             var8 = new EntityLargeFireball(this.clientWorldController, var2, var4, var6,
                     (double) p_147235_1_.func_149010_g() / 8000.0D, (double) p_147235_1_.func_149004_h() / 8000.0D,
@@ -259,7 +249,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         } else if (p_147235_1_.func_148993_l() == 1) {
             var8 = new EntityBoat(this.clientWorldController, var2, var4, var6);
         } else if (p_147235_1_.func_148993_l() == 50) {
-            var8 = new EntityTNTPrimed(this.clientWorldController, var2, var4, var6, (EntityLivingBase) null);
+            var8 = new EntityTNTPrimed(this.clientWorldController, var2, var4, var6, null);
         } else if (p_147235_1_.func_148993_l() == 51) {
             var8 = new EntityEnderCrystal(this.clientWorldController, var2, var4, var6);
         } else if (p_147235_1_.func_148993_l() == 2) {
@@ -309,8 +299,8 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
      * Spawns an experience orb and sets its value (amount of XP)
      */
     public void handleSpawnExperienceOrb(S11PacketSpawnExperienceOrb p_147286_1_) {
-        EntityXPOrb var2 = new EntityXPOrb(this.clientWorldController, (double) p_147286_1_.func_148984_d(),
-                (double) p_147286_1_.func_148983_e(), (double) p_147286_1_.func_148982_f(),
+        EntityXPOrb var2 = new EntityXPOrb(this.clientWorldController, p_147286_1_.func_148984_d(),
+                p_147286_1_.func_148983_e(), p_147286_1_.func_148982_f(),
                 p_147286_1_.func_148986_g());
         var2.serverPosX = p_147286_1_.func_148984_d();
         var2.serverPosY = p_147286_1_.func_148983_e();
@@ -393,9 +383,9 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         GameProfile var10 = p_147237_1_.getGameProfile();
         EntityOtherPlayerMP var11 = new EntityOtherPlayerMP(this.gameController, this.gameController.theWorld,
                 p_147237_1_.getGameProfile());
-        var11.prevPosX = var11.lastTickPosX = (double) (var11.serverPosX = p_147237_1_.func_148942_f());
-        var11.prevPosY = var11.lastTickPosY = (double) (var11.serverPosY = p_147237_1_.func_148949_g());
-        var11.prevPosZ = var11.lastTickPosZ = (double) (var11.serverPosZ = p_147237_1_.func_148946_h());
+        var11.prevPosX = var11.lastTickPosX = var11.serverPosX = p_147237_1_.func_148942_f();
+        var11.prevPosY = var11.lastTickPosY = var11.serverPosY = p_147237_1_.func_148949_g();
+        var11.prevPosZ = var11.lastTickPosZ = var11.serverPosZ = p_147237_1_.func_148946_h();
         int var12 = p_147237_1_.func_148947_k();
 
         if (var12 == 0) {
@@ -493,6 +483,9 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         for (int var2 = 0; var2 < p_147238_1_.func_149098_c().length; ++var2) {
             val entity = this.clientWorldController.removeEntityFromWorld(p_147238_1_.func_149098_c()[var2]);
 
+            if (entity == null)
+                continue;
+
             val event = new EntityDestroyEvent(entity);
             if (this.gameController instanceof ClientInstance instance)
                 instance.callEvent(event);
@@ -522,8 +515,8 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                     new C03PacketPlayer.C06PacketPlayerPosLook(thePlayer.posX, thePlayer.boundingBox.minY,
                             thePlayer.posY, thePlayer.posZ,
                             p_147258_1_.func_148931_f(), p_147258_1_.func_148930_g(),
-                            p_147258_1_.func_148929_h()),
-                    new GenericFutureListener[0]);
+                            p_147258_1_.func_148929_h())
+            );
         }
 
         if (!this.doneLoadingTerrain) {
@@ -533,7 +526,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                 thePlayer.prevPosZ = thePlayer.posZ;
             }
             this.doneLoadingTerrain = true;
-            this.gameController.displayGuiScreen((GuiScreen) null);
+            this.gameController.displayGuiScreen(null);
         }
     }
 
@@ -564,7 +557,6 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                             Block.getBlockById(var8), var9);
                 }
             } catch (IOException var13) {
-                ;
             }
         }
     }
@@ -625,7 +617,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
      * reason for termination
      */
     public void onDisconnect(IChatComponent p_147231_1_) {
-        this.gameController.loadWorld((WorldClient) null);
+        this.gameController.loadWorld(null);
 
         if (this.guiScreenServer != null) {
 
@@ -642,12 +634,12 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
     }
 
     public void addToSendQueue(Packet p_147297_1_) {
-        this.netManager.scheduleOutboundPacket(p_147297_1_, new GenericFutureListener[0]);
+        this.netManager.scheduleOutboundPacket(p_147297_1_);
     }
 
     public void handleCollectItem(S0DPacketCollectItem p_147246_1_) {
         Entity var2 = this.clientWorldController.getEntityByID(p_147246_1_.func_149354_c());
-        Object var3 = (EntityLivingBase) this.clientWorldController.getEntityByID(p_147246_1_.func_149353_d());
+        Object var3 = this.clientWorldController.getEntityByID(p_147246_1_.func_149353_d());
 
         if (var3 == null) {
             var3 = this.gameController.thePlayer;
@@ -745,9 +737,9 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
 
             var10.setEntityId(p_147281_1_.func_149024_d());
             var10.setPositionAndRotation(var2, var4, var6, var8, var9);
-            var10.motionX = (double) ((float) p_147281_1_.func_149026_i() / 8000.0F);
-            var10.motionY = (double) ((float) p_147281_1_.func_149033_j() / 8000.0F);
-            var10.motionZ = (double) ((float) p_147281_1_.func_149031_k() / 8000.0F);
+            var10.motionX = (float) p_147281_1_.func_149026_i() / 8000.0F;
+            var10.motionY = (float) p_147281_1_.func_149033_j() / 8000.0F;
+            var10.motionZ = (float) p_147281_1_.func_149031_k() / 8000.0F;
             this.clientWorldController.addEntityToWorld(p_147281_1_.func_149024_d(), var10);
             List var14 = p_147281_1_.func_149027_c();
 
@@ -807,9 +799,8 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                 this.gameController.ingameGUI
                         .func_110326_a(
                                 I18n.format("mount.onboard",
-                                        new Object[]{
-                                                GameSettings.getKeyDisplayString(this.gameController,
-                                                        var5.keyBindSneak.getKeyCode())}),
+                                        GameSettings.getKeyDisplayString(this.gameController,
+                                                var5.keyBindSneak.getKeyCode())),
                                 false);
             }
         } else if (p_147243_1_.func_149404_c() == 1 && var2 != null && var2 instanceof EntityLiving living) {
@@ -896,9 +887,9 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         EntityClientPlayerMP thePlayer = this.gameController.thePlayer;
 
         if (thePlayer != null) {
-            thePlayer.motionX += (double) p_147283_1_.func_149149_c();
-            thePlayer.motionY += (double) p_147283_1_.func_149144_d();
-            thePlayer.motionZ += (double) p_147283_1_.func_149147_e();
+            thePlayer.motionX += p_147283_1_.func_149149_c();
+            thePlayer.motionY += p_147283_1_.func_149144_d();
+            thePlayer.motionZ += p_147283_1_.func_149147_e();
         }
     }
 
@@ -1037,8 +1028,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         } else {
             boolean var3 = false;
 
-            if (this.gameController.currentScreen instanceof GuiContainerCreative) {
-                GuiContainerCreative var4 = (GuiContainerCreative) this.gameController.currentScreen;
+            if (this.gameController.currentScreen instanceof GuiContainerCreative var4) {
                 var3 = var4.func_147056_g() != CreativeTabs.tabInventory.getTabIndex();
             }
 
@@ -1261,7 +1251,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                 && S2BPacketChangeGameState.field_149142_a[var3] != null) {
             if (var2 != null)
                 var2.addChatComponentMessage(
-                        new ChatComponentTranslation(S2BPacketChangeGameState.field_149142_a[var3], new Object[0]));
+                        new ChatComponentTranslation(S2BPacketChangeGameState.field_149142_a[var3]));
         }
 
         if (var3 == 1) {
@@ -1282,24 +1272,23 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
             } else if (var4 == 101.0F) {
                 this.gameController.ingameGUI.getChatGUI()
                         .func_146227_a(new ChatComponentTranslation("demo.help.movement",
-                                new Object[]{
-                                        GameSettings.getKeyDisplayString(this.gameController,
-                                                var6.keyBindForward.getKeyCode()),
-                                        GameSettings.getKeyDisplayString(this.gameController,
-                                                var6.keyBindLeft.getKeyCode()),
-                                        GameSettings.getKeyDisplayString(this.gameController,
-                                                var6.keyBindBack.getKeyCode()),
-                                        GameSettings.getKeyDisplayString(this.gameController,
-                                                var6.keyBindRight.getKeyCode())}));
+                                GameSettings.getKeyDisplayString(this.gameController,
+                                        var6.keyBindForward.getKeyCode()),
+                                GameSettings.getKeyDisplayString(this.gameController,
+                                        var6.keyBindLeft.getKeyCode()),
+                                GameSettings.getKeyDisplayString(this.gameController,
+                                        var6.keyBindBack.getKeyCode()),
+                                GameSettings.getKeyDisplayString(this.gameController,
+                                        var6.keyBindRight.getKeyCode())));
             } else if (var4 == 102.0F) {
                 this.gameController.ingameGUI.getChatGUI().func_146227_a(new ChatComponentTranslation("demo.help.jump",
-                        new Object[]{GameSettings.getKeyDisplayString(this.gameController,
-                                var6.keyBindJump.getKeyCode())}));
+                        GameSettings.getKeyDisplayString(this.gameController,
+                                var6.keyBindJump.getKeyCode())));
             } else if (var4 == 103.0F) {
                 this.gameController.ingameGUI.getChatGUI()
                         .func_146227_a(new ChatComponentTranslation("demo.help.inventory",
-                                new Object[]{GameSettings.getKeyDisplayString(this.gameController,
-                                        var6.keyBindInventory.getKeyCode())}));
+                                GameSettings.getKeyDisplayString(this.gameController,
+                                        var6.keyBindInventory.getKeyCode())));
             }
         } else if (var3 == 6) {
             if (var2 != null)
@@ -1451,8 +1440,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
     public void handleTabComplete(S3APacketTabComplete p_147274_1_) {
         String[] var2 = p_147274_1_.func_149630_c();
 
-        if (this.gameController.currentScreen instanceof GuiChat) {
-            GuiChat var3 = (GuiChat) this.gameController.currentScreen;
+        if (this.gameController.currentScreen instanceof GuiChat var3) {
             var3.func_146406_a(var2);
         }
     }
@@ -1489,7 +1477,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                     var5.setRecipes(var6);
                 }
             } catch (IOException var10) {
-                logger.error("Couldn\'t load trade info", var10);
+                logger.error("Couldn't load trade info", var10);
             } finally {
                 var2.release();
             }
@@ -1517,10 +1505,10 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                         if (p_73878_1_)
                             NetHandlerPlayClient.this.gameController.getResourcePackRepository().func_148526_a(var12);
 
-                        NetHandlerPlayClient.this.gameController.displayGuiScreen((GuiScreen) null);
+                        NetHandlerPlayClient.this.gameController.displayGuiScreen(null);
                     }
-                }, I18n.format("multiplayer.texturePrompt.line1", new Object[0]),
-                        I18n.format("multiplayer.texturePrompt.line2", new Object[0]), 0));
+                }, I18n.format("multiplayer.texturePrompt.line1"),
+                        I18n.format("multiplayer.texturePrompt.line2"), 0));
             }
         }
     }
@@ -1572,7 +1560,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         Scoreboard var2 = this.clientWorldController.getScoreboard();
 
         if (p_147254_1_.func_149370_d().length() == 0) {
-            var2.func_96530_a(p_147254_1_.func_149371_c(), (ScoreObjective) null);
+            var2.func_96530_a(p_147254_1_.func_149371_c(), null);
         } else {
             ScoreObjective var3 = var2.getObjective(p_147254_1_.func_149370_d());
             var2.func_96530_a(p_147254_1_.func_149371_c(), var3);
@@ -1635,9 +1623,9 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
      */
     public void handleParticles(S2APacketParticles p_147289_1_) {
         if (p_147289_1_.func_149222_k() == 0) {
-            double var2 = (double) (p_147289_1_.func_149227_j() * p_147289_1_.func_149221_g());
-            double var4 = (double) (p_147289_1_.func_149227_j() * p_147289_1_.func_149224_h());
-            double var6 = (double) (p_147289_1_.func_149227_j() * p_147289_1_.func_149223_i());
+            double var2 = p_147289_1_.func_149227_j() * p_147289_1_.func_149221_g();
+            double var4 = p_147289_1_.func_149227_j() * p_147289_1_.func_149224_h();
+            double var6 = p_147289_1_.func_149227_j() * p_147289_1_.func_149223_i();
             this.clientWorldController.spawnParticle(p_147289_1_.func_149228_c(), p_147289_1_.func_149220_d(),
                     p_147289_1_.func_149226_e(), p_147289_1_.func_149225_f(), var2, var4, var6);
         } else {

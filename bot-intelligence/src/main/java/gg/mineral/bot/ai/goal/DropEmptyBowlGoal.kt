@@ -4,11 +4,16 @@ import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.goal.Goal
+import gg.mineral.bot.api.goal.Sporadic
+import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 
-class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance) {
-    override val isExecuting = false
+class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance), Sporadic, Timebound {
+    override var executing: Boolean = false
+    override var startTime: Long = 0
+    override val maxDuration: Long = 100
+
     override fun shouldExecute(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
@@ -21,9 +26,11 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance) {
         return false
     }
 
-    private fun dropBowl() = pressKey(10, Key.Type.KEY_Q)
+    override fun onStart() {
+        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
+    }
 
-    private fun switchToBowl() {
+    private fun getBowlSlot(): Int {
         var bowlSlot = -1
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
@@ -37,7 +44,7 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance) {
             }
         }
 
-        pressKey(10, Key.Type.valueOf("KEY_" + (bowlSlot + 1)))
+        return bowlSlot
     }
 
     // ─── NEW AIMING LOGIC ──────────────────────────────────────────────
@@ -80,17 +87,26 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance) {
     }
     // ────────────────────────────────────────────────────────────────────
 
-    override fun onTick() {
+    override fun onTick(tick: Tick) {
+        aimAtOptimalTarget()
+        
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
-        aimAtOptimalTarget()
+        val bowlSlot = getBowlSlot()
 
-        val itemStack = inventory.heldItemStack
+        tick.finishIf("Bowl is not in Hotbar", bowlSlot == -1)
 
-        if (itemStack != null && itemStack.item.id == Item.BOWL) this.dropBowl()
-        else if (delayedTasks.isEmpty()) schedule({ this.switchToBowl() }, 50)
+        tick.prerequisite("Switch to Bowl Slot", inventory.heldSlot != bowlSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (bowlSlot + 1)))
+        }
+
+        tick.finishIf("Bowl is not in Hand", inventory.heldItemStack?.item?.id != Item.BOWL)
+
+        tick.execute { pressKey(10, Key.Type.KEY_Q) }
+    }
+
+    override fun onEnd() {
     }
 
     override fun onEvent(event: Event) = false

@@ -4,6 +4,7 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.inv.Inventory
 import gg.mineral.bot.api.inv.InventoryContainer
 import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator
+import gg.mineral.bot.api.world.ClientWorld
 
 interface ClientPlayer : ClientLivingEntity {
     /**
@@ -46,5 +47,5 @@ interface ClientPlayer : ClientLivingEntity {
      *
      * @return the player's motion simulator
      */
-    val motionSimulator: PlayerMotionSimulator
+    fun motionSimulator(world: ClientWorld = this.world): PlayerMotionSimulator
 }

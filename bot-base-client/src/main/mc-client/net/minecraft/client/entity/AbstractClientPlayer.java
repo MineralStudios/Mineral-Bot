@@ -6,6 +6,7 @@ import gg.mineral.bot.api.entity.living.player.ClientPlayer;
 import gg.mineral.bot.api.inv.Inventory;
 import gg.mineral.bot.api.inv.InventoryContainer;
 import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator;
+import gg.mineral.bot.api.world.ClientWorld;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -21,39 +22,19 @@ import net.minecraft.world.World;
 import optifine.CapeUtils;
 import optifine.Config;
 import optifine.PlayerConfigurations;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.io.File;
 
 public abstract class AbstractClientPlayer extends EntityPlayer implements SkinManager.SkinAvailableCallback, ClientPlayer {
     public static final ResourceLocation locationStevePng = new ResourceLocation("textures/entity/steve.png");
+    @Getter
+    private final Minecraft mc;
     private ResourceLocation locationSkin;
     private ResourceLocation locationCape;
     private ResourceLocation locationOfCape = null;
     private String nameClear = null;
-    @Getter
-    private final Minecraft mc;
 
-
-    @Override
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    @Override
-    public InventoryContainer getInventoryContainer() {
-        return inventoryContainer;
-    }
-
-    @Override
-    public float getHunger() {
-        return this.foodStats.getFoodLevel();
-    }
-
-    @Override
-    public String getUsername() {
-        return this.nameClear;
-    }
 
     public AbstractClientPlayer(Minecraft mc, World p_i45074_1_, GameProfile p_i45074_2_) {
         super(p_i45074_1_, p_i45074_2_);
@@ -77,13 +58,59 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
         PlayerConfigurations.getPlayerConfiguration(this);
     }
 
+    @Nullable
+    public static ThreadDownloadImageData getDownloadImageSkin(Minecraft mc, ResourceLocation par0ResourceLocation,
+                                                               String par1Str) {
+        TextureManager var2 = mc.getTextureManager();
+
+        if (var2 == null)
+            return null;
+
+        Object var3 = var2.getTexture(par0ResourceLocation);
+
+        if (var3 == null) {
+            var3 = new ThreadDownloadImageData(mc, null,
+                    String.format("http://skins.minecraft.net/MinecraftSkins/%s.png",
+                            StringUtils.stripControlCodes(par1Str)),
+                    locationStevePng, new ImageBufferDownload());
+            var2.loadTexture(par0ResourceLocation, (ITextureObject) var3);
+        }
+
+        return (ThreadDownloadImageData) var3;
+    }
+
+    public static ResourceLocation getLocationSkin(String par0Str) {
+        return new ResourceLocation("skins/" + StringUtils.stripControlCodes(par0Str));
+    }
+
     @Override
-    public PlayerMotionSimulator getMotionSimulator() {
-        return new gg.mineral.bot.base.client.math.simulation.PlayerMotionSimulator(this.mc, this);
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    @Override
+    public InventoryContainer getInventoryContainer() {
+        return inventoryContainer;
+    }
+
+    @Override
+    public float getHunger() {
+        return this.foodStats.getFoodLevel();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.nameClear;
+    }
+
+    @NotNull
+    @Override
+    public PlayerMotionSimulator motionSimulator(ClientWorld world) {
+        return new gg.mineral.bot.base.client.math.simulation.PlayerMotionSimulator(this.mc, this, world);
     }
 
     public boolean func_152122_n() {
-        return !Config.isShowCapes() ? false : (this.locationOfCape != null ? true : this.locationCape != null);
+        return Config.isShowCapes() && (this.locationOfCape != null || this.locationCape != null);
     }
 
     public boolean func_152123_o() {
@@ -96,31 +123,6 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
 
     public ResourceLocation getLocationCape() {
         return !Config.isShowCapes() ? null : (this.locationOfCape != null ? this.locationOfCape : this.locationCape);
-    }
-
-    @Nullable
-    public static ThreadDownloadImageData getDownloadImageSkin(Minecraft mc, ResourceLocation par0ResourceLocation,
-                                                               String par1Str) {
-        TextureManager var2 = mc.getTextureManager();
-
-        if (var2 == null)
-            return null;
-
-        Object var3 = var2.getTexture(par0ResourceLocation);
-
-        if (var3 == null) {
-            var3 = new ThreadDownloadImageData(mc, (File) null,
-                    String.format("http://skins.minecraft.net/MinecraftSkins/%s.png",
-                            new Object[]{StringUtils.stripControlCodes(par1Str)}),
-                    locationStevePng, new ImageBufferDownload());
-            var2.loadTexture(par0ResourceLocation, (ITextureObject) var3);
-        }
-
-        return (ThreadDownloadImageData) var3;
-    }
-
-    public static ResourceLocation getLocationSkin(String par0Str) {
-        return new ResourceLocation("skins/" + StringUtils.stripControlCodes(par0Str));
     }
 
     public void func_152121_a(Type p_152121_1_, ResourceLocation p_152121_2_) {
@@ -153,13 +155,11 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
             try {
                 field_152630_a[Type.SKIN.ordinal()] = 1;
             } catch (NoSuchFieldError var2) {
-                ;
             }
 
             try {
                 field_152630_a[Type.CAPE.ordinal()] = 2;
             } catch (NoSuchFieldError var1) {
-                ;
             }
         }
     }

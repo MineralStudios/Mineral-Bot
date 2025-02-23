@@ -9,6 +9,8 @@ import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.entity.throwable.ClientThrowableEntity
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.entity.EntityDestroyEvent
+import gg.mineral.bot.api.goal.Sporadic
+import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.inv.item.ItemStack
@@ -24,39 +26,19 @@ import org.apache.commons.math3.optim.univariate.BrentOptimizer
 import org.apache.commons.math3.optim.univariate.SearchInterval
 import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction
 
-class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
+    override val maxDuration: Long = 100
+    override var startTime: Long = 0
+    override var executing: Boolean = false
     private var lastPotTick = 0
     private var pottingTicks = 0
+        set(value) {
+            if (field > 0 && value <= 0) this.finish()
+            field = value
+        }
     private var thrownYaw = 0f
-    override val isExecuting: Boolean
-        get() = pottingTicks > 0 || inventoryOpen
 
     private var distanceFromEnemy = Double.MAX_VALUE
-
-    private fun switchToPot() {
-        var potSlot = -1
-        val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory
-
-        for (i in 0..35) {
-            val itemStack = inventory.getItemStackAt(i) ?: continue
-            val item = itemStack.item
-            if (item.id == Item.POTION && itemStack.durability == 16421) {
-                potSlot = i
-                break
-            }
-        }
-
-        if (potSlot > 8) return moveItemToHotbar(potSlot, inventory)
-
-        if (inventoryOpen) {
-            inventoryOpen = false
-            pressKey(10, Key.Type.KEY_ESCAPE)
-            return
-        }
-
-        pressKey(10, Key.Type.valueOf("KEY_" + (potSlot + 1)))
-    }
 
     override fun shouldExecute(): Boolean {
         if (clientInstance.currentTick - lastPotTick < 20) return false
@@ -65,10 +47,16 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         val inventory = fakePlayer.inventory
 
         if (!inventory.contains { it: ItemStack ->
-                it.item.id == Item.POTION && it.durability == 16421
+                isHealthPot(it)
             }) return false
 
         return fakePlayer.health < 12 && (fakePlayer.health < 5 || distanceAwayFromEnemies() > 3.8)
+    }
+
+    override fun onStart() {
+        // Move forward; clear other directional keys.
+        pressKey(Key.Type.KEY_W)
+        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
     }
 
     private fun angleAwayFromEnemies(): Float {
@@ -129,11 +117,6 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         mouse.changeYaw(angleDifference(rotYaw, yaw))
     }
 
-    private fun PlayerMotionSimulator.setMousePitch(pitch: Float) {
-        val rotPitch = this.pitch
-        mouse.changePitch(angleDifference(rotPitch, pitch))
-    }
-
     /**
      * Checks whether the bot is “at a wall” by sampling a block a short distance
      * in the direction the bot is facing.
@@ -158,44 +141,85 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         return block.id != Block.AIR
     }
 
-    override fun onTick() {
+    private fun isHealthPot(itemStack: ItemStack): Boolean {
+        val item = itemStack.item
+        return item.id == Item.POTION && itemStack.durability == 16421
+    }
+
+    private fun getHealthPotSlot(): Int {
+        var healthPotSlot = -1
         val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory
 
-        // Move forward; clear other directional keys.
-        pressKey(Key.Type.KEY_W)
-        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
+        for (i in 0..35) {
+            val itemStack = inventory.getItemStackAt(i) ?: continue
+            if (isHealthPot(itemStack)) {
+                healthPotSlot = i
+                break
+            }
+        }
 
-        // When not potting, adjust aim based on movement and enemy positions.
-        if (!inventoryOpen) {
-            val pitch = minimizePitch(fakePlayer) { it.airTimeTicks.toDouble() }
-            setMousePitch(pitch)
+        return healthPotSlot
+    }
 
-            if (pottingTicks-- > 0) return setMouseYaw(thrownYaw)
+    override fun onTick(tick: Tick) {
+        val healthSlot = getHealthPotSlot()
+        val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory
+
+        tick.finishIf("No Valid Health Pot Found", healthSlot == -1)
+
+        tick.prerequisite("In Hotbar", healthSlot <= 8) {
+            moveItemToHotbar(healthSlot, inventory)
+        }
+
+        tick.prerequisite("Inventory Closed", !inventoryOpen) {
+            inventoryOpen = false
+        }
+
+        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == healthSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (healthSlot + 1)))
+        }
+
+        tick.finishIf(
+            "Not Holding Valid Health Pot",
+            inventory.heldItemStack?.let { isHealthPot(it) } == false
+        )
+
+        tick.execute {
+            if (pottingTicks-- > 0) setMouseYaw(thrownYaw)
             else setMouseYaw(angleAwayFromEnemies())
         }
 
-        val inventory = fakePlayer.inventory
-        val itemStack: ItemStack? = inventory.heldItemStack
-        if (itemStack == null || itemStack.item.id != Item.POTION || itemStack.durability != 16421 || inventoryOpen) switchToPot()
-        else {
+        tick.execute {
+            val worldCopy = fakePlayer.world.deepCopy()
+
+            tick.executeAsync(0, {
+                minimizePitch(fakePlayer, worldCopy) { it.airTimeTicks.toDouble() }
+            }) {
+                setMousePitch(it)
+            }
+
+
             val closestEnemy = closestEnemy()
             val distanceCondition = (closestEnemy?.distance3DTo(fakePlayer) ?: Double.MAX_VALUE) >= distanceFromEnemy &&
                     distanceFromEnemy > 3.6
-            val simulator = fakePlayer.motionSimulator
-            simulator.keyboard.pressKey(Key.Type.KEY_W)
-            simulator.keyboard.unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
-            simulator.setMouseYaw(fakePlayer.yaw)
+            val simulator = fakePlayer.motionSimulator(world = worldCopy).apply {
+                keyboard.pressKey(Key.Type.KEY_W)
+                keyboard.unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
+                setMouseYaw(fakePlayer.yaw)
+            }
 
-            val enemySimulator = closestEnemy?.motionSimulator
+            val enemySimulator = closestEnemy?.motionSimulator(world = worldCopy)
 
             val trajectory = object : SplashPotionTrajectory(
-                fakePlayer.world,
+                worldCopy,
                 fakePlayer.x,
                 fakePlayer.y + fakePlayer.eyeHeight,
                 fakePlayer.z,
                 fakePlayer.yaw,
                 fakePlayer.pitch, { x, y, z ->
-                    hasHitBlock(fakePlayer.world, x, y, z) && run {
+                    hasHitBlock(worldCopy, x, y, z) && run {
                         val distance = simulator.distance3DToSq(x, y, z)
 
                         if (distance < 16.0) 1.0 - sqrt(distance) / 4.0 > 0.5
@@ -215,36 +239,49 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
                 }
             }
 
-            if (trajectory.compute(1000) == Trajectory.Result.VALID && (isAtWall() || distanceCondition || fakePlayer.health <= 6f)) {
+            tick.asyncPrerequisite(
+                1,
+                "Potting",
+                pottingTicks > 0,
+                { trajectory.compute(1000) == Trajectory.Result.VALID && (isAtWall() || distanceCondition || fakePlayer.health <= 6f) }) {
+                if (!it) return@asyncPrerequisite
                 thrownYaw = fakePlayer.yaw
                 lastPotTick = clientInstance.currentTick
                 pottingTicks = 40
                 pressButton(10, MouseButton.Type.RIGHT_CLICK)
             }
         }
+
         distanceFromEnemy = distanceAwayFromEnemies()
+    }
+
+    override fun onEnd() {
+        if (inventoryOpen) {
+            inventoryOpen = false
+        }
     }
 
     private fun minimizePitch(
         fakePlayer: FakePlayer,
+        worldCopy: ClientWorld = fakePlayer.world,
         valueFunction: (SplashPotionTrajectory) -> Double
     ): Float {
         val objective = UnivariateFunction { pitch ->
-            val simulator = fakePlayer.motionSimulator
+            val simulator = fakePlayer.motionSimulator(world = worldCopy)
             simulator.keyboard.pressKey(Key.Type.KEY_W)
             simulator.keyboard.unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
             simulator.setMouseYaw(fakePlayer.yaw)
 
             val enemy = closestEnemy()
-            val enemySimulator = enemy?.motionSimulator
+            val enemySimulator = enemy?.motionSimulator(world = worldCopy)
             val trajectory = object : SplashPotionTrajectory(
-                fakePlayer.world,
+                worldCopy,
                 fakePlayer.x,
                 fakePlayer.y + fakePlayer.eyeHeight,
                 fakePlayer.z,
                 fakePlayer.yaw,
                 pitch.toFloat(), { x, y, z ->
-                    hasHitBlock(fakePlayer.world, x, y, z) && run {
+                    hasHitBlock(worldCopy, x, y, z) && run {
                         val distance = simulator.distance3DToSq(x, y, z)
 
                         if (distance < 16.0) 1.0 - sqrt(distance) / 4.0 > 0.5
@@ -271,11 +308,14 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
         val optimizer = BrentOptimizer(1e-10, 1e-14)
 
+        fun estimatePitch(motX: Double, motZ: Double) =
+            fastArcTan2(motZ, sqrt(motX * motX + motZ * motZ)) * 180 / Math.PI
+
         val result = optimizer.optimize(
             MaxEval(1000),
             UnivariateObjectiveFunction(objective),
             GoalType.MINIMIZE,
-            SearchInterval(-90.0, 90.0)
+            SearchInterval(-90.0, 90.0, estimatePitch(fakePlayer.motionX, fakePlayer.motionZ))
         )
 
         return result.value.toFloat()

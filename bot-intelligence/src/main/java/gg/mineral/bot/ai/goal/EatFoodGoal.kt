@@ -6,13 +6,16 @@ import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
+import gg.mineral.bot.api.goal.Sporadic
+import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 
-class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
+    override var executing: Boolean = false
+    override var startTime: Long = 0
+    override val maxDuration: Long = 100
     private var eating = false
-    override val isExecuting: Boolean
-        get() = eating || inventoryOpen
 
     override fun shouldExecute(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
@@ -20,6 +23,11 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
         val shouldExecute = hasFood() && fakePlayer.hunger < 19 && fakePlayer.health > 16.0
         logger.debug("Checking shouldExecute: $shouldExecute")
         return shouldExecute
+    }
+
+    override fun onStart() {
+        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
+        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
     }
 
     init {
@@ -33,11 +41,6 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
         val hasFood = inventory.contains(Item.Type.FOOD)
         logger.debug("Has food: $hasFood")
         return hasFood
-    }
-
-    private fun eatFood() {
-        this.eating = true
-        logger.debug("Started eating")
     }
 
     private fun angleAwayFromEnemies(): Float {
@@ -71,14 +74,11 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
             } ?: Double.MAX_VALUE
     }
 
-    private fun switchToFood() {
-        eating = false
-        logger.debug("Switching to food")
+    private fun getFoodSlot(): Int {
         var foodSlot = -1
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        // TODO: Choose best availible food
         for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
             val item = itemStack.item
@@ -88,60 +88,52 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
             }
         }
 
-        if (foodSlot > 8) return moveItemToHotbar(foodSlot, inventory)
-
-        if (inventoryOpen) {
-            inventoryOpen = false
-            pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug("Closing inventory after switching to food")
-            return
-        }
-
-        pressKey(10, Key.Type.valueOf("KEY_" + (foodSlot + 1)))
-        logger.debug("Switched to food slot: " + (foodSlot + 1))
+        return foodSlot
     }
 
-    override fun onTick() {
+    override fun onTick(tick: Tick) {
+        val foodSlot = getFoodSlot()
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
-        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
+        tick.finishIf("Valid Food Found", foodSlot == -1)
 
-        val isHungerSatisfied = fakePlayer.hunger >= 19
+        tick.finishIf("Hunger Satisfied", fakePlayer.hunger >= 19)
 
-        if (eating && isHungerSatisfied) {
-            eating = false
-            logger.debug("Stopped eating as hunger is satisfied")
+        tick.prerequisite("In Hotbar", foodSlot <= 8) {
+            moveItemToHotbar(foodSlot, inventory)
         }
 
-        if (!eating) {
-            unpressButton(MouseButton.Type.RIGHT_CLICK)
-            unpressKey(Key.Type.KEY_SPACE)
-            logger.debug("Unpressed RIGHT_CLICK as eating stopped")
+        tick.prerequisite("Inventory Closed", !inventoryOpen) { inventoryOpen = false }
+
+        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == foodSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (foodSlot + 1)))
         }
 
-        if (isHungerSatisfied) return
+        tick.finishIf(
+            "Not Holding Valid Food",
+            inventory.heldItemStack?.let { Item.Type.FOOD.isType(it.item.id) } == false)
 
-        if (eating) {
+        tick.prerequisite("Eating", eating && getButton(MouseButton.Type.RIGHT_CLICK).isPressed) {
+            pressButton(MouseButton.Type.RIGHT_CLICK)
+            eating = true
+        }
+
+        tick.execute {
             if (distanceAwayFromEnemies() < 16) {
                 setMouseYaw(angleAwayFromEnemies())
-                pressKey(Key.Type.KEY_SPACE)
+                pressKey(Key.Type.KEY_SPACE, Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
             }
-            pressButton(MouseButton.Type.RIGHT_CLICK)
-            logger.debug("Pressed RIGHT_CLICK for eating")
         }
+    }
 
-        if (!delayedTasks.isEmpty()) return
-
-        val itemStack = inventory.heldItemStack
-
-        if (itemStack != null && Item.Type.FOOD.isType(itemStack.item.id) && !inventoryOpen) {
-            this.eatFood()
-            logger.debug("Scheduled eatFood task")
-        } else {
-            schedule({ this.switchToFood() }, 100)
-            logger.debug("Scheduled switchToFood task")
+    override fun onEnd() {
+        eating = false
+        unpressButton(MouseButton.Type.RIGHT_CLICK)
+        unpressKey(Key.Type.KEY_SPACE)
+        if (inventoryOpen) {
+            inventoryOpen = false
+            logger.debug("Closing inventory after eating")
         }
     }
 

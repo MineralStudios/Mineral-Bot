@@ -4,12 +4,15 @@ import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.goal.Sporadic
+import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 
-class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
-    override val isExecuting: Boolean
-        get() = inventoryOpen
+class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
+    override val maxDuration: Long = 100
+    override var startTime: Long = 0
+    override var executing: Boolean = false
 
     override fun shouldExecute(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
@@ -17,7 +20,10 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
 
         val missingArmorPiece = missingArmorPiece()
 
-        return canSeeEnemy() && missingArmorPiece != Item.Type.NONE && inventory.contains(missingArmorPiece)
+        return missingArmorPiece != Item.Type.NONE && inventory.contains(missingArmorPiece)
+    }
+
+    override fun onStart() {
     }
 
     private fun missingArmorPiece(): Item.Type {
@@ -36,25 +42,13 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
         return if (boots == null) Item.Type.BOOTS else Item.Type.NONE
     }
 
-    private fun canSeeEnemy(): Boolean {
-        val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world
-        return world.entities.any {
-            !clientInstance.configuration.friendlyUUIDs
-                .contains(it.uuid)
-        }
-    }
-
-    private fun applyArmor() = pressButton(10, MouseButton.Type.RIGHT_CLICK)
-
-    private fun switchToArmor() {
+    private fun getArmorSlot(): Int {
         var armorSlot = -1
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
         val missingArmorPiece = missingArmorPiece()
 
-        // Search hotbar
         for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
             val item = itemStack.item
@@ -64,30 +58,42 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
             }
         }
 
-        if (armorSlot > 8) return moveItemToHotbar(armorSlot, inventory)
-
-        if (inventoryOpen) {
-            inventoryOpen = false
-            pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug("Closing inventory after switching to armor")
-            return
-        }
-
-        pressKey(10, Key.Type.valueOf("KEY_" + (armorSlot + 1)))
+        return armorSlot
     }
 
-    override fun onTick() {
+    override fun onTick(tick: Tick) {
+        val armorSlot = getArmorSlot()
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        val itemStack = inventory.heldItemStack
+        tick.finishIf("No Valid Armor Found", armorSlot == -1)
 
-        val missingArmorPiece = missingArmorPiece()
+        tick.prerequisite("In Hotbar", armorSlot <= 8) {
+            moveItemToHotbar(armorSlot, inventory)
+        }
 
-        if (!delayedTasks.isEmpty()) return
+        tick.prerequisite("Inventory Closed", !inventoryOpen) {
+            inventoryOpen = false
+        }
 
-        if (itemStack != null && missingArmorPiece.isType(itemStack.item.id) && !inventoryOpen) this.applyArmor()
-        else schedule({ this.switchToArmor() }, 100)
+        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == armorSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (armorSlot + 1)))
+        }
+
+        tick.finishIf(
+            "Not Holding Valid Armor",
+            inventory.heldItemStack?.let { missingArmorPiece().isType(it.item.id) } == false)
+
+        tick.execute {
+            pressButton(10, MouseButton.Type.RIGHT_CLICK)
+        }
+    }
+
+    override fun onEnd() {
+        if (inventoryOpen) {
+            inventoryOpen = false
+            logger.debug("Closing inventory after replacing armor")
+        }
     }
 
     override fun onEvent(event: Event) = false

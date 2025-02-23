@@ -14,8 +14,6 @@ import gg.mineral.bot.api.world.block.Block
 
 class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
     private var target: ClientPlayer? = null
-    override val isExecuting: Boolean
-        get() = inventoryOpen
 
     private val meanDelay = (1000 / clientInstance.configuration.averageCps).toLong()
     private val deviation =
@@ -26,39 +24,6 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
     private var lastSprintResetTick = 0
 
     override fun shouldExecute() = true
-
-    private fun switchToBestMeleeWeapon() {
-        var bestMeleeWeaponSlot = 0
-        var damage = 0.0
-        val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory
-
-
-        // Look for a non-splash potion in one of the 36 slots
-        invLoop@ for (i in 0..35) {
-            val itemStack = inventory.getItemStackAt(i) ?: continue
-            val attackDamage = itemStack.attackDamage
-            if (attackDamage > damage) {
-                bestMeleeWeaponSlot = i
-                damage = attackDamage
-            }
-        }
-
-        // If the potion is not in the hotbar (slots 0-8)
-        if (bestMeleeWeaponSlot > 8) return moveItemToHotbar(bestMeleeWeaponSlot, inventory)
-
-        if (inventoryOpen) {
-            inventoryOpen = false
-            pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug("Closing inventory after switching to best melee weapon")
-            return
-        }
-
-        if (inventory.heldSlot != bestMeleeWeaponSlot && !inventoryOpen) pressKey(
-            10,
-            Key.Type.valueOf("KEY_" + (bestMeleeWeaponSlot + 1))
-        )
-    }
 
     private fun findTarget() {
         val targetSearchRange = clientInstance.configuration.targetSearchRange
@@ -440,12 +405,48 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         EXTRA_OFFENSIVE, OFFENSIVE, DEFENSIVE, EXTRA_DEFENSIVE
     }
 
-    override fun onTick() {
+    private fun getBestMeleeWeaponSlot(): Int {
+        var bestMeleeWeaponSlot = 0
+        var damage = 0.0
+        val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory
+
+        // Look for a non-splash potion in one of the 36 slots
+        invLoop@ for (i in 0..35) {
+            val itemStack = inventory.getItemStackAt(i) ?: continue
+            val attackDamage = itemStack.attackDamage
+            if (attackDamage > damage) {
+                bestMeleeWeaponSlot = i
+                damage = attackDamage
+            }
+        }
+
+        return bestMeleeWeaponSlot
+    }
+
+    override fun onTick(tick: Tick) {
+
         pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
 
-        findTarget()
-        switchToBestMeleeWeapon()
-        aimAtTarget()
+
+        val meleeWeaponSlot = getBestMeleeWeaponSlot()
+        val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory
+
+        tick.prerequisite("In Hotbar", meleeWeaponSlot <= 8) {
+            moveItemToHotbar(meleeWeaponSlot, inventory)
+        }
+
+        tick.prerequisite("Inventory Closed", !inventoryOpen) { inventoryOpen = false }
+
+        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == meleeWeaponSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (meleeWeaponSlot + 1)))
+        }
+
+        tick.execute {
+            findTarget()
+            aimAtTarget()
+        }
 
         if (this.target == null && timeMillis() - lastBounceTime > 1000) if (isCollidingWithWall) reflectOffWall()
     }

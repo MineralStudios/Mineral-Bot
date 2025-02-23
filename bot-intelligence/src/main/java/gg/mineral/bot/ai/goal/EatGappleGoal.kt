@@ -8,13 +8,16 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
+import gg.mineral.bot.api.goal.Sporadic
+import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 
-class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
+    override var executing: Boolean = false
+    override var startTime: Long = 0
+    override val maxDuration: Long = 100
     private var eating = false
-    override val isExecuting: Boolean
-        get() = eating || inventoryOpen
 
     override fun shouldExecute(): Boolean {
         var hasRegen = false
@@ -31,6 +34,11 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
             canSeeEnemy() && hasGapple() && !hasRegen && (fakePlayer.health < 10 || distanceAwayFromEnemies() in 8.0..16.0)
         logger.debug("Checking shouldExecute: $shouldExecute")
         return shouldExecute
+    }
+
+    override fun onStart() {
+        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
+        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
     }
 
     init {
@@ -56,40 +64,6 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
         }
         logger.debug("Checking canSeeEnemy: $canSeeEnemy")
         return canSeeEnemy
-    }
-
-    private fun eatGapple() {
-        this.eating = true
-        logger.debug("Started eating golden apple")
-    }
-
-    private fun switchToGapple() {
-        eating = false
-        logger.debug("Switching to golden apple")
-        var gappleSlot = -1
-        val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory
-
-        for (i in 0..35) {
-            val itemStack = inventory.getItemStackAt(i) ?: continue
-            val item = itemStack.item
-            if (item.id == Item.GOLDEN_APPLE) {
-                gappleSlot = i
-                break
-            }
-        }
-
-        if (gappleSlot > 8) return moveItemToHotbar(gappleSlot, inventory)
-
-        if (inventoryOpen) {
-            inventoryOpen = false
-            pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug("Closing inventory after switching to golden apple")
-            return
-        }
-
-        pressKey(10, Key.Type.valueOf("KEY_" + (gappleSlot + 1)))
-        logger.debug("Switched to golden apple slot: " + (gappleSlot + 1))
     }
 
     private fun angleAwayFromEnemies(): Float {
@@ -123,54 +97,66 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
             } ?: Double.MAX_VALUE
     }
 
-    override fun onTick() {
+    private fun getGappleSlot(): Int {
+        var gappleSlot = -1
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
-        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
-
-        var hasRegen = false
-        val regenId = PotionEffectType.REGENERATION.id
-        val activeIds = fakePlayer.activePotionEffectIds
-
-        for (i in activeIds.indices) if (activeIds[i] == regenId) {
-            hasRegen = true
-            break
+        for (i in 0..35) {
+            val itemStack = inventory.getItemStackAt(i) ?: continue
+            val item = itemStack.item
+            if (item.id == Item.GOLDEN_APPLE) {
+                gappleSlot = i
+                break
+            }
         }
 
-        if (eating && hasRegen) {
-            eating = false
-            logger.debug("Stopped eating as regeneration is active")
+        return gappleSlot
+    }
+
+    override fun onTick(tick: Tick) {
+        val gappleSlot = getGappleSlot()
+        val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory
+
+        tick.finishIf("Valid gapple slot not found", gappleSlot == -1)
+
+        tick.prerequisite("In Hotbar", gappleSlot <= 8) {
+            moveItemToHotbar(gappleSlot, inventory)
         }
 
-        if (!eating) {
-            unpressButton(MouseButton.Type.RIGHT_CLICK)
-            unpressKey(Key.Type.KEY_SPACE)
-            logger.debug("Unpressed RIGHT_CLICK as eating stopped")
+        tick.prerequisite("Inventory Closed", !inventoryOpen) {
+            inventoryOpen = false
         }
 
-        if (hasRegen) return
+        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == gappleSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (gappleSlot + 1)))
+        }
 
-        if (eating) {
+        tick.finishIf("Not Holding Valid Gapple", inventory.heldItemStack?.item?.id != Item.GOLDEN_APPLE)
+
+        tick.finishIf("Has Regen", fakePlayer.activePotionEffectIds.any { it == PotionEffectType.REGENERATION.id })
+
+        tick.prerequisite("Eating", eating && getButton(MouseButton.Type.RIGHT_CLICK).isPressed) {
+            pressButton(MouseButton.Type.RIGHT_CLICK)
+            eating = true
+        }
+
+        tick.execute {
             if (distanceAwayFromEnemies() < 16) {
                 setMouseYaw(angleAwayFromEnemies())
-                pressKey(Key.Type.KEY_SPACE)
+                pressKey(Key.Type.KEY_SPACE, Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
             }
-            pressButton(MouseButton.Type.RIGHT_CLICK)
-            logger.debug("Pressed RIGHT_CLICK for eating golden apple")
         }
+    }
 
-        if (!delayedTasks.isEmpty()) return
-
-        val itemStack = inventory.heldItemStack
-
-        if (itemStack != null && itemStack.item.id == Item.GOLDEN_APPLE && !inventoryOpen) {
-            this.eatGapple()
-            logger.debug("Scheduled eatGapple task")
-        } else {
-            schedule({ this.switchToGapple() }, 100)
-            logger.debug("Scheduled switchToGapple task")
+    override fun onEnd() {
+        eating = false
+        unpressButton(MouseButton.Type.RIGHT_CLICK)
+        unpressKey(Key.Type.KEY_SPACE)
+        if (inventoryOpen) {
+            inventoryOpen = false
+            logger.debug("Closing inventory after eating golden apple")
         }
     }
 

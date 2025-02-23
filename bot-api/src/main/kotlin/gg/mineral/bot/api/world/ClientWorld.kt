@@ -38,4 +38,11 @@ interface ClientWorld {
      * @return the block at the specified coordinates
      */
     fun getBlockAt(x: Double, y: Double, z: Double): Block
+
+    /**
+     * Creates a deep copy of this world.
+     *
+     * @return a deep copy of this world
+     */
+    fun deepCopy(): ClientWorld
 }

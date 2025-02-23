@@ -41,14 +41,12 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
      * for example).
      */
     public int animationsToGo;
-    private Item item;
-
     /**
      * A NBTTagMap containing data about an ItemStack. Can only be used for non
      * stackable items
      */
     public NBTTagCompound stackTagCompound;
-
+    private Item item;
     /**
      * Damage dealt to the item or number of use. Raise when using items.
      */
@@ -88,13 +86,34 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
             this.itemDamage = 0;
     }
 
+    private ItemStack() {
+    }
+
     public static ItemStack loadItemStackFromNBT(NBTTagCompound p_77949_0_) {
         ItemStack var1 = new ItemStack();
         var1.readFromNBT(p_77949_0_);
         return var1.getItem() != null ? var1 : null;
     }
 
-    private ItemStack() {
+    public static boolean areItemStackTagsEqual(ItemStack p_77970_0_, ItemStack p_77970_1_) {
+        return p_77970_0_ == null
+                && p_77970_1_ == null || (p_77970_0_ != null && p_77970_1_ != null && ((p_77970_0_.stackTagCompound != null || p_77970_1_.stackTagCompound == null) && (p_77970_0_.stackTagCompound == null
+                || p_77970_0_.stackTagCompound.equals(p_77970_1_.stackTagCompound))));
+    }
+
+    /**
+     * compares ItemStack argument1 with ItemStack argument2; returns true if both
+     * ItemStacks are equal
+     */
+    public static boolean areItemStacksEqual(ItemStack p_77989_0_, ItemStack p_77989_1_) {
+        return p_77989_0_ == null && p_77989_1_ == null || (p_77989_0_ != null && p_77989_1_ != null && p_77989_0_.isItemStackEqual(p_77989_1_));
+    }
+
+    /**
+     * Creates a copy of a ItemStack, a null parameters will return a null.
+     */
+    public static ItemStack copyItemStack(ItemStack p_77944_0_) {
+        return p_77944_0_ == null ? null : p_77944_0_.copy();
     }
 
     /**
@@ -209,8 +228,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
      * true if this itemStack is damageable
      */
     public boolean isItemStackDamageable() {
-        return this.item.getMaxDamage() <= 0 ? false
-                : !this.hasTagCompound() || !this.getTagCompound().getBoolean("Unbreakable");
+        return this.item.getMaxDamage() > 0 && (!this.hasTagCompound() || !this.getTagCompound().getBoolean("Unbreakable"));
     }
 
     public boolean getHasSubtypes() {
@@ -301,8 +319,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
                     p_77972_2_.renderBrokenItemStack(this);
                     --this.stackSize;
 
-                    if (p_77972_2_ instanceof EntityPlayer) {
-                        EntityPlayer var3 = (EntityPlayer) p_77972_2_;
+                    if (p_77972_2_ instanceof EntityPlayer var3) {
                         var3.addStat(StatList.objectBreakStats[Item.getIdFromItem(this.item)], 1);
 
                         if (this.stackSize == 0 && this.getItem() instanceof ItemBow) {
@@ -362,37 +379,13 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
         return var1;
     }
 
-    public static boolean areItemStackTagsEqual(ItemStack p_77970_0_, ItemStack p_77970_1_) {
-        return p_77970_0_ == null
-                && p_77970_1_ == null
-                ? true
-                : (p_77970_0_ != null && p_77970_1_ != null
-                ? (p_77970_0_.stackTagCompound == null && p_77970_1_.stackTagCompound != null ? false
-                : p_77970_0_.stackTagCompound == null
-                || p_77970_0_.stackTagCompound.equals(p_77970_1_.stackTagCompound))
-                : false);
-    }
-
-    /**
-     * compares ItemStack argument1 with ItemStack argument2; returns true if both
-     * ItemStacks are equal
-     */
-    public static boolean areItemStacksEqual(ItemStack p_77989_0_, ItemStack p_77989_1_) {
-        return p_77989_0_ == null && p_77989_1_ == null ? true
-                : (p_77989_0_ != null && p_77989_1_ != null ? p_77989_0_.isItemStackEqual(p_77989_1_) : false);
-    }
-
     /**
      * compares ItemStack argument to the instance ItemStack; returns true if both
      * ItemStacks are equal
      */
     private boolean isItemStackEqual(ItemStack p_77959_1_) {
-        return this.stackSize != p_77959_1_.stackSize ? false
-                : (this.item != p_77959_1_.item ? false
-                : (this.itemDamage != p_77959_1_.itemDamage ? false
-                : (this.stackTagCompound == null && p_77959_1_.stackTagCompound != null ? false
-                : this.stackTagCompound == null
-                || this.stackTagCompound.equals(p_77959_1_.stackTagCompound))));
+        return this.stackSize == p_77959_1_.stackSize && (this.item == p_77959_1_.item && (this.itemDamage == p_77959_1_.itemDamage && ((this.stackTagCompound != null || p_77959_1_.stackTagCompound == null) && (this.stackTagCompound == null
+                || this.stackTagCompound.equals(p_77959_1_.stackTagCompound)))));
     }
 
     /**
@@ -406,13 +399,6 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
 
     public String getUnlocalizedName() {
         return this.item.getUnlocalizedName(this);
-    }
-
-    /**
-     * Creates a copy of a ItemStack, a null parameters will return a null.
-     */
-    public static ItemStack copyItemStack(ItemStack p_77944_0_) {
-        return p_77944_0_ == null ? null : p_77944_0_.copy();
     }
 
     public String toString() {
@@ -468,16 +454,16 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
         return this.stackTagCompound;
     }
 
-    public NBTTagList getEnchantmentTagList() {
-        return this.stackTagCompound == null ? null : this.stackTagCompound.getTagList("ench", 10);
-    }
-
     /**
      * Assigns a NBTTagCompound to the ItemStack, minecraft validates that only
      * non-stackable items can have it.
      */
     public void setTagCompound(NBTTagCompound p_77982_1_) {
         this.stackTagCompound = p_77982_1_;
+    }
+
+    public NBTTagList getEnchantmentTagList() {
+        return this.stackTagCompound == null ? null : this.stackTagCompound.getTagList("ench", 10);
     }
 
     /**
@@ -520,7 +506,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
                     this.stackTagCompound.removeTag("display");
 
                     if (this.stackTagCompound.hasNoTags()) {
-                        this.setTagCompound((NBTTagCompound) null);
+                        this.setTagCompound(null);
                     }
                 }
             }
@@ -531,9 +517,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
      * Returns true if the itemstack has a display name
      */
     public boolean hasDisplayName() {
-        return this.stackTagCompound == null ? false
-                : (!this.stackTagCompound.func_150297_b("display", 10) ? false
-                : this.stackTagCompound.getCompoundTag("display").func_150297_b("Name", 8));
+        return this.stackTagCompound != null && (this.stackTagCompound.func_150297_b("display", 10) && this.stackTagCompound.getCompoundTag("display").func_150297_b("Name", 8));
     }
 
     /**
@@ -561,9 +545,9 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
 
             if (this.getHasSubtypes()) {
                 var4 = var4 + String.format("#%04d/%d%s",
-                        new Object[]{Integer.valueOf(var6), Integer.valueOf(this.itemDamage), var5});
+                        Integer.valueOf(var6), Integer.valueOf(this.itemDamage), var5);
             } else {
-                var4 = var4 + String.format("#%04d%s", new Object[]{Integer.valueOf(var6), var5});
+                var4 = var4 + String.format("#%04d%s", Integer.valueOf(var6), var5);
             }
         } else if (!this.hasDisplayName() && this.item == Items.filled_map) {
             var4 = var4 + " #" + this.itemDamage;
@@ -622,7 +606,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
                 double var9 = var20.getAmount();
 
                 if (var20.getID() == Item.field_111210_e) {
-                    var9 += (double) EnchantmentHelper.func_152377_a(this, EnumCreatureAttribute.UNDEFINED);
+                    var9 += EnchantmentHelper.func_152377_a(this, EnumCreatureAttribute.UNDEFINED);
                 }
 
                 double var11;
@@ -637,13 +621,13 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
                     var3.add(EnumChatFormatting.BLUE + StatCollector.translateToLocalFormatted(
                             "attribute.modifier.plus." + var20.getOperation(),
                             new Object[]{field_111284_a.format(var11),
-                                    StatCollector.translateToLocal("attribute.name." + (String) var18.getKey())}));
+                                    StatCollector.translateToLocal("attribute.name." + var18.getKey())}));
                 } else if (var9 < 0.0D) {
                     var11 *= -1.0D;
                     var3.add(EnumChatFormatting.RED + StatCollector.translateToLocalFormatted(
                             "attribute.modifier.take." + var20.getOperation(),
                             new Object[]{field_111284_a.format(var11),
-                                    StatCollector.translateToLocal("attribute.name." + (String) var18.getKey())}));
+                                    StatCollector.translateToLocal("attribute.name." + var18.getKey())}));
                 }
             }
         }
@@ -672,7 +656,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
      * True if it is a tool and has no enchantments to begin with
      */
     public boolean isItemEnchantable() {
-        return !this.getItem().isItemTool(this) ? false : !this.isItemEnchanted();
+        return this.getItem().isItemTool(this) && !this.isItemEnchanted();
     }
 
     /**
@@ -690,7 +674,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
         NBTTagList var3 = this.stackTagCompound.getTagList("ench", 10);
         NBTTagCompound var4 = new NBTTagCompound();
         var4.setShort("id", (short) p_77966_1_.effectId);
-        var4.setShort("lvl", (short) ((byte) p_77966_2_));
+        var4.setShort("lvl", (byte) p_77966_2_);
         var3.appendTag(var4);
     }
 
@@ -721,17 +705,17 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
     }
 
     /**
-     * Set the item frame this stack is on.
-     */
-    public void setItemFrame(EntityItemFrame p_82842_1_) {
-        this.itemFrame = p_82842_1_;
-    }
-
-    /**
      * Return the item frame this stack is on. Returns null if not on an item frame.
      */
     public EntityItemFrame getItemFrame() {
         return this.itemFrame;
+    }
+
+    /**
+     * Set the item frame this stack is on.
+     */
+    public void setItemFrame(EntityItemFrame p_82842_1_) {
+        this.itemFrame = p_82842_1_;
     }
 
     /**
@@ -778,7 +762,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
             var1 = this.getItem().getItemAttributeModifiers();
         }
 
-        return (Multimap) var1;
+        return var1;
     }
 
     @Override
@@ -842,7 +826,7 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
     @Override
     public Potion getPotion() {
         if (getItem().getId() != Item.POTION)
-            throw new IllegalStateException("Item is not a potion");
+            return null;
         return this;
     }
 

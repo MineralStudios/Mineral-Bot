@@ -7,19 +7,28 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
+import gg.mineral.bot.api.goal.Sporadic
+import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
-import java.util.function.Function
+import gg.mineral.bot.api.inv.item.ItemStack
+import gg.mineral.bot.api.inv.potion.Potion
 
-class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
+    override var executing: Boolean = false
+    override var startTime: Long = 0
+    override val maxDuration: Long = 100
     private var drinking = false
-    override val isExecuting: Boolean
-        get() = drinking || inventoryOpen
 
     override fun shouldExecute(): Boolean {
         val shouldExecute = canSeeEnemy() && hasDrinkablePotion()
         logger.debug("Checking shouldExecute: $shouldExecute")
         return shouldExecute
+    }
+
+    override fun onStart() {
+        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
+        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
     }
 
     init {
@@ -30,10 +39,9 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        val hasDrinkablePotion = inventory.containsPotion(Function {
-            for (effect in it.effects) if (fakePlayer.isPotionActive(effect.potionID)) return@Function false
-            !it.isSplash && it.effects.isNotEmpty()
-        })
+        val hasDrinkablePotion = inventory.containsPotion {
+            isValidPotion(it)
+        }
         logger.debug("Has drinkable potion: $hasDrinkablePotion")
         return hasDrinkablePotion
     }
@@ -49,11 +57,6 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
             }
         logger.debug("Checking canSeeEnemy: $canSeeEnemy")
         return canSeeEnemy
-    }
-
-    private fun drinkPotion() {
-        drinking = true
-        logger.debug("Started drinking potion")
     }
 
     private fun angleAwayFromEnemies(): Float {
@@ -87,8 +90,20 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
             } ?: Double.MAX_VALUE
     }
 
-    private fun switchToDrinkablePotion() {
-        logger.debug("Switching to a drinkable potion")
+    private fun isValidPotion(potion: Potion): Boolean {
+        val fakePlayer = clientInstance.fakePlayer
+        // TODO: exclude negative potions
+        for (effect in potion.effects) if (fakePlayer.isPotionActive(effect.potionID)) return false
+        return !potion.isSplash && potion.effects.isNotEmpty()
+    }
+
+    private fun isValidPotion(itemStack: ItemStack): Boolean {
+        if (itemStack.item.id != Item.POTION) return false
+        val potion = itemStack.potion ?: return false
+        return isValidPotion(potion)
+    }
+
+    private fun getPotionSlot(): Int {
         var potionSlot = -1
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
@@ -96,73 +111,55 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         // Look for a non-splash potion in one of the 36 slots
         invLoop@ for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
-            val item = itemStack.item
-            if (item.id == Item.POTION) {
-                val potion = itemStack.potion ?: continue
-                for (effect in potion.effects) if (fakePlayer.isPotionActive(effect.potionID)) continue@invLoop
-
-                // TODO: stop drinking negative potions
-                if (potion.isSplash || potion.effects.isEmpty()) continue
+            if (isValidPotion(itemStack)) {
                 potionSlot = i
                 break
             }
         }
-
-        // If the potion is not in the hotbar (slots 0-8)
-        if (potionSlot > 8) {
-            moveItemToHotbar(potionSlot, inventory)
-            return
-        }
-
-        if (inventoryOpen) {
-            inventoryOpen = false
-            pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug("Closing inventory after switching potion")
-            return
-        }
-
-        pressKey(10, Key.Type.valueOf("KEY_" + (potionSlot + 1)))
-        logger.debug("Switched to potion slot: " + (potionSlot + 1))
+        return potionSlot
     }
 
-
-    override fun onTick() {
+    override fun onTick(tick: Tick) {
+        val potionSlot = getPotionSlot()
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
-        unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
+        tick.finishIf("No Valid Potion Found", potionSlot == -1)
 
-        val itemStack = inventory.heldItemStack
-
-        if (drinking && (itemStack == null || itemStack.item.id != Item.POTION)) {
-            drinking = false
-            logger.debug("Stopped drinking as no potion is held")
+        tick.prerequisite("In Hotbar", potionSlot <= 8) {
+            moveItemToHotbar(potionSlot, inventory)
         }
 
-        if (drinking) {
+        tick.prerequisite("Inventory Closed", !inventoryOpen) { inventoryOpen = false }
+
+        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == potionSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (potionSlot + 1)))
+        }
+
+        tick.finishIf("Not Holding Valid Potion", inventory.heldItemStack?.let { isValidPotion(it) } == false)
+
+        tick.finishIf("Potion Not Needed", !shouldExecute())
+
+        tick.prerequisite("Drinking", drinking && getButton(MouseButton.Type.RIGHT_CLICK).isPressed) {
+            pressButton(MouseButton.Type.RIGHT_CLICK)
+            drinking = true
+        }
+
+        tick.execute {
             if (distanceAwayFromEnemies() < 16) {
                 setMouseYaw(angleAwayFromEnemies())
-                pressKey(Key.Type.KEY_SPACE)
+                pressKey(Key.Type.KEY_SPACE, Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
             }
-            pressButton(MouseButton.Type.RIGHT_CLICK)
-            logger.debug("Pressed RIGHT_CLICK for drinking")
         }
+    }
 
-        if (!drinking) {
-            unpressButton(MouseButton.Type.RIGHT_CLICK)
-            unpressKey(Key.Type.KEY_SPACE)
-            logger.debug("Unpressed RIGHT_CLICK as drinking stopped")
-        }
-
-        if (drinking || !delayedTasks.isEmpty()) return
-
-        if (itemStack != null && itemStack.item.id == Item.POTION && !inventoryOpen) {
-            this.drinkPotion()
-            logger.debug("Scheduled drinkPotion task")
-        } else {
-            schedule({ this.switchToDrinkablePotion() }, 100)
-            logger.debug("Scheduled switchToDrinkablePotion task")
+    override fun onEnd() {
+        drinking = false
+        unpressButton(MouseButton.Type.RIGHT_CLICK)
+        unpressKey(Key.Type.KEY_SPACE)
+        if (inventoryOpen) {
+            inventoryOpen = false
+            logger.debug("Closing inventory after drinking")
         }
     }
 

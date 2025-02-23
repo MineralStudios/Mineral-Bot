@@ -7,13 +7,22 @@ import gg.mineral.bot.api.inv.Inventory
 import gg.mineral.bot.api.screen.type.ContainerScreen
 
 abstract class InventoryGoal(clientInstance: ClientInstance) : Goal(clientInstance) {
-    var inventoryOpen = false
+    var inventoryOpen: Boolean = false
+        set(value) {
+            if (field == value)
+                return
+
+            field = value
+            if (!value)
+                pressKey(10, Key.Type.KEY_ESCAPE)
+            else
+                pressKey(10, Key.Type.KEY_E)
+        }
 
     fun moveItemToHotbar(index: Int, inventory: Inventory) {
         val fakePlayer = clientInstance.fakePlayer
         if (!inventoryOpen) {
             inventoryOpen = true
-            pressKey(10, Key.Type.KEY_E)
             return logger.debug("Opened inventory")
         }
 
@@ -23,7 +32,6 @@ abstract class InventoryGoal(clientInstance: ClientInstance) : Goal(clientInstan
 
         val slot = inventoryContainer.getSlot(inventory, index) ?: run {
             inventoryOpen = false
-            pressKey(10, Key.Type.KEY_ESCAPE)
             return logger.debug("Slot is null; closing inventory")
         }
 

@@ -8,6 +8,7 @@ import gg.mineral.bot.api.entity.ClientEntity
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.goal.Goal
+import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.Inventory
 import gg.mineral.bot.api.inv.InventoryContainer
@@ -121,7 +122,7 @@ open class ClientInstance(
 
         var executing = false
         for (goal in goals) {
-            if (goal.isExecuting) {
+            if (goal is Sporadic && goal.executing) {
                 goal.callGameLoop()
                 executing = true
                 break
@@ -129,7 +130,7 @@ open class ClientInstance(
         }
         if (!executing) {
             for (goal in goals) {
-                if (goal.shouldExecute()) {
+                if (goal.checkExecute()) {
                     goal.callGameLoop()
                     break
                 }
@@ -159,14 +160,20 @@ open class ClientInstance(
         get() = super.getSession()
 
     override fun <T : Event> callEvent(event: T): Boolean {
+        var executing = false
         for (goal in goals) {
-            if (goal.isExecuting) {
-                return goal.onEvent(event)
+            if (goal is Sporadic && goal.executing) {
+                goal.onEvent(event)
+                executing = true
+                break
             }
         }
-        for (goal in goals) {
-            if (goal.shouldExecute()) {
-                return goal.onEvent(event)
+        if (!executing) {
+            for (goal in goals) {
+                if (goal.checkExecute()) {
+                    goal.onEvent(event)
+                    break
+                }
             }
         }
         return false
@@ -183,16 +190,20 @@ open class ClientInstance(
             configuration.latencyDeviation.toDouble()
         ).toInt()
 
+        var executing = false
         for (goal in goals) {
-            if (goal.isExecuting) {
-                goal.onTick()
-                return
+            if (goal is Sporadic && goal.executing) {
+                goal.callTick()
+                executing = true
+                break
             }
         }
-        for (goal in goals) {
-            if (goal.shouldExecute()) {
-                goal.onTick()
-                break
+        if (!executing) {
+            for (goal in goals) {
+                if (goal.checkExecute()) {
+                    goal.callTick()
+                    break
+                }
             }
         }
     }
@@ -334,6 +345,10 @@ open class ClientInstance(
                             }
                         }
 
+                        override fun deepCopy(): ClientWorld {
+                            return this
+                        }
+
                     }
                 override val random: Random get() = Random()
                 override var boundingBox: BoundingBox = object : BoundingBox {
@@ -347,13 +362,13 @@ open class ClientInstance(
 
                 override val isSprinting = false
                 override val clientInstance = this@ClientInstance
-                override val motionSimulator: PlayerMotionSimulator
-                    get() {
-                        return gg.mineral.bot.base.client.math.simulation.PlayerMotionSimulator(
-                            this@ClientInstance,
-                            this
-                        )
-                    }
+                override fun motionSimulator(world: ClientWorld): PlayerMotionSimulator {
+                    return gg.mineral.bot.base.client.math.simulation.PlayerMotionSimulator(
+                        this@ClientInstance,
+                        this,
+                        world
+                    )
+                }
             }
         }
 

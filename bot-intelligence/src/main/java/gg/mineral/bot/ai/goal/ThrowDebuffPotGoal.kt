@@ -8,9 +8,11 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.goal.Sporadic
+import gg.mineral.bot.api.goal.Suspendable
+import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
-import gg.mineral.bot.api.inv.item.ItemStack
 import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator
 import gg.mineral.bot.api.math.trajectory.Trajectory
 import gg.mineral.bot.api.math.trajectory.throwable.SplashPotionTrajectory
@@ -23,33 +25,15 @@ import org.apache.commons.math3.optim.univariate.BrentOptimizer
 import org.apache.commons.math3.optim.univariate.SearchInterval
 import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction
 
-class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
+class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound,
+    Suspendable {
+    override val maxDuration: Long = 100
+    override var startTime: Long = 0
+    override var executing: Boolean = false
     private var lastPotTick = 0
     private var effects: Set<Int> = emptySet()
-    override val isExecuting: Boolean
-        get() = inventoryOpen
-
-    private fun switchToPot() {
-        var potSlot = -1
-        val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory
-
-        for (i in 0..35) {
-            val itemStack = inventory.getItemStackAt(i) ?: continue
-            val item = itemStack.item
-            if (item.id == Item.POTION && itemStack.potion?.effects?.any {
-                    effects.contains(it.potionID)
-                } == true) {
-                potSlot = i
-                break
-            }
-        }
-
-        if (potSlot > 8) return moveItemToHotbar(potSlot, inventory)
-        if (inventoryOpen) return pressKey(10, Key.Type.KEY_ESCAPE).apply { inventoryOpen = false }
-
-        pressKey(10, Key.Type.valueOf("KEY_" + (potSlot + 1)))
-    }
+    override val suspend: Boolean
+        get() = !inventoryOpen && !shouldExecute()
 
     override fun shouldExecute(): Boolean {
         if (clientInstance.currentTick - lastPotTick < 20) return false
@@ -75,12 +59,17 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             it.effects.any { effect ->
                 effects.contains(effect.potionID)
             }
-        } == true && closestEnemy.distance3DToSq(fakePlayer) in 25.0..64.0).apply {
+        } && closestEnemy.distance3DToSq(fakePlayer) in 25.0..64.0).apply {
             if (this) this@ThrowDebuffPotGoal.effects = effects
         }
     }
 
-    private fun angleTowardsFromEnemies(): Float {
+    override fun onStart() {
+        pressKey(Key.Type.KEY_S)
+        unpressKey(Key.Type.KEY_W, Key.Type.KEY_A, Key.Type.KEY_D)
+    }
+
+    private fun angleTowardsEnemies(): Float {
         val fakePlayer = clientInstance.fakePlayer
         val world = fakePlayer.world
 
@@ -97,18 +86,6 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         if (z < 0.0 && x < 0.0) yaw = (90.0 + Math.toDegrees(fastArcTan(z / x))).toFloat()
         else if (z < 0.0 && x > 0.0) yaw = (-90.0 + Math.toDegrees(fastArcTan(z / x))).toFloat()
         return yaw
-    }
-
-    private fun distanceAwayFromEnemies(): Double {
-        val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world
-
-        return world.entities
-            .minOfOrNull {
-                if (it is ClientLivingEntity && !clientInstance.configuration.friendlyUUIDs.contains(it.uuid))
-                    it.distance2DTo(fakePlayer.x, fakePlayer.z)
-                else Double.MAX_VALUE
-            } ?: Double.MAX_VALUE
     }
 
     private fun closestEnemy(): ClientPlayer? {
@@ -138,71 +115,77 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         mouse.changeYaw(angleDifference(rotYaw, yaw))
     }
 
-    private fun PlayerMotionSimulator.setMousePitch(pitch: Float) {
-        val rotPitch = this.pitch
-        mouse.changePitch(angleDifference(rotPitch, pitch))
-    }
-
-    /**
-     * Checks whether the bot is “at a wall” by sampling a block a short distance
-     * in the direction the bot is facing.
-     */
-    private fun isAtWall(): Boolean {
+    private fun getDebuffSlot(): Int {
+        var debuffSlot = -1
         val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world
+        val inventory = fakePlayer.inventory
 
-        val posX = fakePlayer.x
-        val posY = fakePlayer.y + fakePlayer.eyeHeight
-        val posZ = fakePlayer.z
-        val yaw = fakePlayer.yaw
-        val pitch = 0f
-
-        val checkDistance = 1.0
-        val dir = vectorForRotation(pitch, yaw)  // Assumes this helper exists.
-        val checkX = posX + dir[0] * checkDistance
-        val checkY = posY + dir[1] * checkDistance
-        val checkZ = posZ + dir[2] * checkDistance
-
-        val block = world.getBlockAt(checkX, checkY, checkZ)
-        return block.id != Block.AIR
-    }
-
-    override fun onTick() {
-        val fakePlayer = clientInstance.fakePlayer
-
-        pressKey(Key.Type.KEY_S)
-        unpressKey(Key.Type.KEY_W, Key.Type.KEY_A, Key.Type.KEY_D)
-
-        if (!inventoryOpen) {
-            val pitch = minimizePitch(fakePlayer) { it.airTimeTicks.toDouble() }
-            setMousePitch(pitch)
-            setMouseYaw(angleTowardsFromEnemies())
+        for (i in 0..35) {
+            val itemStack = inventory.getItemStackAt(i) ?: continue
+            val item = itemStack.item
+            if (item.id == Item.POTION && itemStack.potion?.effects?.any {
+                    effects.contains(it.potionID)
+                } == true) {
+                debuffSlot = i
+                break
+            }
         }
 
-        val inventory = fakePlayer.inventory
-        val itemStack: ItemStack? = inventory.heldItemStack
-        if (itemStack == null || itemStack.item.id != Item.POTION || itemStack.potion?.effects?.any {
-                effects.contains(it.potionID)
-            } == false || inventoryOpen) switchToPot()
-        else {
-            val closestEnemy = closestEnemy() ?: return
+        return debuffSlot
+    }
 
-            val simulator = fakePlayer.motionSimulator.apply {
+    override fun onTick(tick: Tick) {
+        val debuffSlot = getDebuffSlot()
+        val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory
+
+        tick.finishIf("No Valid Debuff Potion Found", debuffSlot == -1)
+
+        tick.prerequisite("In Hotbar", debuffSlot <= 8) {
+            moveItemToHotbar(debuffSlot, inventory)
+        }
+
+        tick.prerequisite("Inventory Closed", !inventoryOpen) { inventoryOpen = false }
+
+        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == debuffSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (debuffSlot + 1)))
+        }
+
+        tick.finishIf("Not Holding Valid Potion", inventory.heldItemStack?.let { itemStack ->
+            itemStack.item.id == Item.POTION && itemStack.potion?.effects?.any {
+                effects.contains(it.potionID)
+            } == true
+        } == false)
+
+        tick.execute {
+            setMouseYaw(angleTowardsEnemies())
+        }
+
+        tick.execute {
+            val worldCopy = fakePlayer.world.deepCopy()
+            tick.executeAsync(0, {
+                minimizePitch(fakePlayer, worldCopy) { it.airTimeTicks.toDouble() }
+            }) {
+                setMousePitch(it)
+            }
+
+            val closestEnemy = closestEnemy() ?: return@execute
+
+            val simulator = fakePlayer.motionSimulator(world = worldCopy).apply {
                 setMouseYaw(fakePlayer.yaw)
                 keyboard.pressKey(Key.Type.KEY_S)
                 keyboard.unpressKey(Key.Type.KEY_W, Key.Type.KEY_A, Key.Type.KEY_D)
             }
 
-            val enemySimulator = closestEnemy.motionSimulator
-
+            val enemySimulator = closestEnemy.motionSimulator(world = worldCopy)
             val trajectory = object : SplashPotionTrajectory(
-                fakePlayer.world,
+                worldCopy,
                 fakePlayer.x,
                 fakePlayer.y + fakePlayer.eyeHeight,
                 fakePlayer.z,
                 fakePlayer.yaw,
                 fakePlayer.pitch, { x, y, z ->
-                    hasHitBlock(fakePlayer.world, x, y, z) &&
+                    hasHitBlock(worldCopy, x, y, z) &&
                             enemySimulator.distance3DToSq(x, y, z).let {
                                 if (it < 16.0) 1.0 - sqrt(it) / 4.0 > 0.5
                                 else false
@@ -218,34 +201,47 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
                 }
             }
 
-            if (trajectory.compute(1000) == Trajectory.Result.VALID && !isAtWall()) {
+            tick.executeAsync(1, {
+                trajectory.compute(1000) == Trajectory.Result.VALID
+            }) {
+                if (!it) return@executeAsync
                 lastPotTick = clientInstance.currentTick
                 pressButton(10, MouseButton.Type.RIGHT_CLICK)
+                tick.finishIf("Thrown Debuff", it)
             }
+        }
+    }
+
+    override fun onEnd() {
+        unpressKey(Key.Type.KEY_S)
+        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
+        if (inventoryOpen) {
+            inventoryOpen = false
         }
     }
 
     private fun minimizePitch(
         fakePlayer: FakePlayer,
+        worldCopy: ClientWorld = fakePlayer.world,
         valueFunction: (SplashPotionTrajectory) -> Double
     ): Float {
         val closestEnemy = closestEnemy() ?: return fakePlayer.pitch
         val objective = UnivariateFunction { pitch ->
-            val simulator = fakePlayer.motionSimulator.apply {
+            val simulator = fakePlayer.motionSimulator(world = worldCopy).apply {
                 setMouseYaw(fakePlayer.yaw)
                 keyboard.pressKey(Key.Type.KEY_S)
                 keyboard.unpressKey(Key.Type.KEY_W, Key.Type.KEY_A, Key.Type.KEY_D)
             }
 
-            val enemySimulator = closestEnemy.motionSimulator
+            val enemySimulator = closestEnemy.motionSimulator(world = worldCopy)
             val trajectory = object : SplashPotionTrajectory(
-                fakePlayer.world,
+                worldCopy,
                 fakePlayer.x,
                 fakePlayer.y + fakePlayer.eyeHeight,
                 fakePlayer.z,
                 fakePlayer.yaw,
                 pitch.toFloat(), { x, y, z ->
-                    hasHitBlock(closestEnemy.world, x, y, z) && enemySimulator.distance3DToSq(x, y, z).let {
+                    hasHitBlock(worldCopy, x, y, z) && enemySimulator.distance3DToSq(x, y, z).let {
                         if (it < 16.0) 1.0 - sqrt(it) / 4.0 > 0.5
                         else false
                     }

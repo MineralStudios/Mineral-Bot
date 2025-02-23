@@ -5,12 +5,15 @@ import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.goal.Sporadic
+import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 
-class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {
-    override val isExecuting
-        get() = inventoryOpen
+class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
+    override val maxDuration: Long = 100
+    override var startTime: Long = 0
+    override var executing: Boolean = false
 
     override fun shouldExecute(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
@@ -19,34 +22,8 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
         return fakePlayer.health <= 10 && inventory.contains(Item.MUSHROOM_STEW)
     }
 
-    private fun eatSoup() {
-        pressButton(10, MouseButton.Type.RIGHT_CLICK)
-    }
-
-    private fun switchToSoup() {
-        var soupSlot = -1
-        val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory
-
-        for (i in 0..35) {
-            val itemStack = inventory.getItemStackAt(i) ?: continue
-            val item = itemStack.item
-            if (item.id == Item.MUSHROOM_STEW) {
-                soupSlot = i
-                break
-            }
-        }
-
-        if (soupSlot > 8) return moveItemToHotbar(soupSlot, inventory)
-
-        if (inventoryOpen) {
-            inventoryOpen = false
-            pressKey(10, Key.Type.KEY_ESCAPE)
-            logger.debug("Closing inventory after switching to soup")
-            return
-        }
-
-        pressKey(10, Key.Type.valueOf("KEY_" + (soupSlot + 1)))
+    override fun onStart() {
+        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
     }
 
     // ─── NEW AIMING LOGIC ──────────────────────────────────────────────
@@ -89,18 +66,54 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
     }
     // ────────────────────────────────────────────────────────────────────
 
-    override fun onTick() {
+    private fun getSoupSlot(): Int {
+        var soupSlot = -1
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        // NEW: While healing, continuously aim at the optimal target
-        pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
+        for (i in 0..35) {
+            val itemStack = inventory.getItemStackAt(i) ?: continue
+            val item = itemStack.item
+            if (item.id == Item.MUSHROOM_STEW) {
+                soupSlot = i
+                break
+            }
+        }
+
+        return soupSlot
+    }
+
+    override fun onTick(tick: Tick) {
         aimAtOptimalTarget()
+        val soupSlot = getSoupSlot()
+        val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory
 
-        val itemStack = inventory.heldItemStack
+        tick.finishIf("No Valid Soup Found", soupSlot == -1)
 
-        if (itemStack != null && itemStack.item.id == Item.MUSHROOM_STEW && !inventoryOpen) this.eatSoup()
-        else if (delayedTasks.isEmpty()) schedule({ this.switchToSoup() }, 50)
+        tick.prerequisite("In Hotbar", soupSlot <= 8) {
+            moveItemToHotbar(soupSlot, inventory)
+        }
+
+        tick.prerequisite("Inventory Closed", !inventoryOpen) { inventoryOpen = false }
+
+        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == soupSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (soupSlot + 1)))
+        }
+
+        tick.finishIf("Not Holding Valid Soup", inventory.heldItemStack?.item?.id != Item.MUSHROOM_STEW)
+
+        tick.finishIf("Soup Not Needed", fakePlayer.health > 10)
+
+        tick.execute {
+            pressButton(10, MouseButton.Type.RIGHT_CLICK)
+        }
+    }
+
+    override fun onEnd() {
+        if (inventoryOpen) {
+            inventoryOpen = false
+        }
     }
 
     override fun onEvent(event: Event) = false

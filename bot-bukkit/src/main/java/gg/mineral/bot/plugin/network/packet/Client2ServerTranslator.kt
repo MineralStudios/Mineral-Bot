@@ -113,13 +113,11 @@ class Client2ServerTranslator
         playerConnection.networkManager.a(null, packet)
     }
 
-    private fun fromNMC(itemNMC: ItemStack): net.minecraft.server.v1_8_R3.ItemStack {
+    private fun fromNMC(itemNMC: ItemStack?): net.minecraft.server.v1_8_R3.ItemStack? {
 
         val itemStack = asBukkitCopy(itemNMC)
 
         val nmsItemStack = CraftItemStack.asNMSCopy(itemStack)
-
-        requireNotNull(nmsItemStack) { "NMS ItemStack is null" }
 
         return nmsItemStack
     }

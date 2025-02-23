@@ -5,6 +5,7 @@ import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.EventHandler
 import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator
+import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.base.lwjgl.input.Keyboard
 import gg.mineral.bot.base.lwjgl.input.Mouse
 import net.minecraft.client.Minecraft
@@ -14,9 +15,9 @@ import net.minecraft.util.MovementInput
 import net.minecraft.util.Session
 import net.minecraft.world.World
 
-class PlayerMotionSimulator(mc: Minecraft?, player: ClientPlayer) :
+class PlayerMotionSimulator(mc: Minecraft?, player: ClientPlayer, world: ClientWorld = player.world) :
     EntityPlayerSP(
-        mc, player.world as World, Session(
+        mc, world as World, Session(
             player.username, player.uuid.toString(),
             "0",
             "legacy"

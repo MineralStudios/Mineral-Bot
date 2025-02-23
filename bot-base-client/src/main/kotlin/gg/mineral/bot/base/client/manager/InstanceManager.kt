@@ -8,18 +8,18 @@ object InstanceManager {
     @JvmStatic
     val instances: ConcurrentHashMap<UUID, ClientInstance> =
         object : ConcurrentHashMap<UUID, ClientInstance>() {
-            override fun put(key: UUID, value: ClientInstance): ClientInstance {
+            override fun put(key: UUID, value: ClientInstance): ClientInstance? {
                 require(!containsKey(key)) { "Instance with UUID $key already exists" }
-                return super.put(key, value)!!
+                return super.put(key, value)
             }
         }
 
     @JvmStatic
     val pendingInstances: ConcurrentHashMap<UUID, ClientInstance> =
         object : ConcurrentHashMap<UUID, ClientInstance>() {
-            override fun put(key: UUID, value: ClientInstance): ClientInstance {
+            override fun put(key: UUID, value: ClientInstance): ClientInstance? {
                 require(!containsKey(key)) { "Instance with UUID $key already exists" }
-                return super.put(key, value)!!
+                return super.put(key, value)
             }
         }
 

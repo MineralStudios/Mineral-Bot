@@ -712,10 +712,12 @@ class Server2ClientTranslator : PacketListenerPlayOut, PacketLoginOutListener, P
 
         if (dataWatcherListNMS != null) {
             for (watchableObjectNMS in dataWatcherListNMS) {
-                val watchableObject = fromNMS(
-                    watchableObjectNMS,
-                    entity!!
-                )!!
+                val watchableObject = entity?.let {
+                    fromNMS(
+                        watchableObjectNMS,
+                        it
+                    )
+                } ?: continue
 
                 dataWatcherList.add(watchableObject)
             }

@@ -10,13 +10,18 @@ import gg.mineral.bot.api.util.MathUtil
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.util.*
+import java.util.concurrent.Callable
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.Future
+import java.util.function.Consumer
 
 
 abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
-    protected val logger: Logger =
-        LogManager.getLogger(this.javaClass)
-    protected var delayedTasks: Queue<DelayedTask> = ConcurrentLinkedQueue()
+    private lateinit var thread: Thread
+    private var delayedTasks: Queue<DelayedTask> = ConcurrentLinkedQueue()
+    protected val asyncTasks = ConcurrentHashMap<Int, AsyncTickTask<*>>()
+    var tickCount = 0
 
     @JvmRecord
     data class DelayedTask(val runnable: Runnable, val sendTime: Long) {
@@ -25,11 +30,121 @@ abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
         }
     }
 
-    abstract fun shouldExecute(): Boolean
+    fun ensureSync(runnable: Runnable) {
+        if (Thread.currentThread() == thread) runnable.run()
+        else delayedTasks.add(DelayedTask(runnable, 0))
+    }
 
-    abstract val isExecuting: Boolean
+    fun checkExecute(): Boolean {
+        if (shouldExecute()) {
+            if (this is Sporadic) callStart()
+            return true
+        }
+        return false
+    }
 
-    abstract fun onTick()
+    class AsyncTickTask<T : Any>(
+        private val future: Future<T>? = null,
+        private val onComplete: Consumer<T>
+    ) {
+        fun checkComplete(): Boolean {
+            if (future?.isDone == true) {
+                return onComplete.accept(future.get()).let { true }
+            }
+            return false
+        }
+    }
+
+    class Tick(val tickNumber: Int, val goal: Goal) {
+        private var ended = false
+        var finished = false
+
+        fun <T : Any> asyncPrerequisite(
+            id: Int,
+            name: String,
+            condition: Boolean,
+            codeBlock: Callable<T>,
+            onComplete: Consumer<T>
+        ) {
+            if (!ended) {
+                if (!condition) {
+                    executeAsync(id, codeBlock, onComplete)
+                    ended = true
+                    logger.debug("Prerequisite failed: $name")
+                } else logger.debug("Prerequisite passed: $name")
+            }
+        }
+
+        fun prerequisite(name: String, condition: Boolean, codeBlock: () -> Unit) {
+            if (!ended) {
+                if (!condition) {
+                    codeBlock()
+                    ended = true
+                    logger.debug("Prerequisite failed: $name")
+                } else logger.debug("Prerequisite passed: $name")
+            }
+        }
+
+        fun finishIf(reason: String, condition: Boolean) {
+            if (!ended) {
+                if (condition) {
+                    ended = true
+                    finished = true
+                    logger.debug("Finished goal: $reason")
+                } else logger.debug("Not finished goal: $reason")
+            }
+        }
+
+        fun execute(codeBlock: () -> Unit) {
+            if (!ended) {
+                codeBlock()
+            }
+        }
+
+        fun <T : Any> executeAsync(id: Int, codeBlock: Callable<T>, onComplete: Consumer<T>) {
+            if (!ended) {
+                goal.asyncTasks[id]?.let {
+                    if (it.checkComplete()) goal.asyncTasks.remove(id)
+                    else ended = true
+                    return
+                } ?: run {
+                    ended = true
+                }
+
+                val future = goal.clientInstance.asyncExecutor.submit(codeBlock)
+                goal.asyncTasks[id] = AsyncTickTask(future, onComplete)
+            }
+        }
+    }
+
+
+    protected abstract fun shouldExecute(): Boolean
+
+    fun callTick() {
+        logger.debug("callTick called of ${this.javaClass.simpleName}")
+        /*if (this is Timebound) {
+            if (timeMillis() - startTime >= maxDuration) {
+                finish()
+                return
+            }
+        }*/
+        val tick = Tick(tickCount++, this)
+        if (this is Suspendable && this is Sporadic) {
+            if (!suspend) onTick(tick)
+            else finish()
+        } else onTick(tick)
+
+        if (this is Sporadic && tick.finished) finish()
+    }
+
+    abstract fun onTick(tick: Tick)
+
+    protected fun finish() {
+        if (this is Sporadic) {
+            callEnd()
+            delayedTasks.clear()
+        } else error("Goal must implement Sporadic to call finish()")
+    }
 
     abstract fun onEvent(event: Event): Boolean
 
@@ -128,6 +243,8 @@ abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
     }
 
     fun callGameLoop() {
+        if (!::thread.isInitialized) thread = Thread.currentThread()
+
         this.onGameLoop()
         while (!delayedTasks.isEmpty()) {
             val task = delayedTasks.peek()
@@ -143,7 +260,10 @@ abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
 
     companion object {
         @JvmStatic
-        protected fun timeMillis(): Long {
+        protected val logger: Logger = LogManager.getLogger(Goal::class.java)
+
+        @JvmStatic
+        fun timeMillis(): Long {
             return System.nanoTime() / 1000000
         }
     }

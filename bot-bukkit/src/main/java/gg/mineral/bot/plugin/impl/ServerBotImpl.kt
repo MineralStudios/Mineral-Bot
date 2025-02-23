@@ -14,7 +14,6 @@ import gg.mineral.bot.plugin.network.ClientNetworkManager
 import gg.mineral.bot.plugin.network.ServerNetworkManager
 import gg.mineral.bot.plugin.network.packet.Client2ServerTranslator
 import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator
-import lombok.Getter
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.server.v1_8_R3.*
 import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode
@@ -66,7 +65,6 @@ class ServerBotImpl : BotImpl(), Listener {
             MinecraftServer.getServer(), sNetworkManager,
             serverSide
         ) {
-            @Getter
             private var disconnected = false
 
             override fun disconnect(s: String) {
@@ -75,6 +73,10 @@ class ServerBotImpl : BotImpl(), Listener {
                 despawn(configuration.uuid)
                 // TODO: cancellable kick event
                 super.disconnect(s)
+            }
+
+            override fun isDisconnected(): Boolean {
+                return disconnected
             }
 
             // TODO: Temporary fix for the issue with the player's ping
@@ -182,7 +184,7 @@ class ServerBotImpl : BotImpl(), Listener {
                 "Mineral-Bot-Client", HashMultimap.create<Any, Any>(),
                 "1.7.10"
             ) {
-                override fun displayGuiScreen(guiScreen: GuiScreen) {
+                override fun displayGuiScreen(guiScreen: GuiScreen?) {
                     if (guiScreen is GuiConnecting) guiScreen.connectFunction =
                         GuiConnecting.ConnectFunction { _: String?, _: Int -> }
 

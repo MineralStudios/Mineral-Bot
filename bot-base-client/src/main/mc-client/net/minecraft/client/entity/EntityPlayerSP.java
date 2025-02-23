@@ -26,19 +26,11 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class EntityPlayerSP extends AbstractClientPlayer {
+    private final MouseFilter field_71162_ch = new MouseFilter();
+    private final MouseFilter field_71160_ci = new MouseFilter();
+    private final MouseFilter field_71161_cj = new MouseFilter();
     @Nullable
     public MovementInput movementInput;
-    protected Minecraft mc;
-
-    /**
-     * Used to tell if the player pressed forward twice. If this is at 0 and it's
-     * pressed (And they are allowed to
-     * sprint, aka enough food on the ground etc) it sets this to 7. If it's pressed
-     * and it's greater than 0 enable
-     * sprinting.
-     */
-    protected int sprintToggleTimer;
-
     /**
      * Ticks left before sprinting is disabled.
      */
@@ -47,21 +39,25 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     public float renderArmPitch;
     public float prevRenderArmYaw;
     public float prevRenderArmPitch;
-    private int horseJumpPowerCounter;
-    private float horseJumpPower;
-    private MouseFilter field_71162_ch = new MouseFilter();
-    private MouseFilter field_71160_ci = new MouseFilter();
-    private MouseFilter field_71161_cj = new MouseFilter();
-
     /**
      * The amount of time an entity has been in a Portal
      */
     public float timeInPortal;
-
     /**
      * The amount of time an entity has been in a Portal the previous tick
      */
     public float prevTimeInPortal;
+    protected Minecraft mc;
+    /**
+     * Used to tell if the player pressed forward twice. If this is at 0 and it's
+     * pressed (And they are allowed to
+     * sprint, aka enough food on the ground etc) it sets this to 7. If it's pressed
+     * and it's greater than 0 enable
+     * sprinting.
+     */
+    protected int sprintToggleTimer;
+    private int horseJumpPowerCounter;
+    private float horseJumpPower;
 
     public EntityPlayerSP(Minecraft mc, World p_i1238_2_, Session p_i1238_3_, int p_i1238_4_) {
         super(mc, p_i1238_2_, p_i1238_3_.getGameProfile());
@@ -284,7 +280,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
      */
     public void closeScreen() {
         super.closeScreen();
-        this.mc.displayGuiScreen((GuiScreen) null);
+        this.mc.displayGuiScreen(null);
     }
 
     public void func_146100_a(TileEntity p_146100_1_) {
@@ -476,19 +472,19 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             float var21 = 0.1F;
 
             if (var18 == 0) {
-                this.motionX = (double) (-var21);
+                this.motionX = -var21;
             }
 
             if (var18 == 1) {
-                this.motionX = (double) var21;
+                this.motionX = var21;
             }
 
             if (var18 == 4) {
-                this.motionZ = (double) (-var21);
+                this.motionZ = -var21;
             }
 
             if (var18 == 5) {
-                this.motionZ = (double) var21;
+                this.motionZ = var21;
             }
         }
 

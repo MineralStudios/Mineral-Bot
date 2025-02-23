@@ -39,7 +39,7 @@ class ServerNetworkManager(private val translator: Server2ClientTranslator, priv
 
     @Throws(Exception::class)
     @Suppress("UNCHECKED_CAST")
-    override fun a(channelhandlercontext: ChannelHandlerContext, packet: Packet<*>) {
+    override fun a(channelhandlercontext: ChannelHandlerContext?, packet: Packet<*>) {
         val packetListener = this.packetListener
 
         if (packetListener is PlayerConnection) {

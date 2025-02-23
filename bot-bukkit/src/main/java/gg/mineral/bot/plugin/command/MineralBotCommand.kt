@@ -21,11 +21,11 @@ class MineralBotCommand : CommandExecutor {
 
         if (args[0].equals("debug", ignoreCase = true)) {
             if (debugEnabled) {
-                Configurator.setLevel("gg.mineral.bot", Level.INFO)
+                Configurator.setRootLevel(Level.INFO)
                 debugEnabled = false
                 sender.sendMessage("MineralBot debug mode disabled.")
             } else {
-                Configurator.setLevel("gg.mineral.bot", Level.DEBUG)
+                Configurator.setRootLevel(Level.DEBUG)
                 debugEnabled = true
                 sender.sendMessage("MineralBot debug mode enabled.")
             }
