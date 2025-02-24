@@ -31,6 +31,7 @@ import net.minecraft.util.MessageDeserializer2
 import net.minecraft.util.MessageSerializer
 import net.minecraft.util.MessageSerializer2
 import java.io.File
+import java.lang.ref.WeakReference
 import java.net.Proxy
 
 
@@ -74,7 +75,7 @@ class ServerBotImpl : BotImpl(), ByteWriter {
         }
     }
 
-    override fun spawn(configuration: BotConfiguration, location: ServerLocation): ClientInstance {
+    override fun spawn(configuration: BotConfiguration, location: ServerLocation): WeakReference<ClientInstance> {
         val startTime = System.nanoTime() / 1000000
         val file = configuration.runDirectory
 
@@ -178,6 +179,6 @@ class ServerBotImpl : BotImpl(), ByteWriter {
 
         spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
 
-        return instance
+        return WeakReference(instance)
     }
 }

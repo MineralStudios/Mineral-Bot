@@ -20,12 +20,16 @@ import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import java.io.File
+import java.lang.ref.WeakReference
 import java.net.Proxy
 import java.util.*
 import kotlin.math.min
 
 class ServerBotImpl : BotImpl(), Listener {
-    override fun spawn(configuration: BotConfiguration, location: ServerLocation): ClientInstance {
+    override fun spawn(
+        configuration: BotConfiguration,
+        location: ServerLocation
+    ): WeakReference<gg.mineral.bot.api.instance.ClientInstance> {
         val startTime = System.nanoTime() / 1000000
         val file = configuration.runDirectory
 
@@ -153,7 +157,7 @@ class ServerBotImpl : BotImpl(), Listener {
 
         spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
 
-        return instance
+        return WeakReference(instance)
     }
 
     override fun despawn(uuid: UUID): Boolean {

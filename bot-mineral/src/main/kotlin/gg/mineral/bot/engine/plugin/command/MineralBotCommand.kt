@@ -42,11 +42,13 @@ class MineralBotCommand : Command("mineralbot", "mineralbot.admin") {
                         }
                 })
 
-            instance.startGoals(
-                ReplaceArmorGoal(instance), DrinkPotionGoal(instance),
-                EatGappleGoal(instance),
-                MeleeCombatGoal(instance), ThrowPearlGoal(instance)
-            )
+            instance.get()?.run {
+                startGoals(
+                    ReplaceArmorGoal(this), DrinkPotionGoal(this),
+                    EatGappleGoal(this),
+                    MeleeCombatGoal(this), ThrowPearlGoal(this)
+                )
+            }
         }
     }
 }

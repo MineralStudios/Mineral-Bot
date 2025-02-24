@@ -13,6 +13,7 @@ import gg.mineral.bot.impl.thread.ThreadManager
 import it.unimi.dsi.fastutil.objects.Object2IntMap
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import java.io.File
+import java.lang.ref.WeakReference
 import java.net.Proxy
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -80,7 +81,11 @@ abstract class BotImpl : BotAPI() {
         return gg.mineral.bot.base.client.collections.OptimizedCollections()
     }
 
-    override fun spawn(configuration: BotConfiguration, serverIp: String, serverPort: Int): ClientInstance {
+    override fun spawn(
+        configuration: BotConfiguration,
+        serverIp: String,
+        serverPort: Int
+    ): WeakReference<ClientInstance> {
         val startTime = System.nanoTime() / 1000000
         val file = configuration.runDirectory
 
@@ -88,8 +93,8 @@ abstract class BotImpl : BotAPI() {
 
         val instance = gg.mineral.bot.base.client.instance.ClientInstance(
             configuration, 1280, 720,
-            false,
-            false,
+            fullscreen = false,
+            demo = false,
             file,
             File(file, "assets"),
             File(file, "resourcepacks"),
@@ -105,7 +110,7 @@ abstract class BotImpl : BotAPI() {
         }
 
         spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
-        return instance
+        return WeakReference(instance)
     }
 
     override fun despawn(uuid: UUID): Boolean {
@@ -135,13 +140,13 @@ abstract class BotImpl : BotAPI() {
         instances.clear()
     }
 
-    override val fakePlayers: Collection<FakePlayer>
+    override val fakePlayers: Collection<WeakReference<FakePlayer>>
         get() {
             val fakePlayers =
-                ArrayList<FakePlayer>()
+                ArrayList<WeakReference<FakePlayer>>()
 
             for (instance in InstanceManager.instances.values) fakePlayers.add(
-                instance.fakePlayer
+                WeakReference(instance.fakePlayer)
             )
             return fakePlayers
         }
@@ -149,7 +154,10 @@ abstract class BotImpl : BotAPI() {
     companion object {
         fun init() {
             INSTANCE = object : BotImpl() {
-                override fun spawn(configuration: BotConfiguration, location: ServerLocation): ClientInstance {
+                override fun spawn(
+                    configuration: BotConfiguration,
+                    location: ServerLocation
+                ): WeakReference<ClientInstance> {
                     return spawn(configuration, "localhost", 25565)
                 }
             }
