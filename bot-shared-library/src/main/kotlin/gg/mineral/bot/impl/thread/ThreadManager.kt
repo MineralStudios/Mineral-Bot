@@ -8,7 +8,7 @@ object ThreadManager {
     val asyncExecutor: ExecutorService = Executors
         .newWorkStealingPool()
     val gameLoopExecutor: ScheduledExecutorService = Executors
-        .newScheduledThreadPool(1, MineralThreadFactory())
+        .newScheduledThreadPool(1, MineralThreadFactory("GameLoop"))
 
     @JvmStatic
     fun shutdown() {

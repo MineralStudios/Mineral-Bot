@@ -246,10 +246,8 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         setMousePitch(angles[1])
 
 
-        val worldCopy = world.deepCopy()
-
         val trajectory = EnderPearlTrajectory(
-            worldCopy,
+            world,
             fakePlayer.x,
             fakePlayer.y + fakePlayer.eyeHeight,
             fakePlayer.z,
@@ -259,7 +257,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         )
 
         tick.executeAsync(1, {
-            trajectory.compute(1000) == Trajectory.Result.VALID
+            trajectory.compute(100) == Trajectory.Result.VALID
         }) {
             if (!it) return@executeAsync
             lastPearledTick = clientInstance.currentTick
@@ -313,13 +311,13 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
                 pitch.toFloat(),
                 collisionFunction
             )
-            if (simulator.compute(1000) === Trajectory.Result.VALID) valueFunction.invoke(simulator) else Double.MAX_VALUE
+            if (simulator.compute(100) === Trajectory.Result.VALID) valueFunction.invoke(simulator) else Double.MAX_VALUE
         }
 
         val optimizer = BrentOptimizer(1e-10, 1e-14)
 
         val result = optimizer.optimize(
-            MaxEval(1000),
+            MaxEval(180),
             UnivariateObjectiveFunction(objective),
             GoalType.MINIMIZE,
             SearchInterval(-60.0, 60.0)
@@ -344,13 +342,13 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
                 angles[1].toFloat(),
                 collisionFunction
             )
-            if (simulator.compute(1000) === Trajectory.Result.VALID) valueFunction.invoke(simulator) else if (goalType == GoalType.MINIMIZE) Double.MAX_VALUE else Double.MIN_VALUE
+            if (simulator.compute(100) === Trajectory.Result.VALID) valueFunction.invoke(simulator) else if (goalType == GoalType.MINIMIZE) Double.MAX_VALUE else Double.MIN_VALUE
         }
 
         val optimizer: MultivariateOptimizer = BOBYQAOptimizer(4)
 
-        val lowerBounds = doubleArrayOf(-180.0, -60.0)
-        val upperBounds = doubleArrayOf(180.0, 60.0)
+        val lowerBounds = doubleArrayOf(-180.0, -90.0)
+        val upperBounds = doubleArrayOf(180.0, 90.0)
 
         fun wrapAngleTo180_float(par0: Float): Float {
             var par0 = par0
@@ -373,7 +371,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         )
 
         val optimum: PointValuePair = optimizer.optimize(
-            MaxEval(1000),
+            MaxEval(180),
             ObjectiveFunction(objective),
             goalType,
             InitialGuess(initialGuess),

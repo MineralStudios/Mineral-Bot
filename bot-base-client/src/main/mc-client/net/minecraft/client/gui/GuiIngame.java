@@ -1,15 +1,8 @@
 package net.minecraft.client.gui;
 
-import java.awt.Color;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -36,15 +29,16 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.Direction;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.FoodStats;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StringUtils;
+import net.minecraft.util.*;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.chunk.Chunk;
+
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 public class GuiIngame extends Gui {
     private static final ResourceLocation vignetteTexPath = new ResourceLocation("textures/misc/vignette.png");
@@ -53,24 +47,36 @@ public class GuiIngame extends Gui {
     private final RenderItem itemRenderer;
     private final Random rand = new Random();
 
-    /** ChatGUI instance that retains all previous chat data */
+    /**
+     * ChatGUI instance that retains all previous chat data
+     */
     private final GuiNewChat persistantChatGUI;
     private int updateCounter;
 
-    /** The string specifying which record music is playing */
+    /**
+     * The string specifying which record music is playing
+     */
     private String recordPlaying = "";
 
-    /** How many ticks the record playing message will be displayed */
+    /**
+     * How many ticks the record playing message will be displayed
+     */
     private int recordPlayingUpFor;
     private boolean recordIsPlaying;
 
-    /** Previous frame vignette brightness (slowly changes by 1% each frame) */
+    /**
+     * Previous frame vignette brightness (slowly changes by 1% each frame)
+     */
     public float prevVignetteBrightness = 1.0F;
 
-    /** Remaining ticks the item highlight should be visible */
+    /**
+     * Remaining ticks the item highlight should be visible
+     */
     private int remainingHighlightTicks;
 
-    /** The ItemStack that is currently being highlighted */
+    /**
+     * The ItemStack that is currently being highlighted
+     */
     private ItemStack highlightingItemStack;
 
     public GuiIngame(Minecraft mc) {
@@ -83,6 +89,8 @@ public class GuiIngame extends Gui {
      * Render the ingame overlay with quick icon bar, ...
      */
     public void renderGameOverlay(float p_73830_1_, boolean p_73830_2_, int p_73830_3_, int p_73830_4_) {
+        if (BotGlobalConfig.optimizedGameLoop)
+            return;
         ScaledResolution var5 = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
         int var6 = var5.getScaledWidth();
         int var7 = var5.getScaledHeight();
@@ -299,8 +307,8 @@ public class GuiIngame extends Gui {
                 if (theWorld.getTotalWorldTime() >= 120500L) {
                     var35 = I18n.format("demo.demoExpired", new Object[0]);
                 } else {
-                    var35 = I18n.format("demo.remainingTime", new Object[] {
-                            StringUtils.ticksToElapsedTime((int) (120500L - theWorld.getTotalWorldTime())) });
+                    var35 = I18n.format("demo.remainingTime", new Object[]{
+                            StringUtils.ticksToElapsedTime((int) (120500L - theWorld.getTotalWorldTime()))});
                 }
             }
 
@@ -337,19 +345,19 @@ public class GuiIngame extends Gui {
                 int var24 = MathHelper.floor_double(thePlayer.posZ);
                 this.drawString(fontRenderer,
                         String.format("x: %.5f (%d) // c: %d (%d)",
-                                new Object[] { Double.valueOf(thePlayer.posX),
+                                new Object[]{Double.valueOf(thePlayer.posX),
                                         Integer.valueOf(var22), Integer.valueOf(var22 >> 4),
-                                        Integer.valueOf(var22 & 15) }),
+                                        Integer.valueOf(var22 & 15)}),
                         2, 64, 14737632);
-                this.drawString(fontRenderer, String.format("y: %.3f (feet pos, %.3f eyes pos)", new Object[] {
-                        Double.valueOf(thePlayer.boundingBox.minY), Double.valueOf(thePlayer.posY) }),
+                this.drawString(fontRenderer, String.format("y: %.3f (feet pos, %.3f eyes pos)", new Object[]{
+                                Double.valueOf(thePlayer.boundingBox.minY), Double.valueOf(thePlayer.posY)}),
                         2,
                         72, 14737632);
                 this.drawString(fontRenderer,
                         String.format("z: %.5f (%d) // c: %d (%d)",
-                                new Object[] { Double.valueOf(thePlayer.posZ),
+                                new Object[]{Double.valueOf(thePlayer.posZ),
                                         Integer.valueOf(var24), Integer.valueOf(var24 >> 4),
-                                        Integer.valueOf(var24 & 15) }),
+                                        Integer.valueOf(var24 & 15)}),
                         2, 80, 14737632);
                 int var25 = MathHelper.floor_double((double) (thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D)
                         & 3;
@@ -363,7 +371,7 @@ public class GuiIngame extends Gui {
                     this.drawString(fontRenderer,
                             "lc: " + (var26.getTopFilledSegment() + 15) + " b: "
                                     + var26.getBiomeGenForWorldCoords(var22 & 15, var24 & 15,
-                                            theWorld.getWorldChunkManager()).biomeName
+                                    theWorld.getWorldChunkManager()).biomeName
                                     + " bl: "
                                     + var26.getSavedLightValue(EnumSkyBlock.Block, var22 & 15, var23, var24 & 15)
                                     + " sl: "
@@ -375,17 +383,17 @@ public class GuiIngame extends Gui {
                 if (theWorld != null)
                     this.drawString(fontRenderer,
                             String.format("ws: %.3f, fs: %.3f, g: %b, fl: %d",
-                                    new Object[] { Float.valueOf(thePlayer.capabilities.getWalkSpeed()),
+                                    new Object[]{Float.valueOf(thePlayer.capabilities.getWalkSpeed()),
                                             Float.valueOf(thePlayer.capabilities.getFlySpeed()),
                                             Boolean.valueOf(thePlayer.onGround),
-                                            Integer.valueOf(theWorld.getHeightValue(var22, var24)) }),
+                                            Integer.valueOf(theWorld.getHeightValue(var22, var24))}),
                             2, 104, 14737632);
             }
 
             if (this.mc.entityRenderer != null && this.mc.entityRenderer.isShaderActive()) {
                 this.drawString(fontRenderer,
                         String.format("shader: %s",
-                                new Object[] { this.mc.entityRenderer.getShaderGroup().getShaderGroupName() }),
+                                new Object[]{this.mc.entityRenderer.getShaderGroup().getShaderGroupName()}),
                         2, 112, 14737632);
             }
 
@@ -526,7 +534,7 @@ public class GuiIngame extends Gui {
     }
 
     private void func_96136_a(ScoreObjective p_96136_1_, int p_96136_2_, int p_96136_3_,
-            @Nullable FontRenderer fontRenderer) {
+                              @Nullable FontRenderer fontRenderer) {
         Scoreboard var5 = p_96136_1_.getScoreboard();
         Collection var6 = var5.func_96534_i(p_96136_1_);
 
@@ -969,7 +977,7 @@ public class GuiIngame extends Gui {
             } else if (this.highlightingItemStack != null && var1.getItem() == this.highlightingItemStack.getItem()
                     && ItemStack.areItemStackTagsEqual(var1, this.highlightingItemStack)
                     && (var1.isItemStackDamageable()
-                            || var1.getItemDamage() == this.highlightingItemStack.getItemDamage())) {
+                    || var1.getItemDamage() == this.highlightingItemStack.getItemDamage())) {
                 if (this.remainingHighlightTicks > 0) {
                     --this.remainingHighlightTicks;
                 }
@@ -982,7 +990,7 @@ public class GuiIngame extends Gui {
     }
 
     public void setRecordPlayingMessage(String p_73833_1_) {
-        this.func_110326_a(I18n.format("record.nowPlaying", new Object[] { p_73833_1_ }), true);
+        this.func_110326_a(I18n.format("record.nowPlaying", new Object[]{p_73833_1_}), true);
     }
 
     public void func_110326_a(String p_110326_1_, boolean p_110326_2_) {

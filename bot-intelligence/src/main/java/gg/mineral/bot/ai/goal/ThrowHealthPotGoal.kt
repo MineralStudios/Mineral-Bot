@@ -167,7 +167,12 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        tick.finishIf("No Valid Health Pot Found", healthSlot == -1)
+        tick.finishIf("No Valid Health Pot Found", healthSlot == -1 && pottingTicks == 0)
+
+        tick.execute {
+            if (pottingTicks-- > 0) setMouseYaw(thrownYaw)
+            else setMouseYaw(angleAwayFromEnemies())
+        }
 
         tick.prerequisite("In Hotbar", healthSlot <= 8) {
             moveItemToHotbar(healthSlot, inventory)
@@ -186,65 +191,56 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             inventory.heldItemStack?.let { isHealthPot(it) } == false
         )
 
-        tick.execute {
-            if (pottingTicks-- > 0) setMouseYaw(thrownYaw)
-            else setMouseYaw(angleAwayFromEnemies())
+        tick.executeAsync(0, {
+            minimizePitch(fakePlayer) { it.airTimeTicks.toDouble() }
+        }) {
+            setMousePitch(it)
         }
 
-        tick.execute {
-            val worldCopy = fakePlayer.world.deepCopy()
+        val closestEnemy = closestEnemy()
+        val distanceCondition = (closestEnemy?.distance3DTo(fakePlayer) ?: Double.MAX_VALUE) >= distanceFromEnemy &&
+                distanceFromEnemy > 3.6
+        val simulator = fakePlayer.motionSimulator().apply {
+            keyboard.pressKey(Key.Type.KEY_W)
+            keyboard.unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
+            setMouseYaw(fakePlayer.yaw)
+        }
 
-            tick.executeAsync(0, {
-                minimizePitch(fakePlayer, worldCopy) { it.airTimeTicks.toDouble() }
-            }) {
-                setMousePitch(it)
-            }
+        val enemySimulator = closestEnemy?.motionSimulator()
 
+        val trajectory = object : SplashPotionTrajectory(
+            fakePlayer.world,
+            fakePlayer.x,
+            fakePlayer.y + fakePlayer.eyeHeight,
+            fakePlayer.z,
+            fakePlayer.yaw,
+            fakePlayer.pitch, { x, y, z ->
+                hasHitBlock(fakePlayer.world, x, y, z) && run {
+                    val distance = simulator.distance3DToSq(x, y, z)
 
-            val closestEnemy = closestEnemy()
-            val distanceCondition = (closestEnemy?.distance3DTo(fakePlayer) ?: Double.MAX_VALUE) >= distanceFromEnemy &&
-                    distanceFromEnemy > 3.6
-            val simulator = fakePlayer.motionSimulator(world = worldCopy).apply {
-                keyboard.pressKey(Key.Type.KEY_W)
-                keyboard.unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
-                setMouseYaw(fakePlayer.yaw)
-            }
+                    if (distance < 16.0) 1.0 - sqrt(distance) / 4.0 > 0.5
+                    else false
+                } && run {
+                    val distance = enemySimulator?.distance3DToSq(x, y, z) ?: Double.MAX_VALUE
 
-            val enemySimulator = closestEnemy?.motionSimulator(world = worldCopy)
-
-            val trajectory = object : SplashPotionTrajectory(
-                worldCopy,
-                fakePlayer.x,
-                fakePlayer.y + fakePlayer.eyeHeight,
-                fakePlayer.z,
-                fakePlayer.yaw,
-                fakePlayer.pitch, { x, y, z ->
-                    hasHitBlock(worldCopy, x, y, z) && run {
-                        val distance = simulator.distance3DToSq(x, y, z)
-
-                        if (distance < 16.0) 1.0 - sqrt(distance) / 4.0 > 0.5
-                        else false
-                    } && run {
-                        val distance = enemySimulator?.distance3DToSq(x, y, z) ?: Double.MAX_VALUE
-
-                        if (distance < 16.0) 1.0 - sqrt(distance) / 4.0 == 0.0
-                        else true
-                    }
-                }
-            ) {
-                override fun tick(): Trajectory.Result {
-                    simulator.execute(50)
-                    enemySimulator?.execute(50)
-                    return super.tick()
+                    if (distance < 16.0) 1.0 - sqrt(distance) / 4.0 == 0.0
+                    else true
                 }
             }
+        ) {
+            override fun tick(): Trajectory.Result {
+                simulator.execute(50)
+                enemySimulator?.execute(50)
+                return super.tick()
+            }
+        }
 
-            tick.asyncPrerequisite(
-                1,
-                "Potting",
-                pottingTicks > 0,
-                { trajectory.compute(1000) == Trajectory.Result.VALID && (isAtWall() || distanceCondition || fakePlayer.health <= 6f) }) {
-                if (!it) return@asyncPrerequisite
+        tick.asyncPrerequisite(
+            1,
+            "Potting",
+            pottingTicks > 0,
+            { trajectory.compute(100) == Trajectory.Result.VALID }) {
+            if (it && (isAtWall() || distanceCondition || fakePlayer.health <= 6f)) {
                 thrownYaw = fakePlayer.yaw
                 lastPotTick = clientInstance.currentTick
                 pottingTicks = 40
@@ -263,25 +259,24 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
     private fun minimizePitch(
         fakePlayer: FakePlayer,
-        worldCopy: ClientWorld = fakePlayer.world,
         valueFunction: (SplashPotionTrajectory) -> Double
     ): Float {
         val objective = UnivariateFunction { pitch ->
-            val simulator = fakePlayer.motionSimulator(world = worldCopy)
+            val simulator = fakePlayer.motionSimulator()
             simulator.keyboard.pressKey(Key.Type.KEY_W)
             simulator.keyboard.unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
             simulator.setMouseYaw(fakePlayer.yaw)
 
             val enemy = closestEnemy()
-            val enemySimulator = enemy?.motionSimulator(world = worldCopy)
+            val enemySimulator = enemy?.motionSimulator()
             val trajectory = object : SplashPotionTrajectory(
-                worldCopy,
+                fakePlayer.world,
                 fakePlayer.x,
                 fakePlayer.y + fakePlayer.eyeHeight,
                 fakePlayer.z,
                 fakePlayer.yaw,
                 pitch.toFloat(), { x, y, z ->
-                    hasHitBlock(worldCopy, x, y, z) && run {
+                    hasHitBlock(fakePlayer.world, x, y, z) && run {
                         val distance = simulator.distance3DToSq(x, y, z)
 
                         if (distance < 16.0) 1.0 - sqrt(distance) / 4.0 > 0.5
@@ -300,7 +295,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
                     return super.tick()
                 }
             }
-            if (trajectory.compute(1000) === Trajectory.Result.VALID)
+            if (trajectory.compute(100) === Trajectory.Result.VALID)
                 valueFunction.invoke(trajectory)
             else
                 Double.MAX_VALUE
@@ -308,14 +303,11 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
         val optimizer = BrentOptimizer(1e-10, 1e-14)
 
-        fun estimatePitch(motX: Double, motZ: Double) =
-            fastArcTan2(motZ, sqrt(motX * motX + motZ * motZ)) * 180 / Math.PI
-
         val result = optimizer.optimize(
-            MaxEval(1000),
+            MaxEval(180),
             UnivariateObjectiveFunction(objective),
             GoalType.MINIMIZE,
-            SearchInterval(-90.0, 90.0, estimatePitch(fakePlayer.motionX, fakePlayer.motionZ))
+            SearchInterval(-90.0, 90.0)
         )
 
         return result.value.toFloat()

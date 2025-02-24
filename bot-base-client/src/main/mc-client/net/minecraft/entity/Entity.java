@@ -215,7 +215,7 @@ public abstract class Entity implements ClientEntity {
      * The distance that has to be exceeded in order to triger a new step sound and
      * an onEntityWalking event on a block
      */
-    private int nextStepDistance;
+    protected int nextStepDistance;
     private boolean firstUpdate;
     private double entityRiderPitchDelta, entityRiderYawDelta;
     private boolean invulnerable;

@@ -5,13 +5,18 @@ import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.math.ServerLocation
+import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.ExecutorService
 
 abstract class BotAPI {
-    abstract fun spawn(configuration: BotConfiguration, serverIp: String, serverPort: Int): ClientInstance
+    abstract fun spawn(
+        configuration: BotConfiguration,
+        serverIp: String,
+        serverPort: Int
+    ): WeakReference<ClientInstance>
 
-    abstract fun spawn(configuration: BotConfiguration, location: ServerLocation): ClientInstance
+    abstract fun spawn(configuration: BotConfiguration, location: ServerLocation): WeakReference<ClientInstance>
 
     abstract fun despawn(vararg uuids: UUID): BooleanArray
 
@@ -21,7 +26,7 @@ abstract class BotAPI {
 
     abstract fun isFakePlayer(uuid: UUID): Boolean
 
-    abstract val fakePlayers: Collection<FakePlayer>
+    abstract val fakePlayers: Collection<WeakReference<FakePlayer>>
 
     @JvmField
     protected val spawnRecords: MutableList<SpawnRecord> = ArrayList()

@@ -29,7 +29,6 @@ dependencies {
     compileOnly 'it.unimi.dsi:fastutil:8.5.15'
     compileOnly 'org.apache.logging.log4j:log4j-api:2.24.3'
     compileOnly 'org.apache.logging.log4j:log4j-core:2.24.3'
-    implementation 'com.esotericsoftware:kryo:5.6.2'
     implementation 'net.java.dev.jna:jna:5.16.0'
     implementation 'net.java.dev.jna:jna-platform:5.16.0'
     implementation 'com.ibm.icu:icu4j:76.1'

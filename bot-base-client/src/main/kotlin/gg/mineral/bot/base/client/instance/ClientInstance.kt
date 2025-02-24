@@ -69,9 +69,6 @@ open class ClientInstance(
     // Delayed tasks queue.
     private val delayedTasks = ConcurrentLinkedQueue<DelayedTask>()
 
-    // The thread on which the game loop runs.
-    private var mainThread: Thread? = null
-
     override var latency: Int = 0
 
     override var currentTick: Int = 0
@@ -80,6 +77,10 @@ open class ClientInstance(
         get() = super.keyboard
     override val mouse: Mouse
         get() = super.mouse
+
+    init {
+        mainThread = null
+    }
 
     /**
      * Internal data class to track delayed tasks.
@@ -105,7 +106,7 @@ open class ClientInstance(
     /**
      * Returns true if the current thread is the main game thread.
      */
-    override fun isMainThread(): Boolean = Thread.currentThread() === mainThread
+    override fun isMainThread(): Boolean = Thread.currentThread().name.contains("GameLoop")
 
     override val gameLoopExecutor: ScheduledExecutorService
         get() = ThreadManager.gameLoopExecutor
@@ -116,9 +117,9 @@ open class ClientInstance(
     override fun runGameLoop() {
         if (!running) return
 
-        if (mainThread == null) {
-            mainThread = Thread.currentThread()
-        }
+        //if (mainThread == null) {
+        //   mainThread = Thread.currentThread()
+        //}
 
         var executing = false
         for (goal in goals) {
@@ -220,7 +221,10 @@ open class ClientInstance(
     }
 
     override fun shutdownMinecraftApplet() {
-        InstanceManager.instances.remove(configuration.uuid)
+        if (InstanceManager.instances.remove(configuration.uuid) != null)
+            logger.debug("Removed instance: {}", configuration.uuid)
+        if (InstanceManager.pendingInstances.remove(configuration.uuid) != null)
+            logger.debug("Removed pending instance: {}", configuration.uuid)
         goals.clear()
         running = false
         logger.debug("Stopping!")
@@ -343,10 +347,6 @@ open class ClientInstance(
                                     return null
                                 }
                             }
-                        }
-
-                        override fun deepCopy(): ClientWorld {
-                            return this
                         }
 
                     }

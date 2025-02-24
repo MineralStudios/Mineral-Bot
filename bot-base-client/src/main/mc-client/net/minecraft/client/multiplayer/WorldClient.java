@@ -1,21 +1,13 @@
 package net.minecraft.client.multiplayer;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Serializer;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.DefaultSerializers;
-import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import gg.mineral.bot.api.entity.ClientEntity;
 import gg.mineral.bot.api.world.ClientWorld;
-import gg.mineral.bot.base.client.instance.ClientInstance;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import lombok.SneakyThrows;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -43,142 +35,13 @@ import net.minecraft.world.WorldSettings;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.SaveHandlerMP;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.nio.FloatBuffer;
-import java.security.KeyPair;
-import java.security.PublicKey;
-import java.util.*;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.Collection;
+import java.util.Random;
+import java.util.Set;
 
 public class WorldClient extends World implements ClientWorld {
-    private static final ThreadLocal<Kryo> kryoThreadLocal = ThreadLocal.withInitial(() -> {
-        Kryo kryo = new Kryo();
-        kryo.setWarnUnregisteredClasses(true);
-        kryo.addDefaultSerializer(java.nio.Buffer.class, new JavaSerializer());
-        kryo.setRegistrationRequired(false);
-        kryo.setReferences(true);
-        kryo.register(WorldClient.class);
 
-        kryo.register(UUID.class, new DefaultSerializers.UUIDSerializer());
-
-        kryo.register(ReentrantReadWriteLock.class, new Serializer<ReentrantReadWriteLock>() {
-            @Override
-            public void write(Kryo kryo, Output output, ReentrantReadWriteLock o) {
-            }
-
-            @Override
-            public ReentrantReadWriteLock read(Kryo kryo, Input input, Class aClass) {
-                return new ReentrantReadWriteLock();
-            }
-        });
-
-        kryo.register(File.class, new Serializer<File>() {
-            @Override
-            public void write(Kryo kryo, Output output, File file) {
-                kryo.writeObject(output, file.getAbsolutePath());
-            }
-
-            @Override
-            public File read(Kryo kryo, Input input, Class<? extends File> type) {
-                return new File(kryo.readObject(input, String.class));
-            }
-        });
-
-        kryo.register(Random.class, new Serializer<Random>() {
-            @Override
-            public void write(Kryo kryo, Output output, Random o) {
-            }
-
-            @Override
-            public Random read(Kryo kryo, Input input, Class aClass) {
-                return new Random();
-            }
-        });
-
-        kryo.register(KeyPair.class, new Serializer<KeyPair>() {
-            @Override
-            public void write(Kryo kryo, Output output, KeyPair keyPair) {
-                // Serialize only the public key (private key is ignored for security)
-                kryo.writeObject(output, keyPair.getPublic());
-            }
-
-            @Override
-            public KeyPair read(Kryo kryo, Input input, Class<? extends KeyPair> type) {
-                PublicKey publicKey = kryo.readObject(input, PublicKey.class);
-                return new KeyPair(publicKey, null); // Reconstruct without private key
-            }
-        });
-
-        kryo.register(Thread.class, new Serializer<Thread>() {
-            @Override
-            public void write(Kryo kryo, Output output, Thread o) {
-            }
-
-            @Override
-            public Thread read(Kryo kryo, Input input, Class aClass) {
-                return new Thread();
-            }
-        });
-
-        kryo.register(ClientInstance.DelayedTask.class, new Serializer<ClientInstance.DelayedTask>() {
-            @Override
-            public void write(Kryo kryo, Output output, ClientInstance.DelayedTask o) {
-            }
-
-            @Override
-            public ClientInstance.DelayedTask read(Kryo kryo, Input input, Class aClass) {
-                return new ClientInstance.DelayedTask(() -> {
-                }, 0);
-            }
-        });
-
-        kryo.register(FloatBuffer.class, new Serializer<FloatBuffer>() {
-            @Override
-            public void write(Kryo kryo, Output output, FloatBuffer buffer) {
-                int position = buffer.position();
-                buffer.rewind(); // Move to the start before writing
-
-                output.writeInt(buffer.remaining()); // Save the number of elements
-                while (buffer.hasRemaining()) {
-                    output.writeFloat(buffer.get());
-                }
-
-                buffer.position(position); // Restore original position
-            }
-
-            @Override
-            public FloatBuffer read(Kryo kryo, Input input, Class<? extends FloatBuffer> type) {
-                int length = input.readInt(); // Read the number of elements
-                float[] data = new float[length];
-
-                for (int i = 0; i < length; i++) {
-                    data[i] = input.readFloat();
-                }
-
-                return FloatBuffer.wrap(data); // Return a new FloatBuffer
-            }
-        });
-
-        kryo.register(Int2ObjectOpenHashMap.class, new Serializer<Int2ObjectOpenHashMap<?>>() {
-            @Override
-            public void write(Kryo kryo, Output output, Int2ObjectOpenHashMap<?> o) {
-                HashMap<Integer, ?> map = new HashMap<>(o);
-                kryo.writeClassAndObject(output, map);
-            }
-
-            @Override
-            public Int2ObjectOpenHashMap<?> read(Kryo kryo, Input input, Class aClass) {
-                HashMap<Integer, Object> safeMap = (HashMap<Integer, Object>) kryo.readClassAndObject(input);
-                return new Int2ObjectOpenHashMap<>(safeMap);
-            }
-        });
-
-        return kryo;
-    });
     public final Minecraft mc;
     private final LongSet previousActiveChunkSet = new LongOpenHashSet();
     /**
@@ -204,7 +67,7 @@ public class WorldClient extends World implements ClientWorld {
     /**
      * The ChunkProviderClient instance
      */
-    private ChunkProviderClient clientChunkProvider;
+    ChunkProviderClient clientChunkProvider;
 
     public WorldClient(Minecraft mc, NetHandlerPlayClient p_i45063_1_, WorldSettings p_i45063_2_, int p_i45063_3_,
                        EnumDifficulty p_i45063_4_, Profiler p_i45063_5_) {
@@ -596,23 +459,5 @@ public class WorldClient extends World implements ClientWorld {
     @Override
     public gg.mineral.bot.api.world.block.Block getBlockAt(double x, double y, double z) {
         return getBlock((int) x, (int) y, (int) z);
-    }
-
-    @NotNull
-    @Override
-    @SneakyThrows
-    public ClientWorld deepCopy() {
-        Kryo kryo = kryoThreadLocal.get();
-
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             Output output = new Output(baos)) {
-
-            kryo.writeClassAndObject(output, this);
-            output.close();
-
-            try (Input input = new Input(new ByteArrayInputStream(baos.toByteArray()))) {
-                return (WorldClient) kryo.readClassAndObject(input);
-            }
-        }
     }
 }

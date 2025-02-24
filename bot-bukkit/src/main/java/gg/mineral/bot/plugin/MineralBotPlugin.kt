@@ -1,6 +1,7 @@
 package gg.mineral.bot.plugin
 
 import gg.mineral.bot.api.BotAPI
+import gg.mineral.bot.base.client.manager.InstanceManager
 import gg.mineral.bot.base.client.tick.GameLoop
 import gg.mineral.bot.impl.thread.ThreadManager.shutdown
 import gg.mineral.bot.plugin.command.MineralBotCommand
@@ -27,6 +28,15 @@ class MineralBotPlugin : JavaPlugin() {
 
     override fun onDisable() {
         BotAPI.INSTANCE.despawnAll()
+        logger.info("Disabling MineralBotPlugin...")
+
+        // Cancel all tasks to prevent memory leaks
+        Bukkit.getScheduler().cancelTasks(this)
+
+        // Ensure all instances are removed
+        InstanceManager.instances.clear()
+        InstanceManager.pendingInstances.clear()
+
         shutdown()
     }
 }

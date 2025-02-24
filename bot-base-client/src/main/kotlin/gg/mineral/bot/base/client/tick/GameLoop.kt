@@ -3,6 +3,7 @@ package gg.mineral.bot.base.client.tick
 import gg.mineral.bot.api.BotAPI
 import gg.mineral.bot.base.client.BotImpl
 import gg.mineral.bot.base.client.manager.InstanceManager.instances
+import gg.mineral.bot.base.client.manager.InstanceManager.pendingInstances
 import gg.mineral.bot.impl.config.BotGlobalConfig
 import gg.mineral.bot.impl.thread.ThreadManager.gameLoopExecutor
 import net.minecraft.client.Minecraft
@@ -52,6 +53,11 @@ object GameLoop {
             }
             if (BotAPI.INSTANCE is BotImpl) (BotAPI.INSTANCE as BotImpl).printSpawnInfo()
         }, 0, BotGlobalConfig.gameLoopDelay.toLong(), TimeUnit.MILLISECONDS)
+
+        gameLoopExecutor.scheduleAtFixedRate({
+            instances.entries.removeIf { (_, instance) -> !instance.running }
+            pendingInstances.entries.removeIf { (_, instance) -> !instance.running }
+        }, 0, 10, TimeUnit.SECONDS)
     }
 
     @JvmStatic

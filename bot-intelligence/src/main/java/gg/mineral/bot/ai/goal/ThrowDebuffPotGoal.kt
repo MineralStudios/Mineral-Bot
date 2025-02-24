@@ -161,54 +161,51 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             setMouseYaw(angleTowardsEnemies())
         }
 
-        tick.execute {
-            val worldCopy = fakePlayer.world.deepCopy()
-            tick.executeAsync(0, {
-                minimizePitch(fakePlayer, worldCopy) { it.airTimeTicks.toDouble() }
-            }) {
-                setMousePitch(it)
-            }
+        tick.executeAsync(0, {
+            minimizePitch(fakePlayer) { it.airTimeTicks.toDouble() }
+        }) {
+            setMousePitch(it)
+        }
 
-            val closestEnemy = closestEnemy() ?: return@execute
+        val closestEnemy = closestEnemy() ?: return
 
-            val simulator = fakePlayer.motionSimulator(world = worldCopy).apply {
-                setMouseYaw(fakePlayer.yaw)
-                keyboard.pressKey(Key.Type.KEY_S)
-                keyboard.unpressKey(Key.Type.KEY_W, Key.Type.KEY_A, Key.Type.KEY_D)
-            }
+        val simulator = fakePlayer.motionSimulator().apply {
+            setMouseYaw(fakePlayer.yaw)
+            keyboard.pressKey(Key.Type.KEY_S)
+            keyboard.unpressKey(Key.Type.KEY_W, Key.Type.KEY_A, Key.Type.KEY_D)
+        }
 
-            val enemySimulator = closestEnemy.motionSimulator(world = worldCopy)
-            val trajectory = object : SplashPotionTrajectory(
-                worldCopy,
-                fakePlayer.x,
-                fakePlayer.y + fakePlayer.eyeHeight,
-                fakePlayer.z,
-                fakePlayer.yaw,
-                fakePlayer.pitch, { x, y, z ->
-                    hasHitBlock(worldCopy, x, y, z) &&
-                            enemySimulator.distance3DToSq(x, y, z).let {
-                                if (it < 16.0) 1.0 - sqrt(it) / 4.0 > 0.5
-                                else false
-                            }
-                            && simulator.distance3DToSq(x, y, z)
-                        .let { if (it < 16.0) 1.0 - sqrt(it) / 4.0 <= 0.01 else true }
-                }
-            ) {
-                override fun tick(): Trajectory.Result {
-                    enemySimulator.execute(50)
-                    simulator.execute(50)
-                    return super.tick()
-                }
+        val enemySimulator = closestEnemy.motionSimulator()
+        val trajectory = object : SplashPotionTrajectory(
+            fakePlayer.world,
+            fakePlayer.x,
+            fakePlayer.y + fakePlayer.eyeHeight,
+            fakePlayer.z,
+            fakePlayer.yaw,
+            fakePlayer.pitch, { x, y, z ->
+                hasHitBlock(fakePlayer.world, x, y, z) &&
+                        enemySimulator.distance3DToSq(x, y, z).let {
+                            if (it < 16.0) 1.0 - sqrt(it) / 4.0 > 0.5
+                            else false
+                        }
+                        && simulator.distance3DToSq(x, y, z)
+                    .let { if (it < 16.0) 1.0 - sqrt(it) / 4.0 <= 0.01 else true }
             }
+        ) {
+            override fun tick(): Trajectory.Result {
+                enemySimulator.execute(50)
+                simulator.execute(50)
+                return super.tick()
+            }
+        }
 
-            tick.executeAsync(1, {
-                trajectory.compute(1000) == Trajectory.Result.VALID
-            }) {
-                if (!it) return@executeAsync
-                lastPotTick = clientInstance.currentTick
-                pressButton(10, MouseButton.Type.RIGHT_CLICK)
-                tick.finishIf("Thrown Debuff", it)
-            }
+        tick.executeAsync(1, {
+            trajectory.compute(100) == Trajectory.Result.VALID
+        }) {
+            if (!it) return@executeAsync
+            lastPotTick = clientInstance.currentTick
+            pressButton(10, MouseButton.Type.RIGHT_CLICK)
+            tick.finishIf("Thrown Debuff", it)
         }
     }
 
@@ -222,26 +219,25 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
     private fun minimizePitch(
         fakePlayer: FakePlayer,
-        worldCopy: ClientWorld = fakePlayer.world,
         valueFunction: (SplashPotionTrajectory) -> Double
     ): Float {
         val closestEnemy = closestEnemy() ?: return fakePlayer.pitch
         val objective = UnivariateFunction { pitch ->
-            val simulator = fakePlayer.motionSimulator(world = worldCopy).apply {
+            val simulator = fakePlayer.motionSimulator().apply {
                 setMouseYaw(fakePlayer.yaw)
                 keyboard.pressKey(Key.Type.KEY_S)
                 keyboard.unpressKey(Key.Type.KEY_W, Key.Type.KEY_A, Key.Type.KEY_D)
             }
 
-            val enemySimulator = closestEnemy.motionSimulator(world = worldCopy)
+            val enemySimulator = closestEnemy.motionSimulator()
             val trajectory = object : SplashPotionTrajectory(
-                worldCopy,
+                fakePlayer.world,
                 fakePlayer.x,
                 fakePlayer.y + fakePlayer.eyeHeight,
                 fakePlayer.z,
                 fakePlayer.yaw,
                 pitch.toFloat(), { x, y, z ->
-                    hasHitBlock(worldCopy, x, y, z) && enemySimulator.distance3DToSq(x, y, z).let {
+                    hasHitBlock(fakePlayer.world, x, y, z) && enemySimulator.distance3DToSq(x, y, z).let {
                         if (it < 16.0) 1.0 - sqrt(it) / 4.0 > 0.5
                         else false
                     }
@@ -255,7 +251,7 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
                     return super.tick()
                 }
             }
-            if (trajectory.compute(1000) === Trajectory.Result.VALID)
+            if (trajectory.compute(100) === Trajectory.Result.VALID)
                 valueFunction.invoke(trajectory)
             else
                 Double.MAX_VALUE
@@ -264,7 +260,7 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
         val optimizer = BrentOptimizer(1e-10, 1e-14)
 
         val result = optimizer.optimize(
-            MaxEval(1000),
+            MaxEval(180),
             UnivariateObjectiveFunction(objective),
             GoalType.MINIMIZE,
             SearchInterval(-90.0, 90.0)
