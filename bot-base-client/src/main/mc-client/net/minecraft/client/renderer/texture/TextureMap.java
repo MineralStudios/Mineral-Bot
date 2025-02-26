@@ -2,6 +2,7 @@ package net.minecraft.client.renderer.texture;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -60,6 +61,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
     private static final boolean ENABLE_SKIP = Boolean
             .parseBoolean(System.getProperty("fml.skipFirstTextureLoad", "true"));
     private boolean skipFirst;
+    @Getter
     private final Minecraft mc;
 
     public TextureMap(Minecraft mc, int par1, String par2Str) {
@@ -357,7 +359,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
             if (renderManager != null)
                 renderManager.updateIcons(this);
 
-            ConnectedTextures.updateIcons(this);
+            ConnectedTextures.updateIcons(mc, this);
         }
 
         if (this.textureType == 1) {
@@ -405,7 +407,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
     }
 
     private boolean isItemAnimationActive(TextureAtlasSprite ts) {
-        return ts != TextureUtils.iconClock && ts != TextureUtils.iconCompass ? Config.isAnimatedItems() : true;
+        return ts != TextureUtils.iconClock && ts != TextureUtils.iconCompass ? mc.getConfig().isAnimatedItems() : true;
     }
 
     public IIcon registerIcon(String par1Str) {
@@ -414,7 +416,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         } else if (par1Str.indexOf(92) != -1 && !this.isAbsoluteLocationPath(par1Str)) {
             throw new IllegalArgumentException("Name cannot contain slashes!");
         } else {
-            Object var2 = (TextureAtlasSprite) this.mapRegisteredSprites.get(par1Str);
+            Object var2 = this.mapRegisteredSprites.get(par1Str);
 
             if (var2 == null && this.textureType == 1 && Reflector.ModLoader_getCustomAnimationLogic.exists()) {
                 var2 = Reflector.call(Reflector.ModLoader_getCustomAnimationLogic, new Object[]{par1Str});
@@ -596,11 +598,11 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         return ts != TextureUtils.iconWaterStill && ts != TextureUtils.iconWaterFlow
                 ? (ts != TextureUtils.iconLavaStill && ts != TextureUtils.iconLavaFlow
                 ? (ts != TextureUtils.iconFireLayer0 && ts != TextureUtils.iconFireLayer1
-                ? (ts == TextureUtils.iconPortal ? Config.isAnimatedPortal()
-                : Config.isAnimatedTerrain())
-                : Config.isAnimatedFire())
-                : Config.isAnimatedLava())
-                : Config.isAnimatedWater();
+                ? (ts == TextureUtils.iconPortal ? mc.getConfig().isAnimatedPortal()
+                : mc.getConfig().isAnimatedTerrain())
+                : mc.getConfig().isAnimatedFire())
+                : mc.getConfig().isAnimatedLava())
+                : mc.getConfig().isAnimatedWater();
     }
 
     public void loadTextureSafe(IResourceManager rm) {
@@ -632,7 +634,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
 
     private void writeDebugImage(BufferedImage image, String pngPath) {
         try {
-            ImageIO.write(image, "png", new File(Config.getMinecraft().mcDataDir, pngPath));
+            ImageIO.write(image, "png", new File(mc.mcDataDir, pngPath));
         } catch (Exception var4) {
             var4.printStackTrace();
         }

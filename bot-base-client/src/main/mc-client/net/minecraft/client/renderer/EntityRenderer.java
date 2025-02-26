@@ -768,10 +768,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private void setupCameraTransform(float par1, int par2) {
         this.farPlaneDistance = (float) (this.mc.gameSettings.renderDistanceChunks * 16);
 
-        if (Config.isFogFancy())
+        if (mc.getConfig().isFogFancy())
             this.farPlaneDistance *= 0.95F;
 
-        if (Config.isFogFast())
+        if (mc.getConfig().isFogFast())
             this.farPlaneDistance *= 0.83F;
 
         GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -963,12 +963,12 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         this.lightmapUpdateNeeded = true;
     }
 
-    private void updateLightmap(float par1) {
+    private void updateLightmap(Minecraft mc, float par1) {
         WorldClient var2 = this.mc.theWorld;
 
         if (var2 != null) {
             if (this.mc.thePlayer != null
-                    && CustomColorizer.updateLightmap(var2, this.torchFlickerX, this.lightmapColors,
+                    && CustomColorizer.updateLightmap(mc, var2, this.torchFlickerX, this.lightmapColors,
                     this.mc.thePlayer.isPotionActive(Potion.nightVision))) {
                 if (lightmapTexture != null)
                     this.lightmapTexture.updateDynamicTexture();
@@ -1113,7 +1113,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.initialized = true;
         }
 
-        Config.checkDisplayMode();
+        mc.getConfig().checkDisplayMode();
         WorldClient world1 = this.mc.theWorld;
 
         if (world1 != null && !BotGlobalConfig.optimizedGameLoop) {
@@ -1139,18 +1139,18 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         }
 
         if (this.updatedWorld != world1) {
-            RandomMobs.worldChanged(this.updatedWorld, world1);
-            Config.updateThreadPriorities();
+            RandomMobs.worldChanged(mc, this.updatedWorld, world1);
+            mc.getConfig().updateThreadPriorities();
             this.lastServerTime = 0L;
             this.lastServerTicks = 0;
             this.updatedWorld = world1;
         }
 
-        RenderBlocks.fancyGrass = Config.isGrassFancy() || Config.isBetterGrassFancy();
-        Blocks.leaves.func_150122_b(Config.isTreesFancy());
+        RenderBlocks.fancyGrass = mc.getConfig().isGrassFancy() || mc.getConfig().isBetterGrassFancy();
+        Blocks.leaves.func_150122_b(mc.getConfig().isTreesFancy());
 
         if (this.lightmapUpdateNeeded && !BotGlobalConfig.optimizedGameLoop) {
-            this.updateLightmap(par1);
+            this.updateLightmap(mc, par1);
         }
 
         this.mc.mcProfiler.endSection();
@@ -1231,14 +1231,14 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
                     var12 = this.mc.gameSettings.fancyGraphics;
 
-                    if (!Config.isVignetteEnabled())
+                    if (!mc.getConfig().isVignetteEnabled())
                         this.mc.gameSettings.fancyGraphics = false;
 
                     this.mc.ingameGUI.renderGameOverlay(par1, this.mc.currentScreen != null, var161, var171);
                     this.mc.gameSettings.fancyGraphics = var12;
 
                     if (this.mc.gameSettings.ofShowFps && !this.mc.gameSettings.showDebugInfo)
-                        Config.drawFps();
+                        mc.getConfig().drawFps();
 
                 }
 
@@ -1319,7 +1319,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         this.mc.mcProfiler.startSection("lightTex");
 
         if (this.lightmapUpdateNeeded) {
-            this.updateLightmap(par1);
+            this.updateLightmap(mc, par1);
         }
 
         GL11.glEnable(GL11.GL_CULL_FACE);
@@ -1364,7 +1364,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.mcProfiler.endStartSection("frustrum");
             ClippingHelperImpl.getInstance();
 
-            if (!Config.isSkyEnabled() && !Config.isSunMoonEnabled() && !Config.isStarsEnabled()) {
+            if (!mc.getConfig().isSkyEnabled() && !mc.getConfig().isSunMoonEnabled() && !mc.getConfig().isStarsEnabled()) {
                 GL11.glDisable(GL11.GL_BLEND);
             } else {
                 this.setupFog(-1, par1);
@@ -1519,7 +1519,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             WrUpdates.resumeBackgroundUpdates();
 
-            if (Config.isWaterFancy()) {
+            if (mc.getConfig().isWaterFancy()) {
                 this.mc.mcProfiler.endStartSection("water");
 
                 if (this.mc.gameSettings.ambientOcclusion != 0)
@@ -1614,10 +1614,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private void addRainParticles() {
         float var1 = this.mc.theWorld != null ? this.mc.theWorld.getRainStrength(1.0F) : 0.0f;
 
-        if (!Config.isRainFancy())
+        if (!mc.getConfig().isRainFancy())
             var1 /= 2.0F;
 
-        if (var1 != 0.0F && Config.isRainSplash()) {
+        if (var1 != 0.0F && mc.getConfig().isRainSplash()) {
             this.random.setSeed((long) this.rendererUpdateCount * 312987231L);
             EntityLivingBase var2 = this.mc.renderViewEntity;
             WorldClient var3 = this.mc.theWorld;
@@ -1667,7 +1667,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                         EntityRainFX fx = new EntityRainFX(var3, (float) var17 + var22,
                                 (double) ((float) var19 + 0.1F) - var20.getBlockBoundsMinY(),
                                 (float) var18 + var23);
-                        CustomColorizer.updateWaterFX(fx, var3);
+                        CustomColorizer.updateWaterFX(mc, fx, var3);
                         if (this.mc.effectRenderer != null)
                             this.mc.effectRenderer.addEffect(fx);
                     }
@@ -1724,7 +1724,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 }
             }
 
-            if (Config.isRainOff()) {
+            if (mc.getConfig().isRainOff()) {
                 return;
             }
 
@@ -1745,7 +1745,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             int var15 = MathHelper.floor_double(var11);
             byte var16 = 5;
 
-            if (Config.isRainFancy()) {
+            if (mc.getConfig().isRainFancy()) {
                 var16 = 10;
             }
 
@@ -1753,7 +1753,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             byte var18 = -1;
             float var19 = (float) this.rendererUpdateCount + par1;
 
-            if (Config.isRainFancy()) {
+            if (mc.getConfig().isRainFancy()) {
                 var16 = 10;
             }
 
@@ -2015,7 +2015,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         this.fogColorBlue *= var22;
         double fogYFactor1 = var2 != null ? var2.provider.getVoidFogYFactor() : 0.0;
 
-        if (!Config.isDepthFog())
+        if (!mc.getConfig().isDepthFog())
             fogYFactor1 = 1.0D;
 
         double var14 = (var3.lastTickPosY + (var3.posY - var3.lastTickPosY) * (double) par1) * fogYFactor1;
@@ -2124,7 +2124,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             Block var5 = ActiveRenderInfo.getBlockAtEntityViewpoint(this.mc.theWorld, var3, par2);
             Object event = Reflector.newInstance(Reflector.EntityViewRenderEvent_FogDensity_Constructor,
-                    this, var3, var5, Float.valueOf(par2), Float.valueOf(0.1F));
+                    this, var3, var5, par2, 0.1F);
 
             if (Reflector.postForgeBusEvent(event)) {
                 float var10 = Reflector.getFieldValueFloat(event, Reflector.EntityViewRenderEvent_FogDensity_density,
@@ -2151,7 +2151,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                         GL11.glFogf(GL11.GL_FOG_END, var6);
                     }
 
-                    if (Config.isFogFancy()) {
+                    if (mc.getConfig().isFogFancy()) {
                         GL11.glFogi(34138, 34139);
                     }
                 } else if (this.cloudFog) {
@@ -2166,7 +2166,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                         GL11.glFogf(GL11.GL_FOG_DENSITY, 0.1F - (float) EnchantmentHelper.getRespiration(var3) * 0.03F);
                     }
 
-                    if (Config.isClearWater()) {
+                    if (mc.getConfig().isClearWater()) {
                         GL11.glFogf(GL11.GL_FOG_DENSITY, 0.02F);
                     }
                 } else if (var5.getMaterial() == Material.lava) {
@@ -2176,7 +2176,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     var6 = this.farPlaneDistance;
                     this.fogStandard = true;
 
-                    if (Config.isDepthFog() &&
+                    if (mc.getConfig().isDepthFog() &&
                             this.mc.theWorld != null && this.mc.theWorld.provider.getWorldHasVoidParticles() && !var4) {
                         double var102 = (double) ((var3.getBrightnessForRender(par2) & 15728640) >> 20) / 16.0D
                                 + (var3.lastTickPosY + (var3.posY - var3.lastTickPosY) * (double) par2 + 4.0D) / 32.0D;
@@ -2202,15 +2202,15 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                         GL11.glFogf(GL11.GL_FOG_START, 0.0F);
                         GL11.glFogf(GL11.GL_FOG_END, var6);
                     } else {
-                        GL11.glFogf(GL11.GL_FOG_START, var6 * Config.getFogStart());
+                        GL11.glFogf(GL11.GL_FOG_START, var6 * mc.getConfig().getFogStart());
                         GL11.glFogf(GL11.GL_FOG_END, var6);
                     }
 
                     if (GLContext.getCapabilities().GL_NV_fog_distance) {
-                        if (Config.isFogFancy())
+                        if (mc.getConfig().isFogFancy())
                             GL11.glFogi(34138, 34139);
 
-                        if (Config.isFogFast())
+                        if (mc.getConfig().isFogFast())
                             GL11.glFogi(34138, 34140);
 
                     }
@@ -2250,7 +2250,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private void waitForServerThread() {
         this.serverWaitTimeCurrent = 0;
 
-        if (!Config.isSmoothWorld()) {
+        if (!mc.getConfig().isSmoothWorld()) {
             this.lastServerTime = 0L;
             this.lastServerTicks = 0;
         } else if (this.mc.getIntegratedServer() != null) {

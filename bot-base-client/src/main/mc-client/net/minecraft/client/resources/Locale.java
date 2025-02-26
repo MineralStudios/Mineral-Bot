@@ -1,5 +1,13 @@
 package net.minecraft.client.resources;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
+import gg.mineral.bot.impl.config.BotGlobalConfig;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.util.ResourceLocation;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.IllegalFormatException;
@@ -8,17 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.util.ResourceLocation;
-
 public class Locale {
-    /** Splits on "=" */
+    /**
+     * Splits on "="
+     */
     private static final Splitter splitter = Splitter.on('=').limit(2);
     private static final Pattern field_135031_c = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
     Map<String, String> field_135032_a = new Object2ObjectOpenHashMap<>();
@@ -34,7 +35,7 @@ public class Locale {
 
         while (var3.hasNext()) {
             String var4 = var3.next();
-            String var5 = String.format("lang/%s.lang", new Object[] { var4 });
+            String var5 = String.format("lang/%s.lang", new Object[]{var4});
             Iterator<String> var6 = p_135022_1_.getResourceDomains().iterator();
 
             while (var6.hasNext()) {
@@ -119,6 +120,8 @@ public class Locale {
      * Calls String.format(translateKey(key), params)
      */
     public String formatMessage(String p_135023_1_, Object[] p_135023_2_) {
+        if (BotGlobalConfig.optimizedGameLoop)
+            return p_135023_1_;
         String var3 = this.translateKeyPrivate(p_135023_1_);
 
         try {

@@ -1,28 +1,20 @@
 package optifine;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.IOUtils;
-
 import net.minecraft.client.Minecraft;
-
-import net.minecraft.client.renderer.texture.ITextureObject;
-import net.minecraft.client.renderer.texture.ITickableTextureObject;
-import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.*;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.io.IOUtils;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class TextureUtils {
     public static final String texGrassTop = "grass_top";
@@ -180,12 +172,12 @@ public class TextureUtils {
         return val;
     }
 
-    public static void refreshBlockTextures() {
+    public static void refreshBlockTextures(Minecraft mc) {
         Config.dbg("*** Reloading block textures ***");
         WrUpdates.finishCurrentUpdate();
-        TextureMap.textureMapBlocks.loadTextureSafe(Config.getResourceManager());
+        TextureMap.textureMapBlocks.loadTextureSafe(mc.getConfig().getResourceManager());
         update();
-        NaturalTextures.update();
+        NaturalTextures.update(mc);
         TextureMap.textureMapBlocks.updateAnimations();
     }
 
@@ -194,15 +186,15 @@ public class TextureUtils {
     }
 
     public static ITextureObject getTexture(Minecraft mc, ResourceLocation loc) {
-        ITextureObject tex = Config.getTextureManager().getTexture(loc);
+        ITextureObject tex = mc.getConfig().getTextureManager().getTexture(loc);
 
         if (tex != null) {
             return tex;
-        } else if (!Config.hasResource(loc)) {
+        } else if (!mc.getConfig().hasResource(loc)) {
             return null;
         } else {
             SimpleTexture tex1 = new SimpleTexture(mc, loc);
-            Config.getTextureManager().loadTexture(loc, tex1);
+            mc.getConfig().getTextureManager().loadTexture(loc, tex1);
             return tex1;
         }
     }
@@ -214,25 +206,25 @@ public class TextureUtils {
             TextureAnimations.reset();
             WrUpdates.finishCurrentUpdate();
             update();
-            NaturalTextures.update();
+            NaturalTextures.update(mc);
             TextureAnimations.update(mc);
-            CustomColorizer.update();
+            CustomColorizer.update(mc);
             CustomSky.update(mc);
-            RandomMobs.resetTextures();
-            Config.updateTexturePackClouds();
-            Config.getTextureManager().tick();
+            RandomMobs.resetTextures(mc);
+            mc.getConfig().updateTexturePackClouds();
+            mc.getConfig().getTextureManager().tick();
         }
     }
 
-    public static void refreshTextureMaps(IResourceManager rm) {
+    public static void refreshTextureMaps(Minecraft mc, IResourceManager rm) {
         TextureMap.textureMapBlocks.loadTextureSafe(rm);
         TextureMap.textureMapItems.loadTextureSafe(rm);
         update();
-        NaturalTextures.update();
+        NaturalTextures.update(mc);
     }
 
     public static void registerResourceListener(Minecraft mc) {
-        IResourceManager rm = Config.getResourceManager();
+        IResourceManager rm = mc.getConfig().getResourceManager();
 
         if (rm instanceof IReloadableResourceManager) {
             IReloadableResourceManager tto = (IReloadableResourceManager) rm;
@@ -246,7 +238,7 @@ public class TextureUtils {
 
         ITickableTextureObject tto1 = new ITickableTextureObject() {
             public void tick() {
-                TextureAnimations.updateCustomAnimations();
+                TextureAnimations.updateCustomAnimations(mc);
             }
 
             public void loadTexture(IResourceManager var1) throws IOException {
@@ -257,7 +249,7 @@ public class TextureUtils {
             }
         };
         ResourceLocation ttol1 = new ResourceLocation("optifine/TickableTextures");
-        Config.getTextureManager().loadTickableTexture(ttol1, tto1);
+        mc.getConfig().getTextureManager().loadTickableTexture(ttol1, tto1);
     }
 
     public static String fixResourcePath(String path, String basePath) {

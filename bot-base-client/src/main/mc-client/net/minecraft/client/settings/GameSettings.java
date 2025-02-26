@@ -376,7 +376,7 @@ public class GameSettings {
         GameSettings.Options.RENDER_DISTANCE.setValueMax(32.0F);
         this.renderDistanceChunks = par1Minecraft.isJava64bit() ? 12 : 8;
         this.loadOptions();
-        Config.initGameSettings(par1Minecraft, this);
+        mc.getConfig().initGameSettings(par1Minecraft, this);
     }
 
     public GameSettings(Minecraft mc) {
@@ -620,7 +620,7 @@ public class GameSettings {
             if (this.ofMipmapType > 3)
                 this.ofMipmapType = 0;
 
-            TextureUtils.refreshBlockTextures();
+            TextureUtils.refreshBlockTextures(mc);
         }
 
         if (par1EnumOptions == GameSettings.Options.LOAD_FAR) {
@@ -655,7 +655,7 @@ public class GameSettings {
             if (!Config.isSingleProcessor())
                 this.ofSmoothWorld = false;
 
-            Config.updateThreadPriorities();
+            mc.getConfig().updateThreadPriorities();
         }
 
         if (par1EnumOptions == GameSettings.Options.CLOUDS) {
@@ -684,7 +684,7 @@ public class GameSettings {
             if (this.ofGrass > 2)
                 this.ofGrass = 0;
 
-            RenderBlocks.fancyGrass = Config.isGrassFancy();
+            RenderBlocks.fancyGrass = mc.getConfig().isGrassFancy();
             RenderGlobal renderGlobal = this.mc.renderGlobal;
 
             if (renderGlobal != null)
@@ -888,7 +888,7 @@ public class GameSettings {
 
         if (par1EnumOptions == GameSettings.Options.SWAMP_COLORS) {
             this.ofSwampColors = !this.ofSwampColors;
-            CustomColorizer.updateUseDefaultColorMultiplier();
+            CustomColorizer.updateUseDefaultColorMultiplier(mc);
 
             RenderGlobal renderGlobal = this.mc.renderGlobal;
 
@@ -898,12 +898,12 @@ public class GameSettings {
 
         if (par1EnumOptions == GameSettings.Options.RANDOM_MOBS) {
             this.ofRandomMobs = !this.ofRandomMobs;
-            RandomMobs.resetTextures();
+            RandomMobs.resetTextures(mc);
         }
 
         if (par1EnumOptions == GameSettings.Options.SMOOTH_BIOMES) {
             this.ofSmoothBiomes = !this.ofSmoothBiomes;
-            CustomColorizer.updateUseDefaultColorMultiplier();
+            CustomColorizer.updateUseDefaultColorMultiplier(mc);
 
             RenderGlobal renderGlobal = this.mc.renderGlobal;
 
@@ -916,15 +916,15 @@ public class GameSettings {
             FontRenderer fontRenderer = this.mc.fontRenderer;
 
             if (fontRenderer != null)
-                fontRenderer.onResourceManagerReload(Config.getResourceManager());
+                fontRenderer.onResourceManagerReload(mc.getConfig().getResourceManager());
             FontRenderer stdGalacticFontRenderer = this.mc.standardGalacticFontRenderer;
             if (stdGalacticFontRenderer != null)
-                stdGalacticFontRenderer.onResourceManagerReload(Config.getResourceManager());
+                stdGalacticFontRenderer.onResourceManagerReload(mc.getConfig().getResourceManager());
         }
 
         if (par1EnumOptions == GameSettings.Options.CUSTOM_COLORS) {
             this.ofCustomColors = !this.ofCustomColors;
-            CustomColorizer.update();
+            CustomColorizer.update(mc);
 
             RenderGlobal renderGlobal = this.mc.renderGlobal;
 
@@ -948,7 +948,7 @@ public class GameSettings {
 
         if (par1EnumOptions == GameSettings.Options.NATURAL_TEXTURES) {
             this.ofNaturalTextures = !this.ofNaturalTextures;
-            NaturalTextures.update();
+            NaturalTextures.update(mc);
 
             RenderGlobal renderGlobal = this.mc.renderGlobal;
 
@@ -967,7 +967,7 @@ public class GameSettings {
             if (this.ofFastRender)
                 this.mc.entityRenderer.stopUseShader();
 
-            Config.updateFramebufferSize();
+            mc.getConfig().updateFramebufferSize();
 
             RenderGlobal renderGlobal = this.mc.renderGlobal;
 
@@ -2574,7 +2574,7 @@ public class GameSettings {
             Config.waterOpacityChanged = true;
         }
 
-        ClearWater.updateWaterOpacity(this, this.mc.theWorld);
+        ClearWater.updateWaterOpacity(mc, this, this.mc.theWorld);
     }
 
     public void updateChunkLoading() {

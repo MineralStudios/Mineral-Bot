@@ -1,11 +1,11 @@
 package optifine;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.BiomeGenBase;
 
-public class RandomMobsRule
-{
+public class RandomMobsRule {
     private ResourceLocation baseResLoc = null;
     private int[] skins = null;
     private ResourceLocation[] resourceLocations = null;
@@ -15,8 +15,7 @@ public class RandomMobsRule
     public int[] sumWeights = null;
     public int sumAllWeights = 1;
 
-    public RandomMobsRule(ResourceLocation baseResLoc, int[] skins, int[] weights, BiomeGenBase[] biomes, RangeListInt heights)
-    {
+    public RandomMobsRule(ResourceLocation baseResLoc, int[] skins, int[] weights, BiomeGenBase[] biomes, RangeListInt heights) {
         this.baseResLoc = baseResLoc;
         this.skins = skins;
         this.weights = weights;
@@ -24,41 +23,31 @@ public class RandomMobsRule
         this.heights = heights;
     }
 
-    public boolean isValid(String path)
-    {
+    public boolean isValid(Minecraft mc, String path) {
         this.resourceLocations = new ResourceLocation[this.skins.length];
         ResourceLocation locMcp = RandomMobs.getMcpatcherLocation(this.baseResLoc);
 
-        if (locMcp == null)
-        {
+        if (locMcp == null) {
             Config.warn("Invalid path: " + this.baseResLoc.getResourcePath());
             return false;
-        }
-        else
-        {
+        } else {
             int sum;
             int i;
 
-            for (sum = 0; sum < this.resourceLocations.length; ++sum)
-            {
+            for (sum = 0; sum < this.resourceLocations.length; ++sum) {
                 i = this.skins[sum];
 
-                if (i <= 1)
-                {
+                if (i <= 1) {
                     this.resourceLocations[sum] = this.baseResLoc;
-                }
-                else
-                {
+                } else {
                     ResourceLocation i1 = RandomMobs.getLocationIndexed(locMcp, i);
 
-                    if (i1 == null)
-                    {
+                    if (i1 == null) {
                         Config.warn("Invalid path: " + this.baseResLoc.getResourcePath());
                         return false;
                     }
 
-                    if (!Config.hasResource(i1))
-                    {
+                    if (!mc.getConfig().hasResource(i1)) {
                         Config.warn("Texture not found: " + i1.getResourcePath());
                         return false;
                     }
@@ -67,27 +56,23 @@ public class RandomMobsRule
                 }
             }
 
-            if (this.weights != null)
-            {
+            if (this.weights != null) {
                 int[] var6;
 
-                if (this.weights.length > this.resourceLocations.length)
-                {
+                if (this.weights.length > this.resourceLocations.length) {
                     Config.warn("More weights defined than skins, trimming weights: " + path);
                     var6 = new int[this.resourceLocations.length];
                     System.arraycopy(this.weights, 0, var6, 0, var6.length);
                     this.weights = var6;
                 }
 
-                if (this.weights.length < this.resourceLocations.length)
-                {
+                if (this.weights.length < this.resourceLocations.length) {
                     Config.warn("Less weights defined than skins, expanding weights: " + path);
                     var6 = new int[this.resourceLocations.length];
                     System.arraycopy(this.weights, 0, var6, 0, this.weights.length);
                     i = MathUtils.getAverage(this.weights);
 
-                    for (int var7 = this.weights.length; var7 < var6.length; ++var7)
-                    {
+                    for (int var7 = this.weights.length; var7 < var6.length; ++var7) {
                         var6[var7] = i;
                     }
 
@@ -97,10 +82,8 @@ public class RandomMobsRule
                 this.sumWeights = new int[this.weights.length];
                 sum = 0;
 
-                for (i = 0; i < this.weights.length; ++i)
-                {
-                    if (this.weights[i] < 0)
-                    {
+                for (i = 0; i < this.weights.length; ++i) {
+                    if (this.weights[i] < 0) {
                         Config.warn("Invalid weight: " + this.weights[i]);
                         return false;
                     }
@@ -111,8 +94,7 @@ public class RandomMobsRule
 
                 this.sumAllWeights = sum;
 
-                if (this.sumAllWeights <= 0)
-                {
+                if (this.sumAllWeights <= 0) {
                     Config.warn("Invalid sum of all weights: " + sum);
                     this.sumAllWeights = 1;
                 }
@@ -122,26 +104,21 @@ public class RandomMobsRule
         }
     }
 
-    public boolean matches(EntityLiving el)
-    {
-        if (this.biomes != null)
-        {
+    public boolean matches(EntityLiving el) {
+        if (this.biomes != null) {
             BiomeGenBase spawnBiome = el.spawnBiome;
             boolean matchBiome = false;
 
-            for (int i = 0; i < this.biomes.length; ++i)
-            {
+            for (int i = 0; i < this.biomes.length; ++i) {
                 BiomeGenBase biome = this.biomes[i];
 
-                if (biome == spawnBiome)
-                {
+                if (biome == spawnBiome) {
                     matchBiome = true;
                     break;
                 }
             }
 
-            if (!matchBiome)
-            {
+            if (!matchBiome) {
                 return false;
             }
         }
@@ -149,22 +126,16 @@ public class RandomMobsRule
         return this.heights != null && el.spawnPosition != null ? this.heights.isInRange(el.spawnPosition.getY()) : true;
     }
 
-    public ResourceLocation getTextureLocation(ResourceLocation loc, int randomId)
-    {
+    public ResourceLocation getTextureLocation(ResourceLocation loc, int randomId) {
         int index = 0;
 
-        if (this.weights == null)
-        {
+        if (this.weights == null) {
             index = randomId % this.resourceLocations.length;
-        }
-        else
-        {
+        } else {
             int randWeight = randomId % this.sumAllWeights;
 
-            for (int i = 0; i < this.sumWeights.length; ++i)
-            {
-                if (this.sumWeights[i] > randWeight)
-                {
+            for (int i = 0; i < this.sumWeights.length; ++i) {
+                if (this.sumWeights[i] > randWeight) {
                     index = i;
                     break;
                 }

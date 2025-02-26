@@ -1,8 +1,7 @@
 package optifine;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.base.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
@@ -10,8 +9,9 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+
+import java.lang.reflect.Field;
+import java.util.Map;
 
 public class RenderPlayerOF extends RenderPlayer {
     public RenderPlayerOF(Minecraft mc) {
@@ -24,7 +24,7 @@ public class RenderPlayerOF extends RenderPlayer {
     }
 
     private void renderEquippedItems(EntityLivingBase entityLiving, float scale, float partialTicks) {
-        if (Config.isShowCapes()) {
+        if (mc.getConfig().isShowCapes()) {
             if (entityLiving instanceof AbstractClientPlayer) {
                 AbstractClientPlayer player = (AbstractClientPlayer) entityLiving;
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

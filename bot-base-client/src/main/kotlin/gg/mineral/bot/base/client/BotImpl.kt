@@ -136,7 +136,7 @@ abstract class BotImpl : BotAPI() {
 
     override fun despawnAll() {
         val instances = InstanceManager.instances
-        instances.values.forEach(Consumer { obj: gg.mineral.bot.base.client.instance.ClientInstance -> obj.shutdown() })
+        instances.values.forEach(Consumer { it.shutdown() })
         instances.clear()
     }
 
@@ -159,6 +159,9 @@ abstract class BotImpl : BotAPI() {
                     location: ServerLocation
                 ): WeakReference<ClientInstance> {
                     return spawn(configuration, "localhost", 25565)
+                }
+
+                override fun cleanup() {
                 }
             }
         }

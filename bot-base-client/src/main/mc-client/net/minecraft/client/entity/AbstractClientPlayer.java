@@ -20,7 +20,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraft.world.World;
 import optifine.CapeUtils;
-import optifine.Config;
 import optifine.PlayerConfigurations;
 import org.jetbrains.annotations.NotNull;
 
@@ -110,7 +109,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
     }
 
     public boolean func_152122_n() {
-        return Config.isShowCapes() && (this.locationOfCape != null || this.locationCape != null);
+        return mc.getConfig().isShowCapes() && (this.locationOfCape != null || this.locationCape != null);
     }
 
     public boolean func_152123_o() {
@@ -122,7 +121,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
     }
 
     public ResourceLocation getLocationCape() {
-        return !Config.isShowCapes() ? null : (this.locationOfCape != null ? this.locationOfCape : this.locationCape);
+        return !mc.getConfig().isShowCapes() ? null : (this.locationOfCape != null ? this.locationOfCape : this.locationCape);
     }
 
     public void func_152121_a(Type p_152121_1_, ResourceLocation p_152121_2_) {

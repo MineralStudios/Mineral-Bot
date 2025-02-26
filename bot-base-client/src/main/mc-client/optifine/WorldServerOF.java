@@ -2,6 +2,7 @@ package optifine;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -159,13 +160,15 @@ public class WorldServerOF extends WorldServer {
     public void tick() {
         super.tick();
 
-        if (!Config.isTimeDefault()) {
+        val mc = func_73046_m().getMc();
+
+        if (!mc.getConfig().isTimeDefault()) {
             this.fixWorldTime();
         }
 
         if (Config.waterOpacityChanged) {
             Config.waterOpacityChanged = false;
-            ClearWater.updateWaterOpacity(Config.getGameSettings(), this);
+            ClearWater.updateWaterOpacity(mc, mc.getConfig().getGameSettings(), this);
         }
     }
 
@@ -173,7 +176,8 @@ public class WorldServerOF extends WorldServer {
      * Updates all weather states.
      */
     protected void updateWeather() {
-        if (!Config.isWeatherEnabled()) {
+        val mc = func_73046_m().getMc();
+        if (!mc.getConfig().isWeatherEnabled()) {
             this.fixWorldWeather();
         }
 
@@ -198,8 +202,9 @@ public class WorldServerOF extends WorldServer {
         if (this.worldInfo.getGameType().getID() == 1) {
             long time = this.getWorldTime();
             long timeOfDay = time % 24000L;
+            val mc = func_73046_m().getMc();
 
-            if (Config.isTimeDayOnly()) {
+            if (mc.getConfig().isTimeDayOnly()) {
                 if (timeOfDay <= 1000L) {
                     this.setWorldTime(time - timeOfDay + 1001L);
                 }
@@ -209,7 +214,7 @@ public class WorldServerOF extends WorldServer {
                 }
             }
 
-            if (Config.isTimeNightOnly()) {
+            if (mc.getConfig().isTimeNightOnly()) {
                 if (timeOfDay <= 14000L) {
                     this.setWorldTime(time - timeOfDay + 14001L);
                 }
@@ -248,7 +253,9 @@ public class WorldServerOF extends WorldServer {
         } else {
             super.updateEntity(par1Entity);
 
-            if (Config.isSmoothWorld()) {
+            val mc = func_73046_m().getMc();
+
+            if (mc.getConfig().isSmoothWorld()) {
                 Thread.currentThread();
                 Thread.yield();
             }

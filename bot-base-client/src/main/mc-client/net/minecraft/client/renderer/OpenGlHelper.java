@@ -9,7 +9,6 @@ import gg.mineral.bot.base.lwjgl.opengl.GLContext;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
-import optifine.Config;
 import org.lwjgl.opengl.*;
 
 import java.nio.ByteBuffer;
@@ -63,8 +62,8 @@ public class OpenGlHelper {
     /**
      * Initializes the texture constants to be used when rendering lightmap values
      */
-    public static void initializeTextures() {
-        Config.initDisplay();
+    public static void initializeTextures(Minecraft mc) {
+        mc.getConfig().initDisplay();
 
         if (BotGlobalConfig.optimizedGameLoop)
             return;
@@ -620,6 +619,6 @@ public class OpenGlHelper {
     }
 
     public static boolean isFramebufferEnabled(Minecraft mc) {
-        return Config.isFastRender() ? false : framebufferSupported && mc.gameSettings.fboEnable;
+        return mc.getConfig().isFastRender() ? false : framebufferSupported && mc.gameSettings.fboEnable;
     }
 }

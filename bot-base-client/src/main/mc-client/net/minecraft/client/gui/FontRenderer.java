@@ -146,7 +146,7 @@ public class FontRenderer implements IResourceManagerReloadListener {
         this.locationFontTexture = par2ResourceLocation;
         this.renderEngine = par3TextureManager;
         this.unicodeFlag = par4;
-        this.locationFontTexture = getHdFontLocation(this.locationFontTextureBase);
+        this.locationFontTexture = getHdFontLocation(mc, this.locationFontTextureBase);
         this.bindTexture(this.locationFontTexture);
 
         for (int var5 = 0; var5 < 32; ++var5) {
@@ -180,7 +180,7 @@ public class FontRenderer implements IResourceManagerReloadListener {
     }
 
     public void onResourceManagerReload(IResourceManager par1ResourceManager) {
-        this.locationFontTexture = getHdFontLocation(this.locationFontTextureBase);
+        this.locationFontTexture = getHdFontLocation(mc, this.locationFontTextureBase);
 
         for (int i = 0; i < unicodePageLocations.length; ++i)
             unicodePageLocations[i] = null;
@@ -298,7 +298,7 @@ public class FontRenderer implements IResourceManagerReloadListener {
         if (unicodePageLocations[par1] == null) {
             unicodePageLocations[par1] = new ResourceLocation(
                     String.format("textures/font/unicode_page_%02x.png", new Object[]{Integer.valueOf(par1)}));
-            unicodePageLocations[par1] = getHdFontLocation(unicodePageLocations[par1]);
+            unicodePageLocations[par1] = getHdFontLocation(mc, unicodePageLocations[par1]);
         }
 
         return unicodePageLocations[par1];
@@ -425,7 +425,7 @@ public class FontRenderer implements IResourceManagerReloadListener {
 
                     var6 = this.colorCode[var5];
 
-                    if (Config.isCustomColors()) {
+                    if (mc.getConfig().isCustomColors()) {
                         var6 = CustomColorizer.getTextColor(var5, var6);
                     }
 
@@ -907,7 +907,7 @@ public class FontRenderer implements IResourceManagerReloadListener {
 
             try {
                 ResourceLocation e = new ResourceLocation(this.locationFontTexture.getResourceDomain(), fileName);
-                InputStream in = Config.getResourceStream(Config.getResourceManager(), e);
+                InputStream in = Config.getResourceStream(mc.getConfig().getResourceManager(), e);
 
                 if (in == null)
                     return;
@@ -944,8 +944,8 @@ public class FontRenderer implements IResourceManagerReloadListener {
         }
     }
 
-    private static ResourceLocation getHdFontLocation(ResourceLocation fontLoc) {
-        if (!Config.isCustomFonts()) {
+    private static ResourceLocation getHdFontLocation(Minecraft mc, ResourceLocation fontLoc) {
+        if (!mc.getConfig().isCustomFonts()) {
             return fontLoc;
         } else if (fontLoc == null) {
             return fontLoc;
@@ -960,7 +960,7 @@ public class FontRenderer implements IResourceManagerReloadListener {
                 fontName = fontName.substring(texturesStr.length());
                 fontName = mcpatcherStr + fontName;
                 ResourceLocation fontLocHD = new ResourceLocation(fontLoc.getResourceDomain(), fontName);
-                return Config.hasResource(Config.getResourceManager(), fontLocHD) ? fontLocHD : fontLoc;
+                return Config.hasResource(mc.getConfig().getResourceManager(), fontLocHD) ? fontLocHD : fontLoc;
             }
         }
     }

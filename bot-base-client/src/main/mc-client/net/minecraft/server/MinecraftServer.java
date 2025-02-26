@@ -62,7 +62,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
      */
     private final List tickables = new ArrayList();
     private final ICommandManager commandManager;
-    public final Profiler theProfiler = new Profiler();
+    public final Profiler theProfiler;
     private final NetworkSystem field_147144_o;
     private final ServerStatusResponse field_147147_p = new ServerStatusResponse();
     private final Random field_147146_q = new Random();
@@ -185,6 +185,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable {
     public MinecraftServer(Minecraft mc, File p_i46400_1_, Proxy p_i46400_2_) {
         this.field_152366_X = new PlayerProfileCache(this, field_152367_a);
         this.mc = mc;
+        theProfiler = new Profiler(mc);
         mcServer = this;
         this.serverProxy = p_i46400_2_;
         this.anvilFile = p_i46400_1_;

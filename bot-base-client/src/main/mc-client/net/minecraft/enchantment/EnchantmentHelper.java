@@ -1,12 +1,6 @@
 package net.minecraft.enchantment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import lombok.val;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -19,8 +13,13 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.WeightedRandom;
 
+import java.lang.ref.WeakReference;
+import java.util.*;
+
 public class EnchantmentHelper {
-    /** Is the random seed of enchantment effects. */
+    /**
+     * Is the random seed of enchantment effects.
+     */
     private static final Random enchantmentRand = new Random();
 
     /**
@@ -202,8 +201,8 @@ public class EnchantmentHelper {
     }
 
     public static void func_151384_a(EntityLivingBase p_151384_0_, Entity p_151384_1_) {
-        field_151388_d.field_151363_b = p_151384_1_;
-        field_151388_d.field_151364_a = p_151384_0_;
+        field_151388_d.field_151363_b = new WeakReference<>(p_151384_1_);
+        field_151388_d.field_151364_a = new WeakReference<>(p_151384_0_);
         applyEnchantmentModifierArray(field_151388_d, p_151384_0_.getLastActiveItems());
 
         if (p_151384_1_ instanceof EntityPlayer) {
@@ -212,8 +211,8 @@ public class EnchantmentHelper {
     }
 
     public static void func_151385_b(EntityLivingBase p_151385_0_, Entity p_151385_1_) {
-        field_151389_e.field_151366_a = p_151385_0_;
-        field_151389_e.field_151365_b = p_151385_1_;
+        field_151389_e.field_151366_a = new WeakReference<>(p_151385_0_);
+        field_151389_e.field_151365_b = new WeakReference<>(p_151385_1_);
         applyEnchantmentModifierArray(field_151389_e, p_151385_0_.getLastActiveItems());
 
         if (p_151385_0_ instanceof EntityPlayer) {
@@ -309,7 +308,7 @@ public class EnchantmentHelper {
      * cutting to the max enchantability power of the table (3rd parameter)
      */
     public static int calcItemStackEnchantability(Random p_77514_0_, int p_77514_1_, int p_77514_2_,
-            ItemStack p_77514_3_) {
+                                                  ItemStack p_77514_3_) {
         Item var4 = p_77514_3_.getItem();
         int var5 = var4.getItemEnchantability();
 
@@ -461,14 +460,19 @@ public class EnchantmentHelper {
     }
 
     static final class DamageIterator implements EnchantmentHelper.IModifier {
-        public EntityLivingBase field_151366_a;
-        public Entity field_151365_b;
+        public WeakReference<EntityLivingBase> field_151366_a;
+        public WeakReference<Entity> field_151365_b;
 
         private DamageIterator() {
         }
 
         public void calculateModifier(Enchantment p_77493_1_, int p_77493_2_) {
-            p_77493_1_.func_151368_a(this.field_151366_a, this.field_151365_b, p_77493_2_);
+            val livingBase = this.field_151366_a.get();
+            val entity = this.field_151365_b.get();
+
+            if (livingBase != null && entity != null) {
+                p_77493_1_.func_151367_b(livingBase, entity, p_77493_2_);
+            }
         }
 
         DamageIterator(Object p_i45359_1_) {
@@ -477,14 +481,19 @@ public class EnchantmentHelper {
     }
 
     static final class HurtIterator implements EnchantmentHelper.IModifier {
-        public EntityLivingBase field_151364_a;
-        public Entity field_151363_b;
+        public WeakReference<EntityLivingBase> field_151364_a;
+        public WeakReference<Entity> field_151363_b;
 
         private HurtIterator() {
         }
 
         public void calculateModifier(Enchantment p_77493_1_, int p_77493_2_) {
-            p_77493_1_.func_151367_b(this.field_151364_a, this.field_151363_b, p_77493_2_);
+            val entityLivingBase = this.field_151364_a.get();
+            val entity = this.field_151363_b.get();
+
+            if (entityLivingBase != null && entity != null) {
+                p_77493_1_.func_151368_a(entityLivingBase, entity, p_77493_2_);
+            }
         }
 
         HurtIterator(Object p_i45360_1_) {

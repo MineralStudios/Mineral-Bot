@@ -90,6 +90,8 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
         val inventory = fakePlayer.inventory
 
         tick.finishIf("No Valid Soup Found", soupSlot == -1)
+        
+        tick.finishIf("Soup Not Needed", fakePlayer.health > 10)
 
         tick.prerequisite("In Hotbar", soupSlot <= 8) {
             moveItemToHotbar(soupSlot, inventory)
@@ -102,8 +104,6 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
         }
 
         tick.finishIf("Not Holding Valid Soup", inventory.heldItemStack?.item?.id != Item.MUSHROOM_STEW)
-
-        tick.finishIf("Soup Not Needed", fakePlayer.health > 10)
 
         tick.execute {
             pressButton(10, MouseButton.Type.RIGHT_CLICK)

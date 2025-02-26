@@ -90,6 +90,7 @@ import net.minecraft.world.chunk.storage.AnvilSaveConverter;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import optifine.Config;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -129,6 +130,8 @@ public class Minecraft {
     private final File fileResourcepacks;
     private final Multimap field_152356_J;
     private ServerData currentServerData;
+    @Getter
+    private Config config = new Config();
 
     /**
      * The RenderEngine instance used by Minecraft
@@ -289,7 +292,7 @@ public class Minecraft {
     /**
      * The profiler instance
      */
-    public final Profiler mcProfiler = new Profiler();
+    public final Profiler mcProfiler = new Profiler(this);
     private long field_83002_am = -1L;
     private IReloadableResourceManager mcResourceManager;
     private final IMetadataSerializer metadataSerializer_ = new IMetadataSerializer();
@@ -575,7 +578,7 @@ public class Minecraft {
             Display.create();
         }
 
-        OpenGlHelper.initializeTextures();
+        OpenGlHelper.initializeTextures(this);
 
         this.mcFramebuffer = new Framebuffer(this, this.displayWidth, this.displayHeight, true);
         this.mcFramebuffer.setFramebufferColor(0.0F, 0.0F, 0.0F, 0.0F);

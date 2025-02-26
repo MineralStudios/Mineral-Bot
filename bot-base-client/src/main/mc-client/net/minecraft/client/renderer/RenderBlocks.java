@@ -1,36 +1,8 @@
 package net.minecraft.client.renderer;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAnvil;
-import net.minecraft.block.BlockBeacon;
-import net.minecraft.block.BlockBed;
-import net.minecraft.block.BlockBrewingStand;
-import net.minecraft.block.BlockCauldron;
-import net.minecraft.block.BlockCocoa;
-import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.BlockDragonEgg;
-import net.minecraft.block.BlockEndPortalFrame;
-import net.minecraft.block.BlockFence;
-import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockFire;
-import net.minecraft.block.BlockFlowerPot;
-import net.minecraft.block.BlockGrass;
-import net.minecraft.block.BlockHopper;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.BlockPane;
-import net.minecraft.block.BlockPistonBase;
-import net.minecraft.block.BlockPistonExtension;
-import net.minecraft.block.BlockRailBase;
-import net.minecraft.block.BlockRedstoneComparator;
-import net.minecraft.block.BlockRedstoneDiode;
-import net.minecraft.block.BlockRedstoneRepeater;
-import net.minecraft.block.BlockRedstoneWire;
-import net.minecraft.block.BlockStainedGlassPane;
-import net.minecraft.block.BlockStairs;
-import net.minecraft.block.BlockStem;
-import net.minecraft.block.BlockTripWire;
-import net.minecraft.block.BlockWall;
+import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -46,21 +18,14 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import optifine.Config;
-import optifine.ConnectedTextures;
-import optifine.CustomColorizer;
-import optifine.NaturalProperties;
-import optifine.NaturalTextures;
-import optifine.Reflector;
-import optifine.TextureUtils;
+import optifine.*;
 
 import javax.annotation.Nullable;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
-
 public class RenderBlocks {
-    /** The IBlockAccess used by this instance of RenderBlocks */
+    /**
+     * The IBlockAccess used by this instance of RenderBlocks
+     */
     public IBlockAccess blockAccess;
     public IIcon overrideBlockTexture;
 
@@ -75,22 +40,34 @@ public class RenderBlocks {
     public boolean useInventoryTint = true;
     public boolean renderFromInside = false;
 
-    /** The minimum X value for rendering (default 0.0). */
+    /**
+     * The minimum X value for rendering (default 0.0).
+     */
     public double renderMinX;
 
-    /** The maximum X value for rendering (default 1.0). */
+    /**
+     * The maximum X value for rendering (default 1.0).
+     */
     public double renderMaxX;
 
-    /** The minimum Y value for rendering (default 0.0). */
+    /**
+     * The minimum Y value for rendering (default 0.0).
+     */
     public double renderMinY;
 
-    /** The maximum Y value for rendering (default 1.0). */
+    /**
+     * The maximum Y value for rendering (default 1.0).
+     */
     public double renderMaxY;
 
-    /** The minimum Z value for rendering (default 0.0). */
+    /**
+     * The minimum Z value for rendering (default 0.0).
+     */
     public double renderMinZ;
 
-    /** The maximum Z value for rendering (default 1.0). */
+    /**
+     * The maximum Z value for rendering (default 1.0).
+     */
     public double renderMaxZ;
     public boolean lockBlockBounds;
     public boolean partialRenderBounds;
@@ -167,7 +144,7 @@ public class RenderBlocks {
         this.blockAccess = par1IBlockAccess;
         this.field_152631_f = false;
         this.flipTexture = false;
-        this.aoLightValueOpaque = 1.0F - Config.getAmbientOcclusionLevel() * 0.8F;
+        this.aoLightValueOpaque = 1.0F - mc.getConfig().getAmbientOcclusionLevel() * 0.8F;
     }
 
     public RenderBlocks(Minecraft mc) {
@@ -201,7 +178,7 @@ public class RenderBlocks {
     }
 
     public void setRenderBounds(double p_147782_1_, double p_147782_3_, double p_147782_5_, double p_147782_7_,
-            double p_147782_9_, double p_147782_11_) {
+                                double p_147782_9_, double p_147782_11_) {
         if (!this.lockBlockBounds) {
             this.renderMinX = p_147782_1_;
             this.renderMaxX = p_147782_7_;
@@ -211,7 +188,7 @@ public class RenderBlocks {
             this.renderMaxZ = p_147782_11_;
             this.partialRenderBounds = this.mc.gameSettings.ambientOcclusion >= 2
                     && (this.renderMinX > 0.0D || this.renderMaxX < 1.0D || this.renderMinY > 0.0D
-                            || this.renderMaxY < 1.0D || this.renderMinZ > 0.0D || this.renderMaxZ < 1.0D);
+                    || this.renderMaxY < 1.0D || this.renderMinZ > 0.0D || this.renderMaxZ < 1.0D);
         }
     }
 
@@ -225,12 +202,12 @@ public class RenderBlocks {
             this.renderMaxZ = p_147775_1_.getBlockBoundsMaxZ();
             this.partialRenderBounds = this.mc.gameSettings.ambientOcclusion >= 2
                     && (this.renderMinX > 0.0D || this.renderMaxX < 1.0D || this.renderMinY > 0.0D
-                            || this.renderMaxY < 1.0D || this.renderMinZ > 0.0D || this.renderMaxZ < 1.0D);
+                    || this.renderMaxY < 1.0D || this.renderMinZ > 0.0D || this.renderMaxZ < 1.0D);
         }
     }
 
     public void overrideBlockBounds(double p_147770_1_, double p_147770_3_, double p_147770_5_, double p_147770_7_,
-            double p_147770_9_, double p_147770_11_) {
+                                    double p_147770_9_, double p_147770_11_) {
         this.renderMinX = p_147770_1_;
         this.renderMaxX = p_147770_7_;
         this.renderMinY = p_147770_3_;
@@ -240,7 +217,7 @@ public class RenderBlocks {
         this.lockBlockBounds = true;
         this.partialRenderBounds = this.mc.gameSettings.ambientOcclusion >= 2
                 && (this.renderMinX > 0.0D || this.renderMaxX < 1.0D || this.renderMinY > 0.0D || this.renderMaxY < 1.0D
-                        || this.renderMinZ > 0.0D || this.renderMaxZ < 1.0D);
+                || this.renderMinZ > 0.0D || this.renderMaxZ < 1.0D);
     }
 
     /**
@@ -255,7 +232,7 @@ public class RenderBlocks {
      * texture
      */
     public void renderBlockUsingTexture(Block p_147792_1_, int p_147792_2_, int p_147792_3_, int p_147792_4_,
-            IIcon p_147792_5_) {
+                                        IIcon p_147792_5_) {
         this.setOverrideBlockTexture(p_147792_5_);
         this.renderBlockByRenderType(p_147792_1_, p_147792_2_, p_147792_3_, p_147792_4_);
         this.clearOverrideBlockTexture();
@@ -278,7 +255,7 @@ public class RenderBlocks {
         } else {
             par1Block.setBlockBoundsBasedOnState(this.blockAccess, par2, par3, par4);
 
-            if (Config.isBetterSnow() && par1Block == Blocks.standing_sign
+            if (mc.getConfig().isBetterSnow() && par1Block == Blocks.standing_sign
                     && this.hasSnowNeighbours(par2, par3, par4)) {
                 this.renderSnow(par2, par3, par4, Blocks.snow_layer.getBlockBoundsMaxY());
             }
@@ -356,13 +333,13 @@ public class RenderBlocks {
                 default:
                     if (Reflector.ModLoader.exists()) {
                         return Reflector.callBoolean(Reflector.ModLoader_renderWorldBlock,
-                                new Object[] { this, this.blockAccess, Integer.valueOf(par2), Integer.valueOf(par3),
-                                        Integer.valueOf(par4), par1Block, Integer.valueOf(i) });
+                                new Object[]{this, this.blockAccess, Integer.valueOf(par2), Integer.valueOf(par3),
+                                        Integer.valueOf(par4), par1Block, Integer.valueOf(i)});
                     } else {
                         if (Reflector.FMLRenderAccessLibrary.exists()) {
                             return Reflector.callBoolean(Reflector.FMLRenderAccessLibrary_renderWorldBlock,
-                                    new Object[] { this, this.blockAccess, Integer.valueOf(par2), Integer.valueOf(par3),
-                                            Integer.valueOf(par4), par1Block, Integer.valueOf(i) });
+                                    new Object[]{this, this.blockAccess, Integer.valueOf(par2), Integer.valueOf(par3),
+                                            Integer.valueOf(par4), par1Block, Integer.valueOf(i)});
                         }
 
                         return false;
@@ -432,7 +409,7 @@ public class RenderBlocks {
      * Render BlockEndPortalFrame
      */
     public boolean renderBlockEndPortalFrame(BlockEndPortalFrame p_147743_1_, int p_147743_2_, int p_147743_3_,
-            int p_147743_4_) {
+                                             int p_147743_4_) {
         int var5 = this.blockAccess.getBlockMetadata(p_147743_2_, p_147743_3_, p_147743_4_);
         int var6 = var5 & 3;
 
@@ -473,13 +450,13 @@ public class RenderBlocks {
         boolean var8 = BlockBed.func_149975_b(var6);
 
         if (Reflector.ForgeBlock_getBedDirection.exists()) {
-            var7 = Reflector.callInt(p_147773_1_, Reflector.ForgeBlock_getBedDirection, new Object[] { this.blockAccess,
-                    Integer.valueOf(p_147773_2_), Integer.valueOf(p_147773_3_), Integer.valueOf(p_147773_4_) });
+            var7 = Reflector.callInt(p_147773_1_, Reflector.ForgeBlock_getBedDirection, new Object[]{this.blockAccess,
+                    Integer.valueOf(p_147773_2_), Integer.valueOf(p_147773_3_), Integer.valueOf(p_147773_4_)});
         }
 
         if (Reflector.ForgeBlock_isBedFoot.exists()) {
-            var8 = Reflector.callBoolean(p_147773_1_, Reflector.ForgeBlock_isBedFoot, new Object[] { this.blockAccess,
-                    Integer.valueOf(p_147773_2_), Integer.valueOf(p_147773_3_), Integer.valueOf(p_147773_4_) });
+            var8 = Reflector.callBoolean(p_147773_1_, Reflector.ForgeBlock_isBedFoot, new Object[]{this.blockAccess,
+                    Integer.valueOf(p_147773_2_), Integer.valueOf(p_147773_3_), Integer.valueOf(p_147773_4_)});
         }
 
         float var9 = 0.5F;
@@ -643,7 +620,7 @@ public class RenderBlocks {
      * Render BlockBrewingStand
      */
     public boolean renderBlockBrewingStand(BlockBrewingStand p_147741_1_, int p_147741_2_, int p_147741_3_,
-            int p_147741_4_) {
+                                           int p_147741_4_) {
         this.setRenderBounds(0.4375D, 0.0D, 0.4375D, 0.5625D, 0.875D, 0.5625D);
         this.renderStandardBlock(p_147741_1_, p_147741_2_, p_147741_3_, p_147741_4_);
         this.setOverrideBlockTexture(p_147741_1_.func_149959_e());
@@ -680,7 +657,7 @@ public class RenderBlocks {
         if (this.hasOverrideBlockTexture())
             var311 = this.overrideBlockTexture;
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null)
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null)
             var311 = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147741_1_, p_147741_2_,
                     p_147741_3_,
                     p_147741_4_, -1, var311);
@@ -761,7 +738,7 @@ public class RenderBlocks {
 
         if (var13 > 0) {
             IIcon var14 = BlockLiquid.func_149803_e("water_still");
-            int wc = CustomColorizer.getFluidColor(Blocks.water, this.blockAccess, p_147785_2_, p_147785_3_,
+            int wc = CustomColorizer.getFluidColor(mc, Blocks.water, this.blockAccess, p_147785_2_, p_147785_3_,
                     p_147785_4_);
             float wr = (float) (wc >> 16 & 255) / 255.0F;
             float wg = (float) (wc >> 8 & 255) / 255.0F;
@@ -865,7 +842,7 @@ public class RenderBlocks {
             }
         }
 
-        if (Config.isBetterSnow() && this.hasSnowNeighbours(p_147752_2_, p_147752_3_, p_147752_4_)) {
+        if (mc.getConfig().isBetterSnow() && this.hasSnowNeighbours(p_147752_2_, p_147752_3_, p_147752_4_)) {
             this.renderSnow(p_147752_2_, p_147752_3_, p_147752_4_, Blocks.snow_layer.getBlockBoundsMaxY());
         }
 
@@ -884,7 +861,7 @@ public class RenderBlocks {
      * Renders anvil block with metadata
      */
     public boolean renderBlockAnvilMetadata(BlockAnvil p_147780_1_, int p_147780_2_, int p_147780_3_, int p_147780_4_,
-            int p_147780_5_) {
+                                            int p_147780_5_) {
         Tessellator var6 = this.mc.getTessellator();
         if (var6 != null)
             var6.setBrightness(p_147780_1_.getBlockBrightness(this.blockAccess, p_147780_2_, p_147780_3_, p_147780_4_));
@@ -911,7 +888,7 @@ public class RenderBlocks {
      * Renders anvil block with orientation
      */
     public boolean renderBlockAnvilOrient(BlockAnvil p_147728_1_, int p_147728_2_, int p_147728_3_, int p_147728_4_,
-            int p_147728_5_, boolean p_147728_6_) {
+                                          int p_147728_5_, boolean p_147728_6_) {
         int var7 = p_147728_6_ ? 0 : p_147728_5_ & 3;
         boolean var8 = false;
         float var9 = 0.0F;
@@ -967,8 +944,8 @@ public class RenderBlocks {
      * Renders anvil block with rotation
      */
     public float renderBlockAnvilRotate(BlockAnvil p_147737_1_, int p_147737_2_, int p_147737_3_, int p_147737_4_,
-            int p_147737_5_, float p_147737_6_, float p_147737_7_, float p_147737_8_, float p_147737_9_,
-            boolean p_147737_10_, boolean p_147737_11_, int p_147737_12_) {
+                                        int p_147737_5_, float p_147737_6_, float p_147737_7_, float p_147737_8_, float p_147737_9_,
+                                        boolean p_147737_10_, boolean p_147737_11_, int p_147737_12_) {
         if (p_147737_10_) {
             float var14 = p_147737_7_;
             p_147737_7_ = p_147737_9_;
@@ -1052,7 +1029,7 @@ public class RenderBlocks {
             this.renderTorchAtAngle(p_147791_1_, (double) p_147791_2_, (double) p_147791_3_, (double) p_147791_4_, 0.0D,
                     0.0D, 0);
 
-            if (p_147791_1_ != Blocks.torch && Config.isBetterSnow()
+            if (p_147791_1_ != Blocks.torch && mc.getConfig().isBetterSnow()
                     && this.hasSnowNeighbours(p_147791_2_, p_147791_3_, p_147791_4_))
                 this.renderSnow(p_147791_2_, p_147791_3_, p_147791_4_, Blocks.snow_layer.getBlockBoundsMaxY());
         }
@@ -1064,7 +1041,7 @@ public class RenderBlocks {
      * render a redstone repeater at the given coordinates
      */
     public boolean renderBlockRepeater(BlockRedstoneRepeater p_147759_1_, int p_147759_2_, int p_147759_3_,
-            int p_147759_4_) {
+                                       int p_147759_4_) {
         int var5 = this.blockAccess.getBlockMetadata(p_147759_2_, p_147759_3_, p_147759_4_);
         int var6 = var5 & 3;
         int var7 = (var5 & 12) >> 2;
@@ -1161,7 +1138,7 @@ public class RenderBlocks {
     }
 
     public boolean renderBlockRedstoneComparator(BlockRedstoneComparator p_147781_1_, int p_147781_2_, int p_147781_3_,
-            int p_147781_4_) {
+                                                 int p_147781_4_) {
         Tessellator var5 = this.mc.getTessellator();
         if (var5 != null) {
             var5.setBrightness(p_147781_1_.getBlockBrightness(this.blockAccess, p_147781_2_, p_147781_3_, p_147781_4_));
@@ -1219,7 +1196,7 @@ public class RenderBlocks {
     }
 
     public boolean renderBlockRedstoneDiode(BlockRedstoneDiode p_147748_1_, int p_147748_2_, int p_147748_3_,
-            int p_147748_4_) {
+                                            int p_147748_4_) {
         Tessellator var5 = this.mc.getTessellator();
         this.renderBlockRedstoneDiodeMetadata(p_147748_1_, p_147748_2_, p_147748_3_, p_147748_4_,
                 this.blockAccess.getBlockMetadata(p_147748_2_, p_147748_3_, p_147748_4_) & 3);
@@ -1227,7 +1204,7 @@ public class RenderBlocks {
     }
 
     public void renderBlockRedstoneDiodeMetadata(BlockRedstoneDiode p_147732_1_, int p_147732_2_, int p_147732_3_,
-            int p_147732_4_, int p_147732_5_) {
+                                                 int p_147732_4_, int p_147732_5_) {
         this.renderStandardBlock(p_147732_1_, p_147732_2_, p_147732_3_, p_147732_4_);
         Tessellator var6 = this.mc.getTessellator();
         if (var6 != null) {
@@ -1283,7 +1260,7 @@ public class RenderBlocks {
     }
 
     public boolean renderPistonBase(Block p_147731_1_, int p_147731_2_, int p_147731_3_, int p_147731_4_,
-            boolean p_147731_5_) {
+                                    boolean p_147731_5_) {
         int var6 = this.blockAccess.getBlockMetadata(p_147731_2_, p_147731_3_, p_147731_4_);
         boolean var7 = p_147731_5_ || (var6 & 8) != 0;
         int var8 = BlockPistonBase.func_150076_b(var6);
@@ -1396,7 +1373,7 @@ public class RenderBlocks {
     }
 
     public void renderPistonRodUD(double p_147763_1_, double p_147763_3_, double p_147763_5_, double p_147763_7_,
-            double p_147763_9_, double p_147763_11_, float p_147763_13_, double p_147763_14_) {
+                                  double p_147763_9_, double p_147763_11_, float p_147763_13_, double p_147763_14_) {
         IIcon var16 = BlockPistonBase.func_150074_e("piston_side");
 
         if (this.hasOverrideBlockTexture()) {
@@ -1418,7 +1395,7 @@ public class RenderBlocks {
     }
 
     public void renderPistonRodSN(double p_147789_1_, double p_147789_3_, double p_147789_5_, double p_147789_7_,
-            double p_147789_9_, double p_147789_11_, float p_147789_13_, double p_147789_14_) {
+                                  double p_147789_9_, double p_147789_11_, float p_147789_13_, double p_147789_14_) {
         IIcon var16 = BlockPistonBase.func_150074_e("piston_side");
 
         if (this.hasOverrideBlockTexture()) {
@@ -1440,7 +1417,7 @@ public class RenderBlocks {
     }
 
     public void renderPistonRodEW(double p_147738_1_, double p_147738_3_, double p_147738_5_, double p_147738_7_,
-            double p_147738_9_, double p_147738_11_, float p_147738_13_, double p_147738_14_) {
+                                  double p_147738_9_, double p_147738_11_, float p_147738_13_, double p_147738_14_) {
         IIcon var16 = BlockPistonBase.func_150074_e("piston_side");
 
         if (this.hasOverrideBlockTexture()) {
@@ -1463,14 +1440,14 @@ public class RenderBlocks {
     }
 
     public void renderPistonExtensionAllFaces(Block p_147750_1_, int p_147750_2_, int p_147750_3_, int p_147750_4_,
-            boolean p_147750_5_) {
+                                              boolean p_147750_5_) {
         this.renderAllFaces = true;
         this.renderPistonExtension(p_147750_1_, p_147750_2_, p_147750_3_, p_147750_4_, p_147750_5_);
         this.renderAllFaces = false;
     }
 
     public boolean renderPistonExtension(Block p_147809_1_, int p_147809_2_, int p_147809_3_, int p_147809_4_,
-            boolean p_147809_5_) {
+                                         boolean p_147809_5_) {
         int var6 = this.blockAccess.getBlockMetadata(p_147809_2_, p_147809_3_, p_147809_4_);
         int var7 = BlockPistonExtension.func_150085_b(var6);
         float var8 = 0.25F;
@@ -1811,7 +1788,7 @@ public class RenderBlocks {
             }
         }
 
-        if (Config.isBetterSnow() && this.hasSnowNeighbours(p_147790_2_, p_147790_3_, p_147790_4_)) {
+        if (mc.getConfig().isBetterSnow() && this.hasSnowNeighbours(p_147790_2_, p_147790_3_, p_147790_4_)) {
             this.renderSnow(p_147790_2_, p_147790_3_, p_147790_4_, Blocks.snow_layer.getBlockBoundsMaxY());
         }
 
@@ -2674,43 +2651,43 @@ public class RenderBlocks {
         double var171 = 0.015625D;
         boolean var19 = BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_ - 1, p_147788_3_, p_147788_4_, 1)
                 || !this.blockAccess.getBlock(p_147788_2_ - 1, p_147788_3_, p_147788_4_).isBlockNormalCube()
-                        && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_ - 1, p_147788_3_ - 1,
-                                p_147788_4_, -1);
+                && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_ - 1, p_147788_3_ - 1,
+                p_147788_4_, -1);
         boolean var20 = BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_ + 1, p_147788_3_, p_147788_4_, 3)
                 || !this.blockAccess.getBlock(p_147788_2_ + 1, p_147788_3_, p_147788_4_).isBlockNormalCube()
-                        && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_ + 1, p_147788_3_ - 1,
-                                p_147788_4_, -1);
+                && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_ + 1, p_147788_3_ - 1,
+                p_147788_4_, -1);
         boolean var21 = BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_, p_147788_3_, p_147788_4_ - 1, 2)
                 || !this.blockAccess.getBlock(p_147788_2_, p_147788_3_, p_147788_4_ - 1).isBlockNormalCube()
-                        && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_, p_147788_3_ - 1,
-                                p_147788_4_ - 1, -1);
+                && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_, p_147788_3_ - 1,
+                p_147788_4_ - 1, -1);
         boolean var22 = BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_, p_147788_3_, p_147788_4_ + 1, 0)
                 || !this.blockAccess.getBlock(p_147788_2_, p_147788_3_, p_147788_4_ + 1).isBlockNormalCube()
-                        && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_, p_147788_3_ - 1,
-                                p_147788_4_ + 1, -1);
+                && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_, p_147788_3_ - 1,
+                p_147788_4_ + 1, -1);
 
         if (!this.blockAccess.getBlock(p_147788_2_, p_147788_3_ + 1, p_147788_4_).isBlockNormalCube()) {
             if (this.blockAccess.getBlock(p_147788_2_ - 1, p_147788_3_, p_147788_4_).isBlockNormalCube()
                     && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_ - 1, p_147788_3_ + 1, p_147788_4_,
-                            -1)) {
+                    -1)) {
                 var19 = true;
             }
 
             if (this.blockAccess.getBlock(p_147788_2_ + 1, p_147788_3_, p_147788_4_).isBlockNormalCube()
                     && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_ + 1, p_147788_3_ + 1, p_147788_4_,
-                            -1)) {
+                    -1)) {
                 var20 = true;
             }
 
             if (this.blockAccess.getBlock(p_147788_2_, p_147788_3_, p_147788_4_ - 1).isBlockNormalCube()
                     && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_, p_147788_3_ + 1, p_147788_4_ - 1,
-                            -1)) {
+                    -1)) {
                 var21 = true;
             }
 
             if (this.blockAccess.getBlock(p_147788_2_, p_147788_3_, p_147788_4_ + 1).isBlockNormalCube()
                     && BlockRedstoneWire.func_150174_f(this.blockAccess, p_147788_2_, p_147788_3_ + 1, p_147788_4_ + 1,
-                            -1)) {
+                    -1)) {
                 var22 = true;
             }
         }
@@ -2831,7 +2808,7 @@ public class RenderBlocks {
 
             if (this.blockAccess.getBlock(p_147788_2_ - 1, p_147788_3_, p_147788_4_).isBlockNormalCube()
                     && this.blockAccess.getBlock(p_147788_2_ - 1, p_147788_3_ + 1,
-                            p_147788_4_) == Blocks.redstone_wire
+                    p_147788_4_) == Blocks.redstone_wire
                     && var5 != null) {
                 var5.setColorOpaque_F(var12, var13, var14);
                 var5.addVertexWithUV((double) p_147788_2_ + 0.015625D, (double) ((float) (p_147788_3_ + 1) + 0.021875F),
@@ -2855,7 +2832,7 @@ public class RenderBlocks {
 
             if (this.blockAccess.getBlock(p_147788_2_ + 1, p_147788_3_, p_147788_4_).isBlockNormalCube()
                     && this.blockAccess.getBlock(p_147788_2_ + 1, p_147788_3_ + 1,
-                            p_147788_4_) == Blocks.redstone_wire
+                    p_147788_4_) == Blocks.redstone_wire
                     && var5 != null) {
                 var5.setColorOpaque_F(var12, var13, var14);
                 var5.addVertexWithUV((double) (p_147788_2_ + 1) - 0.015625D, (double) (p_147788_3_ + 0),
@@ -2883,7 +2860,7 @@ public class RenderBlocks {
 
             if (this.blockAccess.getBlock(p_147788_2_, p_147788_3_, p_147788_4_ - 1).isBlockNormalCube()
                     && this.blockAccess.getBlock(p_147788_2_, p_147788_3_ + 1,
-                            p_147788_4_ - 1) == Blocks.redstone_wire
+                    p_147788_4_ - 1) == Blocks.redstone_wire
                     && var5 != null) {
                 var5.setColorOpaque_F(var12, var13, var14);
                 var5.addVertexWithUV((double) (p_147788_2_ + 1), (double) (p_147788_3_ + 0),
@@ -2907,7 +2884,7 @@ public class RenderBlocks {
 
             if (this.blockAccess.getBlock(p_147788_2_, p_147788_3_, p_147788_4_ + 1).isBlockNormalCube()
                     && this.blockAccess.getBlock(p_147788_2_, p_147788_3_ + 1,
-                            p_147788_4_ + 1) == Blocks.redstone_wire
+                    p_147788_4_ + 1) == Blocks.redstone_wire
                     && var5 != null) {
                 var5.setColorOpaque_F(var12, var13, var14);
                 var5.addVertexWithUV((double) (p_147788_2_ + 1), (double) ((float) (p_147788_3_ + 1) + 0.021875F),
@@ -2930,7 +2907,7 @@ public class RenderBlocks {
             }
         }
 
-        if (Config.isBetterSnow() && this.hasSnowNeighbours(p_147788_2_, p_147788_3_, p_147788_4_)) {
+        if (mc.getConfig().isBetterSnow() && this.hasSnowNeighbours(p_147788_2_, p_147788_3_, p_147788_4_)) {
             this.renderSnow(p_147788_2_, p_147788_3_, p_147788_4_, 0.01D);
         }
 
@@ -2938,7 +2915,7 @@ public class RenderBlocks {
     }
 
     public boolean renderBlockMinecartTrack(BlockRailBase p_147766_1_, int p_147766_2_, int p_147766_3_,
-            int p_147766_4_) {
+                                            int p_147766_4_) {
         Tessellator var5 = this.mc.getTessellator();
         int var6 = this.blockAccess.getBlockMetadata(p_147766_2_, p_147766_3_, p_147766_4_);
         IIcon var7 = this.getBlockIconFromSideAndMetadata(p_147766_1_, 0, var6);
@@ -2946,7 +2923,7 @@ public class RenderBlocks {
         if (this.hasOverrideBlockTexture())
             var7 = this.overrideBlockTexture;
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null)
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null)
             var7 = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147766_1_, p_147766_2_,
                     p_147766_3_,
                     p_147766_4_, 1, var7);
@@ -3016,7 +2993,7 @@ public class RenderBlocks {
             var5.addVertexWithUV(var18, var34, var26, var12, var10);
         }
 
-        if (Config.isBetterSnow() && this.hasSnowNeighbours(p_147766_2_, p_147766_3_, p_147766_4_))
+        if (mc.getConfig().isBetterSnow() && this.hasSnowNeighbours(p_147766_2_, p_147766_3_, p_147766_4_))
             this.renderSnow(p_147766_2_, p_147766_3_, p_147766_4_, 0.05D);
 
         return true;
@@ -3032,7 +3009,7 @@ public class RenderBlocks {
 
         int var15 = this.blockAccess.getBlockMetadata(p_147794_2_, p_147794_3_, p_147794_4_);
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             var6 = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147794_1_, p_147794_2_,
                     p_147794_3_,
                     p_147794_4_, var15, var6);
@@ -3106,7 +3083,7 @@ public class RenderBlocks {
 
         int var17 = this.blockAccess.getBlockMetadata(p_147726_2_, p_147726_3_, p_147726_4_);
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             byte var7 = 0;
 
             if ((var17 & 1) != 0) {
@@ -3126,7 +3103,7 @@ public class RenderBlocks {
 
         if (var5 != null)
             var5.setBrightness(p_147726_1_.getBlockBrightness(this.blockAccess, p_147726_2_, p_147726_3_, p_147726_4_));
-        int var71 = CustomColorizer.getColorMultiplier(p_147726_1_, this.blockAccess, p_147726_2_, p_147726_3_,
+        int var71 = CustomColorizer.getColorMultiplier(mc, p_147726_1_, this.blockAccess, p_147726_2_, p_147726_3_,
                 p_147726_4_);
         float var8 = (float) (var71 >> 16 & 255) / 255.0F;
         float var9 = (float) (var71 >> 8 & 255) / 255.0F;
@@ -3269,7 +3246,7 @@ public class RenderBlocks {
         boolean drawTop = true;
         boolean drawBottom = true;
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             IIcon gMinU = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, block, x, y, z, 4,
                     iconGlass1);
             IIcon iz = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, block, x, y, z, 3, iconGlass1);
@@ -3688,7 +3665,7 @@ public class RenderBlocks {
         IIcon kz = var631;
         IIcon kzr = var631;
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             var631 = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147767_1_, p_147767_2_,
                     p_147767_3_,
                     p_147767_4_, 2, var631);
@@ -4086,7 +4063,7 @@ public class RenderBlocks {
             }
         }
 
-        if (Config.isBetterSnow() && this.hasSnowNeighbours(p_147767_2_, p_147767_3_, p_147767_4_)) {
+        if (mc.getConfig().isBetterSnow() && this.hasSnowNeighbours(p_147767_2_, p_147767_3_, p_147767_4_)) {
             this.renderSnow(p_147767_2_, p_147767_3_, p_147767_4_, Blocks.snow_layer.getBlockBoundsMaxY());
         }
 
@@ -4097,7 +4074,7 @@ public class RenderBlocks {
         Tessellator var5 = this.mc.getTessellator();
         if (var5 != null)
             var5.setBrightness(p_147746_1_.getBlockBrightness(this.blockAccess, p_147746_2_, p_147746_3_, p_147746_4_));
-        int var6 = CustomColorizer.getColorMultiplier(p_147746_1_, this.blockAccess, p_147746_2_, p_147746_3_,
+        int var6 = CustomColorizer.getColorMultiplier(mc, p_147746_1_, this.blockAccess, p_147746_2_, p_147746_3_,
                 p_147746_4_);
         float var7 = (float) (var6 >> 16 & 255) / 255.0F;
         float var8 = (float) (var6 >> 8 & 255) / 255.0F;
@@ -4135,7 +4112,7 @@ public class RenderBlocks {
         IIcon var20 = this.getBlockIconFromSideAndMetadata(p_147746_1_, 0,
                 this.blockAccess.getBlockMetadata(p_147746_2_, p_147746_3_, p_147746_4_));
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             var20 = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147746_1_, p_147746_2_,
                     p_147746_3_,
                     p_147746_4_, 2, var20);
@@ -4143,7 +4120,7 @@ public class RenderBlocks {
 
         this.drawCrossedSquares(var20, var181, var191, var14, 1.0F);
 
-        if (Config.isBetterSnow() && this.hasSnowNeighbours(p_147746_2_, p_147746_3_, p_147746_4_)) {
+        if (mc.getConfig().isBetterSnow() && this.hasSnowNeighbours(p_147746_2_, p_147746_3_, p_147746_4_)) {
             this.renderSnow(p_147746_2_, p_147746_3_, p_147746_4_, Blocks.snow_layer.getBlockBoundsMaxY());
         }
 
@@ -4151,11 +4128,11 @@ public class RenderBlocks {
     }
 
     public boolean renderBlockDoublePlant(BlockDoublePlant p_147774_1_, int p_147774_2_, int p_147774_3_,
-            int p_147774_4_) {
+                                          int p_147774_4_) {
         Tessellator var5 = this.mc.getTessellator();
         if (var5 != null)
             var5.setBrightness(p_147774_1_.getBlockBrightness(this.blockAccess, p_147774_2_, p_147774_3_, p_147774_4_));
-        int var6 = CustomColorizer.getColorMultiplier(p_147774_1_, this.blockAccess, p_147774_2_, p_147774_3_,
+        int var6 = CustomColorizer.getColorMultiplier(mc, p_147774_1_, this.blockAccess, p_147774_2_, p_147774_3_,
                 p_147774_4_);
         float var7 = (float) (var6 >> 16 & 255) / 255.0F;
         float var8 = (float) (var6 >> 8 & 255) / 255.0F;
@@ -4237,7 +4214,7 @@ public class RenderBlocks {
             }
         }
 
-        if (Config.isBetterSnow() && this.hasSnowNeighbours(p_147774_2_, p_147774_3_, p_147774_4_)) {
+        if (mc.getConfig().isBetterSnow() && this.hasSnowNeighbours(p_147774_2_, p_147774_3_, p_147774_4_)) {
             this.renderSnow(p_147774_2_, p_147774_3_, p_147774_4_, Blocks.snow_layer.getBlockBoundsMaxY());
         }
 
@@ -4296,7 +4273,7 @@ public class RenderBlocks {
     }
 
     public void renderTorchAtAngle(Block p_147747_1_, double p_147747_2_, double p_147747_4_, double p_147747_6_,
-            double p_147747_8_, double p_147747_10_, int p_147747_12_) {
+                                   double p_147747_8_, double p_147747_10_, int p_147747_12_) {
         Tessellator var13 = this.mc.getTessellator();
         IIcon var14 = this.getBlockIconFromSideAndMetadata(p_147747_1_, 0, p_147747_12_);
 
@@ -4373,7 +4350,7 @@ public class RenderBlocks {
     }
 
     public void drawCrossedSquares(IIcon p_147765_1_, double p_147765_2_, double p_147765_4_, double p_147765_6_,
-            float p_147765_8_) {
+                                   float p_147765_8_) {
         Tessellator var9 = this.mc.getTessellator();
 
         if (this.hasOverrideBlockTexture()) {
@@ -4410,7 +4387,7 @@ public class RenderBlocks {
     }
 
     public void renderBlockStemSmall(Block p_147730_1_, int p_147730_2_, double p_147730_3_, double p_147730_5_,
-            double p_147730_7_, double p_147730_9_) {
+                                     double p_147730_7_, double p_147730_9_) {
         Tessellator var11 = this.mc.getTessellator();
         IIcon var12 = this.getBlockIconFromSideAndMetadata(p_147730_1_, 0, p_147730_2_);
 
@@ -4453,7 +4430,7 @@ public class RenderBlocks {
             var6 = this.overrideBlockTexture;
         }
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             var6 = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147783_1_, p_147783_2_,
                     p_147783_3_,
                     p_147783_4_, 1, var6);
@@ -4498,7 +4475,7 @@ public class RenderBlocks {
     }
 
     public void renderBlockStemBig(BlockStem p_147740_1_, int p_147740_2_, int p_147740_3_, double p_147740_4_,
-            double p_147740_6_, double p_147740_8_, double p_147740_10_) {
+                                   double p_147740_6_, double p_147740_8_, double p_147740_10_) {
         Tessellator var12 = this.mc.getTessellator();
         IIcon var13 = p_147740_1_.func_149872_i();
 
@@ -4545,7 +4522,7 @@ public class RenderBlocks {
     }
 
     public void renderBlockCropsImpl(Block p_147795_1_, int p_147795_2_, double p_147795_3_, double p_147795_5_,
-            double p_147795_7_) {
+                                     double p_147795_7_) {
         Tessellator var9 = this.mc.getTessellator();
         IIcon var10 = this.getBlockIconFromSideAndMetadata(p_147795_1_, 0, p_147795_2_);
 
@@ -4603,7 +4580,7 @@ public class RenderBlocks {
 
     public boolean renderBlockFluids(Block p_147721_1_, int p_147721_2_, int p_147721_3_, int p_147721_4_) {
         Tessellator var5 = this.mc.getTessellator();
-        int var6 = CustomColorizer.getFluidColor(p_147721_1_, this.blockAccess, p_147721_2_, p_147721_3_, p_147721_4_);
+        int var6 = CustomColorizer.getFluidColor(mc, p_147721_1_, this.blockAccess, p_147721_2_, p_147721_3_, p_147721_4_);
         float var7 = (float) (var6 >> 16 & 255) / 255.0F;
         float var8 = (float) (var6 >> 8 & 255) / 255.0F;
         float var9 = (float) (var6 & 255) / 255.0F;
@@ -4611,11 +4588,11 @@ public class RenderBlocks {
                 1);
         boolean var11 = p_147721_1_.shouldSideBeRendered(this.blockAccess, p_147721_2_, p_147721_3_ - 1, p_147721_4_,
                 0);
-        boolean[] var12 = new boolean[] {
+        boolean[] var12 = new boolean[]{
                 p_147721_1_.shouldSideBeRendered(this.blockAccess, p_147721_2_, p_147721_3_, p_147721_4_ - 1, 2),
                 p_147721_1_.shouldSideBeRendered(this.blockAccess, p_147721_2_, p_147721_3_, p_147721_4_ + 1, 3),
                 p_147721_1_.shouldSideBeRendered(this.blockAccess, p_147721_2_ - 1, p_147721_3_, p_147721_4_, 4),
-                p_147721_1_.shouldSideBeRendered(this.blockAccess, p_147721_2_ + 1, p_147721_3_, p_147721_4_, 5) };
+                p_147721_1_.shouldSideBeRendered(this.blockAccess, p_147721_2_ + 1, p_147721_3_, p_147721_4_, 5)};
 
         if (!var10 && !var11 && !var12[0] && !var12[1] && !var12[2] && !var12[3]) {
             return false;
@@ -4845,7 +4822,7 @@ public class RenderBlocks {
     }
 
     public void renderBlockSandFalling(Block p_147749_1_, World p_147749_2_, int p_147749_3_, int p_147749_4_,
-            int p_147749_5_, int p_147749_6_) {
+                                       int p_147749_5_, int p_147749_6_) {
         float var7 = 0.5F;
         float var8 = 1.0F;
         float var9 = 0.8F;
@@ -4881,7 +4858,7 @@ public class RenderBlocks {
      * Renders a standard cube block at the given coordinates
      */
     public boolean renderStandardBlock(Block p_147784_1_, int p_147784_2_, int p_147784_3_, int p_147784_4_) {
-        int var5 = CustomColorizer.getColorMultiplier(p_147784_1_, this.blockAccess, p_147784_2_, p_147784_3_,
+        int var5 = CustomColorizer.getColorMultiplier(mc, p_147784_1_, this.blockAccess, p_147784_2_, p_147784_3_,
                 p_147784_4_);
         float var6 = (float) (var5 >> 16 & 255) / 255.0F;
         float var7 = (float) (var5 >> 8 & 255) / 255.0F;
@@ -4898,12 +4875,12 @@ public class RenderBlocks {
 
         return this.mc.isAmbientOcclusionEnabled() && p_147784_1_.getLightValue() == 0
                 ? (this.partialRenderBounds
-                        ? this.renderStandardBlockWithAmbientOcclusionPartial(p_147784_1_, p_147784_2_, p_147784_3_,
-                                p_147784_4_, var6, var7, var8)
-                        : this.renderStandardBlockWithAmbientOcclusion(p_147784_1_, p_147784_2_, p_147784_3_,
-                                p_147784_4_, var6, var7, var8))
+                ? this.renderStandardBlockWithAmbientOcclusionPartial(p_147784_1_, p_147784_2_, p_147784_3_,
+                p_147784_4_, var6, var7, var8)
+                : this.renderStandardBlockWithAmbientOcclusion(p_147784_1_, p_147784_2_, p_147784_3_,
+                p_147784_4_, var6, var7, var8))
                 : this.renderStandardBlockWithColorMultiplier(p_147784_1_, p_147784_2_, p_147784_3_, p_147784_4_, var6,
-                        var7, var8);
+                var7, var8);
     }
 
     public boolean renderBlockLog(Block p_147742_1_, int p_147742_2_, int p_147742_3_, int p_147742_4_) {
@@ -4958,11 +4935,11 @@ public class RenderBlocks {
     }
 
     public boolean renderStandardBlockWithAmbientOcclusion(Block p_147751_1_, int p_147751_2_, int p_147751_3_,
-            int p_147751_4_, float p_147751_5_, float p_147751_6_, float p_147751_7_) {
+                                                           int p_147751_4_, float p_147751_5_, float p_147751_6_, float p_147751_7_) {
         this.enableAO = true;
         Tessellator tessellator = this.mc.getTessellator();
         boolean defaultTexture = tessellator != null ? tessellator.defaultTexture : true;
-        boolean betterGrass = Config.isBetterGrass() && defaultTexture;
+        boolean betterGrass = mc.getConfig().isBetterGrass() && defaultTexture;
         boolean simpleAO = p_147751_1_ == Blocks.glass;
         boolean var8 = false;
         float var9 = 0.0F;
@@ -5913,7 +5890,7 @@ public class RenderBlocks {
     }
 
     public boolean renderStandardBlockWithAmbientOcclusionPartial(Block p_147808_1_, int p_147808_2_, int p_147808_3_,
-            int p_147808_4_, float p_147808_5_, float p_147808_6_, float p_147808_7_) {
+                                                                  int p_147808_4_, float p_147808_5_, float p_147808_6_, float p_147808_7_) {
         this.enableAO = true;
         boolean var8 = false;
         float var9 = 0.0F;
@@ -6887,7 +6864,7 @@ public class RenderBlocks {
     }
 
     public int mixAoBrightness(int p_147727_1_, int p_147727_2_, int p_147727_3_, int p_147727_4_, double p_147727_5_,
-            double p_147727_7_, double p_147727_9_, double p_147727_11_) {
+                               double p_147727_7_, double p_147727_9_, double p_147727_11_) {
         int var13 = (int) ((double) (p_147727_1_ >> 16 & 255) * p_147727_5_
                 + (double) (p_147727_2_ >> 16 & 255) * p_147727_7_ + (double) (p_147727_3_ >> 16 & 255) * p_147727_9_
                 + (double) (p_147727_4_ >> 16 & 255) * p_147727_11_) & 255;
@@ -6897,11 +6874,11 @@ public class RenderBlocks {
     }
 
     public boolean renderStandardBlockWithColorMultiplier(Block p_147736_1_, int p_147736_2_, int p_147736_3_,
-            int p_147736_4_, float p_147736_5_, float p_147736_6_, float p_147736_7_) {
+                                                          int p_147736_4_, float p_147736_5_, float p_147736_6_, float p_147736_7_) {
         this.enableAO = false;
         Tessellator tessellator = this.mc.getTessellator();
         boolean defaultTexture = tessellator != null ? tessellator.defaultTexture : true;
-        boolean betterGrass = Config.isBetterGrass() && defaultTexture;
+        boolean betterGrass = mc.getConfig().isBetterGrass() && defaultTexture;
         Tessellator var8 = this.mc.getTessellator();
         boolean var9 = false;
         int var26 = -1;
@@ -6986,7 +6963,7 @@ public class RenderBlocks {
 
             if (betterGrass) {
                 if (var271 == TextureUtils.iconGrassSide || var271 == TextureUtils.iconMyceliumSide) {
-                    var271 = Config.getSideGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 2,
+                    var271 = mc.getConfig().getSideGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 2,
                             var271);
 
                     if (var271 == TextureUtils.iconGrassTop) {
@@ -6996,7 +6973,7 @@ public class RenderBlocks {
                 }
 
                 if (var271 == TextureUtils.iconGrassSideSnowed) {
-                    var271 = Config.getSideSnowGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 2);
+                    var271 = mc.getConfig().getSideSnowGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 2);
                 }
             }
 
@@ -7039,7 +7016,7 @@ public class RenderBlocks {
 
             if (betterGrass) {
                 if (var271 == TextureUtils.iconGrassSide || var271 == TextureUtils.iconMyceliumSide) {
-                    var271 = Config.getSideGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 3,
+                    var271 = mc.getConfig().getSideGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 3,
                             var271);
 
                     if (var271 == TextureUtils.iconGrassTop) {
@@ -7049,7 +7026,7 @@ public class RenderBlocks {
                 }
 
                 if (var271 == TextureUtils.iconGrassSideSnowed) {
-                    var271 = Config.getSideSnowGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 3);
+                    var271 = mc.getConfig().getSideSnowGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 3);
                 }
             }
 
@@ -7092,7 +7069,7 @@ public class RenderBlocks {
 
             if (betterGrass) {
                 if (var271 == TextureUtils.iconGrassSide || var271 == TextureUtils.iconMyceliumSide) {
-                    var271 = Config.getSideGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 4,
+                    var271 = mc.getConfig().getSideGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 4,
                             var271);
 
                     if (var271 == TextureUtils.iconGrassTop) {
@@ -7102,7 +7079,7 @@ public class RenderBlocks {
                 }
 
                 if (var271 == TextureUtils.iconGrassSideSnowed) {
-                    var271 = Config.getSideSnowGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 4);
+                    var271 = mc.getConfig().getSideSnowGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 4);
                 }
             }
 
@@ -7145,7 +7122,7 @@ public class RenderBlocks {
 
             if (betterGrass) {
                 if (var271 == TextureUtils.iconGrassSide || var271 == TextureUtils.iconMyceliumSide) {
-                    var271 = Config.getSideGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 5,
+                    var271 = mc.getConfig().getSideGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 5,
                             var271);
 
                     if (var271 == TextureUtils.iconGrassTop) {
@@ -7155,7 +7132,7 @@ public class RenderBlocks {
                 }
 
                 if (var271 == TextureUtils.iconGrassSideSnowed) {
-                    var271 = Config.getSideSnowGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 5);
+                    var271 = mc.getConfig().getSideSnowGrassTexture(this.blockAccess, p_147736_2_, p_147736_3_, p_147736_4_, 5);
                 }
             }
 
@@ -7340,7 +7317,7 @@ public class RenderBlocks {
         this.renderStandardBlock(p_147797_1_, p_147797_2_, p_147797_3_, p_147797_4_);
         IIcon iconBeacon = this.getBlockIcon(Blocks.beacon);
 
-        if (Config.isConnectedTextures()) {
+        if (mc.getConfig().isConnectedTextures()) {
             iconBeacon = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147797_1_, p_147797_2_,
                     p_147797_3_,
                     p_147797_4_, -1, iconBeacon);
@@ -7373,7 +7350,7 @@ public class RenderBlocks {
     }
 
     public boolean renderBlockCactusImpl(Block p_147754_1_, int p_147754_2_, int p_147754_3_, int p_147754_4_,
-            float p_147754_5_, float p_147754_6_, float p_147754_7_) {
+                                         float p_147754_5_, float p_147754_6_, float p_147754_7_) {
         Tessellator var8 = this.mc.getTessellator();
         boolean var9 = false;
         float var10 = 0.5F;
@@ -7521,7 +7498,7 @@ public class RenderBlocks {
         this.field_152631_f = false;
         p_147735_1_.setBlockBoundsBasedOnState(this.blockAccess, p_147735_2_, p_147735_3_, p_147735_4_);
 
-        if (Config.isBetterSnow() && this.hasSnowNeighbours(p_147735_2_, p_147735_3_, p_147735_4_)) {
+        if (mc.getConfig().isBetterSnow() && this.hasSnowNeighbours(p_147735_2_, p_147735_3_, p_147735_4_)) {
             this.renderSnow(p_147735_2_, p_147735_3_, p_147735_4_, Blocks.snow_layer.getBlockBoundsMaxY());
         }
 
@@ -7572,7 +7549,7 @@ public class RenderBlocks {
 
         p_147807_1_.setBlockBoundsBasedOnState(this.blockAccess, p_147807_2_, p_147807_3_, p_147807_4_);
 
-        if (Config.isBetterSnow() && this.hasSnowNeighbours(p_147807_2_, p_147807_3_, p_147807_4_)) {
+        if (mc.getConfig().isBetterSnow() && this.hasSnowNeighbours(p_147807_2_, p_147807_3_, p_147807_4_)) {
             this.renderSnow(p_147807_2_, p_147807_3_, p_147807_4_, Blocks.snow_layer.getBlockBoundsMaxY());
         }
 
@@ -7653,10 +7630,10 @@ public class RenderBlocks {
                 && this.blockAccess.getBlock(p_147776_2_ - 1, p_147776_3_, p_147776_4_) == Blocks.cobblestone_wall
                 && this.blockAccess.getBlock(p_147776_2_ + 1, p_147776_3_, p_147776_4_) == Blocks.cobblestone_wall
                 || (var8 == 3 || var8 == 1)
-                        && this.blockAccess.getBlock(p_147776_2_, p_147776_3_,
-                                p_147776_4_ - 1) == Blocks.cobblestone_wall
-                        && this.blockAccess.getBlock(p_147776_2_, p_147776_3_,
-                                p_147776_4_ + 1) == Blocks.cobblestone_wall) {
+                && this.blockAccess.getBlock(p_147776_2_, p_147776_3_,
+                p_147776_4_ - 1) == Blocks.cobblestone_wall
+                && this.blockAccess.getBlock(p_147776_2_, p_147776_3_,
+                p_147776_4_ + 1) == Blocks.cobblestone_wall) {
             var9 -= 0.1875F;
             var10 -= 0.1875F;
             var11 -= 0.1875F;
@@ -7847,12 +7824,12 @@ public class RenderBlocks {
             this.setRenderBounds((double) var15, (double) var9, (double) var17, (double) var16, (double) var10,
                     (double) var18);
             this.renderStandardBlock(p_147776_1_, p_147776_2_, p_147776_3_, p_147776_4_);
-            this.setRenderBounds((double) var15, (double) var11, (double) var17, (double) var16, (double) var12,
-                    (double) var18);
+            this.setRenderBounds(var15, var11, var17, var16, var12,
+                    var18);
             this.renderStandardBlock(p_147776_1_, p_147776_2_, p_147776_3_, p_147776_4_);
         }
 
-        if (Config.isBetterSnow() && this.hasSnowNeighbours(p_147776_2_, p_147776_3_, p_147776_4_)) {
+        if (mc.getConfig().isBetterSnow() && this.hasSnowNeighbours(p_147776_2_, p_147776_3_, p_147776_4_)) {
             this.renderSnow(p_147776_2_, p_147776_3_, p_147776_4_, Blocks.snow_layer.getBlockBoundsMaxY());
         }
 
@@ -7887,7 +7864,7 @@ public class RenderBlocks {
     }
 
     public boolean renderBlockHopperMetadata(BlockHopper p_147799_1_, int p_147799_2_, int p_147799_3_, int p_147799_4_,
-            int p_147799_5_, boolean p_147799_6_) {
+                                             int p_147799_5_, boolean p_147799_6_) {
         Tessellator var7 = this.mc.getTessellator();
         int var8 = BlockHopper.func_149918_b(p_147799_5_);
         double var9 = 0.625D;
@@ -8151,14 +8128,14 @@ public class RenderBlocks {
     }
 
     public void renderFaceYNeg(Block p_147768_1_, double p_147768_2_, double p_147768_4_, double p_147768_6_,
-            IIcon p_147768_8_) {
+                               IIcon p_147768_8_) {
         Tessellator var9 = this.mc.getTessellator();
 
         if (this.hasOverrideBlockTexture()) {
             p_147768_8_ = this.overrideBlockTexture;
         }
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             p_147768_8_ = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147768_1_,
                     (int) p_147768_2_,
                     (int) p_147768_4_, (int) p_147768_6_, 0, p_147768_8_);
@@ -8166,7 +8143,7 @@ public class RenderBlocks {
 
         boolean uvRotateSet = false;
 
-        if (Config.isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateBottom == 0) {
+        if (mc.getConfig().isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateBottom == 0) {
             NaturalProperties var10 = NaturalTextures.getNaturalProperties(p_147768_8_);
 
             if (var10 != null) {
@@ -8309,14 +8286,14 @@ public class RenderBlocks {
     }
 
     public void renderFaceYPos(Block p_147806_1_, double p_147806_2_, double p_147806_4_, double p_147806_6_,
-            IIcon p_147806_8_) {
+                               IIcon p_147806_8_) {
         Tessellator var9 = this.mc.getTessellator();
 
         if (this.hasOverrideBlockTexture()) {
             p_147806_8_ = this.overrideBlockTexture;
         }
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             p_147806_8_ = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147806_1_,
                     (int) p_147806_2_,
                     (int) p_147806_4_, (int) p_147806_6_, 1, p_147806_8_);
@@ -8324,7 +8301,7 @@ public class RenderBlocks {
 
         boolean uvRotateSet = false;
 
-        if (Config.isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateTop == 0) {
+        if (mc.getConfig().isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateTop == 0) {
             NaturalProperties var10 = NaturalTextures.getNaturalProperties(p_147806_8_);
 
             if (var10 != null) {
@@ -8466,14 +8443,14 @@ public class RenderBlocks {
     }
 
     public void renderFaceZNeg(Block p_147761_1_, double p_147761_2_, double p_147761_4_, double p_147761_6_,
-            IIcon p_147761_8_) {
+                               IIcon p_147761_8_) {
         Tessellator var9 = this.mc.getTessellator();
 
         if (this.hasOverrideBlockTexture()) {
             p_147761_8_ = this.overrideBlockTexture;
         }
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             p_147761_8_ = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147761_1_,
                     (int) p_147761_2_,
                     (int) p_147761_4_, (int) p_147761_6_, 2, p_147761_8_);
@@ -8481,7 +8458,7 @@ public class RenderBlocks {
 
         boolean uvRotateSet = false;
 
-        if (Config.isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateEast == 0) {
+        if (mc.getConfig().isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateEast == 0) {
             NaturalProperties var10 = NaturalTextures.getNaturalProperties(p_147761_8_);
 
             if (var10 != null) {
@@ -8629,14 +8606,14 @@ public class RenderBlocks {
     }
 
     public void renderFaceZPos(Block p_147734_1_, double p_147734_2_, double p_147734_4_, double p_147734_6_,
-            IIcon p_147734_8_) {
+                               IIcon p_147734_8_) {
         Tessellator var9 = this.mc.getTessellator();
 
         if (this.hasOverrideBlockTexture()) {
             p_147734_8_ = this.overrideBlockTexture;
         }
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             p_147734_8_ = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147734_1_,
                     (int) p_147734_2_,
                     (int) p_147734_4_, (int) p_147734_6_, 3, p_147734_8_);
@@ -8644,7 +8621,7 @@ public class RenderBlocks {
 
         boolean uvRotateSet = false;
 
-        if (Config.isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateWest == 0) {
+        if (mc.getConfig().isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateWest == 0) {
             NaturalProperties var10 = NaturalTextures.getNaturalProperties(p_147734_8_);
 
             if (var10 != null) {
@@ -8786,14 +8763,14 @@ public class RenderBlocks {
     }
 
     public void renderFaceXNeg(Block p_147798_1_, double p_147798_2_, double p_147798_4_, double p_147798_6_,
-            IIcon p_147798_8_) {
+                               IIcon p_147798_8_) {
         Tessellator var9 = this.mc.getTessellator();
 
         if (this.hasOverrideBlockTexture()) {
             p_147798_8_ = this.overrideBlockTexture;
         }
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             p_147798_8_ = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147798_1_,
                     (int) p_147798_2_,
                     (int) p_147798_4_, (int) p_147798_6_, 4, p_147798_8_);
@@ -8801,7 +8778,7 @@ public class RenderBlocks {
 
         boolean uvRotateSet = false;
 
-        if (Config.isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateNorth == 0) {
+        if (mc.getConfig().isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateNorth == 0) {
             NaturalProperties var10 = NaturalTextures.getNaturalProperties(p_147798_8_);
 
             if (var10 != null) {
@@ -8943,14 +8920,14 @@ public class RenderBlocks {
     }
 
     public void renderFaceXPos(Block p_147764_1_, double p_147764_2_, double p_147764_4_, double p_147764_6_,
-            IIcon p_147764_8_) {
+                               IIcon p_147764_8_) {
         Tessellator var9 = this.mc.getTessellator();
 
         if (this.hasOverrideBlockTexture()) {
             p_147764_8_ = this.overrideBlockTexture;
         }
 
-        if (Config.isConnectedTextures() && this.overrideBlockTexture == null) {
+        if (mc.getConfig().isConnectedTextures() && this.overrideBlockTexture == null) {
             p_147764_8_ = ConnectedTextures.getConnectedTexture(this.mc, this.blockAccess, p_147764_1_,
                     (int) p_147764_2_,
                     (int) p_147764_4_, (int) p_147764_6_, 5, p_147764_8_);
@@ -8958,7 +8935,7 @@ public class RenderBlocks {
 
         boolean uvRotateSet = false;
 
-        if (Config.isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateSouth == 0) {
+        if (mc.getConfig().isNaturalTextures() && this.overrideBlockTexture == null && this.uvRotateSouth == 0) {
             NaturalProperties var10 = NaturalTextures.getNaturalProperties(p_147764_8_);
 
             if (var10 != null) {
@@ -9622,10 +9599,10 @@ public class RenderBlocks {
                 GL11.glTranslatef(0.5F, 0.5F, 0.5F);
             } else if (Reflector.ModLoader.exists()) {
                 Reflector.callVoid(Reflector.ModLoader_renderInvBlock,
-                        new Object[] { this, p_147800_1_, Integer.valueOf(p_147800_2_), Integer.valueOf(var6) });
+                        new Object[]{this, p_147800_1_, Integer.valueOf(p_147800_2_), Integer.valueOf(var6)});
             } else if (Reflector.FMLRenderAccessLibrary.exists()) {
                 Reflector.callVoid(Reflector.FMLRenderAccessLibrary_renderInventoryBlock,
-                        new Object[] { this, p_147800_1_, Integer.valueOf(p_147800_2_), Integer.valueOf(var6) });
+                        new Object[]{this, p_147800_1_, Integer.valueOf(p_147800_2_), Integer.valueOf(var6)});
             }
         } else {
             if (var6 == 16) {
@@ -9748,17 +9725,17 @@ public class RenderBlocks {
             default:
                 return Reflector.ModLoader.exists()
                         ? Reflector.callBoolean(Reflector.ModLoader_renderBlockIsItemFull3D,
-                                new Object[] { Integer.valueOf(par0) })
+                        par0)
                         : (Reflector.FMLRenderAccessLibrary.exists()
-                                ? Reflector.callBoolean(Reflector.FMLRenderAccessLibrary_renderItemAsFull3DBlock,
-                                        new Object[] { Integer.valueOf(par0) })
-                                : false);
+                        ? Reflector.callBoolean(Reflector.FMLRenderAccessLibrary_renderItemAsFull3DBlock,
+                        par0)
+                        : false);
         }
     }
 
     @Nullable
     public IIcon getBlockIcon(Block p_147793_1_, IBlockAccess p_147793_2_, int p_147793_3_, int p_147793_4_,
-            int p_147793_5_, int p_147793_6_) {
+                              int p_147793_5_, int p_147793_6_) {
         return this.getIconSafe(p_147793_1_.getIcon(p_147793_2_, p_147793_3_, p_147793_4_, p_147793_5_, p_147793_6_));
     }
 
@@ -9797,7 +9774,7 @@ public class RenderBlocks {
 
     private IIcon fixAoSideGrassTexture(IIcon tex, int x, int y, int z, int side, float f, float f1, float f2) {
         if (tex == TextureUtils.iconGrassSide || tex == TextureUtils.iconMyceliumSide) {
-            tex = Config.getSideGrassTexture(this.blockAccess, x, y, z, side, tex);
+            tex = mc.getConfig().getSideGrassTexture(this.blockAccess, x, y, z, side, tex);
 
             if (tex == TextureUtils.iconGrassTop) {
                 this.colorRedTopLeft *= f;
@@ -9816,7 +9793,7 @@ public class RenderBlocks {
         }
 
         if (tex == TextureUtils.iconGrassSideSnowed) {
-            tex = Config.getSideSnowGrassTexture(this.blockAccess, x, y, z, side);
+            tex = mc.getConfig().getSideSnowGrassTexture(this.blockAccess, x, y, z, side);
         }
 
         return tex;
@@ -9828,7 +9805,7 @@ public class RenderBlocks {
                 && this.blockAccess.getBlock(x + 1, y, z) != blockSnow
                 && this.blockAccess.getBlock(x, y, z - 1) != blockSnow
                 && this.blockAccess.getBlock(x, y, z + 1) != blockSnow ? false
-                        : this.blockAccess.getBlock(x, y - 1, z).isOpaqueCube();
+                : this.blockAccess.getBlock(x, y - 1, z).isOpaqueCube();
     }
 
     private void renderSnow(int x, int y, int z, double maxY) {

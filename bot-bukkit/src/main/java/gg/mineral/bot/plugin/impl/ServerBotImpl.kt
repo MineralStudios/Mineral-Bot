@@ -14,10 +14,12 @@ import gg.mineral.bot.plugin.network.ClientNetworkManager
 import gg.mineral.bot.plugin.network.ServerNetworkManager
 import gg.mineral.bot.plugin.network.packet.Client2ServerTranslator
 import gg.mineral.bot.plugin.network.packet.Server2ClientTranslator
+import io.netty.channel.local.LocalChannel
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.server.v1_8_R3.*
 import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode
 import org.bukkit.Bukkit
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.event.Listener
 import java.io.File
 import java.lang.ref.WeakReference
@@ -38,7 +40,7 @@ class ServerBotImpl : BotImpl(), Listener {
         val c2sTranslator = Client2ServerTranslator()
         val s2cTranslator = Server2ClientTranslator()
 
-        val instance = getClientInstance(configuration, file)
+        val instanceRef = getClientInstance(configuration, file)
 
         val name = configuration.fullUsername
 
@@ -52,16 +54,21 @@ class ServerBotImpl : BotImpl(), Listener {
         serverSide.setYawPitch(location.yaw, location.pitch)
         serverSide.spawnInWorld(location.world)
 
-        val cNetworkManager = ClientNetworkManager(
-            c2sTranslator,
-            instance
-        )
-        val sNetworkManager = ServerNetworkManager(s2cTranslator, instance)
+        val cNetworkManager = instanceRef.get()?.let {
+            ClientNetworkManager(
+                c2sTranslator,
+                it
+            )
+        } ?: error("Client network manager is null")
 
-        val netHandlerPlayClient = ClientNetHandler(
-            instance, null,
-            cNetworkManager
-        )
+        val sNetworkManager = ServerNetworkManager(s2cTranslator, instanceRef)
+
+        val netHandlerPlayClient = instanceRef.get()?.let {
+            ClientNetHandler(
+                it, null,
+                cNetworkManager
+            )
+        } ?: error("Client net handler is null")
 
         s2cTranslator.netHandlerPlayClient = netHandlerPlayClient
 
@@ -85,7 +92,7 @@ class ServerBotImpl : BotImpl(), Listener {
 
             // TODO: Temporary fix for the issue with the player's ping
             override fun a(packetplayinkeepalive: PacketPlayInKeepAlive) {
-                player.ping = instance.latency
+                player.ping = instanceRef.get()?.latency ?: 0
             }
         }
 
@@ -141,13 +148,16 @@ class ServerBotImpl : BotImpl(), Listener {
         // getServerConnection().queuePacket(packet));
         serverSide.syncInventory()
 
-        InstanceManager.pendingInstances[configuration.uuid] = instance
+        InstanceManager.pendingInstances[configuration.uuid] = instanceRef.get()!!
 
         ThreadManager.asyncExecutor.execute {
             try {
-                instance.run()
-                InstanceManager.pendingInstances.remove(configuration.uuid)
-                InstanceManager.instances[configuration.uuid] = instance
+                instanceRef.get()?.apply {
+                    this.run()
+                    InstanceManager.pendingInstances.remove(configuration.uuid)
+                    InstanceManager.instances[configuration.uuid] = this
+                }
+
                 MinecraftServer.getServer()
                     .postToMainThread { sNetworkManager.releasePacketQueue() }
             } catch (e: Exception) {
@@ -157,7 +167,7 @@ class ServerBotImpl : BotImpl(), Listener {
 
         spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
 
-        return WeakReference(instance)
+        return WeakReference(instanceRef.get())
     }
 
     override fun despawn(uuid: UUID): Boolean {
@@ -171,12 +181,22 @@ class ServerBotImpl : BotImpl(), Listener {
         return isBot
     }
 
+    override fun cleanup() {
+        for (player in Bukkit.getOnlinePlayers()) {
+            if ((player as CraftPlayer).handle.playerConnection.networkManager.channel.let { it is LocalChannel || it == null } && !isFakePlayer(
+                    player.uniqueId
+                )) player.kickPlayer(
+                "Despawned"
+            )
+        }
+    }
+
     companion object {
         fun init() {
             INSTANCE = ServerBotImpl()
         }
 
-        private fun getClientInstance(configuration: BotConfiguration, file: File): ClientInstance {
+        private fun getClientInstance(configuration: BotConfiguration, file: File): WeakReference<ClientInstance> {
             val instance: ClientInstance = object : ClientInstance(
                 configuration, 1280, 720,
                 false,
@@ -196,7 +216,7 @@ class ServerBotImpl : BotImpl(), Listener {
                 }
             }
             instance.setServer("127.0.0.1", Bukkit.getServer().port)
-            return instance
+            return WeakReference(instance)
         }
     }
 }

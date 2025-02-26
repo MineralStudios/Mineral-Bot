@@ -15,7 +15,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import optifine.Config;
 import optifine.Reflector;
 
 import java.util.ArrayList;
@@ -363,7 +362,7 @@ public class WorldRenderer {
         GL11.glNewList(this.glRenderList + renderpass, GL11.GL_COMPILE);
         this.tessellator.setRenderingChunk(true);
 
-        if (Config.isFastRender()) {
+        if (mc.getConfig().isFastRender()) {
             Reflector.callVoid(Reflector.ForgeHooksClient_onPreRenderWorld,
                     new Object[]{this, Integer.valueOf(renderpass)});
             this.tessellator.startDrawingQuads();
@@ -383,7 +382,7 @@ public class WorldRenderer {
     }
 
     protected void postRenderBlocks(int renderpass, EntityLivingBase entityLiving) {
-        if (Config.isTranslucentBlocksFancy() && renderpass == 1 && !this.skipRenderPass[renderpass]) {
+        if (mc.getConfig().isTranslucentBlocksFancy() && renderpass == 1 && !this.skipRenderPass[renderpass]) {
             this.vertexState = this.tessellator.getVertexState((float) entityLiving.posX, (float) entityLiving.posY,
                     (float) entityLiving.posZ);
         }
@@ -393,7 +392,7 @@ public class WorldRenderer {
                 new Object[]{this, Integer.valueOf(renderpass)});
         this.tessellator.setRenderingChunk(false);
 
-        if (!Config.isFastRender()) {
+        if (!mc.getConfig().isFastRender()) {
             GL11.glPopMatrix();
         }
 
@@ -451,7 +450,7 @@ public class WorldRenderer {
     public void updateInFrustum(ICamera par1ICamera) {
         this.isInFrustum = par1ICamera.isBoundingBoxInFrustum(this.rendererBoundingBox);
 
-        if (this.isInFrustum && Config.isOcclusionFancy()) {
+        if (this.isInFrustum && mc.getConfig().isOcclusionFancy()) {
             this.isInFrustrumFully = par1ICamera.isBoundingBoxInFrustumFully(this.rendererBoundingBox);
         } else {
             this.isInFrustrumFully = false;

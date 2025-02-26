@@ -444,8 +444,8 @@ public class RenderGlobal implements IWorldAccess {
      */
     public void loadRenderers() {
         if (this.theWorld != null) {
-            Blocks.leaves.func_150122_b(Config.isTreesFancy());
-            Blocks.leaves2.func_150122_b(Config.isTreesFancy());
+            Blocks.leaves.func_150122_b(mc.getConfig().isTreesFancy());
+            Blocks.leaves2.func_150122_b(mc.getConfig().isTreesFancy());
             this.renderDistanceChunks = this.mc.gameSettings.renderDistanceChunks;
             WrUpdates.clearAllUpdates();
             int numChunks;
@@ -459,12 +459,12 @@ public class RenderGlobal implements IWorldAccess {
             numChunks = this.mc.gameSettings.renderDistanceChunks;
             byte numChunksFar = 16;
 
-            if (Config.isLoadChunksFar() && numChunks < numChunksFar) {
+            if (mc.getConfig().isLoadChunksFar() && numChunks < numChunksFar) {
                 numChunks = numChunksFar;
             }
 
             int maxPreloadedChunks = Config.limit(numChunksFar - numChunks, 0, 8);
-            this.effectivePreloadedChunks = Config.limit(Config.getPreloadedChunks(), 0, maxPreloadedChunks);
+            this.effectivePreloadedChunks = Config.limit(mc.getConfig().getPreloadedChunks(), 0, maxPreloadedChunks);
             numChunks += this.effectivePreloadedChunks;
             byte limit = 32;
 
@@ -623,7 +623,7 @@ public class RenderGlobal implements IWorldAccess {
             if (pass == 0)
                 this.countEntitiesTotal = var24.size();
 
-            if (Config.isFogOff() && this.mc.entityRenderer.fogStandard)
+            if (mc.getConfig().isFogOff() && this.mc.entityRenderer.fogStandard)
                 GL11.glDisable(GL11.GL_FOG);
 
             Entity var19;
@@ -645,7 +645,7 @@ public class RenderGlobal implements IWorldAccess {
 
             this.theWorld.theProfiler.endStartSection("entities");
             boolean var26 = this.mc.gameSettings.fancyGraphics;
-            this.mc.gameSettings.fancyGraphics = Config.isDroppedItemsFancy();
+            this.mc.gameSettings.fancyGraphics = mc.getConfig().isDroppedItemsFancy();
 
             for (var25 = 0; var25 < var24.size(); ++var25) {
                 var19 = (Entity) var24.get(var25);
@@ -889,7 +889,7 @@ public class RenderGlobal implements IWorldAccess {
             }
         }
 
-        if (this.mc.gameSettings.renderDistanceChunks != this.renderDistanceChunks && !Config.isLoadChunksFar()) {
+        if (this.mc.gameSettings.renderDistanceChunks != this.renderDistanceChunks && !mc.getConfig().isLoadChunksFar()) {
             this.loadRenderers();
         }
 
@@ -945,7 +945,7 @@ public class RenderGlobal implements IWorldAccess {
             lastIndex.prepareToSort(this.sortedWorldRenderers, this.countSortedWorldRenderers);
             Arrays.sort(this.sortedWorldRenderers, 0, this.countSortedWorldRenderers, lastIndex);
 
-            if (Config.isFastRender()) {
+            if (mc.getConfig().isFastRender()) {
                 endIndex = (int) player.posX;
                 stepNum = (int) player.posZ;
                 short step = 2000;
@@ -959,7 +959,7 @@ public class RenderGlobal implements IWorldAccess {
             }
         }
 
-        if (Config.isTranslucentBlocksFancy()) {
+        if (mc.getConfig().isTranslucentBlocksFancy()) {
             var34 = player.posX - this.prevRenderSortX;
             partialX = player.posY - this.prevRenderSortY;
             partialY = player.posZ - this.prevRenderSortZ;
@@ -1069,7 +1069,7 @@ public class RenderGlobal implements IWorldAccess {
                         wr.isInFrustum = false;
                     } else if (!wr.isUpdating && !wr.needsBoxUpdate) {
                         if (wr.isInFrustum) {
-                            if (Config.isOcclusionFancy() && !wr.isInFrustrumFully) {
+                            if (mc.getConfig().isOcclusionFancy() && !wr.isInFrustrumFully) {
                                 wr.isVisible = true;
                             } else if (wr.isInFrustum && !wr.isWaitingOnOcclusionQuery) {
                                 float bbX;
@@ -1187,7 +1187,7 @@ public class RenderGlobal implements IWorldAccess {
      * partialTickTime
      */
     private int renderSortedRenderers(int par1, int par2, int par3, double par4) {
-        if (Config.isFastRender()) {
+        if (mc.getConfig().isFastRender()) {
             return this.renderSortedRenderersFast(par1, par2, par3, par4);
         } else {
             this.glRenderLists.clear();
@@ -1266,7 +1266,7 @@ public class RenderGlobal implements IWorldAccess {
                     this.allRenderLists[var20].addGLRenderList(var24.getGLCallListForPass(par3));
                 }
 
-                if (Config.isFogOff() && this.mc.entityRenderer.fogStandard) {
+                if (mc.getConfig().isFogOff() && this.mc.entityRenderer.fogStandard) {
                     GL11.glDisable(GL11.GL_FOG);
                 }
 
@@ -1326,7 +1326,7 @@ public class RenderGlobal implements IWorldAccess {
         if (l == 0) {
             return 0;
         } else {
-            if (Config.isFogOff() && this.mc.entityRenderer.fogStandard) {
+            if (mc.getConfig().isFogOff() && this.mc.entityRenderer.fogStandard) {
                 GL11.glDisable(GL11.GL_FOG);
             }
 
@@ -1396,7 +1396,7 @@ public class RenderGlobal implements IWorldAccess {
         }
 
         if (this.mc.theWorld != null && this.mc.theWorld.provider.dimensionId == 1) {
-            if (!Config.isSkyEnabled())
+            if (!mc.getConfig().isSkyEnabled())
                 return;
 
             GL11.glDisable(GL11.GL_FOG);
@@ -1471,7 +1471,7 @@ public class RenderGlobal implements IWorldAccess {
             GL11.glEnable(GL11.GL_FOG);
             GL11.glColor3f(var231, var4, var5);
 
-            if (Config.isSkyEnabled()) {
+            if (mc.getConfig().isSkyEnabled()) {
                 GL11.glCallList(this.glSkyList);
             }
 
@@ -1491,7 +1491,7 @@ public class RenderGlobal implements IWorldAccess {
             float var16;
             float var17;
 
-            if (var251 != null && Config.isSunMoonEnabled()) {
+            if (var251 != null && mc.getConfig().isSunMoonEnabled()) {
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
                 GL11.glShadeModel(GL11.GL_SMOOTH);
                 GL11.glPushMatrix();
@@ -1546,10 +1546,10 @@ public class RenderGlobal implements IWorldAccess {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, var8);
             GL11.glTranslatef(var9, var10, var11);
             GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-            CustomSky.renderSky(this.theWorld, this.renderEngine, this.theWorld.getCelestialAngle(par1), var8);
+            CustomSky.renderSky(mc, this.theWorld, this.renderEngine, this.theWorld.getCelestialAngle(par1), var8);
             GL11.glRotatef(this.theWorld.getCelestialAngle(par1) * 360.0F, 1.0F, 0.0F, 0.0F);
 
-            if (Config.isSunMoonEnabled()) {
+            if (mc.getConfig().isSunMoonEnabled()) {
                 var12 = 30.0F;
                 this.renderEngine.bindTexture(locationSunPng);
                 if (var241 != null) {
@@ -1583,7 +1583,7 @@ public class RenderGlobal implements IWorldAccess {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             var20 = this.theWorld.getStarBrightness(par1) * var8;
 
-            if (var20 > 0.0F && Config.isStarsEnabled() && !CustomSky.hasSkyLayers(this.theWorld)) {
+            if (var20 > 0.0F && mc.getConfig().isStarsEnabled() && !CustomSky.hasSkyLayers(mc, this.theWorld)) {
                 GL11.glColor4f(var20, var20, var20, var20);
                 GL11.glCallList(this.starGLCallList);
             }
@@ -1648,7 +1648,7 @@ public class RenderGlobal implements IWorldAccess {
             GL11.glPushMatrix();
             GL11.glTranslatef(0.0F, -((float) (var28 - 16.0D)), 0.0F);
 
-            if (Config.isSkyEnabled()) {
+            if (mc.getConfig().isSkyEnabled()) {
                 GL11.glCallList(this.glSkyList2);
             }
 
@@ -1659,7 +1659,7 @@ public class RenderGlobal implements IWorldAccess {
     }
 
     public void renderClouds(float par1) {
-        if (!Config.isCloudsOff()) {
+        if (!mc.getConfig().isCloudsOff()) {
             if (Reflector.ForgeWorldProvider_getCloudRenderer.exists()) {
                 WorldProvider partialTicks = this.mc.theWorld != null ? this.mc.theWorld.provider : null;
                 Object var2 = partialTicks != null
@@ -1675,7 +1675,7 @@ public class RenderGlobal implements IWorldAccess {
             }
 
             if (this.mc.theWorld != null && this.mc.theWorld.provider.isSurfaceWorld()) {
-                if (Config.isCloudsFancy()) {
+                if (mc.getConfig().isCloudsFancy()) {
                     this.renderCloudsFancy(par1);
                 } else {
                     float partialTicks1 = par1;
@@ -2047,9 +2047,9 @@ public class RenderGlobal implements IWorldAccess {
             return false;
         } else {
             int num = 0;
-            int maxNum = Config.getUpdatesPerFrame();
+            int maxNum = mc.getConfig().getUpdatesPerFrame();
 
-            if (Config.isDynamicUpdates() && !this.isMoving(entityliving)) {
+            if (mc.getConfig().isDynamicUpdates() && !this.isMoving(entityliving)) {
                 maxNum *= 3;
             }
 
@@ -2358,7 +2358,7 @@ public class RenderGlobal implements IWorldAccess {
      * frustum for frustum clipping Args: frustum, partialTickTime
      */
     public void clipRenderersByFrustum(ICamera par1ICamera, float par2) {
-        boolean checkDistanceXz = !Config.isFogOff();
+        boolean checkDistanceXz = !mc.getConfig().isFogOff();
         double renderDistSq = (double) (this.renderDistanceChunks * 16 * this.renderDistanceChunks * 16);
 
         for (int var3 = 0; var3 < this.countSortedWorldRenderers; ++var3) {
@@ -2462,14 +2462,14 @@ public class RenderGlobal implements IWorldAccess {
             Object var21 = null;
 
             if (par1Str.equals("hugeexplosion")) {
-                if (Config.isAnimatedExplosion()) {
+                if (mc.getConfig().isAnimatedExplosion()) {
                     if (this.mc.effectRenderer != null)
                         this.mc.effectRenderer
                                 .addEffect((EntityFX) (var21 = new EntityHugeExplodeFX(this.theWorld, par2,
                                         par4, par6, par8, par10, par12)));
                 }
             } else if (par1Str.equals("largeexplode")) {
-                if (Config.isAnimatedExplosion()) {
+                if (mc.getConfig().isAnimatedExplosion()) {
                     if (this.mc.effectRenderer != null)
                         this.mc.effectRenderer.addEffect((EntityFX) (var21 = new EntityLargeExplodeFX(this.renderEngine,
                                 this.theWorld, par2, par4, par6, par8, par10, par12)));
@@ -2497,13 +2497,13 @@ public class RenderGlobal implements IWorldAccess {
                 } else {
                     if (par1Str.equals("bubble")) {
                         var21 = new EntityBubbleFX(this.theWorld, par2, par4, par6, par8, par10, par12);
-                        CustomColorizer.updateWaterFX((EntityFX) var21, this.theWorld);
+                        CustomColorizer.updateWaterFX(mc, (EntityFX) var21, this.theWorld);
                     } else if (par1Str.equals("suspended")) {
-                        if (Config.isWaterParticles()) {
+                        if (mc.getConfig().isWaterParticles()) {
                             var21 = new EntitySuspendFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                         }
                     } else if (par1Str.equals("depthsuspend")) {
-                        if (Config.isVoidParticles()) {
+                        if (mc.getConfig().isVoidParticles()) {
                             var21 = new EntityAuraFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                         }
                     } else if (par1Str.equals("townaura")) {
@@ -2517,31 +2517,31 @@ public class RenderGlobal implements IWorldAccess {
                                 ((EntityFX) var21).getGreenColorF() * 0.8F, ((EntityFX) var21).getBlueColorF());
                         ((EntityFX) var21).nextTextureIndexX();
                     } else if (par1Str.equals("smoke")) {
-                        if (Config.isAnimatedSmoke()) {
+                        if (mc.getConfig().isAnimatedSmoke()) {
                             var21 = new EntitySmokeFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                         }
                     } else if (par1Str.equals("mobSpell")) {
-                        if (Config.isPotionParticles()) {
+                        if (mc.getConfig().isPotionParticles()) {
                             var21 = new EntitySpellParticleFX(this.theWorld, par2, par4, par6, 0.0D, 0.0D, 0.0D);
                             ((EntityFX) var21).setRBGColorF((float) par8, (float) par10, (float) par12);
                         }
                     } else if (par1Str.equals("mobSpellAmbient")) {
-                        if (Config.isPotionParticles()) {
+                        if (mc.getConfig().isPotionParticles()) {
                             var21 = new EntitySpellParticleFX(this.theWorld, par2, par4, par6, 0.0D, 0.0D, 0.0D);
                             ((EntityFX) var21).setAlphaF(0.15F);
                             ((EntityFX) var21).setRBGColorF((float) par8, (float) par10, (float) par12);
                         }
                     } else if (par1Str.equals("spell")) {
-                        if (Config.isPotionParticles()) {
+                        if (mc.getConfig().isPotionParticles()) {
                             var21 = new EntitySpellParticleFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                         }
                     } else if (par1Str.equals("instantSpell")) {
-                        if (Config.isPotionParticles()) {
+                        if (mc.getConfig().isPotionParticles()) {
                             var21 = new EntitySpellParticleFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                             ((EntitySpellParticleFX) var21).setBaseSpellTextureIndex(144);
                         }
                     } else if (par1Str.equals("witchMagic")) {
-                        if (Config.isPotionParticles()) {
+                        if (mc.getConfig().isPotionParticles()) {
                             var21 = new EntitySpellParticleFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                             ((EntitySpellParticleFX) var21).setBaseSpellTextureIndex(144);
                             float var26 = this.theWorld.rand.nextFloat() * 0.5F + 0.35F;
@@ -2550,7 +2550,7 @@ public class RenderGlobal implements IWorldAccess {
                     } else if (par1Str.equals("note")) {
                         var21 = new EntityNoteFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                     } else if (par1Str.equals("portal")) {
-                        if (Config.isPortalParticles()) {
+                        if (mc.getConfig().isPortalParticles()) {
                             var21 = new EntityPortalFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                             CustomColorizer.updatePortalFX((EntityFX) var21);
                         }
@@ -2558,11 +2558,11 @@ public class RenderGlobal implements IWorldAccess {
                         var21 = new EntityEnchantmentTableParticleFX(this.theWorld, par2, par4, par6, par8, par10,
                                 par12);
                     } else if (par1Str.equals("explode")) {
-                        if (Config.isAnimatedExplosion()) {
+                        if (mc.getConfig().isAnimatedExplosion()) {
                             var21 = new EntityExplodeFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                         }
                     } else if (par1Str.equals("flame")) {
-                        if (Config.isAnimatedFlame()) {
+                        if (mc.getConfig().isAnimatedFlame()) {
                             var21 = new EntityFlameFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                         }
                     } else if (par1Str.equals("lava")) {
@@ -2571,17 +2571,17 @@ public class RenderGlobal implements IWorldAccess {
                         var21 = new EntityFootStepFX(this.renderEngine, this.theWorld, par2, par4, par6);
                     } else if (par1Str.equals("splash")) {
                         var21 = new EntitySplashFX(this.theWorld, par2, par4, par6, par8, par10, par12);
-                        CustomColorizer.updateWaterFX((EntityFX) var21, this.theWorld);
+                        CustomColorizer.updateWaterFX(mc, (EntityFX) var21, this.theWorld);
                     } else if (par1Str.equals("wake")) {
                         var21 = new EntityFishWakeFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                     } else if (par1Str.equals("largesmoke")) {
-                        if (Config.isAnimatedSmoke()) {
+                        if (mc.getConfig().isAnimatedSmoke()) {
                             var21 = new EntitySmokeFX(this.theWorld, par2, par4, par6, par8, par10, par12, 2.5F);
                         }
                     } else if (par1Str.equals("cloud")) {
                         var21 = new EntityCloudFX(this.theWorld, par2, par4, par6, par8, par10, par12);
                     } else if (par1Str.equals("reddust")) {
-                        if (Config.isAnimatedRedstone()) {
+                        if (mc.getConfig().isAnimatedRedstone()) {
                             var21 = new EntityReddustFX(this.theWorld, par2, par4, par6, (float) par8, (float) par10,
                                     (float) par12);
                             CustomColorizer.updateReddustFX((EntityFX) var21, this.theWorld, var15, var17, var19);
@@ -2589,11 +2589,11 @@ public class RenderGlobal implements IWorldAccess {
                     } else if (par1Str.equals("snowballpoof")) {
                         var21 = new EntityBreakingFX(this.theWorld, par2, par4, par6, Items.snowball);
                     } else if (par1Str.equals("dripWater")) {
-                        if (Config.isDrippingWaterLava()) {
+                        if (mc.getConfig().isDrippingWaterLava()) {
                             var21 = new EntityDropParticleFX(this.theWorld, par2, par4, par6, Material.water);
                         }
                     } else if (par1Str.equals("dripLava")) {
-                        if (Config.isDrippingWaterLava()) {
+                        if (mc.getConfig().isDrippingWaterLava()) {
                             var21 = new EntityDropParticleFX(this.theWorld, par2, par4, par6, Material.lava);
                         }
                     } else if (par1Str.equals("snowshovel")) {
@@ -2662,7 +2662,7 @@ public class RenderGlobal implements IWorldAccess {
      * necessary textures. On server worlds, adds the entity to the entity tracker.
      */
     public void onEntityCreate(Entity par1Entity) {
-        RandomMobs.entityLoaded(par1Entity, this.theWorld);
+        RandomMobs.entityLoaded(mc, par1Entity, this.theWorld);
     }
 
     /**

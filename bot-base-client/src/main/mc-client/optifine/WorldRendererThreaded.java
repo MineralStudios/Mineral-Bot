@@ -194,7 +194,7 @@ public class WorldRendererThreaded extends WorldRenderer {
         GL11.glNewList(this.glRenderListWork + renderpass, GL11.GL_COMPILE);
         this.tessellator.setRenderingChunk(true);
 
-        if (Config.isFastRender()) {
+        if (mc.getConfig().isFastRender()) {
             Reflector.callVoid(Reflector.ForgeHooksClient_onPreRenderWorld,
                     new Object[]{this, Integer.valueOf(renderpass)});
             this.tessellator.startDrawingQuads();
@@ -214,7 +214,7 @@ public class WorldRendererThreaded extends WorldRenderer {
     }
 
     protected void postRenderBlocksThreaded(int renderpass, EntityLivingBase entityLiving) {
-        if (Config.isTranslucentBlocksFancy() && renderpass == 1 && !this.tempSkipRenderPass[renderpass]) {
+        if (mc.getConfig().isTranslucentBlocksFancy() && renderpass == 1 && !this.tempSkipRenderPass[renderpass]) {
             this.tempVertexState = this.tessellator.getVertexState((float) entityLiving.posX, (float) entityLiving.posY,
                     (float) entityLiving.posZ);
         }
@@ -224,7 +224,7 @@ public class WorldRendererThreaded extends WorldRenderer {
                 new Object[]{this, Integer.valueOf(renderpass)});
         this.tessellator.setRenderingChunk(false);
 
-        if (!Config.isFastRender()) {
+        if (!mc.getConfig().isFastRender()) {
             GL11.glPopMatrix();
         }
 

@@ -1,18 +1,17 @@
 package optifine;
 
-import java.util.List;
-
+import gg.mineral.bot.base.lwjgl.opengl.Display;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
-import gg.mineral.bot.base.lwjgl.opengl.Display;
 import org.lwjgl.opengl.Drawable;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class WrUpdaterThreaded implements IWrUpdater {
@@ -40,7 +39,7 @@ public class WrUpdaterThreaded implements IWrUpdater {
     }
 
     public WorldRenderer makeWorldRenderer(World worldObj, List tileEntities, int x, int y, int z,
-            int glRenderListBase) {
+                                           int glRenderListBase) {
         return new WorldRendererThreaded(this.mc, worldObj, tileEntities, x, y, z, glRenderListBase);
     }
 
@@ -78,9 +77,9 @@ public class WrUpdaterThreaded implements IWrUpdater {
             }
 
             if (this.updateThread.hasWorkToDo()) {
-                this.updateTargetNum = Config.getUpdatesPerFrame();
+                this.updateTargetNum = mc.getConfig().getUpdatesPerFrame();
 
-                if (Config.isDynamicUpdates() && !rg.isMoving(player)) {
+                if (mc.getConfig().isDynamicUpdates() && !rg.isMoving(player)) {
                     this.updateTargetNum *= 3;
                 }
 
@@ -205,10 +204,10 @@ public class WrUpdaterThreaded implements IWrUpdater {
                 }
             }
 
-            maxUpdateNum = Config.getUpdatesPerFrame();
+            maxUpdateNum = mc.getConfig().getUpdatesPerFrame();
             boolean var17 = false;
 
-            if (Config.isDynamicUpdates() && !rg.isMoving(entityliving)) {
+            if (mc.getConfig().isDynamicUpdates() && !rg.isMoving(entityliving)) {
                 maxUpdateNum *= 3;
                 var17 = true;
             }

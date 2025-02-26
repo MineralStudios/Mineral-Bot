@@ -1,15 +1,6 @@
 package optifine;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.UUID;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -17,8 +8,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public class RandomMobs
-{
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+public class RandomMobs {
     private static Map locationProperties = new HashMap();
     private static RenderGlobal renderGlobal = null;
     private static boolean initialized = false;
@@ -28,29 +23,24 @@ public class RandomMobs
     public static final String SUFFIX_PROPERTIES = ".properties";
     public static final String PREFIX_TEXTURES_ENTITY = "textures/entity/";
     public static final String PREFIX_MCPATCHER_MOB = "mcpatcher/mob/";
-    private static final String[] DEPENDANT_SUFFIXES = new String[] {"_armor", "_eyes", "_exploding", "_shooting", "_fur", "_eyes", "_invulnerable", "_angry", "_tame", "_collar"};
+    private static final String[] DEPENDANT_SUFFIXES = new String[]{"_armor", "_eyes", "_exploding", "_shooting", "_fur", "_eyes", "_invulnerable", "_angry", "_tame", "_collar"};
 
-    public static void entityLoaded(Entity entity, World world)
-    {
-        if (entity instanceof EntityLiving)
-        {
-            if (world != null)
-            {
-                EntityLiving el = (EntityLiving)entity;
-                el.spawnPosition = new BlockPos((int)el.posX, (int)el.posY, (int)el.posZ);
-                el.spawnBiome = world.getBiomeGenForCoords((int)el.posX, (int)el.posZ);
-                WorldServer ws = Config.getWorldServer();
+    public static void entityLoaded(Minecraft mc, Entity entity, World world) {
+        if (entity instanceof EntityLiving) {
+            if (world != null) {
+                EntityLiving el = (EntityLiving) entity;
+                el.spawnPosition = new BlockPos((int) el.posX, (int) el.posY, (int) el.posZ);
+                el.spawnBiome = world.getBiomeGenForCoords((int) el.posX, (int) el.posZ);
+                WorldServer ws = mc.getConfig().getWorldServer();
 
-                if (ws != null)
-                {
+                if (ws != null) {
                     Entity es = ws.getEntityByID(entity.getEntityId());
 
-                    if (es instanceof EntityLiving)
-                    {
-                        EntityLiving els = (EntityLiving)es;
+                    if (es instanceof EntityLiving) {
+                        EntityLiving els = (EntityLiving) es;
                         UUID uuid = els.getUniqueID();
                         long uuidLow = uuid.getLeastSignificantBits();
-                        int id = (int)(uuidLow & 2147483647L);
+                        int id = (int) (uuidLow & 2147483647L);
                         el.randomMobsId = id;
                     }
                 }
@@ -58,74 +48,59 @@ public class RandomMobs
         }
     }
 
-    public static void worldChanged(World oldWorld, World newWorld)
-    {
-        if (newWorld != null)
-        {
+    public static void worldChanged(Minecraft mc, World oldWorld, World newWorld) {
+        if (newWorld != null) {
             List entityList = newWorld.getLoadedEntityList();
 
-            for (int e = 0; e < entityList.size(); ++e)
-            {
-                Entity entity = (Entity)entityList.get(e);
-                entityLoaded(entity, newWorld);
+            for (int e = 0; e < entityList.size(); ++e) {
+                Entity entity = (Entity) entityList.get(e);
+                entityLoaded(mc, entity, newWorld);
             }
         }
     }
 
-    public static ResourceLocation getTextureLocation(ResourceLocation loc)
-    {
-        if (working)
-        {
+    public static ResourceLocation getTextureLocation(Minecraft mc, ResourceLocation loc) {
+        if (working) {
             return loc;
-        }
-        else
-        {
+        } else {
             ResourceLocation var5;
 
-            try
-            {
+            try {
                 working = true;
 
-                if (!initialized)
-                {
-                    initialize();
+                if (!initialized) {
+                    initialize(mc);
                 }
 
-                if (renderGlobal == null)
-                {
+                if (renderGlobal == null) {
                     ResourceLocation entity1 = loc;
                     return entity1;
                 }
 
                 Entity entity = renderGlobal.renderedEntity;
 
-                if (!(entity instanceof EntityLiving))
-                {
+                if (!(entity instanceof EntityLiving)) {
                     ResourceLocation entityLiving1 = loc;
                     return entityLiving1;
                 }
 
-                EntityLiving entityLiving = (EntityLiving)entity;
+                EntityLiving entityLiving = (EntityLiving) entity;
                 String name = loc.getResourcePath();
 
-                if (!name.startsWith("textures/entity/"))
-                {
+                if (!name.startsWith("textures/entity/")) {
                     ResourceLocation props1 = loc;
                     return props1;
                 }
 
-                RandomMobsProperties props = getProperties(loc);
+                RandomMobsProperties props = getProperties(mc, loc);
 
-                if (props != null)
-                {
+                if (props != null) {
                     var5 = props.getTextureLocation(loc, entityLiving);
                     return var5;
                 }
 
                 var5 = loc;
-            }
-            finally
-            {
+            } finally {
                 working = false;
             }
 
@@ -133,148 +108,112 @@ public class RandomMobs
         }
     }
 
-    private static RandomMobsProperties getProperties(ResourceLocation loc)
-    {
+    private static RandomMobsProperties getProperties(Minecraft mc, ResourceLocation loc) {
         String name = loc.getResourcePath();
-        RandomMobsProperties props = (RandomMobsProperties)locationProperties.get(name);
+        RandomMobsProperties props = (RandomMobsProperties) locationProperties.get(name);
 
-        if (props == null)
-        {
-            props = makeProperties(loc);
+        if (props == null) {
+            props = makeProperties(mc, loc);
             locationProperties.put(name, props);
         }
 
         return props;
     }
 
-    private static RandomMobsProperties makeProperties(ResourceLocation loc)
-    {
+    private static RandomMobsProperties makeProperties(Minecraft mc, ResourceLocation loc) {
         String path = loc.getResourcePath();
-        ResourceLocation propLoc = getPropertyLocation(loc);
+        ResourceLocation propLoc = getPropertyLocation(mc, loc);
 
-        if (propLoc != null)
-        {
-            RandomMobsProperties variants = parseProperties(propLoc, loc);
+        if (propLoc != null) {
+            RandomMobsProperties variants = parseProperties(mc, propLoc, loc);
 
-            if (variants != null)
-            {
+            if (variants != null) {
                 return variants;
             }
         }
 
-        ResourceLocation[] variants1 = getTextureVariants(loc);
+        ResourceLocation[] variants1 = getTextureVariants(mc, loc);
         return new RandomMobsProperties(path, variants1);
     }
 
-    private static RandomMobsProperties parseProperties(ResourceLocation propLoc, ResourceLocation resLoc)
-    {
-        try
-        {
+    private static RandomMobsProperties parseProperties(Minecraft mc, ResourceLocation propLoc, ResourceLocation resLoc) {
+        try {
             String e = propLoc.getResourcePath();
             Config.dbg("RandomMobs: " + resLoc.getResourcePath() + ", variants: " + e);
-            InputStream in = Config.getResourceStream(propLoc);
+            InputStream in = mc.getConfig().getResourceStream(propLoc);
 
-            if (in == null)
-            {
+            if (in == null) {
                 Config.warn("RandomMobs properties not found: " + e);
                 return null;
-            }
-            else
-            {
+            } else {
                 Properties props = new Properties();
                 props.load(in);
                 in.close();
                 RandomMobsProperties rmp = new RandomMobsProperties(props, e, resLoc);
-                return !rmp.isValid(e) ? null : rmp;
+                return !rmp.isValid(mc, e) ? null : rmp;
             }
-        }
-        catch (FileNotFoundException var6)
-        {
+        } catch (FileNotFoundException var6) {
             Config.warn("RandomMobs file not found: " + resLoc.getResourcePath());
             return null;
-        }
-        catch (IOException var7)
-        {
+        } catch (IOException var7) {
             var7.printStackTrace();
             return null;
         }
     }
 
-    private static ResourceLocation getPropertyLocation(ResourceLocation loc)
-    {
+    private static ResourceLocation getPropertyLocation(Minecraft mc, ResourceLocation loc) {
         ResourceLocation locMcp = getMcpatcherLocation(loc);
 
-        if (locMcp == null)
-        {
+        if (locMcp == null) {
             return null;
-        }
-        else
-        {
+        } else {
             String domain = locMcp.getResourceDomain();
             String path = locMcp.getResourcePath();
             String pathBase = path;
 
-            if (path.endsWith(".png"))
-            {
+            if (path.endsWith(".png")) {
                 pathBase = path.substring(0, path.length() - ".png".length());
             }
 
             String pathProps = pathBase + ".properties";
             ResourceLocation locProps = new ResourceLocation(domain, pathProps);
 
-            if (Config.hasResource(locProps))
-            {
+            if (mc.getConfig().hasResource(locProps)) {
                 return locProps;
-            }
-            else
-            {
+            } else {
                 String pathParent = getParentPath(pathBase);
 
-                if (pathParent == null)
-                {
+                if (pathParent == null) {
                     return null;
-                }
-                else
-                {
+                } else {
                     ResourceLocation locParentProps = new ResourceLocation(domain, pathParent + ".properties");
-                    return Config.hasResource(locParentProps) ? locParentProps : null;
+                    return mc.getConfig().hasResource(locParentProps) ? locParentProps : null;
                 }
             }
         }
     }
 
-    public static ResourceLocation getMcpatcherLocation(ResourceLocation loc)
-    {
+    public static ResourceLocation getMcpatcherLocation(ResourceLocation loc) {
         String path = loc.getResourcePath();
 
-        if (!path.startsWith("textures/entity/"))
-        {
+        if (!path.startsWith("textures/entity/")) {
             return null;
-        }
-        else
-        {
+        } else {
             String pathMcp = "mcpatcher/mob/" + path.substring("textures/entity/".length());
             return new ResourceLocation(loc.getResourceDomain(), pathMcp);
         }
     }
 
-    public static ResourceLocation getLocationIndexed(ResourceLocation loc, int index)
-    {
-        if (loc == null)
-        {
+    public static ResourceLocation getLocationIndexed(ResourceLocation loc, int index) {
+        if (loc == null) {
             return null;
-        }
-        else
-        {
+        } else {
             String path = loc.getResourcePath();
             int pos = path.lastIndexOf(46);
 
-            if (pos < 0)
-            {
+            if (pos < 0) {
                 return null;
-            }
-            else
-            {
+            } else {
                 String prefix = path.substring(0, pos);
                 String suffix = path.substring(pos);
                 String pathNew = prefix + index + suffix;
@@ -284,14 +223,11 @@ public class RandomMobs
         }
     }
 
-    private static String getParentPath(String path)
-    {
-        for (int i = 0; i < DEPENDANT_SUFFIXES.length; ++i)
-        {
+    private static String getParentPath(String path) {
+        for (int i = 0; i < DEPENDANT_SUFFIXES.length; ++i) {
             String suffix = DEPENDANT_SUFFIXES[i];
 
-            if (path.endsWith(suffix))
-            {
+            if (path.endsWith(suffix)) {
                 String pathParent = path.substring(0, path.length() - suffix.length());
                 return pathParent;
             }
@@ -300,58 +236,45 @@ public class RandomMobs
         return null;
     }
 
-    private static ResourceLocation[] getTextureVariants(ResourceLocation loc)
-    {
+    private static ResourceLocation[] getTextureVariants(Minecraft mc, ResourceLocation loc) {
         ArrayList list = new ArrayList();
         list.add(loc);
         ResourceLocation locMcp = getMcpatcherLocation(loc);
 
-        if (locMcp == null)
-        {
+        if (locMcp == null) {
             return null;
-        }
-        else
-        {
-            for (int locs = 1; locs < list.size() + 10; ++locs)
-            {
+        } else {
+            for (int locs = 1; locs < list.size() + 10; ++locs) {
                 int index = locs + 1;
                 ResourceLocation locIndex = getLocationIndexed(locMcp, index);
 
-                if (Config.hasResource(locIndex))
-                {
+                if (mc.getConfig().hasResource(locIndex)) {
                     list.add(locIndex);
                 }
             }
 
-            if (list.size() <= 1)
-            {
+            if (list.size() <= 1) {
                 return null;
-            }
-            else
-            {
-                ResourceLocation[] var6 = (ResourceLocation[])((ResourceLocation[])list.toArray(new ResourceLocation[list.size()]));
+            } else {
+                ResourceLocation[] var6 = (ResourceLocation[]) ((ResourceLocation[]) list.toArray(new ResourceLocation[list.size()]));
                 Config.dbg("RandomMobs: " + loc.getResourcePath() + ", variants: " + var6.length);
                 return var6;
             }
         }
     }
 
-    public static void resetTextures()
-    {
+    public static void resetTextures(Minecraft mc) {
         locationProperties.clear();
 
-        if (Config.isRandomMobs())
-        {
-            initialize();
+        if (mc.getConfig().isRandomMobs()) {
+            initialize(mc);
         }
     }
 
-    private static void initialize()
-    {
-        renderGlobal = Config.getRenderGlobal();
+    private static void initialize(Minecraft mc) {
+        renderGlobal = mc.getConfig().getRenderGlobal();
 
-        if (renderGlobal != null)
-        {
+        if (renderGlobal != null) {
             initialized = true;
             ArrayList list = new ArrayList();
             list.add("bat");
@@ -399,18 +322,16 @@ public class RandomMobs
             list.add("zombie/zombie");
             list.add("zombie/zombie_villager");
 
-            for (int i = 0; i < list.size(); ++i)
-            {
-                String name = (String)list.get(i);
+            for (int i = 0; i < list.size(); ++i) {
+                String name = (String) list.get(i);
                 String tex = "textures/entity/" + name + ".png";
                 ResourceLocation texLoc = new ResourceLocation(tex);
 
-                if (!Config.hasResource(texLoc))
-                {
+                if (!mc.getConfig().hasResource(texLoc)) {
                     Config.warn("Not found: " + texLoc);
                 }
 
-                getProperties(texLoc);
+                getProperties(mc, texLoc);
             }
         }
     }

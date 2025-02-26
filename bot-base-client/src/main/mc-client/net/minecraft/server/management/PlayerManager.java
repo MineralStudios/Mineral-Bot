@@ -1,9 +1,5 @@
 package net.minecraft.server.management;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
@@ -19,19 +15,23 @@ import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import optifine.CompactArrayList;
-import optifine.Config;
 import optifine.Reflector;
 import optifine.ReflectorForge;
 import optifine.WorldServerOF;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class PlayerManager {
     private static final Logger field_152627_a = LogManager.getLogger(PlayerManager.class);
     private final WorldServer theWorldServer;
 
-    /** players in the current instance */
+    /**
+     * players in the current instance
+     */
     private final List players = new ArrayList();
 
     /**
@@ -46,7 +46,9 @@ public class PlayerManager {
      */
     private final List chunkWatcherWithPlayers = new ArrayList();
 
-    /** This field is using when chunk should be processed (every 8000 ticks) */
+    /**
+     * This field is using when chunk should be processed (every 8000 ticks)
+     */
     private final List playerInstanceList = new ArrayList();
     public CompactArrayList chunkCoordsNotLoaded = new CompactArrayList(100, 0.8F);
 
@@ -56,11 +58,15 @@ public class PlayerManager {
      */
     private int playerViewRadius;
 
-    /** time what is using to check if InhabitedTime should be calculated */
+    /**
+     * time what is using to check if InhabitedTime should be calculated
+     */
     private long previousTotalWorldTime;
 
-    /** x, z direction vectors: east, south, west, north */
-    private final int[][] xzDirectionsConst = new int[][] { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+    /**
+     * x, z direction vectors: east, south, west, north
+     */
+    private final int[][] xzDirectionsConst = new int[][]{{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 
     private final Minecraft mc;
 
@@ -423,7 +429,7 @@ public class PlayerManager {
             this.field_151254_d = new short[64];
             this.chunkLoaded = false;
             this.chunkLocation = new ChunkCoordIntPair(par2, par3);
-            boolean useLazy = lazy && Config.isLazyChunkLoading();
+            boolean useLazy = lazy && mc.getConfig().isLazyChunkLoading();
 
             if (useLazy && !PlayerManager.this.getWorldServer().theChunkProviderServer.chunkExists(par2, par3)) {
                 PlayerManager.this.chunkCoordsNotLoaded.add(this.chunkLocation);
@@ -437,8 +443,8 @@ public class PlayerManager {
         public void addPlayer(EntityPlayerMP par1EntityPlayerMP) {
             if (this.playersWatchingChunk.contains(par1EntityPlayerMP)) {
                 PlayerManager.field_152627_a.debug("Failed to add player. {} already is in chunk {}, {}",
-                        new Object[] { par1EntityPlayerMP, Integer.valueOf(this.chunkLocation.chunkXPos),
-                                Integer.valueOf(this.chunkLocation.chunkZPos) });
+                        new Object[]{par1EntityPlayerMP, Integer.valueOf(this.chunkLocation.chunkXPos),
+                                Integer.valueOf(this.chunkLocation.chunkZPos)});
             } else {
                 if (this.playersWatchingChunk.isEmpty()) {
                     this.previousWorldTime = PlayerManager.this.theWorldServer.getTotalWorldTime();
@@ -467,7 +473,7 @@ public class PlayerManager {
 
                 if (Reflector.EventBus.exists()) {
                     Reflector.postForgeBusEvent(Reflector.ChunkWatchEvent_UnWatch_Constructor,
-                            new Object[] { this.chunkLocation, par1EntityPlayerMP });
+                            new Object[]{this.chunkLocation, par1EntityPlayerMP});
                 }
 
                 if (this.playersWatchingChunk.isEmpty()) {
@@ -570,7 +576,7 @@ public class PlayerManager {
                     } else {
                         this.func_151251_a(new S22PacketMultiBlockChange(this.numberOfTilesToUpdate,
                                 this.field_151254_d, PlayerManager.this.theWorldServer.getChunkFromChunkCoords(
-                                        this.chunkLocation.chunkXPos, this.chunkLocation.chunkZPos)));
+                                this.chunkLocation.chunkXPos, this.chunkLocation.chunkZPos)));
 
                         for (var1 = 0; var1 < this.numberOfTilesToUpdate; ++var1) {
                             var2 = this.chunkLocation.chunkXPos * 16 + (this.field_151254_d[var1] >> 12 & 15);

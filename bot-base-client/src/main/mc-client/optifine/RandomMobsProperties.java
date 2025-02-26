@@ -1,82 +1,70 @@
 package optifine;
 
-import java.util.ArrayList;
-import java.util.Properties;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.BiomeGenBase;
 
-public class RandomMobsProperties
-{
+import java.util.ArrayList;
+import java.util.Properties;
+
+public class RandomMobsProperties {
     public String name = null;
     public String basePath = null;
     public ResourceLocation[] resourceLocations = null;
     public RandomMobsRule[] rules = null;
 
-    public RandomMobsProperties(String path, ResourceLocation[] variants)
-    {
+    public RandomMobsProperties(String path, ResourceLocation[] variants) {
         ConnectedParser cp = new ConnectedParser("RandomMobs");
         this.name = cp.parseName(path);
         this.basePath = cp.parseBasePath(path);
         this.resourceLocations = variants;
     }
 
-    public RandomMobsProperties(Properties props, String path, ResourceLocation baseResLoc)
-    {
+    public RandomMobsProperties(Properties props, String path, ResourceLocation baseResLoc) {
         ConnectedParser cp = new ConnectedParser("RandomMobs");
         this.name = cp.parseName(path);
         this.basePath = cp.parseBasePath(path);
         this.rules = this.parseRules(props, baseResLoc, cp);
     }
 
-    public ResourceLocation getTextureLocation(ResourceLocation loc, EntityLiving el)
-    {
+    public ResourceLocation getTextureLocation(ResourceLocation loc, EntityLiving el) {
         int randomId;
 
-        if (this.rules != null)
-        {
-            for (randomId = 0; randomId < this.rules.length; ++randomId)
-            {
+        if (this.rules != null) {
+            for (randomId = 0; randomId < this.rules.length; ++randomId) {
                 RandomMobsRule index = this.rules[randomId];
 
-                if (index.matches(el))
-                {
+                if (index.matches(el)) {
                     return index.getTextureLocation(loc, el.randomMobsId);
                 }
             }
         }
 
-        if (this.resourceLocations != null)
-        {
+        if (this.resourceLocations != null) {
             randomId = el.randomMobsId;
             int var5 = randomId % this.resourceLocations.length;
             return this.resourceLocations[var5];
-        }
-        else
-        {
+        } else {
             return loc;
         }
     }
 
-    private RandomMobsRule[] parseRules(Properties props, ResourceLocation baseResLoc, ConnectedParser cp)
-    {
+    private RandomMobsRule[] parseRules(Properties props, ResourceLocation baseResLoc, ConnectedParser cp) {
         ArrayList list = new ArrayList();
         int count = props.size();
 
-        for (int rules = 0; rules < count; ++rules)
-        {
+        for (int rules = 0; rules < count; ++rules) {
             int index = rules + 1;
             String valSkins = props.getProperty("skins." + index);
 
-            if (valSkins != null)
-            {
+            if (valSkins != null) {
                 int[] skins = cp.parseIntList(valSkins);
                 int[] weights = cp.parseIntList(props.getProperty("weights." + index));
                 BiomeGenBase[] biomes = cp.parseBiomes(props.getProperty("biomes." + index));
                 RangeListInt heights = cp.parseRangeListInt(props.getProperty("heights." + index));
 
-                if (heights == null)
-                {
+                if (heights == null) {
                     heights = this.parseMinMaxHeight(props, index);
                 }
 
@@ -85,29 +73,23 @@ public class RandomMobsProperties
             }
         }
 
-        RandomMobsRule[] var14 = (RandomMobsRule[])((RandomMobsRule[])list.toArray(new RandomMobsRule[list.size()]));
+        RandomMobsRule[] var14 = (RandomMobsRule[]) ((RandomMobsRule[]) list.toArray(new RandomMobsRule[list.size()]));
         return var14;
     }
 
-    private RangeListInt parseMinMaxHeight(Properties props, int index)
-    {
+    private RangeListInt parseMinMaxHeight(Properties props, int index) {
         String minHeightStr = props.getProperty("minHeight." + index);
         String maxHeightStr = props.getProperty("maxHeight." + index);
 
-        if (minHeightStr == null && maxHeightStr == null)
-        {
+        if (minHeightStr == null && maxHeightStr == null) {
             return null;
-        }
-        else
-        {
+        } else {
             int minHeight = 0;
 
-            if (minHeightStr != null)
-            {
+            if (minHeightStr != null) {
                 minHeight = Config.parseInt(minHeightStr, -1);
 
-                if (minHeight < 0)
-                {
+                if (minHeight < 0) {
                     Config.warn("Invalid minHeight: " + minHeightStr);
                     return null;
                 }
@@ -115,24 +97,19 @@ public class RandomMobsProperties
 
             int maxHeight = 256;
 
-            if (maxHeightStr != null)
-            {
+            if (maxHeightStr != null) {
                 maxHeight = Config.parseInt(maxHeightStr, -1);
 
-                if (maxHeight < 0)
-                {
+                if (maxHeight < 0) {
                     Config.warn("Invalid maxHeight: " + maxHeightStr);
                     return null;
                 }
             }
 
-            if (maxHeight < 0)
-            {
+            if (maxHeight < 0) {
                 Config.warn("Invalid minHeight, maxHeight: " + minHeightStr + ", " + maxHeightStr);
                 return null;
-            }
-            else
-            {
+            } else {
                 RangeListInt list = new RangeListInt();
                 list.addRange(new RangeInt(minHeight, maxHeight));
                 return list;
@@ -140,38 +117,28 @@ public class RandomMobsProperties
         }
     }
 
-    public boolean isValid(String path)
-    {
-        if (this.resourceLocations == null && this.rules == null)
-        {
+    public boolean isValid(Minecraft mc, String path) {
+        if (this.resourceLocations == null && this.rules == null) {
             Config.warn("No skins specified: " + path);
             return false;
-        }
-        else
-        {
+        } else {
             int i;
 
-            if (this.rules != null)
-            {
-                for (i = 0; i < this.rules.length; ++i)
-                {
+            if (this.rules != null) {
+                for (i = 0; i < this.rules.length; ++i) {
                     RandomMobsRule loc = this.rules[i];
 
-                    if (!loc.isValid(path))
-                    {
+                    if (!loc.isValid(mc, path)) {
                         return false;
                     }
                 }
             }
 
-            if (this.resourceLocations != null)
-            {
-                for (i = 0; i < this.resourceLocations.length; ++i)
-                {
+            if (this.resourceLocations != null) {
+                for (i = 0; i < this.resourceLocations.length; ++i) {
                     ResourceLocation var4 = this.resourceLocations[i];
 
-                    if (!Config.hasResource(var4))
-                    {
+                    if (!mc.getConfig().hasResource(var4)) {
                         Config.warn("Texture not found: " + var4.getResourcePath());
                         return false;
                     }

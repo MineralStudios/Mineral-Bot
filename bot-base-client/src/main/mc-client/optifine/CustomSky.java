@@ -22,7 +22,7 @@ public class CustomSky {
     public static void update(Minecraft mc) {
         reset();
 
-        if (Config.isCustomSky()) {
+        if (mc.getConfig().isCustomSky()) {
             worldSkyLayers = readCustomSkies(mc);
         }
     }
@@ -46,7 +46,7 @@ public class CustomSky {
 
                         try {
                             ResourceLocation e = new ResourceLocation(path);
-                            InputStream in = Config.getResourceStream(e);
+                            InputStream in = mc.getConfig().getResourceStream(e);
 
                             if (in == null) {
                                 break label69;
@@ -106,9 +106,9 @@ public class CustomSky {
         }
     }
 
-    public static void renderSky(World world, TextureManager re, float celestialAngle, float rainBrightness) {
+    public static void renderSky(Minecraft mc, World world, TextureManager re, float celestialAngle, float rainBrightness) {
         if (worldSkyLayers != null) {
-            if (Config.getGameSettings().renderDistanceChunks >= 8) {
+            if (mc.getConfig().getGameSettings().renderDistanceChunks >= 8) {
                 int dimId = world.provider.dimensionId;
 
                 if (dimId >= 0 && dimId < worldSkyLayers.length) {
@@ -133,10 +133,10 @@ public class CustomSky {
         }
     }
 
-    public static boolean hasSkyLayers(World world) {
+    public static boolean hasSkyLayers(Minecraft mc, World world) {
         if (worldSkyLayers == null) {
             return false;
-        } else if (Config.getGameSettings().renderDistanceChunks < 8) {
+        } else if (mc.getConfig().getGameSettings().renderDistanceChunks < 8) {
             return false;
         } else {
             int dimId = world.provider.dimensionId;

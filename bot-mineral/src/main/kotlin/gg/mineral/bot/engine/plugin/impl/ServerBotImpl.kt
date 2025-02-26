@@ -181,4 +181,8 @@ class ServerBotImpl : BotImpl(), ByteWriter {
 
         return WeakReference(instance)
     }
+
+    override fun cleanup() {
+
+    }
 }

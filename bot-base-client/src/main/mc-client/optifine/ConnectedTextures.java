@@ -98,7 +98,7 @@ public class ConnectedTextures {
                     if (metadata < 0)
                         metadata = blockAccess.getBlockMetadata(x, y, z);
 
-                    IIcon cps = getConnectedTexture(blockId, blockAccess, block, x, y, z, side, ts, metadata);
+                    IIcon cps = getConnectedTexture(mc, blockId, blockAccess, block, x, y, z, side, ts, metadata);
 
                     if (cps != null)
                         return cps;
@@ -116,7 +116,7 @@ public class ConnectedTextures {
                         if (metadata < 0)
                             metadata = blockAccess.getBlockMetadata(x, y, z);
 
-                        IIcon newIcon = getConnectedTexture(cps1, blockAccess, block, x, y, z, side, ts, metadata);
+                        IIcon newIcon = getConnectedTexture(mc, cps1, blockAccess, block, x, y, z, side, ts, metadata);
 
                         if (newIcon != null)
                             return newIcon;
@@ -151,7 +151,7 @@ public class ConnectedTextures {
                     if (metadata < 0)
                         metadata = blockAccess.getBlockMetadata(x, y, z);
 
-                    ConnectedProperties cps = getConnectedProperties(blockId, blockAccess, block, x, y, z, side, ts,
+                    ConnectedProperties cps = getConnectedProperties(mc, blockId, blockAccess, block, x, y, z, side, ts,
                             metadata);
 
                     if (cps != null)
@@ -171,7 +171,7 @@ public class ConnectedTextures {
                             metadata = blockAccess.getBlockMetadata(x, y, z);
                         }
 
-                        ConnectedProperties cp = getConnectedProperties(cps1, blockAccess, block, x, y, z, side, ts,
+                        ConnectedProperties cp = getConnectedProperties(mc, cps1, blockAccess, block, x, y, z, side, ts,
                                 metadata);
 
                         if (cp != null) {
@@ -185,13 +185,13 @@ public class ConnectedTextures {
         }
     }
 
-    private static IIcon getConnectedTexture(ConnectedProperties[] cps, IBlockAccess blockAccess, Block block, int x,
+    private static IIcon getConnectedTexture(Minecraft mc, ConnectedProperties[] cps, IBlockAccess blockAccess, Block block, int x,
                                              int y, int z, int side, IIcon icon, int metadata) {
         for (int i = 0; i < cps.length; ++i) {
             ConnectedProperties cp = cps[i];
 
             if (cp != null) {
-                IIcon newIcon = getConnectedTexture(cp, blockAccess, block, x, y, z, side, icon, metadata);
+                IIcon newIcon = getConnectedTexture(mc, cp, blockAccess, block, x, y, z, side, icon, metadata);
 
                 if (newIcon != null) {
                     return newIcon;
@@ -202,13 +202,13 @@ public class ConnectedTextures {
         return null;
     }
 
-    private static ConnectedProperties getConnectedProperties(ConnectedProperties[] cps, IBlockAccess blockAccess,
+    private static ConnectedProperties getConnectedProperties(Minecraft mc, ConnectedProperties[] cps, IBlockAccess blockAccess,
                                                               Block block, int x, int y, int z, int side, IIcon icon, int metadata) {
         for (int i = 0; i < cps.length; ++i) {
             ConnectedProperties cp = cps[i];
 
             if (cp != null) {
-                IIcon newIcon = getConnectedTexture(cp, blockAccess, block, x, y, z, side, icon, metadata);
+                IIcon newIcon = getConnectedTexture(mc, cp, blockAccess, block, x, y, z, side, icon, metadata);
 
                 if (newIcon != null) {
                     return cp;
@@ -219,7 +219,7 @@ public class ConnectedTextures {
         return null;
     }
 
-    private static IIcon getConnectedTexture(ConnectedProperties cp, IBlockAccess blockAccess, Block block, int x,
+    private static IIcon getConnectedTexture(Minecraft mc, ConnectedProperties cp, IBlockAccess blockAccess, Block block, int x,
                                              int y, int z, int side, IIcon icon, int metadata) {
         if (y >= cp.minHeight && y <= cp.maxHeight) {
             int mds;
@@ -288,7 +288,7 @@ public class ConnectedTextures {
 
             switch (cp.method) {
                 case 1:
-                    return getConnectedTextureCtm(cp, blockAccess, block, x, y, z, side, icon, metadata);
+                    return getConnectedTextureCtm(mc, cp, blockAccess, block, x, y, z, side, icon, metadata);
 
                 case 2:
                     return getConnectedTextureHorizontal(cp, blockAccess, block, x, y, z, var14, side, icon, metadata);
@@ -484,7 +484,7 @@ public class ConnectedTextures {
         }
     }
 
-    private static IIcon getConnectedTextureCtm(ConnectedProperties cp, IBlockAccess blockAccess, Block block, int x,
+    private static IIcon getConnectedTextureCtm(Minecraft mc, ConnectedProperties cp, IBlockAccess blockAccess, Block block, int x,
                                                 int y, int z, int side, IIcon icon, int metadata) {
         boolean[] borders = new boolean[6];
 
@@ -561,7 +561,7 @@ public class ConnectedTextures {
 
         if (index == 0) {
             return cp.tileIcons[index];
-        } else if (!Config.isConnectedTexturesFancy()) {
+        } else if (!mc.getConfig().isConnectedTexturesFancy()) {
             return cp.tileIcons[index];
         } else {
             boolean[] edges = new boolean[6];
@@ -922,21 +922,21 @@ public class ConnectedTextures {
         return top ? cp.tileIcons[0] : null;
     }
 
-    public static void updateIcons(TextureMap textureMap) {
+    public static void updateIcons(Minecraft mc, TextureMap textureMap) {
         blockProperties = (ConnectedProperties[][]) null;
         tileProperties = (ConnectedProperties[][]) null;
-        IResourcePack[] rps = Config.getResourcePacks();
+        IResourcePack[] rps = textureMap.getMc().getConfig().getResourcePacks();
 
         for (int i = rps.length - 1; i >= 0; --i) {
             IResourcePack rp = rps[i];
-            updateIcons(textureMap, rp);
+            updateIcons(mc, textureMap, rp);
         }
 
-        updateIcons(textureMap, Config.getDefaultResourcePack());
+        updateIcons(mc, textureMap, textureMap.getMc().getConfig().getDefaultResourcePack());
     }
 
-    public static void updateIcons(TextureMap textureMap, IResourcePack rp) {
-        String[] names = collectFiles(rp, "mcpatcher/ctm/", ".properties");
+    public static void updateIcons(Minecraft mc, TextureMap textureMap, IResourcePack rp) {
+        String[] names = collectFiles(mc, rp, "mcpatcher/ctm/", ".properties");
         Arrays.sort(names);
         List tileList = makePropertyList(tileProperties);
         List blockList = makePropertyList(blockProperties);
@@ -1102,9 +1102,9 @@ public class ConnectedTextures {
         ((List) subList).add(cp);
     }
 
-    private static String[] collectFiles(IResourcePack rp, String prefix, String suffix) {
+    private static String[] collectFiles(Minecraft mc, IResourcePack rp, String prefix, String suffix) {
         if (rp instanceof DefaultResourcePack) {
-            return collectFilesDefault(rp);
+            return collectFilesDefault(mc, rp);
         } else if (!(rp instanceof AbstractResourcePack)) {
             return new String[0];
         } else {
@@ -1116,9 +1116,9 @@ public class ConnectedTextures {
         }
     }
 
-    private static String[] collectFilesDefault(IResourcePack rp) {
+    private static String[] collectFilesDefault(Minecraft mc, IResourcePack rp) {
         ArrayList list = new ArrayList();
-        String[] names = getDefaultCtmPaths();
+        String[] names = getDefaultCtmPaths(mc);
 
         for (int nameArr = 0; nameArr < names.length; ++nameArr) {
             String name = names[nameArr];
@@ -1133,20 +1133,20 @@ public class ConnectedTextures {
         return var6;
     }
 
-    private static String[] getDefaultCtmPaths() {
+    private static String[] getDefaultCtmPaths(Minecraft mc) {
         ArrayList list = new ArrayList();
         String defPath = "mcpatcher/ctm/default/";
 
-        if (Config.isFromDefaultResourcePack(new ResourceLocation("textures/blocks/glass.png"))) {
+        if (mc.getConfig().isFromDefaultResourcePack(new ResourceLocation("textures/blocks/glass.png"))) {
             list.add(defPath + "glass.properties");
             list.add(defPath + "glasspane.properties");
         }
 
-        if (Config.isFromDefaultResourcePack(new ResourceLocation("textures/blocks/bookshelf.png"))) {
+        if (mc.getConfig().isFromDefaultResourcePack(new ResourceLocation("textures/blocks/bookshelf.png"))) {
             list.add(defPath + "bookshelf.properties");
         }
 
-        if (Config.isFromDefaultResourcePack(new ResourceLocation("textures/blocks/sandstone_normal.png"))) {
+        if (mc.getConfig().isFromDefaultResourcePack(new ResourceLocation("textures/blocks/sandstone_normal.png"))) {
             list.add(defPath + "sandstone.properties");
         }
 
@@ -1156,7 +1156,7 @@ public class ConnectedTextures {
         for (int paths = 0; paths < colors.length; ++paths) {
             String color = colors[paths];
 
-            if (Config.isFromDefaultResourcePack(new ResourceLocation("textures/blocks/glass_" + color + ".png"))) {
+            if (mc.getConfig().isFromDefaultResourcePack(new ResourceLocation("textures/blocks/glass_" + color + ".png"))) {
                 list.add(defPath + paths + "_glass_" + color + "/glass_" + color + ".properties");
                 list.add(defPath + paths + "_glass_" + color + "/glass_pane_" + color + ".properties");
             }

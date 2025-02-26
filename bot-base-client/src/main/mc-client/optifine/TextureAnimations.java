@@ -1,7 +1,13 @@
 package optifine;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.ITextureObject;
+import net.minecraft.client.resources.IResourcePack;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.util.ResourceLocation;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.FileNotFoundException;
@@ -10,14 +16,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
-
-import javax.imageio.ImageIO;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.ITextureObject;
-import net.minecraft.client.resources.IResourcePack;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.util.ResourceLocation;
 
 public class TextureAnimations {
     private static TextureAnimation[] textureAnimations = null;
@@ -28,17 +26,17 @@ public class TextureAnimations {
 
     public static void update(Minecraft mc) {
         textureAnimations = null;
-        IResourcePack[] rps = Config.getResourcePacks();
+        IResourcePack[] rps = mc.getConfig().getResourcePacks();
         textureAnimations = getTextureAnimations(mc, rps);
 
-        if (Config.isAnimatedTextures()) {
+        if (mc.getConfig().isAnimatedTextures()) {
             updateAnimations();
         }
     }
 
-    public static void updateCustomAnimations() {
+    public static void updateCustomAnimations(Minecraft mc) {
         if (textureAnimations != null)
-            if (Config.isAnimatedTextures())
+            if (mc.getConfig().isAnimatedTextures())
                 updateAnimations();
     }
 
@@ -90,7 +88,7 @@ public class TextureAnimations {
                     if (anim != null) {
                         ResourceLocation locDstTex = new ResourceLocation(anim.getDstTex());
 
-                        if (Config.getDefiningResourcePack(locDstTex) != rp) {
+                        if (mc.getConfig().getDefiningResourcePack(locDstTex) != rp) {
                             Config.dbg("Skipped: " + propName + ", target texture not loaded from same resource pack");
                         } else {
                             list.add(anim);
@@ -124,7 +122,7 @@ public class TextureAnimations {
                 String basePath = TextureUtils.getBasePath(propLoc.getResourcePath());
                 texFrom = TextureUtils.fixResourcePath(texFrom, basePath);
                 texTo = TextureUtils.fixResourcePath(texTo, basePath);
-                byte[] imageBytes = getCustomTextureData(texFrom, width);
+                byte[] imageBytes = getCustomTextureData(mc, texFrom, width);
 
                 if (imageBytes == null) {
                     Config.warn("TextureAnimation: Source texture not found: " + texTo);
@@ -132,7 +130,7 @@ public class TextureAnimations {
                 } else {
                     ResourceLocation locTexTo = new ResourceLocation(texTo);
 
-                    if (!Config.hasResource(locTexTo)) {
+                    if (!mc.getConfig().hasResource(locTexTo)) {
                         Config.warn("TextureAnimation: Target texture not found: " + texTo);
                         return null;
                     } else {
@@ -159,22 +157,22 @@ public class TextureAnimations {
         }
     }
 
-    public static byte[] getCustomTextureData(String imagePath, int tileWidth) {
-        byte[] imageBytes = loadImage(imagePath, tileWidth);
+    public static byte[] getCustomTextureData(Minecraft mc, String imagePath, int tileWidth) {
+        byte[] imageBytes = loadImage(mc, imagePath, tileWidth);
 
         if (imageBytes == null) {
-            imageBytes = loadImage("/anim" + imagePath, tileWidth);
+            imageBytes = loadImage(mc, "/anim" + imagePath, tileWidth);
         }
 
         return imageBytes;
     }
 
-    private static byte[] loadImage(String name, int targetWidth) {
-        GameSettings options = Config.getGameSettings();
+    private static byte[] loadImage(Minecraft mc, String name, int targetWidth) {
+        GameSettings options = mc.getConfig().getGameSettings();
 
         try {
             ResourceLocation e = new ResourceLocation(name);
-            InputStream in = Config.getResourceStream(e);
+            InputStream in = mc.getConfig().getResourceStream(e);
 
             if (in == null) {
                 return null;

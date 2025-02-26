@@ -1,8 +1,5 @@
 package optifine;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-
 import gg.mineral.bot.base.lwjgl.opengl.GL11;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
@@ -11,6 +8,9 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.util.ResourceLocation;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class PlayerItemModel {
     private Dimension textureSize = null;
@@ -35,7 +35,7 @@ public class PlayerItemModel {
     }
 
     public void render(ModelBiped modelBiped, AbstractClientPlayer player, float scale, float partialTicks) {
-        TextureManager textureManager = Config.getTextureManager();
+        TextureManager textureManager = player.getMc().getTextureManager();
 
         if (this.usePlayerTexture) {
             textureManager.bindTexture(player.getLocationSkin());

@@ -1,5 +1,6 @@
 package optifine;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.AbstractResourcePack;
 import net.minecraft.client.resources.DefaultResourcePack;
 import net.minecraft.client.resources.IResourcePack;
@@ -15,13 +16,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ResUtils {
-    public static String[] collectFiles(String prefix, String suffix) {
-        return collectFiles(new String[]{prefix}, new String[]{suffix});
+    public static String[] collectFiles(Minecraft mc, String prefix, String suffix) {
+        return collectFiles(mc, new String[]{prefix}, new String[]{suffix});
     }
 
-    public static String[] collectFiles(String[] prefixes, String[] suffixes) {
+    public static String[] collectFiles(Minecraft mc, String[] prefixes, String[] suffixes) {
         LinkedHashSet setPaths = new LinkedHashSet();
-        IResourcePack[] rps = Config.getResourcePacks();
+        IResourcePack[] rps = mc.getConfig().getResourcePacks();
 
         for (int paths = 0; paths < rps.length; ++paths) {
             IResourcePack rp = rps[paths];

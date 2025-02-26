@@ -36,8 +36,8 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
     }
 
     public void bindTexture(ResourceLocation par1ResourceLocation) {
-        if (Config.isRandomMobs()) {
-            par1ResourceLocation = RandomMobs.getTextureLocation(par1ResourceLocation);
+        if (mc.getConfig().isRandomMobs()) {
+            par1ResourceLocation = RandomMobs.getTextureLocation(mc, par1ResourceLocation);
         }
 
         Object var2 = (ITextureObject) this.mapTextureObjects.get(par1ResourceLocation);
@@ -106,7 +106,7 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
 
     public ResourceLocation getDynamicTextureLocation(String par1Str, DynamicTexture par2DynamicTexture) {
         if (par1Str.equals("logo")) {
-            par2DynamicTexture = Config.getMojangLogoTexture(this.mc, par2DynamicTexture);
+            par2DynamicTexture = mc.getConfig().getMojangLogoTexture(this.mc, par2DynamicTexture);
         }
 
         Integer var3 = (Integer) this.mapTextureCounters.get(par1Str);
@@ -143,7 +143,7 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
 
     public void onResourceManagerReload(IResourceManager par1ResourceManager) {
         Config.dbg("*** Reloading textures ***");
-        Config.log("Resource packs: " + Config.getResourcePackNames());
+        Config.log("Resource packs: " + mc.getConfig().getResourcePackNames());
         Iterator it = this.mapTextureObjects.keySet().iterator();
 
         while (it.hasNext()) {

@@ -6,12 +6,15 @@ import gg.mineral.server.combat.BacktrackSystem.PacketRecieveTask
 import io.netty.channel.ChannelHandlerContext
 import io.netty.util.concurrent.Future
 import io.netty.util.concurrent.GenericFutureListener
-import net.minecraft.client.Minecraft
 import net.minecraft.server.v1_8_R3.*
+import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class ServerNetworkManager(private val translator: Server2ClientTranslator, private val mc: Minecraft) :
+class ServerNetworkManager(
+    private val translator: Server2ClientTranslator,
+    private val clientInstance: WeakReference<ClientInstance>
+) :
     NetworkManager(EnumProtocolDirection.SERVERBOUND) {
     private var started = false
 
@@ -30,11 +33,12 @@ class ServerNetworkManager(private val translator: Server2ClientTranslator, priv
             return
         }
 
-        if (mc is ClientInstance && (!mc.isMainThread() || mc.latency > 0)) mc.scheduleTask(
-            Runnable { translator.handlePacket(packet as Packet<PacketListenerPlayOut>) },
-            mc.latency.toLong()
-        )
-        else translator.handlePacket(packet as Packet<PacketListenerPlayOut>)
+        clientInstance.get()?.let {
+            if (!it.isMainThread() || it.latency > 0) it.scheduleTask(
+                { translator.handlePacket(packet as Packet<PacketListenerPlayOut>) },
+                it.latency.toLong()
+            )
+        }
     }
 
     @Throws(Exception::class)

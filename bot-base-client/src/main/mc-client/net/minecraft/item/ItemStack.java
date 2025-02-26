@@ -765,39 +765,77 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
         return var1;
     }
 
+    /**
+     * Specialized method to calculate attack damage without creating a full multimap
+     * This avoids the memory overhead of getAttributeModifiers() when we only need attack damage
+     */
+    private Collection<AttributeModifier> getAttackDamageModifiers() {
+        // First check if we have custom attribute modifiers in NBT
+        if (this.hasTagCompound() && this.stackTagCompound.func_150297_b("AttributeModifiers", 9)) {
+            List<AttributeModifier> modifiers = new ArrayList<>();
+            NBTTagList tagList = this.stackTagCompound.getTagList("AttributeModifiers", 10);
+
+            for (int i = 0; i < tagList.tagCount(); ++i) {
+                NBTTagCompound tag = tagList.getCompoundTagAt(i);
+                String attributeName = tag.getString("AttributeName");
+
+                // Only process attack damage modifiers
+                if ("generic.attackDamage".equals(attributeName)) {
+                    AttributeModifier modifier = SharedMonsterAttributes.readAttributeModifierFromNBT(tag);
+                    if (modifier.getID().getLeastSignificantBits() != 0L &&
+                            modifier.getID().getMostSignificantBits() != 0L) {
+                        modifiers.add(modifier);
+                    }
+                }
+            }
+
+            if (!modifiers.isEmpty()) {
+                return modifiers;
+            }
+        }
+
+        // Fall back to item's default attribute modifiers for attack damage
+        return this.getItem().getItemAttributeModifiers().get("generic.attackDamage");
+    }
+
+    /**
+     * Optimized method to get attack damage value directly
+     *
+     * @return the calculated attack damage for this item
+     */
     @Override
     public double getAttackDamage() {
         double baseAmount = 0;
         double multiplierBase = 0;
         double multiplier = 1;
 
-        // Loop through the attribute modifiers and apply the operations
-        for (AttributeModifier var1 : ((Set<AttributeModifier>) this.getAttributeModifiers()
-                .get("generic.attackDamage"))) {
-            switch (var1.getOperation()) {
-                case 0: // Add operation
-                    baseAmount += var1.getAmount();
-                    break;
-                case 1: // Multiply base operation
-                    multiplierBase += var1.getAmount();
-                    break;
-                case 2: // Multiply operation
-                    multiplier *= (1 + var1.getAmount());
-                    break;
-                default:
-                    break;
+        Collection<AttributeModifier> attackModifiers = getAttackDamageModifiers();
+        if (attackModifiers != null) {
+            for (AttributeModifier modifier : attackModifiers) {
+                switch (modifier.getOperation()) {
+                    case 0: // Add operation
+                        baseAmount += modifier.getAmount();
+                        break;
+                    case 1: // Multiply base operation
+                        multiplierBase += modifier.getAmount();
+                        break;
+                    case 2: // Multiply operation
+                        multiplier *= (1 + modifier.getAmount());
+                        break;
+                }
             }
         }
 
-        // Apply the multiply_base operation
-        double amount = baseAmount * (1 + multiplierBase);
-        // Apply the multiply operation
-        amount *= multiplier;
+        // Calculate final damage value
+        double damage = baseAmount * (1 + multiplierBase) * multiplier;
 
-        // Apply any additional bonuses from enchantments
-        amount += EnchantmentHelper.getEnchantmentLevel(Enchantment.sharpness.effectId, this) * 1.25D;
+        // Add sharpness bonus if present
+        int sharpnessLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.sharpness.effectId, this);
+        if (sharpnessLevel > 0) {
+            damage += sharpnessLevel * 1.25D;
+        }
 
-        return amount;
+        return damage;
     }
 
     public void func_150996_a(Item p_150996_1_) {

@@ -29,14 +29,14 @@ public class CustomItems {
         itemProperties = (CustomItemProperties[][]) null;
 
         if (Config.isCustomItems()) {
-            IResourcePack[] rps = Config.getResourcePacks();
+            IResourcePack[] rps = textureMap.getMc().getConfig().getResourcePacks();
 
             for (int i = rps.length - 1; i >= 0; --i) {
                 IResourcePack rp = rps[i];
                 updateIcons(textureMap, rp);
             }
 
-            updateIcons(textureMap, Config.getDefaultResourcePack());
+            updateIcons(textureMap, textureMap.getMc().getConfig().getDefaultResourcePack());
         }
     }
 

@@ -24,6 +24,8 @@ abstract class BotAPI {
 
     abstract fun despawnAll()
 
+    abstract fun cleanup()
+
     abstract fun isFakePlayer(uuid: UUID): Boolean
 
     abstract val fakePlayers: Collection<WeakReference<FakePlayer>>

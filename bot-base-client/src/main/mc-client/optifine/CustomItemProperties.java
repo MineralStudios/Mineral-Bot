@@ -446,7 +446,7 @@ public class CustomItemProperties {
 
             String fileName = fullName + ".png";
             ResourceLocation loc = new ResourceLocation(fileName);
-            boolean exists = Config.hasResource(loc);
+            boolean exists = textureMap.getMc().getConfig().hasResource(loc);
 
             if (!exists) {
                 Config.warn("File not found: " + fileName);

@@ -89,7 +89,7 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance), 
 
     override fun onTick(tick: Tick) {
         aimAtOptimalTarget()
-        
+
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
@@ -97,7 +97,7 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance), 
 
         tick.finishIf("Bowl is not in Hotbar", bowlSlot == -1)
 
-        tick.prerequisite("Switch to Bowl Slot", inventory.heldSlot != bowlSlot) {
+        tick.prerequisite("Switch to Bowl Slot", inventory.heldSlot == bowlSlot) {
             pressKey(10, Key.Type.valueOf("KEY_" + (bowlSlot + 1)))
         }
 

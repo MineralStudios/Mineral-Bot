@@ -287,7 +287,7 @@ public class WorldRendererSmooth extends WorldRenderer {
         GL11.glNewList(this.glWorkLists[this.activeSet][renderpass][this.activeListIndex[renderpass]], GL11.GL_COMPILE);
         this.tessellator.setRenderingChunk(true);
 
-        if (Config.isFastRender()) {
+        if (mc.getConfig().isFastRender()) {
             Reflector.callVoid(Reflector.ForgeHooksClient_onPreRenderWorld,
                     new Object[]{this, Integer.valueOf(renderpass)});
             this.tessellator.startDrawingQuads();
@@ -307,7 +307,7 @@ public class WorldRendererSmooth extends WorldRenderer {
     }
 
     protected void postRenderBlocksSmooth(int renderpass, EntityLivingBase entityLiving, boolean updateFinished) {
-        if (Config.isTranslucentBlocksFancy() && renderpass == 1 && !this.tempSkipRenderPass[renderpass]) {
+        if (mc.getConfig().isTranslucentBlocksFancy() && renderpass == 1 && !this.tempSkipRenderPass[renderpass]) {
             TesselatorVertexState tsv = this.tessellator.getVertexState((float) entityLiving.posX,
                     (float) entityLiving.posY, (float) entityLiving.posZ);
 
@@ -323,7 +323,7 @@ public class WorldRendererSmooth extends WorldRenderer {
                 new Object[]{this, Integer.valueOf(renderpass)});
         this.tessellator.setRenderingChunk(false);
 
-        if (!Config.isFastRender()) {
+        if (!mc.getConfig().isFastRender()) {
             GL11.glPopMatrix();
         }
 

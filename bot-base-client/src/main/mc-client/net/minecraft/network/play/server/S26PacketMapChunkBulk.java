@@ -1,11 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
-
 import lombok.NoArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.INetHandler;
@@ -15,6 +9,12 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 @NoArgsConstructor
 public class S26PacketMapChunkBulk extends Packet {
@@ -28,7 +28,7 @@ public class S26PacketMapChunkBulk extends Packet {
     private boolean hasSky;
 
     public S26PacketMapChunkBulk(Minecraft mc, int[] chunkXArr, int[] chunkZArr, ExtendedBlockStorage[][] chunkSections,
-            byte[][] biomeArrays, boolean groundUpContinuous) {
+                                 byte[][] biomeArrays, boolean groundUpContinuous) {
         int chunkCount = chunkXArr.length;
         this.chunkXArr = new int[chunkCount];
         this.chunkZArr = new int[chunkCount];
@@ -61,7 +61,7 @@ public class S26PacketMapChunkBulk extends Packet {
 
         /*
          * Deflater var11 = new Deflater(-1);
-         * 
+         *
          * try {
          * var11.setInput(buffer, 0, var3);
          * var11.finish();
@@ -80,13 +80,13 @@ public class S26PacketMapChunkBulk extends Packet {
         this.primaryBitMapArr = new int[chunkCount];
         this.addBitMapArr = new int[chunkCount];
         this.dataArr = new byte[chunkCount][];
-        this.hasSky = !chunks.isEmpty() && !((Chunk) chunks.get(0)).worldObj.provider.hasNoSky;
+        this.hasSky = !chunks.isEmpty() && !chunks.get(0).worldObj.provider.hasNoSky;
         int var3 = 0;
 
         byte[] buffer = mc.getReadBuffer();
 
         for (int var4 = 0; var4 < chunkCount; ++var4) {
-            Chunk var5 = (Chunk) chunks.get(var4);
+            Chunk var5 = chunks.get(var4);
             S21PacketChunkData.Extracted var6 = this.func_149269_a(mc, var5, true, 65535);
 
             if (buffer.length < var3 + var6.data.length) {
@@ -117,8 +117,8 @@ public class S26PacketMapChunkBulk extends Packet {
     }
 
     public S21PacketChunkData.Extracted func_149269_a(Minecraft mc, ExtendedBlockStorage[] var4, byte[] biomeArray,
-            boolean groundUpContinuous,
-            int p_149269_2_) {
+                                                      boolean groundUpContinuous,
+                                                      int p_149269_2_) {
         int var3 = 0;
         int var5 = 0;
         S21PacketChunkData.Extracted var6 = new S21PacketChunkData.Extracted();
@@ -191,9 +191,8 @@ public class S26PacketMapChunkBulk extends Packet {
         }
 
         if (groundUpContinuous) {
-            byte[] var10 = biomeArray;
-            System.arraycopy(var10, 0, var7, var3, var10.length);
-            var3 += var10.length;
+            System.arraycopy(biomeArray, 0, var7, var3, biomeArray.length);
+            var3 += biomeArray.length;
         }
 
         var6.data = new byte[var3];
@@ -202,7 +201,7 @@ public class S26PacketMapChunkBulk extends Packet {
     }
 
     public S21PacketChunkData.Extracted func_149269_a(Minecraft mc, Chunk chunk, boolean groundUpContinuous,
-            int p_149269_2_) {
+                                                      int p_149269_2_) {
         int var3 = 0;
         ExtendedBlockStorage[] var4 = chunk.getBlockStorageArray();
         int var5 = 0;
@@ -404,14 +403,14 @@ public class S26PacketMapChunkBulk extends Packet {
             }
 
             var1.append(String.format("{x=%d, z=%d, sections=%d, adds=%d, data=%d}",
-                    new Object[] { Integer.valueOf(this.chunkXArr[var2]),
-                            Integer.valueOf(this.chunkZArr[var2]), Integer.valueOf(this.primaryBitMapArr[var2]),
-                            Integer.valueOf(this.addBitMapArr[var2]),
-                            Integer.valueOf(this.dataArr[var2].length) }));
+                    this.chunkXArr[var2],
+                    this.chunkZArr[var2], this.primaryBitMapArr[var2],
+                    this.addBitMapArr[var2],
+                    this.dataArr[var2].length));
         }
 
-        return String.format("size=%d, chunks=%d[%s]", new Object[] { Integer.valueOf(this.compressedSize),
-                Integer.valueOf(this.chunkXArr.length), var1 });
+        return String.format("size=%d, chunks=%d[%s]", this.compressedSize,
+                this.chunkXArr.length, var1);
     }
 
     public int[] func_149252_e() {

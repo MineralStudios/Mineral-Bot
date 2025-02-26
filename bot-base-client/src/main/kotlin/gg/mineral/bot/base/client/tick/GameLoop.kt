@@ -57,6 +57,7 @@ object GameLoop {
         gameLoopExecutor.scheduleAtFixedRate({
             instances.entries.removeIf { (_, instance) -> !instance.running }
             pendingInstances.entries.removeIf { (_, instance) -> !instance.running }
+            BotAPI.INSTANCE.cleanup()
         }, 0, 10, TimeUnit.SECONDS)
     }
 

@@ -1,13 +1,13 @@
 package optifine;
 
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class WrUpdaterSmooth implements IWrUpdater {
@@ -26,7 +26,7 @@ public class WrUpdaterSmooth implements IWrUpdater {
     }
 
     public WorldRenderer makeWorldRenderer(World worldObj, List tileEntities, int x, int y, int z,
-            int glRenderListBase) {
+                                           int glRenderListBase) {
         return new WorldRendererSmooth(this.mc, worldObj, tileEntities, x, y, z, glRenderListBase);
     }
 
@@ -34,9 +34,9 @@ public class WrUpdaterSmooth implements IWrUpdater {
         this.lastUpdateStartTimeNs = this.updateStartTimeNs;
         this.updateStartTimeNs = System.nanoTime();
         long finishTimeNs = this.updateStartTimeNs + this.updateTimeNs;
-        int maxNum = Config.getUpdatesPerFrame();
+        int maxNum = mc.getConfig().getUpdatesPerFrame();
 
-        if (Config.isDynamicUpdates() && !rg.isMoving(entityliving)) {
+        if (mc.getConfig().isDynamicUpdates() && !rg.isMoving(entityliving)) {
             maxNum *= 3;
         }
 

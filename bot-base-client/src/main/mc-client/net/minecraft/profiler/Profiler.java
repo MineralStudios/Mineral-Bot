@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import optifine.Config;
+import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,13 +47,15 @@ public class Profiler {
     public long timeTickNano;
     private long startUpdateChunksNano;
     public long timeUpdateChunksNano;
+    private final Minecraft mc;
 
-    public Profiler() {
+    public Profiler(Minecraft mc) {
         this.profilerLocalEnabled = this.profilerGlobalEnabled;
         this.startTickNano = 0L;
         this.timeTickNano = 0L;
         this.startUpdateChunksNano = 0L;
         this.timeUpdateChunksNano = 0L;
+        this.mc = mc;
     }
 
     /**
@@ -70,7 +72,7 @@ public class Profiler {
      * Start section
      */
     public void startSection(String par1Str) {
-        if (Config.getGameSettings().showDebugInfo) {
+        if (mc.getConfig().getGameSettings().showDebugInfo) {
             if (this.startTickNano == 0L && par1Str.equals("tick")) {
                 this.startTickNano = System.nanoTime();
             }
