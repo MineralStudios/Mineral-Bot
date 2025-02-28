@@ -168,6 +168,9 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
             if (drinking && event.type == MouseButton.Type.RIGHT_CLICK && !event.pressed) {
                 logger.debug("Ignoring RIGHT_CLICK release event while drinking")
                 return true
+            } else if (event.type == MouseButton.Type.LEFT_CLICK && inventoryOpen && inventoryOpen && event.pressed) {
+                logger.debug("Ignoring LEFT_CLICK press event")
+                return true
             }
         }
         return false

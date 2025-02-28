@@ -7,6 +7,7 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Suspendable
 import gg.mineral.bot.api.goal.Timebound
@@ -139,6 +140,21 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
 
         tick.finishIf("Valid pearl slot not found", pearlSlot == -1)
 
+        val entity = world.entities.filterIsInstance<ClientPlayer>().minByOrNull {
+            if (!clientInstance.configuration.friendlyUUIDs.contains(it.uuid)
+            ) fakePlayer.distance3DTo(it) else Double.MAX_VALUE
+        }
+
+        tick.finishIf("Enemy is not present", entity == null)
+        entity ?: return
+
+        val type: Type = Type.entries.firstOrNull {
+            it.test(fakePlayer, entity)
+        } ?: run {
+            tick.finishIf("No valid type found", true)
+            return
+        }
+
         tick.prerequisite("In Hotbar", pearlSlot <= 8) {
             moveItemToHotbar(pearlSlot, fakePlayer.inventory)
         }
@@ -151,22 +167,9 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
 
         tick.finishIf("Not Holding Valid Pearl", inventory.heldItemStack?.item?.id != Item.ENDER_PEARL)
 
-        val entity = world.entities.filterIsInstance<ClientPlayer>().minByOrNull {
-            if (!clientInstance.configuration.friendlyUUIDs.contains(it.uuid)
-            ) fakePlayer.distance3DTo(it) else Double.MAX_VALUE
-        }
-
-        tick.finishIf("Enemy is not present", entity == null)
-        entity ?: return
-
-        val type: Type = Type.entries.firstOrNull {
-            it.test(fakePlayer, entity)
-        } ?: return
-
         val targetX = entity.x + (entity.x - entity.lastX)
         val targetY = entity.y + (entity.y - entity.lastY)
         val targetZ = entity.z + (entity.z - entity.lastZ)
-
 
         val collisionFunction = when (type) {
             Type.FORWARD -> CollisionFunction { x1: Double, y1: Double, z1: Double ->
@@ -244,7 +247,6 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         val angles = getAngles(fakePlayer, entity)
         setMouseYaw(angles[0])
         setMousePitch(angles[1])
-
 
         val trajectory = EnderPearlTrajectory(
             world,
@@ -400,7 +402,14 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
         return false
     }
 
-    override fun onEvent(event: Event) = false
+    override fun onEvent(event: Event): Boolean {
+        if (event is MouseButtonEvent && inventoryOpen && event.type == MouseButton.Type.LEFT_CLICK && event.pressed) {
+            logger.debug("Ignoring LEFT_CLICK press event")
+            return true
+        }
+
+        return false
+    }
 
     override fun onGameLoop() {
     }

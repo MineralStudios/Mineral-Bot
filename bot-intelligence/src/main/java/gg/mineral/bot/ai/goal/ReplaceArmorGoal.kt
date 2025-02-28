@@ -4,6 +4,7 @@ import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
@@ -96,7 +97,13 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
         }
     }
 
-    override fun onEvent(event: Event) = false
+    override fun onEvent(event: Event): Boolean {
+        if (event is MouseButtonEvent && inventoryOpen && event.type == MouseButton.Type.LEFT_CLICK && event.pressed) {
+            logger.debug("Ignoring LEFT_CLICK press event")
+            return true
+        }
+        return false
+    }
 
     override fun onGameLoop() {}
 }

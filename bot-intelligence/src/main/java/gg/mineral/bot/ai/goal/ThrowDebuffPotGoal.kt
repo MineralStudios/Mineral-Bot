@@ -8,6 +8,7 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Suspendable
 import gg.mineral.bot.api.goal.Timebound
@@ -161,13 +162,13 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             setMouseYaw(angleTowardsEnemies())
         }
 
+        val closestEnemy = closestEnemy() ?: return
+
         tick.executeAsync(0, {
-            minimizePitch(fakePlayer) { it.airTimeTicks.toDouble() }
+            minimizePitch(fakePlayer, closestEnemy) { it.airTimeTicks.toDouble() }
         }) {
             setMousePitch(it)
         }
-
-        val closestEnemy = closestEnemy() ?: return
 
         val simulator = fakePlayer.motionSimulator().apply {
             setMouseYaw(fakePlayer.yaw)
@@ -219,9 +220,10 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
     private fun minimizePitch(
         fakePlayer: FakePlayer,
+        closestEnemy: ClientPlayer?,
         valueFunction: (SplashPotionTrajectory) -> Double
     ): Float {
-        val closestEnemy = closestEnemy() ?: return fakePlayer.pitch
+        closestEnemy ?: return fakePlayer.pitch
         val objective = UnivariateFunction { pitch ->
             val simulator = fakePlayer.motionSimulator().apply {
                 setMouseYaw(fakePlayer.yaw)
@@ -284,6 +286,10 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
     }
 
     override fun onEvent(event: Event): Boolean {
+        if (event is MouseButtonEvent && inventoryOpen && event.type == MouseButton.Type.LEFT_CLICK && event.pressed) {
+            logger.debug("Ignoring LEFT_CLICK press event")
+            return true
+        }
         return false
     }
 

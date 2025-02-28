@@ -8,6 +8,7 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.entity.EntityHurtEvent
+import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.world.block.Block
@@ -453,6 +454,11 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
 
     override fun onEvent(event: Event): Boolean {
         if (event is EntityHurtEvent) return onEntityHurt(event)
+
+        if (event is MouseButtonEvent && inventoryOpen && event.type == MouseButton.Type.LEFT_CLICK && event.pressed) {
+            logger.debug("Ignoring LEFT_CLICK press event")
+            return true
+        }
 
         return false
     }

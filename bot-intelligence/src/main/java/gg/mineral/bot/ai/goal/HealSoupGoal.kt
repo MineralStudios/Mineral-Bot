@@ -5,6 +5,7 @@ import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
@@ -90,7 +91,7 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
         val inventory = fakePlayer.inventory
 
         tick.finishIf("No Valid Soup Found", soupSlot == -1)
-        
+
         tick.finishIf("Soup Not Needed", fakePlayer.health > 10)
 
         tick.prerequisite("In Hotbar", soupSlot <= 8) {
@@ -116,7 +117,13 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
         }
     }
 
-    override fun onEvent(event: Event) = false
+    override fun onEvent(event: Event): Boolean {
+        if (event is MouseButtonEvent && inventoryOpen && event.type == MouseButton.Type.LEFT_CLICK && event.pressed) {
+            logger.debug("Ignoring LEFT_CLICK press event")
+            return true
+        }
+        return false
+    }
 
     override fun onGameLoop() {}
 }

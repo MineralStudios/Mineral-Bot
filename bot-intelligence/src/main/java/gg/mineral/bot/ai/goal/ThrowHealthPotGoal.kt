@@ -9,6 +9,7 @@ import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.entity.throwable.ClientThrowableEntity
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.entity.EntityDestroyEvent
+import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
@@ -191,13 +192,14 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             inventory.heldItemStack?.let { isHealthPot(it) } == false
         )
 
+        val closestEnemy = closestEnemy()
+
         tick.executeAsync(0, {
-            minimizePitch(fakePlayer) { it.airTimeTicks.toDouble() }
+            minimizePitch(fakePlayer, closestEnemy) { it.airTimeTicks.toDouble() }
         }) {
             setMousePitch(it)
         }
 
-        val closestEnemy = closestEnemy()
         val distanceCondition = (closestEnemy?.distance3DTo(fakePlayer) ?: Double.MAX_VALUE) >= distanceFromEnemy &&
                 distanceFromEnemy > 3.6
         val simulator = fakePlayer.motionSimulator().apply {
@@ -259,6 +261,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
 
     private fun minimizePitch(
         fakePlayer: FakePlayer,
+        enemy: ClientPlayer?,
         valueFunction: (SplashPotionTrajectory) -> Double
     ): Float {
         val objective = UnivariateFunction { pitch ->
@@ -266,8 +269,6 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             simulator.keyboard.pressKey(Key.Type.KEY_W)
             simulator.keyboard.unpressKey(Key.Type.KEY_S, Key.Type.KEY_A, Key.Type.KEY_D)
             simulator.setMouseYaw(fakePlayer.yaw)
-
-            val enemy = closestEnemy()
             val enemySimulator = enemy?.motionSimulator()
             val trajectory = object : SplashPotionTrajectory(
                 fakePlayer.world,
@@ -330,11 +331,18 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
     }
 
     override fun onEvent(event: Event): Boolean {
-        if (event is EntityDestroyEvent) {
-            val fakePlayer = clientInstance.fakePlayer
-            if (event.destroyedEntity is ClientThrowableEntity && event.destroyedEntity.distance3DToSq(fakePlayer) < 9.0)
-                pottingTicks = 0
+        when (event) {
+            is EntityDestroyEvent -> {
+                val fakePlayer = clientInstance.fakePlayer
+                if (event.destroyedEntity is ClientThrowableEntity && event.destroyedEntity.distance3DToSq(fakePlayer) < 9.0)
+                    pottingTicks = 0
+            }
+
+            is MouseButtonEvent -> {
+                if (event.pressed) return true
+            }
         }
+
         return false
     }
 

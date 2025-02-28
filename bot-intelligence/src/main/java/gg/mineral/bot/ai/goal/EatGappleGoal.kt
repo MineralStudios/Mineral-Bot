@@ -165,6 +165,9 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
             if (eating && event.type == MouseButton.Type.RIGHT_CLICK && !event.pressed) {
                 logger.debug("Ignoring RIGHT_CLICK release event while eating")
                 return true
+            } else if (event.type == MouseButton.Type.LEFT_CLICK && event.pressed) {
+                logger.debug("Ignoring LEFT_CLICK press event")
+                return true
             }
         }
         return false
