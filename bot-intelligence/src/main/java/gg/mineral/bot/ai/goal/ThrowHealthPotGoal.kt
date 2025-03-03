@@ -1,5 +1,6 @@
 package gg.mineral.bot.ai.goal
 
+import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.ClientLivingEntity
@@ -8,7 +9,6 @@ import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.entity.throwable.ClientThrowableEntity
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.entity.EntityDestroyEvent
-import gg.mineral.bot.api.goal.Goal
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
@@ -28,7 +28,7 @@ import org.apache.commons.math3.optim.univariate.SearchInterval
 import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction
 import org.apache.commons.math3.stat.regression.SimpleRegression
 
-class ThrowHealthPotGoal(clientInstance: ClientInstance) : Goal(clientInstance), Sporadic, Timebound {
+class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
     override val maxDuration: Long = 100
     override var startTime: Long = 0
     override var executing: Boolean = false
@@ -178,7 +178,9 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : Goal(clientInstance),
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        tick.finishIf("Not In Hotbar", healthSlot > 8)
+        tick.prerequisite("In Hotbar", healthSlot <= 8) {
+            moveItemToHotbar(healthSlot, inventory)
+        }
 
         tick.prerequisite("Inventory Closed", clientInstance.currentScreen !is ContainerScreen) {
             pressKey(10, Key.Type.KEY_ESCAPE)

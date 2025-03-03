@@ -70,8 +70,8 @@ abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
                 if (!condition) {
                     executeAsync(id, codeBlock, onComplete)
                     ended = true
-                    logger.debug("Prerequisite failed: $name")
-                } else logger.debug("Prerequisite passed: $name")
+                    println("Prerequisite failed: $name")
+                } else println("Prerequisite passed: $name")
             }
         }
 
@@ -80,8 +80,8 @@ abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
                 if (!condition) {
                     codeBlock()
                     ended = true
-                    logger.debug("Prerequisite failed: $name")
-                } else logger.debug("Prerequisite passed: $name")
+                    println("Prerequisite failed: $name")
+                } else println("Prerequisite passed: $name")
             }
         }
 
@@ -90,8 +90,8 @@ abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
                 if (condition) {
                     ended = true
                     finished = true
-                    logger.debug("Finished goal: $reason")
-                } else logger.debug("Not finished goal: $reason")
+                    println("Finished goal: $reason")
+                } else println("Not finished goal: $reason")
             }
         }
 
