@@ -8,6 +8,7 @@ import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
+import gg.mineral.bot.api.screen.type.ContainerScreen
 
 class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance), Sporadic, Timebound {
     override var executing: Boolean = false
@@ -15,15 +16,20 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance), 
     override val maxDuration: Long = 100
 
     override fun shouldExecute(): Boolean {
+
+        return false
+
+        // TODO: fix dropping in team fights (never finishes)
+        /*
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
         for (i in 0..8) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
             val item = itemStack.item
-            if (item.id == Item.BOWL) return true
+            if (item.id == Item.BOWL && itemStack.count <= 1) return true
         }
-        return false
+        return false*/
     }
 
     override fun onStart() {
@@ -38,7 +44,7 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance), 
         for (i in 0..8) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
             val item = itemStack.item
-            if (item.id == Item.BOWL) {
+            if (item.id == Item.BOWL && itemStack.count <= 1) {
                 bowlSlot = i
                 break
             }
@@ -97,13 +103,19 @@ class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance), 
 
         tick.finishIf("Bowl is not in Hotbar", bowlSlot == -1)
 
+        tick.prerequisite("Inventory Closed", clientInstance.currentScreen !is ContainerScreen) {
+            pressKey(Key.Type.KEY_ESCAPE)
+        }
+
         tick.prerequisite("Switch to Bowl Slot", inventory.heldSlot == bowlSlot) {
             pressKey(10, Key.Type.valueOf("KEY_" + (bowlSlot + 1)))
         }
 
         tick.finishIf("Bowl is not in Hand", inventory.heldItemStack?.item?.id != Item.BOWL)
 
-        tick.execute { pressKey(10, Key.Type.KEY_Q) }
+        tick.execute {
+            pressKey(10, Key.Type.KEY_Q)
+        }
     }
 
     override fun onEnd() {

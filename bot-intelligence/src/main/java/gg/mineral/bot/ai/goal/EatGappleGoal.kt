@@ -12,6 +12,7 @@ import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
+import gg.mineral.bot.api.screen.type.ContainerScreen
 
 class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
     override var executing: Boolean = false
@@ -125,8 +126,8 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
             moveItemToHotbar(gappleSlot, inventory)
         }
 
-        tick.prerequisite("Inventory Closed", !inventoryOpen) {
-            inventoryOpen = false
+        tick.prerequisite("Inventory Closed", clientInstance.currentScreen !is ContainerScreen) {
+            pressKey(10, Key.Type.KEY_ESCAPE)
         }
 
         tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == gappleSlot) {
@@ -154,10 +155,6 @@ class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstan
         eating = false
         unpressButton(MouseButton.Type.RIGHT_CLICK)
         unpressKey(Key.Type.KEY_SPACE)
-        if (inventoryOpen) {
-            inventoryOpen = false
-            logger.debug("Closing inventory after eating golden apple")
-        }
     }
 
     override fun onEvent(event: Event): Boolean {

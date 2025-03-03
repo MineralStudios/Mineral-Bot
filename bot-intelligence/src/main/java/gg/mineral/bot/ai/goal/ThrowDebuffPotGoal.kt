@@ -8,7 +8,6 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.event.Event
-import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Suspendable
 import gg.mineral.bot.api.goal.Timebound
@@ -17,6 +16,7 @@ import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator
 import gg.mineral.bot.api.math.trajectory.Trajectory
 import gg.mineral.bot.api.math.trajectory.throwable.SplashPotionTrajectory
+import gg.mineral.bot.api.screen.type.ContainerScreen
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
 import org.apache.commons.math3.analysis.UnivariateFunction
@@ -34,7 +34,7 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
     private var lastPotTick = 0
     private var effects: Set<Int> = emptySet()
     override val suspend: Boolean
-        get() = !inventoryOpen && !shouldExecute()
+        get() = clientInstance.currentScreen !is ContainerScreen && !shouldExecute()
 
     override fun shouldExecute(): Boolean {
         if (clientInstance.currentTick - lastPotTick < 20) return false
@@ -146,7 +146,12 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             moveItemToHotbar(debuffSlot, inventory)
         }
 
-        tick.prerequisite("Inventory Closed", !inventoryOpen) { inventoryOpen = false }
+        tick.prerequisite("Inventory Closed", clientInstance.currentScreen !is ContainerScreen) {
+            pressKey(
+                10,
+                Key.Type.KEY_ESCAPE
+            )
+        }
 
         tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == debuffSlot) {
             pressKey(10, Key.Type.valueOf("KEY_" + (debuffSlot + 1)))
@@ -213,9 +218,6 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
     override fun onEnd() {
         unpressKey(Key.Type.KEY_S)
         pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
-        if (inventoryOpen) {
-            inventoryOpen = false
-        }
     }
 
     private fun minimizePitch(
@@ -286,10 +288,6 @@ class ThrowDebuffPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
     }
 
     override fun onEvent(event: Event): Boolean {
-        if (event is MouseButtonEvent && inventoryOpen && event.type == MouseButton.Type.LEFT_CLICK && event.pressed) {
-            logger.debug("Ignoring LEFT_CLICK press event")
-            return true
-        }
         return false
     }
 

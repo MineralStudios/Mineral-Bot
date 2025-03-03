@@ -11,6 +11,13 @@ interface ItemStack {
     val item: Item
 
     /**
+     * Get the count of this item stack.
+     *
+     * @return the count of this item stack
+     */
+    val count: Int
+
+    /**
      * Get the attack damage of this item stack.
      *
      * @return the attack damage of this item stack

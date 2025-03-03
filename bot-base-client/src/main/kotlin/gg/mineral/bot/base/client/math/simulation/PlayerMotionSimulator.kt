@@ -18,7 +18,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.*
 import net.minecraft.world.World
 
-class PlayerMotionSimulator(mc: Minecraft?, player: ClientPlayer, world: ClientWorld = player.world) :
+class PlayerMotionSimulator(mc: Minecraft, player: ClientPlayer, world: ClientWorld = player.world) :
     EntityPlayerSP(
         mc, world as World, Session(
             player.username, player.uuid.toString(),

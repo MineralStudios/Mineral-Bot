@@ -23,6 +23,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -30,6 +31,7 @@ import java.util.Map.Entry;
 
 public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, Potion {
     public static final DecimalFormat field_111284_a = new DecimalFormat("#.###");
+
 
     /**
      * Size of the stack.
@@ -876,11 +878,17 @@ public final class ItemStack implements gg.mineral.bot.api.inv.item.ItemStack, P
         return ItemPotion.isSplash(this.getItemDamage());
     }
 
+    @NotNull
     @Override
     public List<PotionEffect> getEffects() {
         if (getItem() instanceof ItemPotion potion)
             return Collections.unmodifiableList(potion.getEffects(this));
 
         throw new IllegalStateException("Item is not a potion");
+    }
+
+    @Override
+    public int getCount() {
+        return stackSize;
     }
 }

@@ -10,6 +10,7 @@ import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
+import gg.mineral.bot.api.screen.type.ContainerScreen
 
 class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
     override var executing: Boolean = false
@@ -104,7 +105,12 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
             moveItemToHotbar(foodSlot, inventory)
         }
 
-        tick.prerequisite("Inventory Closed", !inventoryOpen) { inventoryOpen = false }
+        tick.prerequisite("Inventory Closed", clientInstance.currentScreen !is ContainerScreen) {
+            pressKey(
+                10,
+                Key.Type.KEY_ESCAPE
+            )
+        }
 
         tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == foodSlot) {
             pressKey(10, Key.Type.valueOf("KEY_" + (foodSlot + 1)))
@@ -131,19 +137,12 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
         eating = false
         unpressButton(MouseButton.Type.RIGHT_CLICK)
         unpressKey(Key.Type.KEY_SPACE)
-        if (inventoryOpen) {
-            inventoryOpen = false
-            logger.debug("Closing inventory after eating")
-        }
     }
 
     override fun onEvent(event: Event): Boolean {
         if (event is MouseButtonEvent) {
             if (eating && event.type == MouseButton.Type.RIGHT_CLICK && !event.pressed) {
                 logger.debug("Ignoring RIGHT_CLICK release event while eating")
-                return true
-            } else if (event.type == MouseButton.Type.LEFT_CLICK && inventoryOpen && event.pressed) {
-                logger.debug("Ignoring LEFT_CLICK press event")
                 return true
             }
         }

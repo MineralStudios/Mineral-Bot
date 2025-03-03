@@ -7,7 +7,6 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.event.Event
-import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Suspendable
 import gg.mineral.bot.api.goal.Timebound
@@ -16,6 +15,7 @@ import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.math.trajectory.Trajectory
 import gg.mineral.bot.api.math.trajectory.Trajectory.CollisionFunction
 import gg.mineral.bot.api.math.trajectory.throwable.EnderPearlTrajectory
+import gg.mineral.bot.api.screen.type.ContainerScreen
 import gg.mineral.bot.api.util.MathUtil
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
@@ -39,7 +39,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
     override var executing: Boolean = false
     override var startTime: Long = 0
     override val suspend: Boolean
-        get() = !inventoryOpen && !shouldExecute()
+        get() = clientInstance.currentScreen !is ContainerScreen && !shouldExecute()
     override val maxDuration: Long = 100
     private var lastPearledTick = 0
 
@@ -159,7 +159,12 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
             moveItemToHotbar(pearlSlot, fakePlayer.inventory)
         }
 
-        tick.prerequisite("Inventory Closed", !inventoryOpen) { inventoryOpen = false }
+        tick.prerequisite("Inventory Closed", clientInstance.currentScreen !is ContainerScreen) {
+            pressKey(
+                10,
+                Key.Type.KEY_ESCAPE
+            )
+        }
 
         tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == pearlSlot) {
             pressKey(10, Key.Type.valueOf("KEY_" + (pearlSlot + 1)))
@@ -269,10 +274,6 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
     }
 
     override fun onEnd() {
-        if (inventoryOpen) {
-            inventoryOpen = false
-            logger.debug("Closing inventory after throwing pearl")
-        }
     }
 
     private fun getAngles(player: ClientPlayer, entity: ClientPlayer): FloatArray {
@@ -403,11 +404,6 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
     }
 
     override fun onEvent(event: Event): Boolean {
-        if (event is MouseButtonEvent && inventoryOpen && event.type == MouseButton.Type.LEFT_CLICK && event.pressed) {
-            logger.debug("Ignoring LEFT_CLICK press event")
-            return true
-        }
-
         return false
     }
 

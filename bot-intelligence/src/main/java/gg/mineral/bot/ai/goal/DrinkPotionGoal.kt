@@ -13,6 +13,7 @@ import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.inv.item.ItemStack
 import gg.mineral.bot.api.inv.potion.Potion
+import gg.mineral.bot.api.screen.type.ContainerScreen
 
 class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
     override var executing: Boolean = false
@@ -130,7 +131,10 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
             moveItemToHotbar(potionSlot, inventory)
         }
 
-        tick.prerequisite("Inventory Closed", !inventoryOpen) { inventoryOpen = false }
+        tick.prerequisite(
+            "Inventory Closed",
+            clientInstance.currentScreen !is ContainerScreen
+        ) { pressKey(10, Key.Type.KEY_ESCAPE) }
 
         tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == potionSlot) {
             pressKey(10, Key.Type.valueOf("KEY_" + (potionSlot + 1)))
@@ -157,19 +161,12 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         drinking = false
         unpressButton(MouseButton.Type.RIGHT_CLICK)
         unpressKey(Key.Type.KEY_SPACE)
-        if (inventoryOpen) {
-            inventoryOpen = false
-            logger.debug("Closing inventory after drinking")
-        }
     }
 
     override fun onEvent(event: Event): Boolean {
         if (event is MouseButtonEvent) {
             if (drinking && event.type == MouseButton.Type.RIGHT_CLICK && !event.pressed) {
                 logger.debug("Ignoring RIGHT_CLICK release event while drinking")
-                return true
-            } else if (event.type == MouseButton.Type.LEFT_CLICK && inventoryOpen && inventoryOpen && event.pressed) {
-                logger.debug("Ignoring LEFT_CLICK press event")
                 return true
             }
         }

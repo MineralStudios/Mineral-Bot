@@ -24,6 +24,7 @@ data class BotConfiguration(
     var sprintResetAccuracy: Float = 0.5f,
     var hitSelectAccuracy: Float = 0.5f,
     var latency: Int = 0,
+    var predictionHorizon: Int = 5,
     var latencyDeviation: Int = 0,
     var pearlCooldown: Int = 15,
     var skin: Skins = Skins.MINERAL_DEFAULT,
@@ -61,6 +62,7 @@ data class BotConfiguration(
             private var sprintResetAccuracy: Float = 0.5f
             private var hitSelectAccuracy: Float = 0.5f
             private var latency: Int = 0
+            private var predictionHorizon: Int = 5
             private var latencyDeviation: Int = 0
             private var pearlCooldown: Int = 15
             private var skin: Skins = Skins.MINERAL_DEFAULT
@@ -102,6 +104,7 @@ data class BotConfiguration(
             fun debug(debug: Boolean) = apply { this.debug = debug }
             fun friendlyUUIDs(friendlyUUIDs: MutableSet<UUID>) = apply { this.friendlyUUIDs = friendlyUUIDs }
             fun potAccuracy(potAccuracy: Double) = apply { this.potAccuracy = potAccuracy }
+            fun predictionHorizon(predictionHorizon: Int) = apply { this.predictionHorizon = predictionHorizon }
 
             fun build() = BotConfiguration(
                 username,
@@ -122,6 +125,7 @@ data class BotConfiguration(
                 sprintResetAccuracy,
                 hitSelectAccuracy,
                 latency,
+                predictionHorizon,
                 latencyDeviation,
                 pearlCooldown,
                 skin,

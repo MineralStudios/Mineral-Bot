@@ -4,11 +4,11 @@ import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.event.Event
-import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
+import gg.mineral.bot.api.screen.type.ContainerScreen
 
 class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
     override val maxDuration: Long = 100
@@ -73,8 +73,8 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
             moveItemToHotbar(armorSlot, inventory)
         }
 
-        tick.prerequisite("Inventory Closed", !inventoryOpen) {
-            inventoryOpen = false
+        tick.prerequisite("Inventory Closed", clientInstance.currentScreen !is ContainerScreen) {
+            pressKey(10, Key.Type.KEY_ESCAPE)
         }
 
         tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == armorSlot) {
@@ -91,17 +91,9 @@ class ReplaceArmorGoal(clientInstance: ClientInstance) : InventoryGoal(clientIns
     }
 
     override fun onEnd() {
-        if (inventoryOpen) {
-            inventoryOpen = false
-            logger.debug("Closing inventory after replacing armor")
-        }
     }
 
     override fun onEvent(event: Event): Boolean {
-        if (event is MouseButtonEvent && inventoryOpen && event.type == MouseButton.Type.LEFT_CLICK && event.pressed) {
-            logger.debug("Ignoring LEFT_CLICK press event")
-            return true
-        }
         return false
     }
 
