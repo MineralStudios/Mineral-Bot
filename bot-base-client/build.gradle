@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '2.1.10'
+    ext.kotlin_version = '2.1.20'
     repositories {
         mavenCentral()
     }
@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.jetbrains.kotlin.plugin.lombok' version '2.1.10'
+    id 'org.jetbrains.kotlin.plugin.lombok' version '2.1.20'
 }
 
 repositories {
@@ -29,16 +29,16 @@ dependencies {
     compileOnly 'it.unimi.dsi:fastutil:8.5.15'
     compileOnly 'org.apache.logging.log4j:log4j-api:2.24.3'
     compileOnly 'org.apache.logging.log4j:log4j-core:2.24.3'
-    implementation 'net.java.dev.jna:jna:5.16.0'
-    implementation 'net.java.dev.jna:jna-platform:5.16.0'
-    implementation 'com.ibm.icu:icu4j:76.1'
+    implementation 'net.java.dev.jna:jna:5.17.0'
+    implementation 'net.java.dev.jna:jna-platform:5.17.0'
+    implementation 'com.ibm.icu:icu4j:77.1'
     implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
     implementation 'com.paulscode:codecjorbis:20101023'
     implementation 'com.paulscode:codecwav:20101023'
     implementation 'com.paulscode:libraryjavasound:20101123'
     implementation 'com.paulscode:librarylwjglopenal:20100824'
     implementation 'com.paulscode:soundsystem:20120107'
-    implementation 'com.google.guava:guava:33.4.0-jre'
+    implementation 'com.google.guava:guava:33.4.6-jre'
     implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation 'commons-io:commons-io:2.18.0'
     implementation 'com.google.code.gson:gson:2.12.1'
