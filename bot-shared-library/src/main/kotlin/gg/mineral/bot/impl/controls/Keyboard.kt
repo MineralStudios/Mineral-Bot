@@ -1,5 +1,6 @@
 package gg.mineral.bot.impl.controls
 
+import gg.mineral.bot.api.controls.Keyboard.Log
 import gg.mineral.bot.api.event.EventHandler
 import gg.mineral.bot.api.event.peripherals.KeyboardKeyEvent
 import gg.mineral.bot.api.instance.ClientInstance
@@ -51,8 +52,8 @@ open class Keyboard(private val eventHandler: EventHandler) : gg.mineral.bot.api
         return keys[type.ordinal]
     }
 
-    override fun pressKey(durationMillis: Int, vararg type: gg.mineral.bot.api.controls.Key.Type) {
-        for (type in type) {
+    override fun pressKey(durationMillis: Int, vararg types: gg.mineral.bot.api.controls.Key.Type) {
+        for (type in types) {
             val key = getKey(type)
 
             if (key == null || key.isPressed) continue
@@ -122,6 +123,10 @@ open class Keyboard(private val eventHandler: EventHandler) : gg.mineral.bot.api
         return false
     }
 
+    override fun getKeyStateChanges(): List<Log> {
+        return logs.toList() + listOfNotNull(currentLog)
+    }
+
     override val eventKey: Int
         get() = if (eventLog != null) eventLog!!.type.keyCode else -1
 
@@ -141,8 +146,11 @@ open class Keyboard(private val eventHandler: EventHandler) : gg.mineral.bot.api
         scheduledTasks.clear()
     }
 
-    @JvmRecord
-    data class Log(val type: gg.mineral.bot.api.controls.Key.Type, val pressed: Boolean)
+    override fun setState(vararg types: gg.mineral.bot.api.controls.Key.Type) {
+        stopAll()
+        for (type in types) pressKey(type)
+    }
+
     companion object {
         private val logger: Logger = LogManager.getLogger(Keyboard::class.java)
     }

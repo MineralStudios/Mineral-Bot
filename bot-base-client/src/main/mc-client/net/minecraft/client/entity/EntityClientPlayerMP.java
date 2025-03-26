@@ -9,15 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C01PacketChatMessage;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.network.play.client.C0APacketAnimation;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
-import net.minecraft.network.play.client.C0CPacketInput;
-import net.minecraft.network.play.client.C0DPacketCloseWindow;
-import net.minecraft.network.play.client.C13PacketPlayerAbilities;
-import net.minecraft.network.play.client.C16PacketClientStatus;
+import net.minecraft.network.play.client.*;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatFileWriter;
 import net.minecraft.util.DamageSource;
@@ -31,17 +23,23 @@ public class EntityClientPlayerMP extends EntityPlayerSP implements ClientPlayer
     private final StatFileWriter field_146108_bO;
     public double oldPosX;
 
-    /** Old Minimum Y of the bounding box */
+    /**
+     * Old Minimum Y of the bounding box
+     */
     private double oldMinY;
     private double oldPosY;
     private double oldPosZ;
     private float oldRotationYaw;
     private float oldRotationPitch;
 
-    /** Check if was on ground last update */
+    /**
+     * Check if was on ground last update
+     */
     private boolean wasOnGround;
 
-    /** should the player stop sneaking? */
+    /**
+     * should the player stop sneaking?
+     */
     private boolean shouldStopSneaking;
     private boolean wasSneaking;
 
@@ -52,12 +50,14 @@ public class EntityClientPlayerMP extends EntityPlayerSP implements ClientPlayer
      */
     private int ticksSinceMovePacket;
 
-    /** has the client player's health been set? */
+    /**
+     * has the client player's health been set?
+     */
     private boolean hasSetHealth;
     private String field_142022_ce;
 
     public EntityClientPlayerMP(Minecraft p_i45064_1_, World p_i45064_2_, Session p_i45064_3_,
-            NetHandlerPlayClient p_i45064_4_, StatFileWriter p_i45064_5_) {
+                                NetHandlerPlayClient p_i45064_4_, StatFileWriter p_i45064_5_) {
         super(p_i45064_1_, p_i45064_2_, p_i45064_3_, 0);
         this.sendQueue = p_i45064_4_;
         this.field_146108_bO = p_i45064_5_;
@@ -185,6 +185,7 @@ public class EntityClientPlayerMP extends EntityPlayerSP implements ClientPlayer
      */
     public EntityItem dropOneItem(boolean p_71040_1_) {
         int var2 = p_71040_1_ ? 3 : 4;
+        Thread.dumpStack();
         this.sendQueue.addToSendQueue(new C07PacketPlayerDigging(var2, 0, 0, 0, 0));
         return null;
     }

@@ -1,7 +1,7 @@
 package gg.mineral.bot.api.math.trajectory.throwable
 
 import gg.mineral.bot.api.math.trajectory.Trajectory
-import gg.mineral.bot.api.util.MathUtil
+import gg.mineral.bot.api.util.*
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
 
@@ -13,8 +13,7 @@ abstract class ThrowableEntityTrajectory(
     yaw: Float,
     pitch: Float,
     override val collisionFunction: Trajectory.CollisionFunction
-) :
-    MathUtil, Trajectory {
+) : Trajectory {
     var airTimeTicks: Int = 0
     private var motX: Float
     private var motY: Float

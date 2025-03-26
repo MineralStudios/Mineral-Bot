@@ -1,6 +1,5 @@
 package net.minecraft.world;
 
-import gg.mineral.bot.api.util.MathUtil;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -35,7 +34,9 @@ import net.minecraft.world.storage.WorldInfo;
 
 import java.util.*;
 
-public abstract class World implements IBlockAccess, MathUtil {
+import static gg.mineral.bot.api.util.MathUtilKt.combineIntsToLong;
+
+public abstract class World implements IBlockAccess {
     /**
      * boolean; if true updates scheduled by scheduleBlockUpdate happen immediately
      */

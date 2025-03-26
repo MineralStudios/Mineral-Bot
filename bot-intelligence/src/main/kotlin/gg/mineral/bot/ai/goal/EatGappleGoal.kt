@@ -3,7 +3,9 @@ package gg.mineral.bot.ai.goal
 import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
+import gg.mineral.bot.api.entity.effect.PotionEffectType
 import gg.mineral.bot.api.entity.living.ClientLivingEntity
+import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.goal.Sporadic
@@ -11,17 +13,27 @@ import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.screen.type.ContainerScreen
+import gg.mineral.bot.api.util.fastArcTan
 
-class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
+class EatGappleGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
     override var executing: Boolean = false
     override var startTime: Long = 0
     override val maxDuration: Long = 100
     private var eating = false
 
     override fun shouldExecute(): Boolean {
+        var hasRegen = false
+        val regenId = PotionEffectType.REGENERATION.id
         val fakePlayer = clientInstance.fakePlayer
-        // TODO: config how conservative to be with food
-        val shouldExecute = hasFood() && fakePlayer.hunger < 19 && fakePlayer.health > 16.0
+        val activeIds = fakePlayer.activePotionEffectIds
+
+        for (activeId in activeIds) if (activeId == regenId) {
+            hasRegen = true
+            break
+        }
+
+        val shouldExecute =
+            canSeeEnemy() && hasGapple() && !hasRegen && (fakePlayer.health < 10 || distanceAwayFromEnemies() in 8.0..16.0)
         logger.debug("Checking shouldExecute: $shouldExecute")
         return shouldExecute
     }
@@ -32,16 +44,28 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
     }
 
     init {
-        logger.debug("EatFoodGoal initialized")
+        logger.debug("EatGappleGoal initialized")
     }
 
-    private fun hasFood(): Boolean {
+    private fun hasGapple(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        val hasFood = inventory.contains(Item.Type.FOOD)
-        logger.debug("Has food: $hasFood")
-        return hasFood
+        val hasGapple = inventory.contains(Item.GOLDEN_APPLE)
+        logger.debug("Has golden apple: $hasGapple")
+        return hasGapple
+    }
+
+    private fun canSeeEnemy(): Boolean {
+        val fakePlayer = clientInstance.fakePlayer
+        val world = fakePlayer.world
+
+        val canSeeEnemy = world.entities.any {
+            it is ClientPlayer
+                    && !clientInstance.configuration.friendlyUUIDs.contains(it.uuid)
+        }
+        logger.debug("Checking canSeeEnemy: $canSeeEnemy")
+        return canSeeEnemy
     }
 
     private fun angleAwayFromEnemies(): Float {
@@ -75,50 +99,46 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
             } ?: Double.MAX_VALUE
     }
 
-    private fun getFoodSlot(): Int {
-        var foodSlot = -1
+    private fun getGappleSlot(): Int {
+        var gappleSlot = -1
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
         for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
             val item = itemStack.item
-            if (Item.Type.FOOD.isType(item.id)) {
-                foodSlot = i
+            if (item.id == Item.GOLDEN_APPLE) {
+                gappleSlot = i
                 break
             }
         }
 
-        return foodSlot
+        return gappleSlot
     }
 
     override fun onTick(tick: Tick) {
-        val foodSlot = getFoodSlot()
+
+        val gappleSlot = getGappleSlot()
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        tick.finishIf("Valid Food Found", foodSlot == -1)
+        tick.finishIf("Valid gapple slot not found", gappleSlot == -1)
 
-        tick.finishIf("Hunger Satisfied", fakePlayer.hunger >= 19)
-
-        tick.prerequisite("In Hotbar", foodSlot <= 8) {
-            moveItemToHotbar(foodSlot, inventory)
+        tick.prerequisite("In Hotbar", gappleSlot <= 8) {
+            moveItemToHotbar(gappleSlot, inventory)
         }
 
         tick.prerequisite("Inventory Closed", clientInstance.currentScreen !is ContainerScreen) {
-            pressKey(
-                10,
-                Key.Type.KEY_ESCAPE
-            )
+            pressKey(10, Key.Type.KEY_ESCAPE)
         }
 
-        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == foodSlot) {
-            pressKey(10, Key.Type.valueOf("KEY_" + (foodSlot + 1)))
+        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == gappleSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (gappleSlot + 1)))
         }
 
-        tick.finishIf(
-            "Not Holding Valid Food",
-            inventory.heldItemStack?.let { Item.Type.FOOD.isType(it.item.id) } == false)
+        tick.finishIf("Not Holding Valid Gapple", inventory.heldItemStack?.item?.id != Item.GOLDEN_APPLE)
+
+        tick.finishIf("Has Regen", fakePlayer.activePotionEffectIds.any { it == PotionEffectType.REGENERATION.id })
 
         tick.prerequisite("Eating", eating && getButton(MouseButton.Type.RIGHT_CLICK).isPressed) {
             pressButton(MouseButton.Type.RIGHT_CLICK)
@@ -143,6 +163,9 @@ class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance
         if (event is MouseButtonEvent) {
             if (eating && event.type == MouseButton.Type.RIGHT_CLICK && !event.pressed) {
                 logger.debug("Ignoring RIGHT_CLICK release event while eating")
+                return true
+            } else if (event.type == MouseButton.Type.LEFT_CLICK && event.pressed) {
+                logger.debug("Ignoring LEFT_CLICK press event")
                 return true
             }
         }

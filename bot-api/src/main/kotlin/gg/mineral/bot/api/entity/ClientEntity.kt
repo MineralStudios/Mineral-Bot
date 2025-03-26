@@ -117,4 +117,11 @@ interface ClientEntity : Positionable {
      * @return true if the entity is sprinting
      */
     val isSprinting: Boolean
+
+    /**
+     * Gets the entities' eye height.
+     *
+     * @return the entities' eye height
+     */
+    val eyeHeight: Float
 }

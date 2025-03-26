@@ -34,6 +34,10 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
     private ResourceLocation locationOfCape = null;
     private String nameClear = null;
 
+    @Override
+    public boolean getEating() {
+        return isEating();
+    }
 
     public AbstractClientPlayer(Minecraft mc, World p_i45074_1_, GameProfile p_i45074_2_) {
         super(p_i45074_1_, p_i45074_2_);

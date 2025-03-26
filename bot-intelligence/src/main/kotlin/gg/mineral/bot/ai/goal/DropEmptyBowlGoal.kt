@@ -1,30 +1,54 @@
 package gg.mineral.bot.ai.goal
 
-import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
-import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.goal.Goal
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.screen.type.ContainerScreen
+import gg.mineral.bot.api.util.computeOptimalYawAndPitch
 
-class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
-    override val maxDuration: Long = 100
-    override var startTime: Long = 0
+class DropEmptyBowlGoal(clientInstance: ClientInstance) : Goal(clientInstance), Sporadic, Timebound {
     override var executing: Boolean = false
+    override var startTime: Long = 0
+    override val maxDuration: Long = 100
 
     override fun shouldExecute(): Boolean {
+
+        // TODO: fix dropping in team fights (goal never finishes)
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        return fakePlayer.health <= 10 && inventory.contains(Item.MUSHROOM_STEW)
+        for (i in 0..8) {
+            val itemStack = inventory.getItemStackAt(i) ?: continue
+            val item = itemStack.item
+            if (item.id == Item.BOWL && itemStack.count <= 1) return true
+        }
+        return false
     }
 
     override fun onStart() {
         pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
+    }
+
+    private fun getBowlSlot(): Int {
+        var bowlSlot = -1
+        val fakePlayer = clientInstance.fakePlayer
+        val inventory = fakePlayer.inventory
+
+        for (i in 0..8) {
+            val itemStack = inventory.getItemStackAt(i) ?: continue
+            val item = itemStack.item
+            if (item.id == Item.BOWL && itemStack.count <= 1) {
+                bowlSlot = i
+                break
+            }
+        }
+
+        return bowlSlot
     }
 
     // ─── NEW AIMING LOGIC ──────────────────────────────────────────────
@@ -67,61 +91,35 @@ class HealSoupGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstanc
     }
     // ────────────────────────────────────────────────────────────────────
 
-    private fun getSoupSlot(): Int {
-        var soupSlot = -1
-        val fakePlayer = clientInstance.fakePlayer
-        val inventory = fakePlayer.inventory
-
-        for (i in 0..35) {
-            val itemStack = inventory.getItemStackAt(i) ?: continue
-            val item = itemStack.item
-            if (item.id == Item.MUSHROOM_STEW) {
-                soupSlot = i
-                break
-            }
-        }
-
-        return soupSlot
-    }
-
     override fun onTick(tick: Tick) {
         aimAtOptimalTarget()
-        val soupSlot = getSoupSlot()
+
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        tick.finishIf("No Valid Soup Found", soupSlot == -1)
+        val bowlSlot = getBowlSlot()
 
-        tick.finishIf("Soup Not Needed", fakePlayer.health > 10)
-
-        tick.prerequisite("In Hotbar", soupSlot <= 8) {
-            moveItemToHotbar(soupSlot, inventory)
-        }
+        tick.finishIf("Bowl is not in Hotbar", bowlSlot == -1)
 
         tick.prerequisite("Inventory Closed", clientInstance.currentScreen !is ContainerScreen) {
-            pressKey(
-                10,
-                Key.Type.KEY_ESCAPE
-            )
+            pressKey(Key.Type.KEY_ESCAPE)
         }
 
-        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == soupSlot) {
-            pressKey(10, Key.Type.valueOf("KEY_" + (soupSlot + 1)))
+        tick.prerequisite("Switch to Bowl Slot", inventory.heldSlot == bowlSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (bowlSlot + 1)))
         }
 
-        tick.finishIf("Not Holding Valid Soup", inventory.heldItemStack?.item?.id != Item.MUSHROOM_STEW)
+        tick.finishIf("Bowl is not in Hand", inventory.heldItemStack?.item?.id != Item.BOWL)
 
         tick.execute {
-            pressButton(10, MouseButton.Type.RIGHT_CLICK)
+            pressKey(10, Key.Type.KEY_Q)
         }
     }
 
     override fun onEnd() {
     }
 
-    override fun onEvent(event: Event): Boolean {
-        return false
-    }
+    override fun onEvent(event: Event) = false
 
     override fun onGameLoop() {}
 }

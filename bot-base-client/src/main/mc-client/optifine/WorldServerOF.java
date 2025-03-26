@@ -25,6 +25,8 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static gg.mineral.bot.api.util.MathUtilKt.combineIntsToLong;
+
 public class WorldServerOF extends WorldServer {
     private NextTickHashSet pendingTickListEntriesHashSet;
     private TreeSet pendingTickListEntriesTreeSet;
@@ -309,7 +311,7 @@ public class WorldServerOF extends WorldServer {
                             this.limitedChunkSet.add(combineIntsToLong(cx + pcx, cz + pcz));
                 }
 
-                if (this.setChunkCoordsToTickOnce.size() > 0) {
+                if (!this.setChunkCoordsToTickOnce.isEmpty()) {
                     this.limitedChunkSet.addAll(this.setChunkCoordsToTickOnce);
                     this.setChunkCoordsToTickOnce.clear();
                 }

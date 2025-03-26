@@ -11,6 +11,7 @@ import gg.mineral.bot.api.event.entity.EntityHurtEvent
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.screen.type.ContainerScreen
+import gg.mineral.bot.api.util.*
 import gg.mineral.bot.api.world.block.Block
 
 class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance) {

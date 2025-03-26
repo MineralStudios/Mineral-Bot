@@ -17,6 +17,10 @@ import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator
 import gg.mineral.bot.api.math.trajectory.Trajectory
 import gg.mineral.bot.api.math.trajectory.throwable.SplashPotionTrajectory
 import gg.mineral.bot.api.screen.type.ContainerScreen
+import gg.mineral.bot.api.util.angleDifference
+import gg.mineral.bot.api.util.fastArcTan
+import gg.mineral.bot.api.util.floor
+import gg.mineral.bot.api.util.sqrt
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
 import org.apache.commons.math3.analysis.UnivariateFunction

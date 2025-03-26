@@ -9,6 +9,7 @@ import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.ExecutorService
 
+
 abstract class BotAPI {
     abstract fun spawn(
         configuration: BotConfiguration,

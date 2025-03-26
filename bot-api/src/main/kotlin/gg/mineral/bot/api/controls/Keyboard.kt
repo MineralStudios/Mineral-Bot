@@ -21,7 +21,7 @@ interface Keyboard {
      * @param type
      * The type of the key to press.
      */
-    fun pressKey(durationMillis: Int, vararg type: Key.Type)
+    fun pressKey(durationMillis: Int, vararg types: Key.Type)
 
     /**
      * Presses a key indefinitely.
@@ -42,7 +42,7 @@ interface Keyboard {
      * The duration in milliseconds the key is to be
      * unpressed.
      */
-    fun unpressKey(durationMillis: Int, vararg type: Key.Type)
+    fun unpressKey(durationMillis: Int, vararg types: Key.Type)
 
     /**
      * Unpresses a key indefinitely.
@@ -92,7 +92,28 @@ interface Keyboard {
     val eventKeyState: Boolean
 
     /**
+     * Returns a snapshot list of all key state changes that have been recorded so far.
+     *
+     * This method does not modify the internal state of the Keyboard, so any pending log entries
+     * (like [currentLog]) are left intact and will be processed by subsequent calls to [next].
+     *
+     * @return A list of all key state changes that have been recorded so far.
+     */
+    fun getKeyStateChanges(): List<Log>
+
+    /**
      * Stops all keyboard actions.
      */
     fun stopAll()
+
+    /**
+     * Sets the state of the specified keys.
+     *
+     * @param type
+     * The types of the keys to set the state of.
+     */
+    fun setState(vararg type: Key.Type)
+
+    @JvmRecord
+    data class Log(val type: Key.Type, val pressed: Boolean)
 }

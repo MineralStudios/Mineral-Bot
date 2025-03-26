@@ -16,7 +16,10 @@ import gg.mineral.bot.api.math.trajectory.Trajectory
 import gg.mineral.bot.api.math.trajectory.Trajectory.CollisionFunction
 import gg.mineral.bot.api.math.trajectory.throwable.EnderPearlTrajectory
 import gg.mineral.bot.api.screen.type.ContainerScreen
-import gg.mineral.bot.api.util.MathUtil
+import gg.mineral.bot.api.util.abs
+import gg.mineral.bot.api.util.floor
+import gg.mineral.bot.api.util.sqrt
+import gg.mineral.bot.api.util.vectorForRotation
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
 import org.apache.commons.math3.analysis.MultivariateFunction
@@ -44,7 +47,7 @@ class ThrowPearlGoal(clientInstance: ClientInstance) : InventoryGoal(clientInsta
     private var lastPearledTick = 0
 
 
-    private enum class Type : MathUtil {
+    private enum class Type {
         RETREAT {
             override fun test(fakePlayer: FakePlayer, entity: ClientLivingEntity) = false
 

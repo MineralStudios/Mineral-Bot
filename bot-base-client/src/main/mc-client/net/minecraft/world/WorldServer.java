@@ -1,18 +1,6 @@
 package net.minecraft.world;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.Lists;
-
 import gg.mineral.bot.api.world.ServerWorld;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import net.minecraft.block.Block;
@@ -33,25 +21,14 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.network.play.server.S19PacketEntityStatus;
-import net.minecraft.network.play.server.S24PacketBlockAction;
-import net.minecraft.network.play.server.S27PacketExplosion;
-import net.minecraft.network.play.server.S2APacketParticles;
-import net.minecraft.network.play.server.S2BPacketChangeGameState;
-import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity;
+import net.minecraft.network.play.server.*;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.scoreboard.ScoreboardSaveData;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.IProgressUpdate;
-import net.minecraft.util.IntHashMap;
-import net.minecraft.util.ReportedException;
-import net.minecraft.util.Vec3;
-import net.minecraft.util.WeightedRandom;
-import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraft.util.*;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.Chunk;
@@ -61,6 +38,13 @@ import net.minecraft.world.chunk.storage.IChunkLoader;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.feature.WorldGeneratorBonusChest;
 import net.minecraft.world.storage.ISaveHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.*;
+
+import static gg.mineral.bot.api.util.MathUtilKt.highInt;
+import static gg.mineral.bot.api.util.MathUtilKt.lowInt;
 
 public class WorldServer extends World implements ServerWorld<WorldServer> {
     private static final Logger logger = LogManager.getLogger(WorldServer.class);
@@ -69,14 +53,20 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
     private final PlayerManager thePlayerManager;
     private Set pendingTickListEntriesHashSet;
 
-    /** All work to do in future ticks. */
+    /**
+     * All work to do in future ticks.
+     */
     private TreeSet pendingTickListEntriesTreeSet;
     public ChunkProviderServer theChunkProviderServer;
 
-    /** Whether or not level saving is enabled */
+    /**
+     * Whether or not level saving is enabled
+     */
     public boolean levelSaving;
 
-    /** is false if there are no players */
+    /**
+     * is false if there are no players
+     */
     private boolean allPlayersSleeping;
     private int updateEntityTick;
 
@@ -85,10 +75,10 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
      */
     private final Teleporter worldTeleporter;
     private final SpawnerAnimals animalSpawner = new SpawnerAnimals();
-    private WorldServer.ServerBlockEventList[] field_147490_S = new WorldServer.ServerBlockEventList[] {
-            new WorldServer.ServerBlockEventList(null), new WorldServer.ServerBlockEventList(null) };
+    private WorldServer.ServerBlockEventList[] field_147490_S = new WorldServer.ServerBlockEventList[]{
+            new WorldServer.ServerBlockEventList(null), new WorldServer.ServerBlockEventList(null)};
     private int field_147489_T;
-    private static final WeightedRandomChestContent[] bonusChestContent = new WeightedRandomChestContent[] {
+    private static final WeightedRandomChestContent[] bonusChestContent = new WeightedRandomChestContent[]{
             new WeightedRandomChestContent(Items.stick, 0, 1, 3, 10),
             new WeightedRandomChestContent(Item.getItemFromBlock(Blocks.planks), 0, 1, 3, 10),
             new WeightedRandomChestContent(Item.getItemFromBlock(Blocks.log), 0, 1, 3, 10),
@@ -98,15 +88,17 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
             new WeightedRandomChestContent(Items.wooden_pickaxe, 0, 1, 1, 5),
             new WeightedRandomChestContent(Items.apple, 0, 2, 3, 5),
             new WeightedRandomChestContent(Items.bread, 0, 2, 3, 3),
-            new WeightedRandomChestContent(Item.getItemFromBlock(Blocks.log2), 0, 1, 3, 10) };
+            new WeightedRandomChestContent(Item.getItemFromBlock(Blocks.log2), 0, 1, 3, 10)};
     private List pendingTickListEntriesThisTick = new ArrayList();
 
-    /** An IntHashMap of entity IDs (integers) to their Entity objects. */
+    /**
+     * An IntHashMap of entity IDs (integers) to their Entity objects.
+     */
     private IntHashMap entityIdMap;
 
     public WorldServer(Minecraft mc, MinecraftServer p_i45284_1_, ISaveHandler p_i45284_2_, String p_i45284_3_,
-            int p_i45284_4_,
-            WorldSettings p_i45284_5_, Profiler p_i45284_6_) {
+                       int p_i45284_4_,
+                       WorldSettings p_i45284_5_, Profiler p_i45284_6_) {
         super(p_i45284_2_, p_i45284_3_, p_i45284_5_, WorldProvider.getProviderForDimension(p_i45284_4_), p_i45284_6_);
         this.mcServer = p_i45284_1_;
         this.theEntityTracker = new EntityTracker(this);
@@ -198,7 +190,7 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
      * only spawns creatures allowed by the chunkProvider
      */
     public BiomeGenBase.SpawnListEntry spawnRandomCreature(EnumCreatureType p_73057_1_, int p_73057_2_, int p_73057_3_,
-            int p_73057_4_) {
+                                                           int p_73057_4_) {
         List var5 = this.getChunkProvider().getPossibleCreatures(p_73057_1_, p_73057_2_, p_73057_3_, p_73057_4_);
         return var5 != null && !var5.isEmpty()
                 ? (BiomeGenBase.SpawnListEntry) WeightedRandom.getRandomItem(this.rand, var5)
@@ -391,12 +383,12 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
      * Schedules a tick to a block with a delay (Most commonly the tick rate)
      */
     public void scheduleBlockUpdate(int p_147464_1_, int p_147464_2_, int p_147464_3_, Block p_147464_4_,
-            int p_147464_5_) {
+                                    int p_147464_5_) {
         this.func_147454_a(p_147464_1_, p_147464_2_, p_147464_3_, p_147464_4_, p_147464_5_, 0);
     }
 
     public void func_147454_a(int p_147454_1_, int p_147454_2_, int p_147454_3_, Block p_147454_4_, int p_147454_5_,
-            int p_147454_6_) {
+                              int p_147454_6_) {
         NextTickListEntry var7 = new NextTickListEntry(p_147454_1_, p_147454_2_, p_147454_3_, p_147454_4_);
         byte var8 = 0;
 
@@ -434,7 +426,7 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
     }
 
     public void func_147446_b(int p_147446_1_, int p_147446_2_, int p_147446_3_, Block p_147446_4_, int p_147446_5_,
-            int p_147446_6_) {
+                              int p_147446_6_) {
         NextTickListEntry var7 = new NextTickListEntry(p_147446_1_, p_147446_2_, p_147446_3_, p_147446_4_);
         var7.setPriority(p_147446_6_);
 
@@ -611,7 +603,7 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
     }
 
     public List func_147486_a(int p_147486_1_, int p_147486_2_, int p_147486_3_, int p_147486_4_, int p_147486_5_,
-            int p_147486_6_) {
+                              int p_147486_6_) {
         ArrayList var7 = new ArrayList();
 
         for (int var8 = 0; var8 < this.field_147482_g.size(); ++var8) {
@@ -826,7 +818,7 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
      * finished)
      */
     public Explosion newExplosion(Entity p_72885_1_, double p_72885_2_, double p_72885_4_, double p_72885_6_,
-            float p_72885_8_, boolean p_72885_9_, boolean p_72885_10_) {
+                                  float p_72885_8_, boolean p_72885_9_, boolean p_72885_10_) {
         Explosion var11 = new Explosion(this, p_72885_1_, p_72885_2_, p_72885_4_, p_72885_6_, p_72885_8_);
         var11.isFlaming = p_72885_9_;
         var11.isSmoking = p_72885_10_;
@@ -853,7 +845,7 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
     }
 
     public void func_147452_c(int p_147452_1_, int p_147452_2_, int p_147452_3_, Block p_147452_4_, int p_147452_5_,
-            int p_147452_6_) {
+                              int p_147452_6_) {
         BlockEventData var7 = new BlockEventData(p_147452_1_, p_147452_2_, p_147452_3_, p_147452_4_, p_147452_5_,
                 p_147452_6_);
         Iterator var8 = this.field_147490_S[this.field_147489_T].iterator();
@@ -896,7 +888,7 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
                 p_147485_1_.func_151341_c());
         return var2 == p_147485_1_.getBlock()
                 ? var2.onBlockEventReceived(this, p_147485_1_.func_151340_a(), p_147485_1_.func_151342_b(),
-                        p_147485_1_.func_151341_c(), p_147485_1_.getEventID(), p_147485_1_.getEventParameter())
+                p_147485_1_.func_151341_c(), p_147485_1_.getEventID(), p_147485_1_.getEventParameter())
                 : false;
     }
 
@@ -962,7 +954,7 @@ public class WorldServer extends World implements ServerWorld<WorldServer> {
     }
 
     public void func_147487_a(String p_147487_1_, double p_147487_2_, double p_147487_4_, double p_147487_6_,
-            int p_147487_8_, double p_147487_9_, double p_147487_11_, double p_147487_13_, double p_147487_15_) {
+                              int p_147487_8_, double p_147487_9_, double p_147487_11_, double p_147487_13_, double p_147487_15_) {
         S2APacketParticles var17 = new S2APacketParticles(p_147487_1_, (float) p_147487_2_, (float) p_147487_4_,
                 (float) p_147487_6_, (float) p_147487_9_, (float) p_147487_11_, (float) p_147487_13_,
                 (float) p_147487_15_, p_147487_8_);

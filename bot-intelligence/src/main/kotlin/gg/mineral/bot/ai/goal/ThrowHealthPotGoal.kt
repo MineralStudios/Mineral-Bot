@@ -11,6 +11,9 @@ import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.entity.EntityDestroyEvent
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
+import gg.mineral.bot.api.goal.annotation.ItemId
+import gg.mineral.bot.api.goal.annotation.KeyboardState
+import gg.mineral.bot.api.goal.annotation.MouseState
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.inv.item.ItemStack
@@ -18,6 +21,7 @@ import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator
 import gg.mineral.bot.api.math.trajectory.Trajectory
 import gg.mineral.bot.api.math.trajectory.throwable.SplashPotionTrajectory
 import gg.mineral.bot.api.screen.type.ContainerScreen
+import gg.mineral.bot.api.util.*
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
 import org.apache.commons.math3.analysis.UnivariateFunction
@@ -28,6 +32,9 @@ import org.apache.commons.math3.optim.univariate.SearchInterval
 import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction
 import org.apache.commons.math3.stat.regression.SimpleRegression
 
+@KeyboardState(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
+@MouseState()
+@ItemId(Item.POTION, durability = 16421)
 class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
     override val maxDuration: Long = 100
     override var startTime: Long = 0

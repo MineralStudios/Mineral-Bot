@@ -4,25 +4,25 @@ import gg.mineral.bot.ai.goal.type.InventoryGoal
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.ClientLivingEntity
-import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.peripherals.MouseButtonEvent
 import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.goal.Timebound
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.item.Item
-import gg.mineral.bot.api.inv.item.ItemStack
-import gg.mineral.bot.api.inv.potion.Potion
 import gg.mineral.bot.api.screen.type.ContainerScreen
+import gg.mineral.bot.api.util.fastArcTan
 
-class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
+class EatFoodGoal(clientInstance: ClientInstance) : InventoryGoal(clientInstance), Sporadic, Timebound {
     override var executing: Boolean = false
     override var startTime: Long = 0
     override val maxDuration: Long = 100
-    private var drinking = false
+    private var eating = false
 
     override fun shouldExecute(): Boolean {
-        val shouldExecute = canSeeEnemy() && hasDrinkablePotion()
+        val fakePlayer = clientInstance.fakePlayer
+        // TODO: config how conservative to be with food
+        val shouldExecute = hasFood() && fakePlayer.hunger < 19 && fakePlayer.health > 16.0
         logger.debug("Checking shouldExecute: $shouldExecute")
         return shouldExecute
     }
@@ -33,31 +33,16 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
     }
 
     init {
-        logger.debug("DrinkPotionGoal initialized")
+        logger.debug("EatFoodGoal initialized")
     }
 
-    private fun hasDrinkablePotion(): Boolean {
+    private fun hasFood(): Boolean {
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        val hasDrinkablePotion = inventory.containsPotion {
-            isValidPotion(it)
-        }
-        logger.debug("Has drinkable potion: $hasDrinkablePotion")
-        return hasDrinkablePotion
-    }
-
-    private fun canSeeEnemy(): Boolean {
-        val fakePlayer = clientInstance.fakePlayer
-        val world = fakePlayer.world
-
-        val canSeeEnemy = world.entities
-            .any {
-                it is ClientPlayer
-                        && !clientInstance.configuration.friendlyUUIDs.contains(it.uuid)
-            }
-        logger.debug("Checking canSeeEnemy: $canSeeEnemy")
-        return canSeeEnemy
+        val hasFood = inventory.contains(Item.Type.FOOD)
+        logger.debug("Has food: $hasFood")
+        return hasFood
     }
 
     private fun angleAwayFromEnemies(): Float {
@@ -91,62 +76,54 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
             } ?: Double.MAX_VALUE
     }
 
-    private fun isValidPotion(potion: Potion): Boolean {
-        val fakePlayer = clientInstance.fakePlayer
-        // TODO: exclude negative potions
-        for (effect in potion.effects) if (fakePlayer.isPotionActive(effect.potionID)) return false
-        return !potion.isSplash && potion.effects.isNotEmpty()
-    }
-
-    private fun isValidPotion(itemStack: ItemStack): Boolean {
-        if (itemStack.item.id != Item.POTION) return false
-        val potion = itemStack.potion ?: return false
-        return isValidPotion(potion)
-    }
-
-    private fun getPotionSlot(): Int {
-        var potionSlot = -1
+    private fun getFoodSlot(): Int {
+        var foodSlot = -1
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        // Look for a non-splash potion in one of the 36 slots
-        invLoop@ for (i in 0..35) {
+        for (i in 0..35) {
             val itemStack = inventory.getItemStackAt(i) ?: continue
-            if (isValidPotion(itemStack)) {
-                potionSlot = i
+            val item = itemStack.item
+            if (Item.Type.FOOD.isType(item.id)) {
+                foodSlot = i
                 break
             }
         }
-        return potionSlot
+
+        return foodSlot
     }
 
     override fun onTick(tick: Tick) {
-        val potionSlot = getPotionSlot()
+        val foodSlot = getFoodSlot()
         val fakePlayer = clientInstance.fakePlayer
         val inventory = fakePlayer.inventory
 
-        tick.finishIf("No Valid Potion Found", potionSlot == -1)
+        tick.finishIf("Valid Food Found", foodSlot == -1)
 
-        tick.prerequisite("In Hotbar", potionSlot <= 8) {
-            moveItemToHotbar(potionSlot, inventory)
+        tick.finishIf("Hunger Satisfied", fakePlayer.hunger >= 19)
+
+        tick.prerequisite("In Hotbar", foodSlot <= 8) {
+            moveItemToHotbar(foodSlot, inventory)
         }
 
-        tick.prerequisite(
-            "Inventory Closed",
-            clientInstance.currentScreen !is ContainerScreen
-        ) { pressKey(10, Key.Type.KEY_ESCAPE) }
-
-        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == potionSlot) {
-            pressKey(10, Key.Type.valueOf("KEY_" + (potionSlot + 1)))
+        tick.prerequisite("Inventory Closed", clientInstance.currentScreen !is ContainerScreen) {
+            pressKey(
+                10,
+                Key.Type.KEY_ESCAPE
+            )
         }
 
-        tick.finishIf("Not Holding Valid Potion", inventory.heldItemStack?.let { isValidPotion(it) } == false)
+        tick.prerequisite("Correct Hotbar Slot Selected", inventory.heldSlot == foodSlot) {
+            pressKey(10, Key.Type.valueOf("KEY_" + (foodSlot + 1)))
+        }
 
-        tick.finishIf("Potion Not Needed", !shouldExecute())
+        tick.finishIf(
+            "Not Holding Valid Food",
+            inventory.heldItemStack?.let { Item.Type.FOOD.isType(it.item.id) } == false)
 
-        tick.prerequisite("Drinking", drinking && getButton(MouseButton.Type.RIGHT_CLICK).isPressed) {
+        tick.prerequisite("Eating", eating && getButton(MouseButton.Type.RIGHT_CLICK).isPressed) {
             pressButton(MouseButton.Type.RIGHT_CLICK)
-            drinking = true
+            eating = true
         }
 
         tick.execute {
@@ -158,20 +135,21 @@ class DrinkPotionGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
     }
 
     override fun onEnd() {
-        drinking = false
+        eating = false
         unpressButton(MouseButton.Type.RIGHT_CLICK)
         unpressKey(Key.Type.KEY_SPACE)
     }
 
     override fun onEvent(event: Event): Boolean {
         if (event is MouseButtonEvent) {
-            if (drinking && event.type == MouseButton.Type.RIGHT_CLICK && !event.pressed) {
-                logger.debug("Ignoring RIGHT_CLICK release event while drinking")
+            if (eating && event.type == MouseButton.Type.RIGHT_CLICK && !event.pressed) {
+                logger.debug("Ignoring RIGHT_CLICK release event while eating")
                 return true
             }
         }
         return false
     }
 
-    public override fun onGameLoop() {}
+    public override fun onGameLoop() {
+    }
 }

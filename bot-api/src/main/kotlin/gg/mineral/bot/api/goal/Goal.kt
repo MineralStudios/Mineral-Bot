@@ -5,8 +5,9 @@ import gg.mineral.bot.api.controls.Keyboard
 import gg.mineral.bot.api.controls.Mouse
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.goal.annotation.KeyboardState
 import gg.mineral.bot.api.instance.ClientInstance
-import gg.mineral.bot.api.util.MathUtil
+import gg.mineral.bot.api.util.angleDifference
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.util.*
@@ -17,7 +18,7 @@ import java.util.concurrent.Future
 import java.util.function.Consumer
 
 
-abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
+abstract class Goal(protected val clientInstance: ClientInstance) {
     private lateinit var thread: Thread
     private var delayedTasks: Queue<DelayedTask> = ConcurrentLinkedQueue()
     protected val asyncTasks = ConcurrentHashMap<Int, AsyncTickTask<*>>()
@@ -70,8 +71,8 @@ abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
                 if (!condition) {
                     executeAsync(id, codeBlock, onComplete)
                     ended = true
-                    println("Prerequisite failed: $name")
-                } else println("Prerequisite passed: $name")
+                    logger.debug("Prerequisite failed: $name")
+                } else logger.debug("Prerequisite passed: $name")
             }
         }
 
@@ -80,8 +81,8 @@ abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
                 if (!condition) {
                     codeBlock()
                     ended = true
-                    println("Prerequisite failed: $name")
-                } else println("Prerequisite passed: $name")
+                    logger.debug("Prerequisite failed: $name")
+                } else logger.debug("Prerequisite passed: $name")
             }
         }
 
@@ -90,8 +91,8 @@ abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
                 if (condition) {
                     ended = true
                     finished = true
-                    println("Finished goal: $reason")
-                } else println("Not finished goal: $reason")
+                    logger.debug("Finished goal: $reason")
+                } else logger.debug("Not finished goal: $reason")
             }
         }
 
@@ -258,9 +259,17 @@ abstract class Goal(protected val clientInstance: ClientInstance) : MathUtil {
         }
     }
 
+    fun getKeyboardState(clazz: Class<*>): KeyboardState? {
+        return keyboardStateCache.getOrPut(clazz) {
+            clazz.getAnnotation(KeyboardState::class.java)
+        }
+    }
+
+
     companion object {
         @JvmStatic
         protected val logger: Logger = LogManager.getLogger(Goal::class.java)
+        private val keyboardStateCache = mutableMapOf<Class<*>, KeyboardState?>()
 
         @JvmStatic
         fun timeMillis(): Long {

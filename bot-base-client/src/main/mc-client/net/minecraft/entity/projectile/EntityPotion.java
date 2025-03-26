@@ -1,7 +1,6 @@
 package net.minecraft.entity.projectile;
 
-import java.util.Iterator;
-import java.util.List;
+import gg.mineral.bot.api.entity.throwable.ClientPotion;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -12,7 +11,10 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-public class EntityPotion extends EntityThrowable {
+import java.util.Iterator;
+import java.util.List;
+
+public class EntityPotion extends EntityThrowable implements ClientPotion {
     /**
      * The damage value of the thrown potion that this EntityPotion represents.
      */
@@ -36,7 +38,7 @@ public class EntityPotion extends EntityThrowable {
     }
 
     public EntityPotion(World p_i1792_1_, double p_i1792_2_, double p_i1792_4_, double p_i1792_6_,
-            ItemStack p_i1792_8_) {
+                        ItemStack p_i1792_8_) {
         super(p_i1792_1_, p_i1792_2_, p_i1792_4_, p_i1792_6_);
         this.potionDamage = p_i1792_8_;
     }
@@ -155,5 +157,10 @@ public class EntityPotion extends EntityThrowable {
         if (this.potionDamage != null) {
             p_70014_1_.setTag("Potion", this.potionDamage.writeToNBT(new NBTTagCompound()));
         }
+    }
+
+    @Override
+    public int getPotionDurability() {
+        return getPotionDamage();
     }
 }

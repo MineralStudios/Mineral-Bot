@@ -22,13 +22,6 @@ interface ClientPlayer : ClientLivingEntity {
     val inventoryContainer: InventoryContainer
 
     /**
-     * Gets the player's eye height.
-     *
-     * @return the player's eye height
-     */
-    val eyeHeight: Float
-
-    /**
      * Gets the player's username.
      *
      * @return the player's username
@@ -41,6 +34,13 @@ interface ClientPlayer : ClientLivingEntity {
      * @return the player's hunger
      */
     val hunger: Float
+
+    /**
+     * Gets if the player is eating.
+     *
+     * @return if the player is eating
+     */
+    val eating: Boolean
 
     /**
      * Gets the player's motion simulator.

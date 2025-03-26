@@ -292,6 +292,7 @@ open class ClientInstance(
                 override val eyeHeight: Float = 0f
                 override val username = configuration.fullUsername
                 override val hunger = 20f
+                override val eating: Boolean = false
                 override val headY = 0.0
                 override val activePotionEffectIds = intArrayOf()
                 override fun isPotionActive(potionId: Int): Boolean = false
