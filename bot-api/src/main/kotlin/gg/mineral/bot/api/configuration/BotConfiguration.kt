@@ -29,6 +29,7 @@ data class BotConfiguration(
     var pearlCooldown: Int = 15,
     var skin: Skins = Skins.MINERAL_DEFAULT,
     var debug: Boolean = false,
+    var disableEntityCollisions: Boolean = true,
     var friendlyUUIDs: MutableSet<UUID> = BotAPI.INSTANCE.collections().newSet(),
     var potAccuracy: Double = 0.5
 ) {
@@ -67,6 +68,7 @@ data class BotConfiguration(
             private var pearlCooldown: Int = 15
             private var skin: Skins = Skins.MINERAL_DEFAULT
             private var debug: Boolean = false
+            private var disableEntityCollisions: Boolean = true
             private var friendlyUUIDs: MutableSet<UUID> = BotAPI.INSTANCE.collections().newSet()
             private var potAccuracy: Double = 0.5
 
@@ -105,6 +107,8 @@ data class BotConfiguration(
             fun friendlyUUIDs(friendlyUUIDs: MutableSet<UUID>) = apply { this.friendlyUUIDs = friendlyUUIDs }
             fun potAccuracy(potAccuracy: Double) = apply { this.potAccuracy = potAccuracy }
             fun predictionHorizon(predictionHorizon: Int) = apply { this.predictionHorizon = predictionHorizon }
+            fun disableEntityCollisions(disableEntityCollisions: Boolean) =
+                apply { this.disableEntityCollisions = disableEntityCollisions }
 
             fun build() = BotConfiguration(
                 username,
@@ -130,6 +134,7 @@ data class BotConfiguration(
                 pearlCooldown,
                 skin,
                 debug,
+                disableEntityCollisions,
                 friendlyUUIDs,
                 potAccuracy
             )

@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
 import gg.mineral.bot.api.entity.living.player.ServerPlayer
 import gg.mineral.bot.api.world.ServerWorld
-import gg.mineral.bot.impl.config.BotGlobalConfig
 import net.minecraft.server.v1_8_R3.*
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld
@@ -13,16 +12,22 @@ import org.spigotmc.event.player.PlayerSpawnLocationEvent
 import java.util.*
 
 class NMSServerPlayer(
-    world: World, gameProfile: GameProfile, vararg skinData: String
+    world: World, gameProfile: GameProfile, vararg skinData: String, private val disableEntityCollisions: Boolean = true
 ) :
     EntityPlayer(
         MinecraftServer.getServer(), world as WorldServer, gameProfile,
         PlayerInteractManager(world)
     ), ServerPlayer {
-    constructor(world: ServerWorld<*>, uuid: UUID, name: String, vararg skinData: String) : this(
+    constructor(
+        world: ServerWorld<*>,
+        uuid: UUID,
+        name: String,
+        vararg skinData: String,
+        disableEntityCollisions: Boolean = true
+    ) : this(
         getHandle(
             world.handle!!
-        ), GameProfile(uuid, name), *skinData
+        ), GameProfile(uuid, name), *skinData, disableEntityCollisions = disableEntityCollisions
     )
 
     init {
@@ -45,11 +50,11 @@ class NMSServerPlayer(
     }
 
     override fun bL() {
-        if (!BotGlobalConfig.disableEntityCollisions) super.bL()
+        if (!disableEntityCollisions) super.bL()
     }
 
     override fun a(blockposition: BlockPosition, block: Block) {
-        if (!BotGlobalConfig.disableEntityCollisions) super.a(blockposition, block)
+        if (!disableEntityCollisions) super.a(blockposition, block)
     }
 
     override fun sendSupportedChannels() {

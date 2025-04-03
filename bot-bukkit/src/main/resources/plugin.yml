@@ -4,6 +4,7 @@ main: gg.mineral.bot.plugin.MineralBotPlugin
 author: Jaiden
 description: Mineral Bot Plugin
 api: '1.8.9'
+depend: [ packetevents ]
 
 commands:
   mineralbot:
