@@ -14,7 +14,7 @@ dependencies {
     implementation project(':bot-base-client')
     compileOnly project(':bot-api')
     compileOnly project(':bot-shared-library')
-    compileOnly 'com.google.guava:guava:33.4.6-jre'
+    compileOnly 'com.google.guava:guava:33.4.7-jre'
     implementation 'org.jline:jline:3.29.0'
     implementation 'io.netty:netty-all:4.2.0.Final'
     implementation 'it.unimi.dsi:fastutil:8.5.15'
