@@ -33,7 +33,7 @@ repositories {
 
 dependencies {
     compileOnly 'io.netty:netty-all:4.2.0.Final'
-    compileOnly "gg.mineral.engine:api:20250331-13.29.29"
+    compileOnly "gg.mineral.engine:api:20250404-20.21.44"
     implementation project(':bot-base-client')
     compileOnly project(':bot-shared-library')
     compileOnly project(':bot-api')
