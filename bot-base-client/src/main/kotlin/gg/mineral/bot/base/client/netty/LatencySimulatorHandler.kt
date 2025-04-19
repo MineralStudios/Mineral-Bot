@@ -18,8 +18,6 @@ class LatencySimulatorHandler(private val mc: Minecraft) : ChannelOutboundHandle
                     promise.setFailure(e)
                 }
             }, mc.latency.toLong())
-        } else {
-            super.write(ctx, msg, promise)
-        }
+        } else super.write(ctx, msg, promise)
     }
 }

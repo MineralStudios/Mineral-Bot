@@ -2,6 +2,7 @@ package gg.mineral.bot.plugin.impl
 
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.protocol.nbt.NBTCompound
+import com.github.retrooper.packetevents.protocol.player.ClientVersion
 import com.github.retrooper.packetevents.protocol.player.GameMode
 import com.github.retrooper.packetevents.protocol.world.Difficulty
 import com.github.retrooper.packetevents.protocol.world.WorldBlockPosition
@@ -14,24 +15,21 @@ import com.google.common.collect.HashMultimap
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.math.ServerLocation
 import gg.mineral.bot.base.client.BotImpl
-import gg.mineral.bot.base.client.gui.GuiConnecting
-import gg.mineral.bot.base.client.instance.ClientInstance
 import gg.mineral.bot.base.client.manager.InstanceManager
 import gg.mineral.bot.base.client.netty.LatencySimulatorHandler
 import gg.mineral.bot.base.client.network.ClientNetHandler
 import gg.mineral.bot.impl.thread.ThreadManager
 import gg.mineral.bot.plugin.impl.player.NMSServerPlayer
+import gg.mineral.bot.plugin.instance.BukkitClientInstance
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.Channel
-import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
+import io.netty.channel.DefaultEventLoopGroup
 import io.netty.channel.local.LocalAddress
 import io.netty.channel.local.LocalChannel
 import io.netty.channel.local.LocalChannelUtil
-import io.netty.channel.local.LocalEventLoopGroup
 import io.netty.handler.timeout.ReadTimeoutHandler
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiScreen
 import net.minecraft.network.EnumConnectionState
 import net.minecraft.network.NetworkManager
 import net.minecraft.server.v1_8_R3.EnumProtocol
@@ -67,21 +65,6 @@ class ServerBotImpl : BotImpl(), Listener {
         }
     }
 
-    class BotNetworkManager(mc: Minecraft) : NetworkManager(mc, true) {
-        fun setConnectionState(state: EnumConnectionState, channel: Channel) {
-            this.connectionState = channel.attr(attrKeyConnectionState).getAndSet(state)
-            channel.attr(attrKeyReceivable).set(state.func_150757_a(true))
-            channel.attr(attrKeySendable).set(state.func_150754_b(true))
-            channel.config().setAutoRead(true)
-            Minecraft.logger.debug("Enabled auto read")
-        }
-
-        override fun channelActive(ctx: ChannelHandlerContext?) {
-            super.channelActive(ctx)
-            setConnectionState(EnumConnectionState.LOGIN)
-        }
-    }
-
     private fun Player.sendPacket(wrapper: PacketWrapper<*>) =
         PacketEvents.getAPI().playerManager.sendPacket(this, wrapper)
 
@@ -94,8 +77,6 @@ class ServerBotImpl : BotImpl(), Listener {
 
         if (!file.exists()) file.mkdirs()
 
-        val instanceRef = getClientInstance(configuration, file)
-
         val name = configuration.fullUsername
 
         val serverSide = NMSServerPlayer(
@@ -105,66 +86,84 @@ class ServerBotImpl : BotImpl(), Listener {
             disableEntityCollisions = configuration.disableEntityCollisions
         )
 
-        instanceRef.get()?.let {
-            val clientNetworkManager = BotNetworkManager(it)
+        val instance = BukkitClientInstance(
+            configuration, 1280, 720,
+            fullscreen = false,
+            demo = false,
+            file,
+            File(file, "assets"),
+            File(file, "resourcepacks"),
+            Proxy.NO_PROXY,
+            "Mineral-Bot-Client", HashMultimap.create<Any, Any>(),
+            "1.7.10"
+        )
 
-            val netHandlerPlayClient = ClientNetHandler(
-                it, null,
-                clientNetworkManager
-            )
+        instance.setServer("127.0.0.1", Bukkit.getServer().port)
 
-            val channel = Bootstrap()
-                .group(fakeGroup)
-                .channel(LocalChannel::class.java)
-                .handler(ClientChannelInitializer(it, clientNetworkManager)).connect(fakeAddress).sync()
-                .channel() as LocalChannel
+        val clientNetworkManager = instance.networkManager
 
-            val remoteAddress = channel.remoteAddress()
+        val channel = Bootstrap()
+            .group(fakeGroup)
+            .channel(LocalChannel::class.java)
+            .handler(ClientChannelInitializer(instance, clientNetworkManager)).connect(fakeAddress).sync()
+            .channel() as LocalChannel
 
-            val serverChannel = LocalChannelUtil.get(remoteAddress)
+        val remoteAddress = channel.remoteAddress()
 
-            val serverNetworkManager =
-                serverChannel!!.pipeline().get("packet_handler") as net.minecraft.server.v1_8_R3.NetworkManager
+        val serverChannel = LocalChannelUtil.get(remoteAddress)
 
-            serverNetworkManager.protocol = EnumProtocol.PLAY
+        val serverNetworkManager =
+            serverChannel!!.pipeline().get("packet_handler") as net.minecraft.server.v1_8_R3.NetworkManager
 
-            clientNetworkManager.netHandler = netHandlerPlayClient
+        serverNetworkManager.protocol = EnumProtocol.PLAY
 
-            clientNetworkManager.setConnectionState(EnumConnectionState.PLAY, channel)
+        val netHandlerPlayClient = ClientNetHandler(
+            instance, null,
+            clientNetworkManager
+        )
 
-            val playerConnection: PlayerConnection = object : PlayerConnection(
-                MinecraftServer.getServer(), serverNetworkManager,
-                serverSide
-            ) {
-                private var disconnected = false
+        clientNetworkManager.netHandler = netHandlerPlayClient
 
-                override fun disconnect(s: String) {
-                    if (disconnected) return
-                    disconnected = true
-                    despawn(configuration.uuid)
-                    // TODO: cancellable kick event
-                    super.disconnect(s)
-                }
+        clientNetworkManager.setConnectionState(EnumConnectionState.PLAY, channel)
 
-                override fun isDisconnected(): Boolean {
-                    return disconnected
-                }
+        val instanceRef = WeakReference(instance)
 
-                // TODO: Temporary fix for the issue with the player's ping
-                override fun a(packetplayinkeepalive: PacketPlayInKeepAlive) {
-                    player.ping = instanceRef.get()?.latency ?: 0
-                }
+        val playerConnection: PlayerConnection = object : PlayerConnection(
+            MinecraftServer.getServer(), serverNetworkManager,
+            serverSide
+        ) {
+            private var disconnected = false
+
+            override fun disconnect(s: String) {
+                if (disconnected) return
+                disconnected = true
+                despawn(configuration.uuid)
+                // TODO: cancellable kick event
+                super.disconnect(s)
             }
 
-            serverSide.playerConnection = playerConnection
+            override fun isDisconnected(): Boolean {
+                return disconnected
+            }
+
+            // TODO: Temporary fix for the issue with the player's ping
+            override fun a(packetplayinkeepalive: PacketPlayInKeepAlive) {
+                player.ping = instanceRef.get()?.latency ?: 0
+            }
         }
+
+        serverSide.playerConnection = playerConnection
+
+
+        val player = serverSide.bukkitEntity
+
+        PacketEvents.getAPI().playerManager.getUser(player)?.clientVersion = ClientVersion.V_1_7_10
+
 
         serverSide.setPosition(location.x, location.y, location.z)
         serverSide.setYawPitch(location.yaw, location.pitch)
         serverSide.spawnInWorld(location.world)
         serverSide.callSpawnEvents()
-
-        val player = serverSide.bukkitEntity
 
         player.sendPacket(
             WrapperPlayServerJoinGame(
@@ -255,7 +254,7 @@ class ServerBotImpl : BotImpl(), Listener {
 
         ThreadManager.asyncExecutor.execute {
             try {
-                instanceRef.get()?.apply {
+                instance.apply {
                     this.run()
                     InstanceManager.pendingInstances.remove(configuration.uuid)
                     InstanceManager.instances[configuration.uuid] = this
@@ -267,7 +266,7 @@ class ServerBotImpl : BotImpl(), Listener {
 
         spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
 
-        return WeakReference(instanceRef.get())
+        return WeakReference(instance)
     }
 
     override fun despawn(uuid: UUID): Boolean {
@@ -292,34 +291,11 @@ class ServerBotImpl : BotImpl(), Listener {
     }
 
     companion object {
-        val fakeGroup = LocalEventLoopGroup()
+        val fakeGroup = DefaultEventLoopGroup()
         val fakeAddress = LocalAddress("Mineral-fake")
 
         fun init() {
             INSTANCE = ServerBotImpl()
-        }
-
-        private fun getClientInstance(configuration: BotConfiguration, file: File): WeakReference<ClientInstance> {
-            val instance: ClientInstance = object : ClientInstance(
-                configuration, 1280, 720,
-                false,
-                false,
-                file,
-                File(file, "assets"),
-                File(file, "resourcepacks"),
-                Proxy.NO_PROXY,
-                "Mineral-Bot-Client", HashMultimap.create<Any, Any>(),
-                "1.7.10"
-            ) {
-                override fun displayGuiScreen(guiScreen: GuiScreen?) {
-                    if (guiScreen is GuiConnecting) guiScreen.connectFunction =
-                        GuiConnecting.ConnectFunction { _: String?, _: Int -> }
-
-                    super.displayGuiScreen(guiScreen)
-                }
-            }
-            instance.setServer("127.0.0.1", Bukkit.getServer().port)
-            return WeakReference(instance)
         }
     }
 }
