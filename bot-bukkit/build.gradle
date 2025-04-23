@@ -34,7 +34,7 @@ publishing {
 }
 
 dependencies {
-    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20250324-00.03.34'
+    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20250422-21.30.06'
     compileOnly 'com.viaversion:viaversion-api:5.3.1'
     compileOnly 'com.viaversion:viaversion-common:5.3.1'
     compileOnly 'com.viaversion:viaversion-bukkit:5.3.1'
