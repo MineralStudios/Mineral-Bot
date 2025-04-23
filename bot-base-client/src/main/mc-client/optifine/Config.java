@@ -34,7 +34,8 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;

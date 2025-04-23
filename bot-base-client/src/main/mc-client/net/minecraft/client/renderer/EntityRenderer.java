@@ -48,7 +48,8 @@ import optifine.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.FloatBuffer;

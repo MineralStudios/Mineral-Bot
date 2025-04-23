@@ -20,7 +20,8 @@ import org.apache.commons.io.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

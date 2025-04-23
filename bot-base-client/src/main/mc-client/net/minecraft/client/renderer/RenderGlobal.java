@@ -46,7 +46,8 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBOcclusionQuery;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import java.nio.IntBuffer;
 import java.util.*;
 

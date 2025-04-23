@@ -33,7 +33,8 @@ import net.minecraft.util.*;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.chunk.Chunk;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import java.awt.*;
 import java.util.Collection;
 import java.util.Iterator;

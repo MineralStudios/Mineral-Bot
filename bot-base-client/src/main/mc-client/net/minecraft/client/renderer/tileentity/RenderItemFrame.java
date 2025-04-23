@@ -26,7 +26,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.MapData;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.bot.lwjgl.opengl.GL11;
 

@@ -24,7 +24,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.MapData;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class ItemRenderer {
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation(

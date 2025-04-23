@@ -97,12 +97,12 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.PixelFormat;
 
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
@@ -1241,7 +1241,7 @@ public class Minecraft {
             val result = profilerData.remove(0);
 
             if (p_71383_1_ == 0) {
-                if (result.field_76331_c.length() > 0) {
+                if (!result.field_76331_c.isEmpty()) {
                     val var4 = this.debugProfilerName.lastIndexOf(".");
 
                     if (var4 >= 0)
@@ -1253,7 +1253,7 @@ public class Minecraft {
 
                 if (p_71383_1_ < profilerData.size()
                         && !profilerData.get(p_71383_1_).field_76331_c.equals("unspecified")) {
-                    if (this.debugProfilerName.length() > 0)
+                    if (!this.debugProfilerName.isEmpty())
                         this.debugProfilerName = this.debugProfilerName + ".";
 
                     this.debugProfilerName = this.debugProfilerName
@@ -1266,8 +1266,7 @@ public class Minecraft {
     private void displayDebugInfo(long p_71366_1_) {
         if (this.mcProfiler.profilingEnabled) {
             val profilerData = this.mcProfiler.getProfilingData(this.debugProfilerName);
-            @Nullable
-            Profiler.Result result = profilerData == null ? null : profilerData.remove(0);
+            Profiler.@Nullable Result result = profilerData == null ? null : profilerData.remove(0);
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             GL11.glMatrixMode(GL11.GL_PROJECTION);
             GL11.glEnable(GL11.GL_COLOR_MATERIAL);

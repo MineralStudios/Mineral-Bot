@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.Validate;

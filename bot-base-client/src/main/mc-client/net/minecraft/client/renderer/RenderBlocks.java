@@ -20,7 +20,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import optifine.*;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class RenderBlocks {
     /**

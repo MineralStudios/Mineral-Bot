@@ -9,7 +9,8 @@ import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
