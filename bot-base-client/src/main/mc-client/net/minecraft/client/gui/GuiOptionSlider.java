@@ -2,7 +2,7 @@ package net.minecraft.client.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class GuiOptionSlider extends GuiButton {
     private float field_146134_p;
@@ -12,12 +12,12 @@ public class GuiOptionSlider extends GuiButton {
     private final float field_146131_s;
 
     public GuiOptionSlider(Minecraft mc, int p_i45016_1_, int p_i45016_2_, int p_i45016_3_,
-            GameSettings.Options p_i45016_4_) {
+                           GameSettings.Options p_i45016_4_) {
         this(mc, p_i45016_1_, p_i45016_2_, p_i45016_3_, p_i45016_4_, 0.0F, 1.0F);
     }
 
     public GuiOptionSlider(Minecraft mc, int p_i45017_1_, int p_i45017_2_, int p_i45017_3_,
-            GameSettings.Options p_i45017_4_, float p_i45017_5_, float p_i45017_6_) {
+                           GameSettings.Options p_i45017_4_, float p_i45017_5_, float p_i45017_6_) {
         super(mc, p_i45017_1_, p_i45017_2_, p_i45017_3_, 150, 20, "");
         this.field_146134_p = 1.0F;
         this.field_146133_q = p_i45017_4_;

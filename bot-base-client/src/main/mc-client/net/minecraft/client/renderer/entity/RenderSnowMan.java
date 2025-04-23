@@ -11,12 +11,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderSnowMan extends RenderLiving {
     private static final ResourceLocation snowManTextures = new ResourceLocation("textures/entity/snowman.png");
 
-    /** A reference to the Snowman model in RenderSnowMan. */
+    /**
+     * A reference to the Snowman model in RenderSnowMan.
+     */
     private ModelSnowMan snowmanModel;
 
     public RenderSnowMan(Minecraft mc) {

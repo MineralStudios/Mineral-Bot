@@ -1,7 +1,7 @@
 package net.minecraft.client.renderer.tileentity;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelChest;
 import net.minecraft.tileentity.TileEntity;
@@ -17,7 +17,7 @@ public class TileEntityEnderChestRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntityEnderChest p_147500_1_, double p_147500_2_, double p_147500_4_,
-            double p_147500_6_, float p_147500_8_) {
+                                   double p_147500_6_, float p_147500_8_) {
         int var9 = 0;
 
         if (p_147500_1_.hasWorldObj()) {
@@ -59,7 +59,7 @@ public class TileEntityEnderChestRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_,
-            float p_147500_8_) {
+                                   float p_147500_8_) {
         this.renderTileEntityAt((TileEntityEnderChest) p_147500_1_, p_147500_2_, p_147500_4_, p_147500_6_, p_147500_8_);
     }
 }

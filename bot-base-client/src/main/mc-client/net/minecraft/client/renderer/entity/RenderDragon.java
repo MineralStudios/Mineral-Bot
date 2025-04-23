@@ -1,7 +1,6 @@
 package net.minecraft.client.renderer.entity;
 
-import java.util.Random;
-
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelDragon;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -14,7 +13,8 @@ import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+
+import java.util.Random;
 
 public class RenderDragon extends RenderLiving {
     private static final ResourceLocation enderDragonExplodingTextures = new ResourceLocation(
@@ -26,7 +26,9 @@ public class RenderDragon extends RenderLiving {
     private static final ResourceLocation enderDragonTextures = new ResourceLocation(
             "textures/entity/enderdragon/dragon.png");
 
-    /** An instance of the dragon model in RenderDragon */
+    /**
+     * An instance of the dragon model in RenderDragon
+     */
     protected ModelDragon modelDragon;
 
     public RenderDragon(Minecraft mc) {
@@ -59,7 +61,7 @@ public class RenderDragon extends RenderLiving {
      * Renders the model in RenderLiving
      */
     protected void renderModel(EntityDragon p_77036_1_, float p_77036_2_, float p_77036_3_, float p_77036_4_,
-            float p_77036_5_, float p_77036_6_, float p_77036_7_) {
+                               float p_77036_5_, float p_77036_6_, float p_77036_7_) {
         if (p_77036_1_.deathTicks > 0) {
             float var8 = (float) p_77036_1_.deathTicks / 200.0F;
             GL11.glDepthFunc(GL11.GL_LEQUAL);
@@ -97,9 +99,9 @@ public class RenderDragon extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityDragon p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         BossStatus.setBossStatus(p_76986_1_, false);
-        super.doRender((EntityLiving) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
+        super.doRender(p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
 
         if (p_76986_1_.healingEnderCrystal != null) {
             float var10 = (float) p_76986_1_.healingEnderCrystal.innerRotation + p_76986_9_;
@@ -115,9 +117,9 @@ public class RenderDragon extends RenderLiving {
             float var16 = MathHelper.sqrt_float(var12 * var12 + var13 * var13 + var14 * var14);
             GL11.glPushMatrix();
             GL11.glTranslatef((float) p_76986_2_, (float) p_76986_4_ + 2.0F, (float) p_76986_6_);
-            GL11.glRotatef((float) (-Math.atan2((double) var14, (double) var12)) * 180.0F / (float) Math.PI - 90.0F,
+            GL11.glRotatef((float) (-Math.atan2(var14, var12)) * 180.0F / (float) Math.PI - 90.0F,
                     0.0F, 1.0F, 0.0F);
-            GL11.glRotatef((float) (-Math.atan2((double) var15, (double) var13)) * 180.0F / (float) Math.PI - 90.0F,
+            GL11.glRotatef((float) (-Math.atan2(var15, var13)) * 180.0F / (float) Math.PI - 90.0F,
                     1.0F, 0.0F, 0.0F);
             Tessellator var17 = this.mc.getTessellator();
             RenderHelper.disableStandardItemLighting();
@@ -136,18 +138,18 @@ public class RenderDragon extends RenderLiving {
             for (int var21 = 0; var21 <= var20; ++var21) {
                 float var22 = MathHelper.sin((float) (var21 % var20) * (float) Math.PI * 2.0F / (float) var20) * 0.75F;
                 float var23 = MathHelper.cos((float) (var21 % var20) * (float) Math.PI * 2.0F / (float) var20) * 0.75F;
-                float var24 = (float) (var21 % var20) * 1.0F / (float) var20;
+                float var24 = (float) (var21 % var20) / (float) var20;
                 var17.setColorOpaque_I(0);
-                var17.addVertexWithUV((double) (var22 * 0.2F), (double) (var23 * 0.2F), 0.0D, (double) var24,
-                        (double) var19);
+                var17.addVertexWithUV(var22 * 0.2F, var23 * 0.2F, 0.0D, var24,
+                        var19);
                 var17.setColorOpaque_I(16777215);
-                var17.addVertexWithUV((double) var22, (double) var23, (double) var16, (double) var24, (double) var18);
+                var17.addVertexWithUV(var22, var23, var16, var24, var18);
             }
 
             var17.draw();
             GL11.glEnable(GL11.GL_CULL_FACE);
             GL11.glShadeModel(GL11.GL_FLAT);
-            RenderHelper.enableStandardItemLighting();
+            this.mc.renderHelper.enableStandardItemLighting();
             GL11.glPopMatrix();
         }
     }
@@ -198,10 +200,10 @@ public class RenderDragon extends RenderLiving {
                     var3.setColorRGBA_I(16777215, (int) (255.0F * (1.0F - var5)));
                     var3.addVertex(0.0D, 0.0D, 0.0D);
                     var3.setColorRGBA_I(16711935, 0);
-                    var3.addVertex(-0.866D * (double) var9, (double) var8, (double) (-0.5F * var9));
-                    var3.addVertex(0.866D * (double) var9, (double) var8, (double) (-0.5F * var9));
-                    var3.addVertex(0.0D, (double) var8, (double) (1.0F * var9));
-                    var3.addVertex(-0.866D * (double) var9, (double) var8, (double) (-0.5F * var9));
+                    var3.addVertex(-0.866D * (double) var9, var8, -0.5F * var9);
+                    var3.addVertex(0.866D * (double) var9, var8, -0.5F * var9);
+                    var3.addVertex(0.0D, var8, var9);
+                    var3.addVertex(-0.866D * (double) var9, var8, -0.5F * var9);
                     var3.draw();
                 }
             }
@@ -214,7 +216,7 @@ public class RenderDragon extends RenderLiving {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glEnable(GL11.GL_ALPHA_TEST);
-            RenderHelper.enableStandardItemLighting();
+            this.mc.renderHelper.enableStandardItemLighting();
         }
     }
 
@@ -238,8 +240,8 @@ public class RenderDragon extends RenderLiving {
             char var4 = 61680;
             int var5 = var4 % 65536;
             int var6 = var4 / 65536;
-            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) var5 / 1.0F,
-                    (float) var6 / 1.0F);
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) var5,
+                    (float) var6);
             GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             return 1;
@@ -256,7 +258,7 @@ public class RenderDragon extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityLiving p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         this.doRender((EntityDragon) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 
@@ -279,7 +281,7 @@ public class RenderDragon extends RenderLiving {
      * Renders the model in RenderLiving
      */
     protected void renderModel(EntityLivingBase p_77036_1_, float p_77036_2_, float p_77036_3_, float p_77036_4_,
-            float p_77036_5_, float p_77036_6_, float p_77036_7_) {
+                               float p_77036_5_, float p_77036_6_, float p_77036_7_) {
         this.renderModel((EntityDragon) p_77036_1_, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_,
                 p_77036_7_);
     }
@@ -294,7 +296,7 @@ public class RenderDragon extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityLivingBase p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         this.doRender((EntityDragon) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 
@@ -316,7 +318,7 @@ public class RenderDragon extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         this.doRender((EntityDragon) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

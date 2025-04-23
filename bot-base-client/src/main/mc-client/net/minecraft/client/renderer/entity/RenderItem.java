@@ -23,19 +23,23 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 
 public class RenderItem extends Render {
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation(
             "textures/misc/enchanted_item_glint.png");
     private RenderBlocks field_147913_i;
 
-    /** The RNG used in RenderItem (for bobbing itemstacks on the ground) */
+    /**
+     * The RNG used in RenderItem (for bobbing itemstacks on the ground)
+     */
     private Random random = new Random();
     public boolean renderWithColor = true;
 
-    /** Defines the zLevel of rendering of item on GUI. */
+    /**
+     * Defines the zLevel of rendering of item on GUI.
+     */
     public float zLevel;
     public static boolean renderInFrame;
 
@@ -56,7 +60,7 @@ public class RenderItem extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityItem p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         ItemStack var10 = p_76986_1_.getEntityItem();
 
         if (var10.getItem() != null) {
@@ -212,7 +216,7 @@ public class RenderItem extends Render {
      * Renders a dropped item
      */
     private void renderDroppedItem(EntityItem p_77020_1_, IIcon p_77020_2_, int p_77020_3_, float p_77020_4_,
-            float p_77020_5_, float p_77020_6_, float p_77020_7_) {
+                                   float p_77020_5_, float p_77020_6_, float p_77020_7_) {
         Tessellator var8 = this.mc.getTessellator();
 
         if (p_77020_2_ == null) {
@@ -344,7 +348,7 @@ public class RenderItem extends Render {
      * Renders the item's icon or block into the UI at the specified position.
      */
     public void renderItemIntoGUI(FontRenderer p_77015_1_, TextureManager p_77015_2_, ItemStack p_77015_3_,
-            int p_77015_4_, int p_77015_5_) {
+                                  int p_77015_4_, int p_77015_5_) {
         if (p_77015_1_ == null)
             return;
         int var6 = p_77015_3_.getItemDamage();
@@ -474,7 +478,7 @@ public class RenderItem extends Render {
      * Render the item's icon or block into the GUI, including the glint effect.
      */
     public void renderItemAndEffectIntoGUI(FontRenderer p_82406_1_, TextureManager p_82406_2_,
-            final ItemStack p_82406_3_, int p_82406_4_, int p_82406_5_) {
+                                           final ItemStack p_82406_3_, int p_82406_4_, int p_82406_5_) {
         if (p_82406_1_ == null)
             return;
         if (p_82406_3_ != null) {
@@ -550,12 +554,12 @@ public class RenderItem extends Render {
      * specified position.
      */
     public void renderItemOverlayIntoGUI(FontRenderer p_77021_1_, TextureManager p_77021_2_, ItemStack p_77021_3_,
-            int p_77021_4_, int p_77021_5_) {
+                                         int p_77021_4_, int p_77021_5_) {
         this.renderItemOverlayIntoGUI(p_77021_1_, p_77021_2_, p_77021_3_, p_77021_4_, p_77021_5_, (String) null);
     }
 
     public void renderItemOverlayIntoGUI(FontRenderer p_94148_1_, TextureManager p_94148_2_, ItemStack p_94148_3_,
-            int p_94148_4_, int p_94148_5_, String p_94148_6_) {
+                                         int p_94148_4_, int p_94148_5_, String p_94148_6_) {
         if (p_94148_1_ == null)
             return;
         if (p_94148_3_ != null) {
@@ -602,7 +606,7 @@ public class RenderItem extends Render {
      * tessellator, x, y, width, height, color
      */
     private void renderQuad(Tessellator p_77017_1_, int p_77017_2_, int p_77017_3_, int p_77017_4_, int p_77017_5_,
-            int p_77017_6_) {
+                            int p_77017_6_) {
         if (p_77017_1_ == null)
             return;
         p_77017_1_.startDrawingQuads();
@@ -648,7 +652,7 @@ public class RenderItem extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         this.doRender((EntityItem) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

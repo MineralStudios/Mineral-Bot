@@ -8,19 +8,27 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.Tessellator;
 import optifine.ModelSprite;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class ModelRenderer {
-    /** The size of the texture file's width in pixels. */
+    /**
+     * The size of the texture file's width in pixels.
+     */
     public float textureWidth;
 
-    /** The size of the texture file's height in pixels. */
+    /**
+     * The size of the texture file's height in pixels.
+     */
     public float textureHeight;
 
-    /** The X offset into the texture used for displaying this model */
+    /**
+     * The X offset into the texture used for displaying this model
+     */
     private int textureOffsetX;
 
-    /** The Y offset into the texture used for displaying this model */
+    /**
+     * The Y offset into the texture used for displaying this model
+     */
     private int textureOffsetY;
     public float rotationPointX;
     public float rotationPointY;
@@ -30,12 +38,16 @@ public class ModelRenderer {
     public float rotateAngleZ;
     private boolean compiled;
 
-    /** The GL display list rendered by the Tessellator for this model */
+    /**
+     * The GL display list rendered by the Tessellator for this model
+     */
     private int displayList;
     public boolean mirror;
     public boolean showModel;
 
-    /** Hides the model. */
+    /**
+     * Hides the model.
+     */
     public boolean isHidden;
     public List cubeList;
     public List childModels;

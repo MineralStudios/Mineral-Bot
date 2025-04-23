@@ -1,22 +1,23 @@
 package net.minecraft.client.shader;
 
 import com.google.common.collect.Maps;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Map;
+import gg.mineral.bot.lwjgl.BufferUtils;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.util.JsonException;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.lwjgl.BufferUtils;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Map;
 
 public class ShaderLoader {
     private final ShaderLoader.ShaderType field_148061_a;
     private final String field_148059_b;
-    private int field_148060_c;
+    private final int field_148060_c;
     private int field_148058_d = 0;
 
     private ShaderLoader(ShaderLoader.ShaderType p_i45091_1_, int p_i45091_2_, String p_i45091_3_) {
@@ -44,7 +45,7 @@ public class ShaderLoader {
     }
 
     public static ShaderLoader func_148057_a(IResourceManager p_148057_0_, ShaderLoader.ShaderType p_148057_1_,
-            String p_148057_2_) throws IOException {
+                                             String p_148057_2_) throws IOException {
         ShaderLoader var3 = (ShaderLoader) p_148057_1_.func_148064_d().get(p_148057_2_);
 
         if (var3 == null) {
@@ -62,7 +63,7 @@ public class ShaderLoader {
             if (OpenGlHelper.func_153157_c(var8, OpenGlHelper.field_153208_p) == 0) {
                 String var9 = StringUtils.trim(OpenGlHelper.func_153158_d(var8, 32768));
                 JsonException var10 = new JsonException(
-                        "Couldn\'t compile " + p_148057_1_.func_148062_a() + " program: " + var9);
+                        "Couldn't compile " + p_148057_1_.func_148062_a() + " program: " + var9);
                 var10.func_151381_b(var4.getResourcePath());
                 throw var10;
             }
@@ -74,7 +75,7 @@ public class ShaderLoader {
         return var3;
     }
 
-    public static enum ShaderType {
+    public enum ShaderType {
         VERTEX("VERTEX", 0, "vertex", ".vsh", OpenGlHelper.field_153209_q), FRAGMENT("FRAGMENT", 1, "fragment", ".fsh",
                 OpenGlHelper.field_153210_r);
 
@@ -83,10 +84,10 @@ public class ShaderLoader {
         private final int field_148070_e;
         private final Map field_148067_f = Maps.newHashMap();
 
-        private static final ShaderLoader.ShaderType[] $VALUES = new ShaderLoader.ShaderType[] { VERTEX, FRAGMENT };
+        private static final ShaderLoader.ShaderType[] $VALUES = new ShaderLoader.ShaderType[]{VERTEX, FRAGMENT};
 
-        private ShaderType(String p_i45090_1_, int p_i45090_2_, String p_i45090_3_, String p_i45090_4_,
-                int p_i45090_5_) {
+        ShaderType(String p_i45090_1_, int p_i45090_2_, String p_i45090_3_, String p_i45090_4_,
+                   int p_i45090_5_) {
             this.field_148072_c = p_i45090_3_;
             this.field_148069_d = p_i45090_4_;
             this.field_148070_e = p_i45090_5_;
@@ -96,15 +97,15 @@ public class ShaderLoader {
             return this.field_148072_c;
         }
 
-        protected String func_148063_b() {
+        private String func_148063_b() {
             return this.field_148069_d;
         }
 
-        protected int func_148065_c() {
+        private int func_148065_c() {
             return this.field_148070_e;
         }
 
-        protected Map func_148064_d() {
+        private Map func_148064_d() {
             return this.field_148067_f;
         }
     }

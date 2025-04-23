@@ -1,6 +1,6 @@
 package net.minecraft.client;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -14,7 +14,9 @@ import net.minecraft.util.MinecraftError;
 public class LoadingScreenRenderer implements IProgressUpdate {
     private String field_73727_a = "";
 
-    /** A reference to the Minecraft object. */
+    /**
+     * A reference to the Minecraft object.
+     */
     private Minecraft mc;
 
     /**

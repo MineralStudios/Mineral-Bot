@@ -1,8 +1,8 @@
 package net.minecraft.client.gui;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
-import gg.mineral.bot.base.lwjgl.util.glu.Project;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.util.glu.Project;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -27,8 +27,8 @@ public class GuiEnchantment extends GuiContainer {
     private static final ResourceLocation field_147070_D = new ResourceLocation(
             "textures/entity/enchanting_table_book.png");
     private final ModelBook field_147072_E;
-    private Random field_147074_F = new Random();
-    private ContainerEnchantment field_147075_G;
+    private final Random field_147074_F = new Random();
+    private final ContainerEnchantment field_147075_G;
     public int field_147073_u;
     public float field_147071_v;
     public float field_147069_w;
@@ -37,7 +37,7 @@ public class GuiEnchantment extends GuiContainer {
     public float field_147080_z;
     public float field_147076_A;
     ItemStack field_147077_B;
-    private String field_147079_H;
+    private final String field_147079_H;
 
     public GuiEnchantment(Minecraft mc, InventoryPlayer p_i46398_1_, World p_i46398_2_, int p_i46398_3_,
                           int p_i46398_4_, int p_i46398_5_, String p_i46398_6_) {
@@ -76,9 +76,9 @@ public class GuiEnchantment extends GuiContainer {
 
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {
         this.fontRendererObj.drawString(
-                this.field_147079_H == null ? I18n.format("container.enchant", new Object[0]) : this.field_147079_H, 12,
+                this.field_147079_H == null ? I18n.format("container.enchant") : this.field_147079_H, 12,
                 5, 4210752);
-        this.fontRendererObj.drawString(I18n.format("container.inventory", new Object[0]), 8,
+        this.fontRendererObj.drawString(I18n.format("container.inventory"), 8,
                 this.field_147000_g - 96 + 2, 4210752);
     }
 
@@ -130,7 +130,7 @@ public class GuiEnchantment extends GuiContainer {
         float var7 = 1.0F;
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadIdentity();
-        RenderHelper.enableStandardItemLighting();
+        this.mc.renderHelper.enableStandardItemLighting();
         GL11.glTranslatef(0.0F, 3.3F, -16.0F);
         GL11.glScalef(var7, var7, var7);
         float var8 = 5.0F;
@@ -145,8 +145,8 @@ public class GuiEnchantment extends GuiContainer {
         GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
         float var10 = this.field_147069_w + (this.field_147071_v - this.field_147069_w) * p_146976_1_ + 0.25F;
         float var11 = this.field_147069_w + (this.field_147071_v - this.field_147069_w) * p_146976_1_ + 0.75F;
-        var10 = (var10 - (float) MathHelper.truncateDoubleToInt((double) var10)) * 1.6F - 0.3F;
-        var11 = (var11 - (float) MathHelper.truncateDoubleToInt((double) var11)) * 1.6F - 0.3F;
+        var10 = (var10 - (float) MathHelper.truncateDoubleToInt(var10)) * 1.6F - 0.3F;
+        var11 = (var11 - (float) MathHelper.truncateDoubleToInt(var11)) * 1.6F - 0.3F;
 
         if (var10 < 0.0F)
             var10 = 0.0F;
@@ -161,7 +161,7 @@ public class GuiEnchantment extends GuiContainer {
             var11 = 1.0F;
 
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        field_147072_E.render((Entity) null, 0.0F, var10, var11, var9, 0.0F, 0.0625F);
+        field_147072_E.render(null, 0.0F, var10, var11, var9, 0.0F, 0.0625F);
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         RenderHelper.disableStandardItemLighting();
         GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -244,6 +244,7 @@ public class GuiEnchantment extends GuiContainer {
         for (int var3 = 0; var3 < 3; ++var3) {
             if (this.field_147075_G.enchantLevels[var3] != 0) {
                 var2 = true;
+                break;
             }
         }
 

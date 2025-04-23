@@ -1,6 +1,6 @@
 package net.minecraft.client.renderer.entity;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -49,7 +49,7 @@ public abstract class Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public abstract void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_);
+                                  float p_76986_8_, float p_76986_9_);
 
     /**
      * Returns the location of an entity's texture. Doesn't seem to be called unless
@@ -73,7 +73,7 @@ public abstract class Render {
      * Renders fire on top of the entity. Args: entity, x, y, z, partialTickTime
      */
     private void renderEntityOnFire(Entity p_76977_1_, double p_76977_2_, double p_76977_4_, double p_76977_6_,
-            float p_76977_8_) {
+                                    float p_76977_8_) {
         GL11.glDisable(GL11.GL_LIGHTING);
         IIcon var9 = Blocks.fire.func_149840_c(0);
         IIcon var10 = Blocks.fire.func_149840_c(1);
@@ -136,7 +136,7 @@ public abstract class Render {
      * partialTickTime
      */
     private void renderShadow(Entity p_76975_1_, double p_76975_2_, double p_76975_4_, double p_76975_6_,
-            float p_76975_8_, float p_76975_9_) {
+                              float p_76975_8_, float p_76975_9_) {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         this.renderManager.renderEngine.bindTexture(shadowTextures);
@@ -199,14 +199,14 @@ public abstract class Render {
     }
 
     private void func_147907_a(Block p_147907_1_, double p_147907_2_, double p_147907_4_, double p_147907_6_,
-            int p_147907_8_, int p_147907_9_, int p_147907_10_, float p_147907_11_, float p_147907_12_,
-            double p_147907_13_, double p_147907_15_, double p_147907_17_) {
+                               int p_147907_8_, int p_147907_9_, int p_147907_10_, float p_147907_11_, float p_147907_12_,
+                               double p_147907_13_, double p_147907_15_, double p_147907_17_) {
         Tessellator var19 = this.mc.getTessellator();
 
         if (p_147907_1_.renderAsNormalBlock()) {
             double var20 = ((double) p_147907_11_ - (p_147907_4_ - ((double) p_147907_9_ + p_147907_15_)) / 2.0D) * 0.5D
                     * (double) this.getWorldFromRenderManager().getLightBrightness(p_147907_8_, p_147907_9_,
-                            p_147907_10_);
+                    p_147907_10_);
 
             if (var20 >= 0.0D) {
                 if (var20 > 1.0D)
@@ -237,7 +237,7 @@ public abstract class Render {
      * Args: aabb, x, y, z
      */
     public static void renderOffsetAABB(Minecraft mc, AxisAlignedBB p_76978_0_, double p_76978_1_, double p_76978_3_,
-            double p_76978_5_) {
+                                        double p_76978_5_) {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         Tessellator var7 = mc.getTessellator();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -328,7 +328,7 @@ public abstract class Render {
      * yaw, partialTickTime
      */
     public void doRenderShadowAndFire(Entity p_76979_1_, double p_76979_2_, double p_76979_4_, double p_76979_6_,
-            float p_76979_8_, float p_76979_9_) {
+                                      float p_76979_8_, float p_76979_9_) {
         if (this.renderManager.options.fancyGraphics && this.shadowSize > 0.0F && !p_76979_1_.isInvisible()) {
             double var10 = this.renderManager.getDistanceToCamera(p_76979_1_.posX, p_76979_1_.posY, p_76979_1_.posZ);
             float var12 = (float) ((1.0D - var10 / 256.0D) * (double) this.shadowOpaque);
@@ -354,7 +354,7 @@ public abstract class Render {
     }
 
     protected void func_147906_a(Entity p_147906_1_, String p_147906_2_, double p_147906_3_, double p_147906_5_,
-            double p_147906_7_, int p_147906_9_) {
+                                 double p_147906_7_, int p_147906_9_) {
         double var10 = p_147906_1_.getDistanceSqToEntity(this.renderManager.livingPlayer);
 
         if (var10 <= (double) (p_147906_9_ * p_147906_9_)) {

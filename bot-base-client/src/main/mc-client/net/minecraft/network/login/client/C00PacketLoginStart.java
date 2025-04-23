@@ -11,7 +11,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.login.INetHandlerLoginServer;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +22,7 @@ public class C00PacketLoginStart extends Packet {
      * Reads the raw packet data from the data stream.
      */
     public void readPacketData(PacketBuffer p_148837_1_, Minecraft mc) throws IOException {
-        this.gameProfile = new GameProfile((UUID) null, p_148837_1_.readStringFromBuffer(16));
+        this.gameProfile = new GameProfile(null, p_148837_1_.readStringFromBuffer(16));
     }
 
     /**

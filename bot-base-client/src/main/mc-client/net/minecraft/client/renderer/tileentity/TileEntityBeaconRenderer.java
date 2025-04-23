@@ -1,6 +1,6 @@
 package net.minecraft.client.renderer.tileentity;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -16,7 +16,7 @@ public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer {
     private final Minecraft mc;
 
     public void renderTileEntityAt(TileEntityBeacon p_147500_1_, double p_147500_2_, double p_147500_4_,
-            double p_147500_6_, float p_147500_8_) {
+                                   double p_147500_6_, float p_147500_8_) {
         float var9 = p_147500_1_.func_146002_i();
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 
@@ -117,7 +117,7 @@ public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_,
-            float p_147500_8_) {
+                                   float p_147500_8_) {
         this.renderTileEntityAt((TileEntityBeacon) p_147500_1_, p_147500_2_, p_147500_4_, p_147500_6_, p_147500_8_);
     }
 }

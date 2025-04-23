@@ -1,6 +1,7 @@
 package optifine;
 
 import java.lang.reflect.Field;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -15,8 +16,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 
 public class ItemRendererOF extends ItemRenderer {
     private Minecraft mc = null;
@@ -61,14 +62,14 @@ public class ItemRendererOF extends ItemRenderer {
         if (Reflector.MinecraftForgeClient_getItemRenderer.exists()) {
             type = Reflector.getFieldValue(Reflector.ItemRenderType_EQUIPPED);
             customRenderer = Reflector.call(Reflector.MinecraftForgeClient_getItemRenderer,
-                    new Object[] { par2ItemStack, type });
+                    new Object[]{par2ItemStack, type});
         }
 
         if (customRenderer != null) {
             if (var4 != null)
                 var4.bindTexture(var4.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
             Reflector.callVoid(Reflector.ForgeHooksClient_renderEquippedItem,
-                    new Object[] { type, customRenderer, this.renderBlocksIr, par1EntityLivingBase, par2ItemStack });
+                    new Object[]{type, customRenderer, this.renderBlocksIr, par1EntityLivingBase, par2ItemStack});
         } else if (par2ItemStack.getItemSpriteNumber() == 0 && var5 instanceof ItemBlock
                 && var6 != null && RenderBlocks.renderItemIn3d(var6.getRenderType())) {
             if (var4 != null)
@@ -111,7 +112,7 @@ public class ItemRendererOF extends ItemRenderer {
 
             if (Reflector.ForgeItemStack_hasEffect.exists()) {
                 renderEffect = Reflector.callBoolean(par2ItemStack, Reflector.ForgeItemStack_hasEffect,
-                        new Object[] { Integer.valueOf(par3) });
+                        new Object[]{Integer.valueOf(par3)});
             } else {
                 renderEffect = par2ItemStack.hasEffect() && par3 == 0;
             }

@@ -19,6 +19,8 @@
 *.tar.gz
 *.rar
 
+*.idea/*
+
 # Exclude gradle-wrapper.jar from being ignored
 !gradle/wrapper/gradle-wrapper.jar
 

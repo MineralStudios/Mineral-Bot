@@ -3,7 +3,7 @@ package net.minecraft.client.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ChatAllowedCharacters;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class GuiTextField extends Gui {
     private final FontRenderer field_146211_a;
@@ -26,7 +26,7 @@ public class GuiTextField extends Gui {
     private boolean field_146220_v = true;
 
     public GuiTextField(Minecraft mc, FontRenderer p_i46392_1_, int p_i46392_2_, int p_i46392_3_, int p_i46392_4_,
-            int p_i46392_5_) {
+                        int p_i46392_5_) {
         super(mc);
         this.field_146211_a = p_i46392_1_;
         this.field_146209_f = p_i46392_2_;

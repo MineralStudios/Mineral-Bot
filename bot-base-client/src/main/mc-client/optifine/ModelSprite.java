@@ -3,7 +3,7 @@ package optifine;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.MathHelper;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class ModelSprite {
     private ModelRenderer modelRenderer = null;
@@ -22,7 +22,7 @@ public class ModelSprite {
     private float maxV = 0.0F;
 
     public ModelSprite(ModelRenderer modelRenderer, int textureOffsetX, int textureOffsetY, float posX, float posY,
-            float posZ, int sizeX, int sizeY, int sizeZ, float sizeAdd) {
+                       float posZ, int sizeX, int sizeY, int sizeZ, float sizeAdd) {
         this.modelRenderer = modelRenderer;
         this.textureOffsetX = textureOffsetX;
         this.textureOffsetY = textureOffsetY;
@@ -62,7 +62,7 @@ public class ModelSprite {
     }
 
     public static void renderItemIn2D(Tessellator tessellator, float minU, float minV, float maxU, float maxV,
-            int sizeX, int sizeY, float width, float texWidth, float texHeight) {
+                                      int sizeX, int sizeY, float width, float texWidth, float texHeight) {
         if (width < 6.25E-4F) {
             width = 6.25E-4F;
         }

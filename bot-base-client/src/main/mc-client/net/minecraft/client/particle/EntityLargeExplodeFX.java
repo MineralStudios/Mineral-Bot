@@ -5,19 +5,21 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class EntityLargeExplodeFX extends EntityFX {
     private static final ResourceLocation field_110127_a = new ResourceLocation("textures/entity/explosion.png");
     private int field_70581_a;
     private int field_70584_aq;
 
-    /** The Rendering Engine. */
+    /**
+     * The Rendering Engine.
+     */
     private TextureManager theRenderEngine;
     private float field_70582_as;
 
     public EntityLargeExplodeFX(TextureManager p_i1213_1_, World p_i1213_2_, double p_i1213_3_, double p_i1213_5_,
-            double p_i1213_7_, double p_i1213_9_, double p_i1213_11_, double p_i1213_13_) {
+                                double p_i1213_7_, double p_i1213_9_, double p_i1213_11_, double p_i1213_13_) {
         super(p_i1213_2_, p_i1213_3_, p_i1213_5_, p_i1213_7_, 0.0D, 0.0D, 0.0D);
         this.theRenderEngine = p_i1213_1_;
         this.field_70584_aq = 6 + this.rand.nextInt(4);
@@ -26,7 +28,7 @@ public class EntityLargeExplodeFX extends EntityFX {
     }
 
     public void renderParticle(Tessellator p_70539_1_, float p_70539_2_, float p_70539_3_, float p_70539_4_,
-            float p_70539_5_, float p_70539_6_, float p_70539_7_) {
+                               float p_70539_5_, float p_70539_6_, float p_70539_7_) {
         int var8 = (int) (((float) this.field_70581_a + p_70539_2_) * 15.0F / (float) this.field_70584_aq);
 
         if (var8 <= 15) {

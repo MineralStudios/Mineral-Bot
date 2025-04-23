@@ -1,6 +1,6 @@
 package net.minecraft.client.model;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
@@ -29,7 +29,9 @@ public class ModelBiped extends ModelBase {
     public int heldItemRight;
     public boolean isSneak;
 
-    /** Records whether the model should be rendered aiming a bow. */
+    /**
+     * Records whether the model should be rendered aiming a bow.
+     */
     public boolean aimedBow;
 
     public ModelBiped(Minecraft mc) {
@@ -76,7 +78,7 @@ public class ModelBiped extends ModelBase {
      * Sets the models various rotation angles then renders the model.
      */
     public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_,
-            float p_78088_6_, float p_78088_7_) {
+                       float p_78088_6_, float p_78088_7_) {
         this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_, p_78088_1_);
 
         if (this.isChild) {
@@ -115,7 +117,7 @@ public class ModelBiped extends ModelBase {
      * "far" arms and legs can swing at most.
      */
     public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_,
-            float p_78087_5_, float p_78087_6_, Entity p_78087_7_) {
+                                  float p_78087_5_, float p_78087_6_, Entity p_78087_7_) {
         this.bipedHead.rotateAngleY = p_78087_4_ / (180F / (float) Math.PI);
         this.bipedHead.rotateAngleX = p_78087_5_ / (180F / (float) Math.PI);
         this.bipedHeadwear.rotateAngleY = this.bipedHead.rotateAngleY;

@@ -1,7 +1,7 @@
 package net.minecraft.client.renderer.entity;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -38,7 +38,7 @@ public class RenderSnowball extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         IIcon var10 = this.field_94151_a.getIconFromDamage(this.field_94150_f);
 
         if (var10 != null) {

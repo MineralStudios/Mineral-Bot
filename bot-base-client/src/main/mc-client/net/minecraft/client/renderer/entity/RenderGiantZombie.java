@@ -6,12 +6,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityGiantZombie;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderGiantZombie extends RenderLiving {
     private static final ResourceLocation zombieTextures = new ResourceLocation("textures/entity/zombie/zombie.png");
 
-    /** Scale of the model to use */
+    /**
+     * Scale of the model to use
+     */
     private float scale;
 
     public RenderGiantZombie(Minecraft mc, ModelBase p_i1255_1_, float p_i1255_2_, float p_i1255_3_) {

@@ -2,11 +2,12 @@ package net.minecraft.client.renderer;
 
 import com.google.gson.JsonSyntaxException;
 import gg.mineral.bot.base.client.instance.ClientInstance;
-import gg.mineral.bot.base.lwjgl.opengl.Display;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GLContext;
-import gg.mineral.bot.base.lwjgl.util.glu.Project;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
+import gg.mineral.bot.lwjgl.opengl.Display;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GLContext;
+import gg.mineral.bot.lwjgl.util.glu.GLU;
+import gg.mineral.bot.lwjgl.util.glu.Project;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -17,7 +18,6 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityRainFX;
 import net.minecraft.client.particle.EntitySmokeFX;
-import net.minecraft.client.renderer.culling.ClippingHelperImpl;
 import net.minecraft.client.renderer.culling.Frustrum;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -47,7 +47,6 @@ import net.minecraft.world.biome.BiomeGenBase;
 import optifine.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.util.glu.GLU;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -859,6 +858,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
      * Render player hand
      */
     private void renderHand(float par1, int par2) {
+        if (BotGlobalConfig.optimizedGameLoop) return;
         if (this.debugViewDirection <= 0) {
             GL11.glMatrixMode(GL11.GL_PROJECTION);
             GL11.glLoadIdentity();
@@ -1362,7 +1362,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.setupCameraTransform(par1, var13);
             ActiveRenderInfo.updateRenderInfo(this.mc.thePlayer, this.mc.gameSettings.thirdPersonView == 2);
             this.mc.mcProfiler.endStartSection("frustrum");
-            ClippingHelperImpl.getInstance();
+            this.mc.getClippingHelper();
 
             if (!mc.getConfig().isSkyEnabled() && !mc.getConfig().isSunMoonEnabled() && !mc.getConfig().isStarsEnabled()) {
                 GL11.glDisable(GL11.GL_BLEND);
@@ -1380,7 +1380,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 GL11.glShadeModel(GL11.GL_SMOOTH);
 
             this.mc.mcProfiler.endStartSection("culling");
-            Frustrum var14 = new Frustrum();
+            Frustrum var14 = new Frustrum(this.mc);
             var14.setPosition(var7, var9, var11);
             RenderGlobal renderGlobal = this.mc.renderGlobal;
 
@@ -1427,17 +1427,17 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 GL11.glMatrixMode(GL11.GL_MODELVIEW);
                 GL11.glPopMatrix();
                 GL11.glPushMatrix();
-                RenderHelper.enableStandardItemLighting();
+                this.mc.renderHelper.enableStandardItemLighting();
                 this.mc.mcProfiler.endStartSection("entities");
 
                 if (hasForge)
-                    Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, Integer.valueOf(0));
+                    Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, 0);
 
                 if (var5 != null)
                     var5.renderEntities(var4, var14, par1);
 
                 if (hasForge)
-                    Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, Integer.valueOf(-1));
+                    Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, -1);
 
                 RenderHelper.disableStandardItemLighting();
                 this.disableLightmap(par1);
@@ -1452,8 +1452,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     this.mc.mcProfiler.endStartSection("outline");
 
                     if ((!hasForge || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight,
-                            var5, var18, this.mc.objectMouseOver, Integer.valueOf(0),
-                            var18.inventory.getCurrentItem(), Float.valueOf(par1)))
+                            var5, var18, this.mc.objectMouseOver, 0,
+                            var18.inventory.getCurrentItem(), par1))
                             && !this.mc.gameSettings.hideGUI)
                         if (var5 != null)
                             var5.drawSelectionBox(var18, this.mc.objectMouseOver, 0, par1);
@@ -1472,8 +1472,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 this.mc.mcProfiler.endStartSection("outline");
 
                 if ((!hasForge || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight,
-                        var5, var18, this.mc.objectMouseOver, Integer.valueOf(0),
-                        var18.inventory.getCurrentItem(), Float.valueOf(par1)))
+                        var5, var18, this.mc.objectMouseOver, 0,
+                        var18.inventory.getCurrentItem(), par1))
                         && !this.mc.gameSettings.hideGUI)
                     if (var5 != null)
                         var5.drawSelectionBox(var18, this.mc.objectMouseOver, 0, par1);
@@ -1550,7 +1550,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             WrUpdates.pauseBackgroundUpdates();
 
             if (hasForge && this.debugViewDirection == 0) {
-                RenderHelper.enableStandardItemLighting();
+                this.mc.renderHelper.enableStandardItemLighting();
                 this.mc.mcProfiler.endStartSection("entities");
                 Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, Integer.valueOf(1));
 

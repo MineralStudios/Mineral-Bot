@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.SecretKey;
 import java.net.InetAddress;
@@ -35,7 +36,6 @@ import java.net.SocketAddress;
 import java.util.Queue;
 
 public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
-    private static final Logger logger = LogManager.getLogger(NetworkManager.class);
     public static final Marker logMarkerNetwork = MarkerManager.getMarker("NETWORK");
     public static final Marker logMarkerPackets = MarkerManager.getMarker("NETWORK_PACKETS", logMarkerNetwork);
     public static final Marker field_152461_c = MarkerManager.getMarker("NETWORK_STAT", logMarkerNetwork);
@@ -50,57 +50,104 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
             : new NioEventLoopGroup(0,
             (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).build());
     public static final NetworkStatistics field_152462_h = new NetworkStatistics();
-
-    /**
-     * Whether this NetworkManager deals with the client or server side of the
-     * connection
-     */
-    private final boolean isClientSide;
-
+    private static final Logger logger = LogManager.getLogger(NetworkManager.class);
     /**
      * The queue for received, unprioritized packets that will be processed at the
      * earliest opportunity
      */
     protected final Queue<Packet> receivedPacketsQueue = Queues.newConcurrentLinkedQueue();
-
     /**
      * The queue for packets that require transmission
      */
     protected final Queue<NetworkManager.InboundHandlerTuplePacketListener> outboundPacketsQueue = Queues
             .newConcurrentLinkedQueue();
-
+    protected final Minecraft mc;
     /**
-     * The active channel
+     * Whether this NetworkManager deals with the client or server side of the
+     * connection
      */
-    private Channel channel;
-
-    /**
-     * The address of the remote party
-     */
-    private SocketAddress socketAddress;
-
+    private final boolean isClientSide;
     /**
      * The INetHandler instance responsible for processing received packets
      */
     @Getter
     protected INetHandler netHandler;
-
     /**
      * The current connection state, being one of: HANDSHAKING, PLAY, STATUS, LOGIN
      */
     protected EnumConnectionState connectionState;
-
     /**
      * A String indicating why the network has shutdown.
      */
     protected IChatComponent terminationReason;
     protected boolean encryptionEnabled;
-
-    protected final Minecraft mc;
+    /**
+     * The active channel
+     */
+    @Getter
+    private Channel channel;
+    /**
+     * The address of the remote party
+     * -- GETTER --
+     * Return the InetSocketAddress of the remote endpoint
+     */
+    @Getter
+    private SocketAddress socketAddress;
 
     public NetworkManager(Minecraft mc, boolean isClientSide) {
         this.isClientSide = isClientSide;
         this.mc = mc;
+    }
+
+    /**
+     * Prepares a clientside NetworkManager: establishes a connection to the address
+     * and port supplied and configures
+     * the channel pipeline. Returns the newly created instance.
+     */
+    public static NetworkManager provideLanClient(Minecraft mc, InetAddress p_150726_0_, int p_150726_1_) {
+        final NetworkManager var2 = new NetworkManager(mc, true);
+        (new Bootstrap()).group(eventLoops).handler(new ChannelInitializer() {
+
+                    protected void initChannel(Channel p_initChannel_1_) {
+                        try {
+                            p_initChannel_1_.config().setOption(ChannelOption.IP_TOS, Integer.valueOf(24));
+                        } catch (ChannelException var4) {
+                        }
+
+                        try {
+                            p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, true);
+                        } catch (ChannelException var3) {
+                        }
+
+                        p_initChannel_1_.pipeline().addLast("timeout", new ReadTimeoutHandler(20))
+                                .addLast("latency_simulator", new LatencySimulatorHandler(mc))
+                                .addLast("splitter", new MessageDeserializer2())
+                                .addLast("decoder", new MessageDeserializer(NetworkManager.field_152462_h, mc))
+                                .addLast("prepender", new MessageSerializer2())
+                                .addLast("encoder", new MessageSerializer(NetworkManager.field_152462_h))
+                                .addLast("packet_handler", var2);
+                    }
+                }).channel(Epoll.isAvailable() ? EpollSocketChannel.class
+                        : KQueue.isAvailable() ? KQueueSocketChannel.class
+                        : NioSocketChannel.class)
+                .connect(p_150726_0_, p_150726_1_).syncUninterruptibly();
+        return var2;
+    }
+
+    /**
+     * Prepares a clientside NetworkManager: establishes a connection to the socket
+     * supplied and configures the channel
+     * pipeline. Returns the newly created instance.
+     */
+    public static NetworkManager provideLocalClient(Minecraft mc, SocketAddress p_150722_0_) {
+        final NetworkManager var1 = new NetworkManager(mc, true);
+        (new Bootstrap()).group(eventLoops).handler(new ChannelInitializer() {
+
+            protected void initChannel(Channel p_initChannel_1_) {
+                p_initChannel_1_.pipeline().addLast("packet_handler", var1);
+            }
+        }).channel(LocalChannel.class).connect(p_150722_0_).syncUninterruptibly();
+        return var1;
     }
 
     @Override
@@ -123,18 +170,18 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
         logger.debug("Enabled auto read");
     }
 
-    public void channelInactive(ChannelHandlerContext p_channelInactive_1_) {
-        this.closeChannel(new ChatComponentTranslation("disconnect.endOfStream", new Object[0]));
+    public void channelInactive(@NotNull ChannelHandlerContext p_channelInactive_1_) {
+        this.closeChannel(new ChatComponentTranslation("disconnect.endOfStream"));
     }
 
-    public void exceptionCaught(ChannelHandlerContext p_exceptionCaught_1_, Throwable p_exceptionCaught_2_) {
+    public void exceptionCaught(@NotNull ChannelHandlerContext p_exceptionCaught_1_, @NotNull Throwable p_exceptionCaught_2_) {
         ChatComponentTranslation var3;
 
         if (p_exceptionCaught_2_ instanceof TimeoutException) {
-            var3 = new ChatComponentTranslation("disconnect.timeout", new Object[0]);
+            var3 = new ChatComponentTranslation("disconnect.timeout");
         } else {
             var3 = new ChatComponentTranslation("disconnect.genericReason",
-                    new Object[]{"Internal Exception: " + p_exceptionCaught_2_});
+                    "Internal Exception: " + p_exceptionCaught_2_);
         }
 
         p_exceptionCaught_2_.printStackTrace();
@@ -159,7 +206,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
      * connection state (protocol)
      */
     public void setNetHandler(INetHandler p_150719_1_) {
-        Validate.notNull(p_150719_1_, "packetListener", new Object[0]);
+        Validate.notNull(p_150719_1_, "packetListener");
         logger.debug("Set listener of {} to {}", new Object[]{this, p_150719_1_});
         this.netHandler = p_150719_1_;
     }
@@ -188,7 +235,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
      */
     protected void dispatchPacket(final Packet p_150732_1_, final GenericFutureListener[] p_150732_2_) {
         final EnumConnectionState var3 = EnumConnectionState.func_150752_a(p_150732_1_);
-        final EnumConnectionState var4 = (EnumConnectionState) this.channel.attr(attrKeyConnectionState).get();
+        final EnumConnectionState var4 = this.channel.attr(attrKeyConnectionState).get();
 
         if (var4 != var3) {
             logger.debug("Disabled auto read");
@@ -220,7 +267,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     protected void flushOutboundQueue() {
         if (this.channel != null && this.channel.isOpen()) {
             while (!this.outboundPacketsQueue.isEmpty()) {
-                NetworkManager.InboundHandlerTuplePacketListener var1 = (NetworkManager.InboundHandlerTuplePacketListener) this.outboundPacketsQueue
+                NetworkManager.InboundHandlerTuplePacketListener var1 = this.outboundPacketsQueue
                         .poll();
                 this.dispatchPacket(var1.field_150774_a, var1.field_150773_b);
             }
@@ -232,7 +279,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
      */
     public void processReceivedPackets() {
         this.flushOutboundQueue();
-        EnumConnectionState var1 = (EnumConnectionState) this.channel.attr(attrKeyConnectionState).get();
+        EnumConnectionState var1 = this.channel.attr(attrKeyConnectionState).get();
 
         if (this.connectionState != var1) {
             if (this.connectionState != null) {
@@ -244,7 +291,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 
         if (this.netHandler != null) {
             for (int var2 = 1000; !this.receivedPacketsQueue.isEmpty() && var2 >= 0; --var2) {
-                Packet var3 = (Packet) this.receivedPacketsQueue.poll();
+                Packet var3 = this.receivedPacketsQueue.poll();
                 var3.processPacket(this.netHandler);
             }
 
@@ -252,13 +299,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
         }
 
         this.channel.flush();
-    }
-
-    /**
-     * Return the InetSocketAddress of the remote endpoint
-     */
-    public SocketAddress getSocketAddress() {
-        return this.socketAddress;
     }
 
     /**
@@ -279,59 +319,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
      */
     public boolean isLocalChannel() {
         return this.channel instanceof LocalChannel || this.channel instanceof LocalServerChannel;
-    }
-
-    /**
-     * Prepares a clientside NetworkManager: establishes a connection to the address
-     * and port supplied and configures
-     * the channel pipeline. Returns the newly created instance.
-     */
-    public static NetworkManager provideLanClient(Minecraft mc, InetAddress p_150726_0_, int p_150726_1_) {
-        final NetworkManager var2 = new NetworkManager(mc, true);
-        ((Bootstrap) ((Bootstrap) ((Bootstrap) (new Bootstrap()).group(eventLoops)).handler(new ChannelInitializer() {
-
-            protected void initChannel(Channel p_initChannel_1_) {
-                try {
-                    p_initChannel_1_.config().setOption(ChannelOption.IP_TOS, Integer.valueOf(24));
-                } catch (ChannelException var4) {
-                    ;
-                }
-
-                try {
-                    p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, true);
-                } catch (ChannelException var3) {
-                    ;
-                }
-
-                p_initChannel_1_.pipeline().addLast("timeout", new ReadTimeoutHandler(20))
-                        .addLast("latency_simulator", new LatencySimulatorHandler(mc))
-                        .addLast("splitter", new MessageDeserializer2())
-                        .addLast("decoder", new MessageDeserializer(NetworkManager.field_152462_h, mc))
-                        .addLast("prepender", new MessageSerializer2())
-                        .addLast("encoder", new MessageSerializer(NetworkManager.field_152462_h))
-                        .addLast("packet_handler", var2);
-            }
-        })).channel(Epoll.isAvailable() ? EpollSocketChannel.class
-                : KQueue.isAvailable() ? KQueueSocketChannel.class
-                : NioSocketChannel.class))
-                .connect(p_150726_0_, p_150726_1_).syncUninterruptibly();
-        return var2;
-    }
-
-    /**
-     * Prepares a clientside NetworkManager: establishes a connection to the socket
-     * supplied and configures the channel
-     * pipeline. Returns the newly created instance.
-     */
-    public static NetworkManager provideLocalClient(Minecraft mc, SocketAddress p_150722_0_) {
-        final NetworkManager var1 = new NetworkManager(mc, true);
-        ((Bootstrap) ((Bootstrap) ((Bootstrap) (new Bootstrap()).group(eventLoops)).handler(new ChannelInitializer() {
-
-            protected void initChannel(Channel p_initChannel_1_) {
-                p_initChannel_1_.pipeline().addLast("packet_handler", var1);
-            }
-        })).channel(LocalChannel.class)).connect(p_150722_0_).syncUninterruptibly();
-        return var1;
     }
 
     /**

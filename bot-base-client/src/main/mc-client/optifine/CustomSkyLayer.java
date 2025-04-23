@@ -4,7 +4,7 @@ import java.util.Properties;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class CustomSkyLayer {
     public String source = null;
@@ -17,7 +17,7 @@ public class CustomSkyLayer {
     private float speed = 1.0F;
     private float[] axis;
     public int textureId;
-    public static final float[] DEFAULT_AXIS = new float[] { 1.0F, 0.0F, 0.0F };
+    public static final float[] DEFAULT_AXIS = new float[]{1.0F, 0.0F, 0.0F};
     private final Minecraft mc;
 
     public CustomSkyLayer(Minecraft mc, Properties props, String defSource) {
@@ -129,7 +129,7 @@ public class CustomSkyLayer {
                     Config.warn("Invalid axis values: " + str);
                     return defVal;
                 } else {
-                    float[] as = new float[] { az, ay, -var9 };
+                    float[] as = new float[]{az, ay, -var9};
                     return as;
                 }
             }

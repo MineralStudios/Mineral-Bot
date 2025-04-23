@@ -10,13 +10,15 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 
 public class RenderIronGolem extends RenderLiving {
     private static final ResourceLocation ironGolemTextures = new ResourceLocation("textures/entity/iron_golem.png");
 
-    /** Iron Golem's Model. */
+    /**
+     * Iron Golem's Model.
+     */
     private final ModelIronGolem ironGolemModel;
 
     public RenderIronGolem(Minecraft mc) {
@@ -34,7 +36,7 @@ public class RenderIronGolem extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityIronGolem p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         super.doRender((EntityLiving) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 
@@ -92,7 +94,7 @@ public class RenderIronGolem extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityLiving p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         this.doRender((EntityIronGolem) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 
@@ -114,7 +116,7 @@ public class RenderIronGolem extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityLivingBase p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         this.doRender((EntityIronGolem) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 
@@ -136,7 +138,7 @@ public class RenderIronGolem extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         this.doRender((EntityIronGolem) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

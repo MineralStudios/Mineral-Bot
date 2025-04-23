@@ -117,10 +117,6 @@ open class ClientInstance(
     override fun runGameLoop() {
         if (!running) return
 
-        //if (mainThread == null) {
-        //   mainThread = Thread.currentThread()
-        //}
-
         var executing = false
         for (goal in goals) {
             if (goal is Sporadic && goal.executing) {
@@ -372,9 +368,9 @@ open class ClientInstance(
             }
         }
 
-    override fun newMouse(): Mouse = gg.mineral.bot.base.lwjgl.input.Mouse(this)
+    override fun newMouse(): Mouse = gg.mineral.bot.lwjgl.input.Mouse(this)
 
-    override fun newKeyboard(): Keyboard = gg.mineral.bot.base.lwjgl.input.Keyboard(this)
+    override fun newKeyboard(): Keyboard = gg.mineral.bot.lwjgl.input.Keyboard(this)
 
     override var displayHeight: Int
         get() = super.displayHeight
