@@ -1,46 +1,70 @@
 package net.minecraft.client.model;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.EntityDragon;
 
 public class ModelDragon extends ModelBase {
-    /** The head Model renderer of the dragon */
+    /**
+     * The head Model renderer of the dragon
+     */
     private ModelRenderer head;
 
-    /** The spine Model renderer of the dragon */
+    /**
+     * The spine Model renderer of the dragon
+     */
     private ModelRenderer spine;
 
-    /** The jaw Model renderer of the dragon */
+    /**
+     * The jaw Model renderer of the dragon
+     */
     private ModelRenderer jaw;
 
-    /** The body Model renderer of the dragon */
+    /**
+     * The body Model renderer of the dragon
+     */
     private ModelRenderer body;
 
-    /** The rear leg Model renderer of the dragon */
+    /**
+     * The rear leg Model renderer of the dragon
+     */
     private ModelRenderer rearLeg;
 
-    /** The front leg Model renderer of the dragon */
+    /**
+     * The front leg Model renderer of the dragon
+     */
     private ModelRenderer frontLeg;
 
-    /** The rear leg tip Model renderer of the dragon */
+    /**
+     * The rear leg tip Model renderer of the dragon
+     */
     private ModelRenderer rearLegTip;
 
-    /** The front leg tip Model renderer of the dragon */
+    /**
+     * The front leg tip Model renderer of the dragon
+     */
     private ModelRenderer frontLegTip;
 
-    /** The rear foot Model renderer of the dragon */
+    /**
+     * The rear foot Model renderer of the dragon
+     */
     private ModelRenderer rearFoot;
 
-    /** The front foot Model renderer of the dragon */
+    /**
+     * The front foot Model renderer of the dragon
+     */
     private ModelRenderer frontFoot;
 
-    /** The wing Model renderer of the dragon */
+    /**
+     * The wing Model renderer of the dragon
+     */
     private ModelRenderer wing;
 
-    /** The wing tip Model renderer of the dragon */
+    /**
+     * The wing tip Model renderer of the dragon
+     */
     private ModelRenderer wingTip;
     private float partialTicks;
 
@@ -135,7 +159,7 @@ public class ModelDragon extends ModelBase {
      * Sets the models various rotation angles then renders the model.
      */
     public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_,
-            float p_78088_6_, float p_78088_7_) {
+                       float p_78088_6_, float p_78088_7_) {
         GL11.glPushMatrix();
         EntityDragon var8 = (EntityDragon) p_78088_1_;
         float var9 = var8.prevAnimTime + (var8.animTime - var8.prevAnimTime) * this.partialTicks;

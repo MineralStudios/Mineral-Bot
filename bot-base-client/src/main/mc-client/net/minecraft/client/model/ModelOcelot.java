@@ -1,6 +1,6 @@
 package net.minecraft.client.model;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -8,28 +8,44 @@ import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.util.MathHelper;
 
 public class ModelOcelot extends ModelBase {
-    /** The back left leg model for the Ocelot. */
+    /**
+     * The back left leg model for the Ocelot.
+     */
     ModelRenderer ocelotBackLeftLeg;
 
-    /** The back right leg model for the Ocelot. */
+    /**
+     * The back right leg model for the Ocelot.
+     */
     ModelRenderer ocelotBackRightLeg;
 
-    /** The front left leg model for the Ocelot. */
+    /**
+     * The front left leg model for the Ocelot.
+     */
     ModelRenderer ocelotFrontLeftLeg;
 
-    /** The front right leg model for the Ocelot. */
+    /**
+     * The front right leg model for the Ocelot.
+     */
     ModelRenderer ocelotFrontRightLeg;
 
-    /** The tail model for the Ocelot. */
+    /**
+     * The tail model for the Ocelot.
+     */
     ModelRenderer ocelotTail;
 
-    /** The second part of tail model for the Ocelot. */
+    /**
+     * The second part of tail model for the Ocelot.
+     */
     ModelRenderer ocelotTail2;
 
-    /** The head model for the Ocelot. */
+    /**
+     * The head model for the Ocelot.
+     */
     ModelRenderer ocelotHead;
 
-    /** The body model for the Ocelot. */
+    /**
+     * The body model for the Ocelot.
+     */
     ModelRenderer ocelotBody;
     int field_78163_i = 1;
 
@@ -72,7 +88,7 @@ public class ModelOcelot extends ModelBase {
      * Sets the models various rotation angles then renders the model.
      */
     public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_,
-            float p_78088_6_, float p_78088_7_) {
+                       float p_78088_6_, float p_78088_7_) {
         this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_, p_78088_1_);
 
         if (this.isChild) {
@@ -113,7 +129,7 @@ public class ModelOcelot extends ModelBase {
      * "far" arms and legs can swing at most.
      */
     public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_,
-            float p_78087_5_, float p_78087_6_, Entity p_78087_7_) {
+                                  float p_78087_5_, float p_78087_6_, Entity p_78087_7_) {
         this.ocelotHead.rotateAngleX = p_78087_5_ / (180F / (float) Math.PI);
         this.ocelotHead.rotateAngleY = p_78087_4_ / (180F / (float) Math.PI);
 

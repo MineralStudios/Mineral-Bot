@@ -6,7 +6,7 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class GuiButton extends Gui {
     protected static final ResourceLocation field_146122_a = new ResourceLocation("textures/gui/widgets.png");
@@ -15,7 +15,9 @@ public class GuiButton extends Gui {
     public int field_146128_h;
     public int field_146129_i;
 
-    /** The string displayed on this control. */
+    /**
+     * The string displayed on this control.
+     */
     public String displayString;
     public int id;
     public boolean enabled;
@@ -27,7 +29,7 @@ public class GuiButton extends Gui {
     }
 
     public GuiButton(Minecraft mc, int p_i46323_1_, int p_i46323_2_, int p_i46323_3_, int p_i46323_4_, int p_i46323_5_,
-            String p_i46323_6_) {
+                     String p_i46323_6_) {
         super(mc);
         this.field_146120_f = 200;
         this.field_146121_g = 20;

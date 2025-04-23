@@ -1,6 +1,6 @@
 package net.minecraft.client.model;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,14 +14,20 @@ public class ModelHorse extends ModelBase {
     private ModelRenderer horseLeftEar;
     private ModelRenderer horseRightEar;
 
-    /** The left ear box for the mule model. */
+    /**
+     * The left ear box for the mule model.
+     */
     private ModelRenderer muleLeftEar;
 
-    /** The right ear box for the mule model. */
+    /**
+     * The right ear box for the mule model.
+     */
     private ModelRenderer muleRightEar;
     private ModelRenderer neck;
 
-    /** The box for the horse's ropes on its face. */
+    /**
+     * The box for the horse's ropes on its face.
+     */
     private ModelRenderer horseFaceRopes;
     private ModelRenderer mane;
     private ModelRenderer body;
@@ -41,10 +47,14 @@ public class ModelHorse extends ModelBase {
     private ModelRenderer frontRightShin;
     private ModelRenderer frontRightHoof;
 
-    /** The left chest box on the mule model. */
+    /**
+     * The left chest box on the mule model.
+     */
     private ModelRenderer muleLeftChest;
 
-    /** The right chest box on the mule model. */
+    /**
+     * The right chest box on the mule model.
+     */
     private ModelRenderer muleRightChest;
     private ModelRenderer horseSaddleBottom;
     private ModelRenderer horseSaddleFront;
@@ -54,10 +64,14 @@ public class ModelHorse extends ModelBase {
     private ModelRenderer horseRightSaddleRope;
     private ModelRenderer horseRightSaddleMetal;
 
-    /** The left metal connected to the horse's face ropes. */
+    /**
+     * The left metal connected to the horse's face ropes.
+     */
     private ModelRenderer horseLeftFaceMetal;
 
-    /** The right metal connected to the horse's face ropes. */
+    /**
+     * The right metal connected to the horse's face ropes.
+     */
     private ModelRenderer horseRightFaceMetal;
     private ModelRenderer horseLeftRein;
     private ModelRenderer horseRightRein;
@@ -207,7 +221,7 @@ public class ModelHorse extends ModelBase {
      * Sets the models various rotation angles then renders the model.
      */
     public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_,
-            float p_78088_6_, float p_78088_7_) {
+                       float p_78088_6_, float p_78088_7_) {
         EntityHorse var8 = (EntityHorse) p_78088_1_;
         int var9 = var8.getHorseType();
         float var10 = var8.getGrassEatingAmount(0.0F);

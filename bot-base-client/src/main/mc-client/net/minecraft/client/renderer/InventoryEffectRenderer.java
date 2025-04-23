@@ -1,7 +1,7 @@
 package net.minecraft.client.renderer;
 
 import gg.mineral.bot.api.screen.type.InvEffectRendererScreen;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -11,7 +11,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 
 public abstract class InventoryEffectRenderer extends GuiContainer implements InvEffectRendererScreen {
@@ -75,7 +74,6 @@ public abstract class InventoryEffectRenderer extends GuiContainer implements In
         int var1 = this.xShift - 124;
         int var2 = this.yShift;
         boolean var3 = true;
-        @Nullable
         val var4 = this.mc.thePlayer != null ? this.mc.thePlayer.getActivePotionEffects() : null;
 
         if (var4 != null && !var4.isEmpty()) {
@@ -89,7 +87,7 @@ public abstract class InventoryEffectRenderer extends GuiContainer implements In
             if (this.mc.thePlayer != null)
                 for (Iterator<PotionEffect> var6 = this.mc.thePlayer.getActivePotionEffects().iterator(); var6
                         .hasNext(); var2 += var5) {
-                    PotionEffect var7 = (PotionEffect) var6.next();
+                    PotionEffect var7 = var6.next();
                     Potion var8 = Potion.potionTypes[var7.getPotionID()];
                     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                     TextureManager textureManager = this.mc.getTextureManager();
@@ -101,17 +99,17 @@ public abstract class InventoryEffectRenderer extends GuiContainer implements In
 
                     if (var8.hasStatusIcon()) {
                         int var9 = var8.getStatusIconIndex();
-                        this.drawTexturedModalRect(var1 + 6, var2 + 7, 0 + var9 % 8 * 18, 198 + var9 / 8 * 18, 18, 18);
+                        this.drawTexturedModalRect(var1 + 6, var2 + 7, var9 % 8 * 18, 198 + var9 / 8 * 18, 18, 18);
                     }
 
-                    String var11 = I18n.format(var8.getName(), new Object[0]);
+                    String var11 = I18n.format(var8.getName());
 
                     if (var7.getAmplifier() == 1)
-                        var11 = var11 + " " + I18n.format("enchantment.level.2", new Object[0]);
+                        var11 = var11 + " " + I18n.format("enchantment.level.2");
                     else if (var7.getAmplifier() == 2)
-                        var11 = var11 + " " + I18n.format("enchantment.level.3", new Object[0]);
+                        var11 = var11 + " " + I18n.format("enchantment.level.3");
                     else if (var7.getAmplifier() == 3)
-                        var11 = var11 + " " + I18n.format("enchantment.level.4", new Object[0]);
+                        var11 = var11 + " " + I18n.format("enchantment.level.4");
 
                     if (this.fontRendererObj != null)
                         this.fontRendererObj.drawStringWithShadow(var11, var1 + 10 + 18, var2 + 6, 16777215);

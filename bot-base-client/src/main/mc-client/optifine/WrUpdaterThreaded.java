@@ -1,6 +1,6 @@
 package optifine;
 
-import gg.mineral.bot.base.lwjgl.opengl.Display;
+import gg.mineral.bot.lwjgl.opengl.Display;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;

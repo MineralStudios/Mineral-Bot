@@ -1,0 +1,16 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group = 'gg.mineral'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly project(':bot-api')
+    compileOnly project(':bot-shared-library')
+    implementation 'org.lwjgl.lwjgl:lwjgl:2.9.3'
+    implementation 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
+}

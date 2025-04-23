@@ -1,21 +1,21 @@
 package optifine;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.Pbuffer;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class WrUpdateThread extends Thread {
     private Pbuffer pbuffer = null;
-    private Object lock = new Object();
-    private List<WorldRenderer> updateList = new LinkedList<>();
-    private List<WorldRenderer> updatedList = new LinkedList<>();
+    private final Object lock = new Object();
+    private final List<WorldRenderer> updateList = new LinkedList<>();
+    private final List<WorldRenderer> updatedList = new LinkedList<>();
     private int updateCount = 0;
-    private Tessellator mainTessellator;
-    private Tessellator threadTessellator;
+    private final Tessellator mainTessellator;
+    private final Tessellator threadTessellator;
     private boolean working;
     private WorldRendererThreaded currentRenderer;
     private boolean canWork;
@@ -45,7 +45,7 @@ public class WrUpdateThread extends Thread {
         }
 
         WrUpdateThread.ThreadUpdateListener updateListener = new WrUpdateThread.ThreadUpdateListener(
-                (WrUpdateThread.NamelessClass750854124) null);
+                null);
 
         while (!Thread.interrupted() && !this.terminated) {
             try {
@@ -55,7 +55,7 @@ public class WrUpdateThread extends Thread {
                     return;
                 }
 
-                this.checkCanWork((IWrUpdateControl) null);
+                this.checkCanWork(null);
 
                 try {
                     this.currentRenderer = e;
@@ -112,7 +112,6 @@ public class WrUpdateThread extends Thread {
                         return (WorldRendererThreaded) var10000;
                     }
                 } catch (InterruptedException var4) {
-                    ;
                 }
             }
 
@@ -126,7 +125,7 @@ public class WrUpdateThread extends Thread {
         Object var1 = this.lock;
 
         synchronized (this.lock) {
-            return this.updateList.size() > 0 ? true : (this.currentRenderer != null ? true : this.working);
+            return this.updateList.size() > 0 || (this.currentRenderer != null || this.working);
         }
     }
 
@@ -176,7 +175,6 @@ public class WrUpdateThread extends Thread {
                 try {
                     this.lock.wait();
                 } catch (InterruptedException var4) {
-                    ;
                 }
             }
 
@@ -215,7 +213,6 @@ public class WrUpdateThread extends Thread {
                     try {
                         this.lock.wait();
                     } catch (InterruptedException var4) {
-                        ;
                     }
                 }
 
@@ -240,7 +237,6 @@ public class WrUpdateThread extends Thread {
                 try {
                     this.lock.wait();
                 } catch (InterruptedException var5) {
-                    ;
                 }
             }
 
@@ -261,7 +257,7 @@ public class WrUpdateThread extends Thread {
             this.unpauseToEndOfUpdate();
 
             for (int i = 0; i < this.updateList.size(); ++i) {
-                WorldRenderer wr = (WorldRenderer) this.updateList.get(i);
+                WorldRenderer wr = this.updateList.get(i);
                 wr.needsUpdate = true;
                 wr.isUpdating = false;
             }
@@ -337,10 +333,10 @@ public class WrUpdateThread extends Thread {
     }
 
     private class ThreadUpdateListener implements IWrUpdateListener {
-        private WrUpdateThread.ThreadUpdateControl tuc;
+        private final WrUpdateThread.ThreadUpdateControl tuc;
 
         private ThreadUpdateListener() {
-            this.tuc = WrUpdateThread.this.new ThreadUpdateControl((WrUpdateThread.NamelessClass750854124) null);
+            this.tuc = WrUpdateThread.this.new ThreadUpdateControl(null);
         }
 
         public void updating(IWrUpdateControl uc) {

@@ -1,6 +1,6 @@
 package net.minecraft.client.renderer.entity;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBook;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -22,8 +22,8 @@ public class RenderEnchantmentTable extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntityEnchantmentTable p_147500_1_, double p_147500_2_,
-            double p_147500_4_,
-            double p_147500_6_, float p_147500_8_) {
+                                   double p_147500_4_,
+                                   double p_147500_6_, float p_147500_8_) {
 
         GL11.glPushMatrix();
         GL11.glTranslatef((float) p_147500_2_ + 0.5F, (float) p_147500_4_ + 0.75F, (float) p_147500_6_ + 0.5F);
@@ -75,7 +75,7 @@ public class RenderEnchantmentTable extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_,
-            float p_147500_8_) {
+                                   float p_147500_8_) {
         this.renderTileEntityAt((TileEntityEnchantmentTable) p_147500_1_, p_147500_2_, p_147500_4_, p_147500_6_,
                 p_147500_8_);
     }

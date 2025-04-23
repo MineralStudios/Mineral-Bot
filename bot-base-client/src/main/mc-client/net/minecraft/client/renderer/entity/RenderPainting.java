@@ -7,8 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 
 public class RenderPainting extends Render {
     public RenderPainting(Minecraft mc) {
@@ -28,7 +28,7 @@ public class RenderPainting extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityPainting p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         GL11.glPushMatrix();
         GL11.glTranslated(p_76986_2_, p_76986_4_, p_76986_6_);
         GL11.glRotatef(p_76986_8_, 0.0F, 1.0F, 0.0F);
@@ -51,7 +51,7 @@ public class RenderPainting extends Render {
     }
 
     private void func_77010_a(EntityPainting p_77010_1_, int p_77010_2_, int p_77010_3_, int p_77010_4_,
-            int p_77010_5_) {
+                              int p_77010_5_) {
         float var6 = (float) (-p_77010_2_) / 2.0F;
         float var7 = (float) (-p_77010_3_) / 2.0F;
         float var8 = 0.5F;
@@ -165,7 +165,7 @@ public class RenderPainting extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         this.doRender((EntityPainting) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

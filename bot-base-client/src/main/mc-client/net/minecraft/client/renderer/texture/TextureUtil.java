@@ -6,9 +6,9 @@ import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
-import gg.mineral.bot.base.lwjgl.opengl.GL14;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL14;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
@@ -32,9 +32,9 @@ public class TextureUtil {
         missingTextureData = missingTexture.getTextureData();
         int var0 = -16777216;
         int var1 = -524040;
-        int[] var2 = new int[] { -524040, -524040, -524040, -524040, -524040, -524040, -524040, -524040 };
-        int[] var3 = new int[] { -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-                -16777216 };
+        int[] var2 = new int[]{-524040, -524040, -524040, -524040, -524040, -524040, -524040, -524040};
+        int[] var3 = new int[]{-16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
+                -16777216};
         int var4 = var2.length;
 
         for (int var5 = 0; var5 < 16; ++var5) {
@@ -58,7 +58,7 @@ public class TextureUtil {
     }
 
     public static void uploadTexture(Minecraft mc, IntBuffer dataBuffer, int par0, int[] par1ArrayOfInteger, int par2,
-            int par3) {
+                                     int par3) {
         bindTexture(par0);
         func_147947_a(mc, dataBuffer, 0, par1ArrayOfInteger, par2, par3, 0, 0, false, false, false);
     }
@@ -105,12 +105,12 @@ public class TextureUtil {
     }
 
     private static int func_147943_a(int p_147943_0_, int p_147943_1_, int p_147943_2_, int p_147943_3_,
-            boolean p_147943_4_) {
+                                     boolean p_147943_4_) {
         return Mipmaps.alphaBlend(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_);
     }
 
     private static int func_147944_a(int p_147944_0_, int p_147944_1_, int p_147944_2_, int p_147944_3_,
-            int p_147944_4_) {
+                                     int p_147944_4_) {
         float var5 = (float) Math.pow((double) ((float) (p_147944_0_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
         float var6 = (float) Math.pow((double) ((float) (p_147944_1_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
         float var7 = (float) Math.pow((double) ((float) (p_147944_2_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
@@ -120,9 +120,9 @@ public class TextureUtil {
     }
 
     public static void func_147955_a(Minecraft mc, IntBuffer dataBuffer, int[][] p_147955_0_, int p_147955_1_,
-            int p_147955_2_,
-            int p_147955_3_,
-            int p_147955_4_, boolean p_147955_5_, boolean p_147955_6_) {
+                                     int p_147955_2_,
+                                     int p_147955_3_,
+                                     int p_147955_4_, boolean p_147955_5_, boolean p_147955_6_) {
         for (int var7 = 0; var7 < p_147955_0_.length; ++var7) {
             int[] var8 = p_147955_0_[var7];
             func_147947_a(mc, dataBuffer, var7, var8, p_147955_1_ >> var7, p_147955_2_ >> var7, p_147955_3_ >> var7,
@@ -131,9 +131,9 @@ public class TextureUtil {
     }
 
     private static void func_147947_a(Minecraft mc, IntBuffer dataBuffer, int p_147947_0_, int[] p_147947_1_,
-            int p_147947_2_,
-            int p_147947_3_,
-            int p_147947_4_, int p_147947_5_, boolean p_147947_6_, boolean p_147947_7_, boolean p_147947_8_) {
+                                      int p_147947_2_,
+                                      int p_147947_3_,
+                                      int p_147947_4_, int p_147947_5_, boolean p_147947_6_, boolean p_147947_7_, boolean p_147947_8_) {
         int var9 = 4194304 / p_147947_2_;
         func_147954_b(p_147947_6_, p_147947_8_);
         setTextureClamped(p_147947_7_);
@@ -150,7 +150,7 @@ public class TextureUtil {
     }
 
     public static int uploadTextureImageAllocate(Minecraft mc, int par0, BufferedImage par1BufferedImage, boolean par2,
-            boolean par3) {
+                                                 boolean par3) {
         allocateTexture(par0, par1BufferedImage.getWidth(), par1BufferedImage.getHeight());
         return uploadTextureImageSub(mc, par0, par1BufferedImage, 0, 0, par2, par3);
     }
@@ -160,7 +160,7 @@ public class TextureUtil {
     }
 
     public static void func_147946_a(int p_147946_0_, int p_147946_1_, int p_147946_2_, int p_147946_3_,
-            float p_147946_4_) {
+                                     float p_147946_4_) {
         Class monitor = TextureUtil.class;
 
         if (Reflector.SplashScreen.exists()) {
@@ -190,8 +190,8 @@ public class TextureUtil {
     }
 
     public static int uploadTextureImageSub(Minecraft mc, int par0, BufferedImage par1BufferedImage, int par2, int par3,
-            boolean par4,
-            boolean par5) {
+                                            boolean par4,
+                                            boolean par5) {
         bindTexture(par0);
         TextureUtil textureUtil = mc.textureUtil;
 
@@ -201,9 +201,9 @@ public class TextureUtil {
     }
 
     private static void uploadTextureImageSubImpl(Minecraft mc, IntBuffer dataBuffer, BufferedImage par0BufferedImage,
-            int par1, int par2,
-            boolean par3,
-            boolean par4) {
+                                                  int par1, int par2,
+                                                  boolean par3,
+                                                  boolean par4) {
         int var5 = par0BufferedImage.getWidth();
         int var6 = par0BufferedImage.getHeight();
         int var7 = 4194304 / var5;
@@ -283,7 +283,7 @@ public class TextureUtil {
     }
 
     private static void copyToBufferPos(Minecraft mc, IntBuffer dataBuffer, int[] par0ArrayOfInteger, int par1,
-            int par2) {
+                                        int par2) {
         int[] var3 = par0ArrayOfInteger;
 
         if (mc.gameSettings.anaglyph)

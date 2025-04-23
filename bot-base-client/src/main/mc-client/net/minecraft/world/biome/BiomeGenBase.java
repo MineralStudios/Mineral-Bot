@@ -1,28 +1,12 @@
 package net.minecraft.world.biome;
 
 import com.google.common.collect.Sets;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityEnderman;
-import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.entity.monster.EntityWitch;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.passive.EntityBat;
-import net.minecraft.entity.passive.EntityChicken;
-import net.minecraft.entity.passive.EntityCow;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.entity.passive.EntitySquid;
+import net.minecraft.entity.monster.*;
+import net.minecraft.entity.passive.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.WeightedRandom;
@@ -30,15 +14,15 @@ import net.minecraft.world.ColorizerFoliage;
 import net.minecraft.world.ColorizerGrass;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
-import net.minecraft.world.gen.feature.WorldGenAbstractTree;
-import net.minecraft.world.gen.feature.WorldGenBigTree;
-import net.minecraft.world.gen.feature.WorldGenDoublePlant;
-import net.minecraft.world.gen.feature.WorldGenSwamp;
-import net.minecraft.world.gen.feature.WorldGenTallGrass;
-import net.minecraft.world.gen.feature.WorldGenTrees;
-import net.minecraft.world.gen.feature.WorldGenerator;
+import net.minecraft.world.gen.feature.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 public abstract class BiomeGenBase {
     private static final Logger logger = LogManager.getLogger(BiomeGenBase.class);
@@ -56,7 +40,9 @@ public abstract class BiomeGenBase {
     protected static final BiomeGenBase.Height field_150598_l = new BiomeGenBase.Height(0.2F, 0.3F);
     protected static final BiomeGenBase.Height field_150599_m = new BiomeGenBase.Height(-0.2F, 0.1F);
 
-    /** An array of all the biomes, indexed by biome id. */
+    /**
+     * An array of all the biomes, indexed by biome id.
+     */
     private static final BiomeGenBase[] biomeList = new BiomeGenBase[256];
     public static final Set field_150597_n = Sets.newHashSet();
     public static final BiomeGenBase ocean = (new BiomeGenOcean(0)).setColor(112).setBiomeName("Ocean")
@@ -76,7 +62,9 @@ public abstract class BiomeGenBase {
     public static final BiomeGenBase hell = (new BiomeGenHell(8)).setColor(16711680).setBiomeName("Hell")
             .setDisableRain().setTemperatureRainfall(2.0F, 0.0F);
 
-    /** Is the biome used for sky world. */
+    /**
+     * Is the biome used for sky world.
+     */
     public static final BiomeGenBase sky = (new BiomeGenEnd(9)).setColor(8421631).setBiomeName("Sky").setDisableRain();
     public static final BiomeGenBase frozenOcean = (new BiomeGenOcean(10)).setColor(9474208).setBiomeName("FrozenOcean")
             .setEnableSnow().func_150570_a(field_150595_c).setTemperatureRainfall(0.0F, 0.5F);
@@ -94,30 +82,42 @@ public abstract class BiomeGenBase {
     public static final BiomeGenBase mushroomIslandShore = (new BiomeGenMushroomIsland(15)).setColor(10486015)
             .setBiomeName("MushroomIslandShore").setTemperatureRainfall(0.9F, 1.0F).func_150570_a(field_150600_j);
 
-    /** Beach biome. */
+    /**
+     * Beach biome.
+     */
     public static final BiomeGenBase beach = (new BiomeGenBeach(16)).setColor(16440917).setBiomeName("Beach")
             .setTemperatureRainfall(0.8F, 0.4F).func_150570_a(field_150600_j);
 
-    /** Desert Hills biome. */
+    /**
+     * Desert Hills biome.
+     */
     public static final BiomeGenBase desertHills = (new BiomeGenDesert(17)).setColor(13786898)
             .setBiomeName("DesertHills").setDisableRain().setTemperatureRainfall(2.0F, 0.0F)
             .func_150570_a(field_150591_g);
 
-    /** Forest Hills biome. */
+    /**
+     * Forest Hills biome.
+     */
     public static final BiomeGenBase forestHills = (new BiomeGenForest(18, 0)).setColor(2250012)
             .setBiomeName("ForestHills").func_150570_a(field_150591_g);
 
-    /** Taiga Hills biome. */
+    /**
+     * Taiga Hills biome.
+     */
     public static final BiomeGenBase taigaHills = (new BiomeGenTaiga(19, 0)).setColor(1456435)
             .setBiomeName("TaigaHills").func_76733_a(5159473).setTemperatureRainfall(0.25F, 0.8F)
             .func_150570_a(field_150591_g);
 
-    /** Extreme Hills Edge biome. */
+    /**
+     * Extreme Hills Edge biome.
+     */
     public static final BiomeGenBase extremeHillsEdge = (new BiomeGenHills(20, true)).setColor(7501978)
             .setBiomeName("Extreme Hills Edge").func_150570_a(field_150603_i.func_150775_a())
             .setTemperatureRainfall(0.2F, 0.3F);
 
-    /** Jungle biome identifier */
+    /**
+     * Jungle biome identifier
+     */
     public static final BiomeGenBase jungle = (new BiomeGenJungle(21, false)).setColor(5470985).setBiomeName("Jungle")
             .func_76733_a(5470985).setTemperatureRainfall(0.95F, 0.9F);
     public static final BiomeGenBase jungleHills = (new BiomeGenJungle(22, false)).setColor(2900485)
@@ -170,51 +170,69 @@ public abstract class BiomeGenBase {
     public int color;
     public int field_150609_ah;
 
-    /** The block expected to be on the top of this biome */
+    /**
+     * The block expected to be on the top of this biome
+     */
     public Block topBlock;
     public int field_150604_aj;
 
-    /** The block to fill spots in when not on the top */
+    /**
+     * The block to fill spots in when not on the top
+     */
     public Block fillerBlock;
     public int field_76754_C;
 
-    /** The minimum height of this biome. Default 0.1. */
+    /**
+     * The minimum height of this biome. Default 0.1.
+     */
     public float minHeight;
 
-    /** The maximum height of this biome. Default 0.3. */
+    /**
+     * The maximum height of this biome. Default 0.3.
+     */
     public float maxHeight;
 
-    /** The temperature of this biome. */
+    /**
+     * The temperature of this biome.
+     */
     public float temperature;
 
-    /** The rainfall in this biome. */
+    /**
+     * The rainfall in this biome.
+     */
     public float rainfall;
 
-    /** Color tint applied to water depending on biome */
+    /**
+     * Color tint applied to water depending on biome
+     */
     public int waterColorMultiplier;
 
-    /** The biome decorator. */
+    /**
+     * The biome decorator.
+     */
     public BiomeDecorator theBiomeDecorator;
 
     /**
      * Holds the classes of IMobs (hostile mobs) that can be spawned in the biome.
      */
-    protected List spawnableMonsterList;
+    protected List<BiomeGenBase.SpawnListEntry> spawnableMonsterList;
 
     /**
      * Holds the classes of any creature that can be spawned in the biome as
      * friendly creature.
      */
-    protected List spawnableCreatureList;
+    protected List<BiomeGenBase.SpawnListEntry> spawnableCreatureList;
 
     /**
      * Holds the classes of any aquatic creature that can be spawned in the water of
      * the biome.
      */
-    protected List spawnableWaterCreatureList;
-    protected List spawnableCaveCreatureList;
+    protected List<BiomeGenBase.SpawnListEntry> spawnableWaterCreatureList;
+    protected List<BiomeGenBase.SpawnListEntry> spawnableCaveCreatureList;
 
-    /** Set to true if snow is enabled for this biome. */
+    /**
+     * Set to true if snow is enabled for this biome.
+     */
     protected boolean enableSnow;
 
     /**
@@ -223,16 +241,24 @@ public abstract class BiomeGenBase {
      */
     protected boolean enableRain;
 
-    /** The id number to this biome, and its index in the biomeList array. */
+    /**
+     * The id number to this biome, and its index in the biomeList array.
+     */
     public final int biomeID;
 
-    /** The tree generator. */
+    /**
+     * The tree generator.
+     */
     protected WorldGenTrees worldGeneratorTrees;
 
-    /** The big tree generator. */
+    /**
+     * The big tree generator.
+     */
     protected WorldGenBigTree worldGeneratorBigTree;
 
-    /** The swamp tree generator. */
+    /**
+     * The swamp tree generator.
+     */
     protected WorldGenSwamp worldGeneratorSwamp;
 
     protected BiomeGenBase(int p_i1971_1_) {
@@ -306,8 +332,8 @@ public abstract class BiomeGenBase {
     }
 
     public WorldGenAbstractTree func_150567_a(Random p_150567_1_) {
-        return (WorldGenAbstractTree) (p_150567_1_.nextInt(10) == 0 ? this.worldGeneratorBigTree
-                : this.worldGeneratorTrees);
+        return p_150567_1_.nextInt(10) == 0 ? this.worldGeneratorBigTree
+                : this.worldGeneratorTrees;
     }
 
     /**
@@ -384,8 +410,8 @@ public abstract class BiomeGenBase {
     public List getSpawnableList(EnumCreatureType p_76747_1_) {
         return p_76747_1_ == EnumCreatureType.monster ? this.spawnableMonsterList
                 : (p_76747_1_ == EnumCreatureType.creature ? this.spawnableCreatureList
-                        : (p_76747_1_ == EnumCreatureType.waterCreature ? this.spawnableWaterCreatureList
-                                : (p_76747_1_ == EnumCreatureType.ambient ? this.spawnableCaveCreatureList : null)));
+                : (p_76747_1_ == EnumCreatureType.waterCreature ? this.spawnableWaterCreatureList
+                : (p_76747_1_ == EnumCreatureType.ambient ? this.spawnableCaveCreatureList : null)));
     }
 
     /**
@@ -400,7 +426,7 @@ public abstract class BiomeGenBase {
      * bolts enabled and have rain enabled.
      */
     public boolean canSpawnLightningBolt() {
-        return this.func_150559_j() ? false : this.enableRain;
+        return !this.func_150559_j() && this.enableRain;
     }
 
     /**
@@ -436,8 +462,8 @@ public abstract class BiomeGenBase {
      */
     public final float getFloatTemperature(int p_150564_1_, int p_150564_2_, int p_150564_3_) {
         if (p_150564_2_ > 64) {
-            float var4 = (float) field_150605_ac.func_151601_a((double) p_150564_1_ * 1.0D / 8.0D,
-                    (double) p_150564_3_ * 1.0D / 8.0D) * 4.0F;
+            float var4 = (float) field_150605_ac.func_151601_a((double) p_150564_1_ / 8.0D,
+                    (double) p_150564_3_ / 8.0D) * 4.0F;
             return this.temperature - (var4 + (float) p_150564_2_ - 64.0F) * 0.05F / 30.0F;
         } else {
             return this.temperature;
@@ -452,9 +478,9 @@ public abstract class BiomeGenBase {
      * Provides the basic grass color based on the biome temperature and rainfall
      */
     public int getBiomeGrassColor(int p_150558_1_, int p_150558_2_, int p_150558_3_) {
-        double var4 = (double) MathHelper.clamp_float(this.getFloatTemperature(p_150558_1_, p_150558_2_, p_150558_3_),
+        double var4 = MathHelper.clamp_float(this.getFloatTemperature(p_150558_1_, p_150558_2_, p_150558_3_),
                 0.0F, 1.0F);
-        double var6 = (double) MathHelper.clamp_float(this.getFloatRainfall(), 0.0F, 1.0F);
+        double var6 = MathHelper.clamp_float(this.getFloatRainfall(), 0.0F, 1.0F);
         return ColorizerGrass.getGrassColor(var4, var6);
     }
 
@@ -462,9 +488,9 @@ public abstract class BiomeGenBase {
      * Provides the basic foliage color based on the biome temperature and rainfall
      */
     public int getBiomeFoliageColor(int p_150571_1_, int p_150571_2_, int p_150571_3_) {
-        double var4 = (double) MathHelper.clamp_float(this.getFloatTemperature(p_150571_1_, p_150571_2_, p_150571_3_),
+        double var4 = MathHelper.clamp_float(this.getFloatTemperature(p_150571_1_, p_150571_2_, p_150571_3_),
                 0.0F, 1.0F);
-        double var6 = (double) MathHelper.clamp_float(this.getFloatRainfall(), 0.0F, 1.0F);
+        double var6 = MathHelper.clamp_float(this.getFloatRainfall(), 0.0F, 1.0F);
         return ColorizerFoliage.getFoliageColor(var4, var6);
     }
 
@@ -473,12 +499,12 @@ public abstract class BiomeGenBase {
     }
 
     public void func_150573_a(World p_150573_1_, Random p_150573_2_, Block[] p_150573_3_, byte[] p_150573_4_,
-            int p_150573_5_, int p_150573_6_, double p_150573_7_) {
+                              int p_150573_5_, int p_150573_6_, double p_150573_7_) {
         this.func_150560_b(p_150573_1_, p_150573_2_, p_150573_3_, p_150573_4_, p_150573_5_, p_150573_6_, p_150573_7_);
     }
 
     public final void func_150560_b(World p_150560_1_, Random p_150560_2_, Block[] p_150560_3_, byte[] p_150560_4_,
-            int p_150560_5_, int p_150560_6_, double p_150560_7_) {
+                                    int p_150560_5_, int p_150560_6_, double p_150560_7_) {
         boolean var9 = true;
         Block var10 = this.topBlock;
         byte var11 = (byte) (this.field_150604_aj & 255);
@@ -492,7 +518,7 @@ public abstract class BiomeGenBase {
         for (int var18 = 255; var18 >= 0; --var18) {
             int var19 = (var16 * 16 + var15) * var17 + var18;
 
-            if (var18 <= 0 + p_150560_2_.nextInt(5)) {
+            if (var18 <= p_150560_2_.nextInt(5)) {
                 p_150560_3_[var19] = Blocks.bedrock;
             } else {
                 Block var20 = p_150560_3_[var19];
@@ -558,14 +584,13 @@ public abstract class BiomeGenBase {
     }
 
     public boolean func_150569_a(BiomeGenBase p_150569_1_) {
-        return p_150569_1_ == this ? true
-                : (p_150569_1_ == null ? false : this.func_150562_l() == p_150569_1_.func_150562_l());
+        return p_150569_1_ == this || (p_150569_1_ != null && this.func_150562_l() == p_150569_1_.func_150562_l());
     }
 
     public BiomeGenBase.TempCategory func_150561_m() {
         return (double) this.temperature < 0.2D ? BiomeGenBase.TempCategory.COLD
                 : ((double) this.temperature < 1.0D ? BiomeGenBase.TempCategory.MEDIUM
-                        : BiomeGenBase.TempCategory.WARM);
+                : BiomeGenBase.TempCategory.WARM);
     }
 
     public static BiomeGenBase[] getBiomeGenArray() {
@@ -655,13 +680,13 @@ public abstract class BiomeGenBase {
         }
     }
 
-    public static enum TempCategory {
+    public enum TempCategory {
         OCEAN("OCEAN", 0), COLD("COLD", 1), MEDIUM("MEDIUM", 2), WARM("WARM", 3);
 
-        private static final BiomeGenBase.TempCategory[] $VALUES = new BiomeGenBase.TempCategory[] { OCEAN, COLD,
-                MEDIUM, WARM };
+        private static final BiomeGenBase.TempCategory[] $VALUES = new BiomeGenBase.TempCategory[]{OCEAN, COLD,
+                MEDIUM, WARM};
 
-        private TempCategory(String p_i45372_1_, int p_i45372_2_) {
+        TempCategory(String p_i45372_1_, int p_i45372_2_) {
         }
     }
 }

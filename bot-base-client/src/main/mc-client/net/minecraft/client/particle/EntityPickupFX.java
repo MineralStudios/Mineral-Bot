@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class EntityPickupFX extends EntityFX {
     private Entity entityToPickUp;
@@ -14,7 +14,9 @@ public class EntityPickupFX extends EntityFX {
     private int age;
     private int maxAge;
 
-    /** renamed from yOffset to fix shadowing Entity.yOffset */
+    /**
+     * renamed from yOffset to fix shadowing Entity.yOffset
+     */
     private float yOffs;
     private final Minecraft mc;
 
@@ -29,7 +31,7 @@ public class EntityPickupFX extends EntityFX {
     }
 
     public void renderParticle(Tessellator p_70539_1_, float p_70539_2_, float p_70539_3_, float p_70539_4_,
-            float p_70539_5_, float p_70539_6_, float p_70539_7_) {
+                               float p_70539_5_, float p_70539_6_, float p_70539_7_) {
         float var8 = ((float) this.age + p_70539_2_) / (float) this.maxAge;
         var8 *= var8;
         double var9 = this.entityToPickUp.posX;

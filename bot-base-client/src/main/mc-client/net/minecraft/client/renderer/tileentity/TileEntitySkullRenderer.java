@@ -6,8 +6,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelSkeletonHead;
@@ -36,7 +36,7 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntitySkull p_147500_1_, double p_147500_2_, double p_147500_4_,
-            double p_147500_6_, float p_147500_8_) {
+                                   double p_147500_6_, float p_147500_8_) {
         this.func_152674_a((float) p_147500_2_, (float) p_147500_4_, (float) p_147500_6_,
                 p_147500_1_.getBlockMetadata() & 7, (float) (p_147500_1_.func_145906_b() * 360) / 16.0F,
                 p_147500_1_.func_145904_a(), p_147500_1_.func_152108_a());
@@ -48,7 +48,7 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer {
     }
 
     public void func_152674_a(float p_152674_1_, float p_152674_2_, float p_152674_3_, int p_152674_4_,
-            float p_152674_5_, int p_152674_6_, GameProfile p_152674_7_) {
+                              float p_152674_5_, int p_152674_6_, GameProfile p_152674_7_) {
         ModelSkeletonHead var8 = this.field_147533_g;
 
         switch (p_152674_6_) {
@@ -123,7 +123,7 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_,
-            float p_147500_8_) {
+                                   float p_147500_8_) {
         this.renderTileEntityAt((TileEntitySkull) p_147500_1_, p_147500_2_, p_147500_4_, p_147500_6_, p_147500_8_);
     }
 }

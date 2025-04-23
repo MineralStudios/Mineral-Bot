@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -80,7 +80,7 @@ public class TileEntityRendererDispatcher {
     }
 
     public void func_147542_a(World p_147542_1_, TextureManager p_147542_2_, FontRenderer p_147542_3_,
-            EntityLivingBase p_147542_4_, float p_147542_5_) {
+                              EntityLivingBase p_147542_4_, float p_147542_5_) {
         if (this.field_147550_f != p_147542_1_) {
             this.func_147543_a(p_147542_1_);
         }
@@ -117,7 +117,7 @@ public class TileEntityRendererDispatcher {
     }
 
     public void func_147549_a(TileEntity p_147549_1_, double p_147549_2_, double p_147549_4_, double p_147549_6_,
-            float p_147549_8_) {
+                              float p_147549_8_) {
         TileEntitySpecialRenderer var9 = this.getSpecialRenderer(p_147549_1_);
 
         if (var9 != null) {

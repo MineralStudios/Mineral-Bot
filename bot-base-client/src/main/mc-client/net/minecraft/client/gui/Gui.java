@@ -1,6 +1,6 @@
 package net.minecraft.client.gui;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -43,7 +43,7 @@ public class Gui {
      * x1, y1, x2, y2, color
      */
     public static void drawRect(Minecraft mc, int p_73734_0_, int p_73734_1_, int p_73734_2_, int p_73734_3_,
-            int p_73734_4_) {
+                                int p_73734_4_) {
         int var5;
 
         if (p_73734_0_ < p_73734_2_) {
@@ -84,7 +84,7 @@ public class Gui {
      * Draws a rectangle with a vertical gradient between the specified colors.
      */
     protected void drawGradientRect(int p_73733_1_, int p_73733_2_, int p_73733_3_, int p_73733_4_, int p_73733_5_,
-            int p_73733_6_) {
+                                    int p_73733_6_) {
         float var7 = (float) (p_73733_5_ >> 24 & 255) / 255.0F;
         float var8 = (float) (p_73733_5_ >> 16 & 255) / 255.0F;
         float var9 = (float) (p_73733_5_ >> 8 & 255) / 255.0F;
@@ -120,7 +120,7 @@ public class Gui {
      * Renders the specified text to the screen, center-aligned.
      */
     public void drawCenteredString(FontRenderer p_73732_1_, String p_73732_2_, int p_73732_3_, int p_73732_4_,
-            int p_73732_5_) {
+                                   int p_73732_5_) {
         if (p_73732_1_ == null)
             return;
         p_73732_1_.drawStringWithShadow(p_73732_2_, p_73732_3_ - p_73732_1_.getStringWidth(p_73732_2_) / 2,
@@ -132,7 +132,7 @@ public class Gui {
      * Renders the specified text to the screen.
      */
     public void drawString(FontRenderer p_73731_1_, String p_73731_2_, int p_73731_3_, int p_73731_4_,
-            int p_73731_5_) {
+                           int p_73731_5_) {
         p_73731_1_.drawStringWithShadow(p_73731_2_, p_73731_3_, p_73731_4_, p_73731_5_);
     }
 
@@ -141,8 +141,8 @@ public class Gui {
      * height
      */
     public void drawTexturedModalRect(int p_73729_1_, int p_73729_2_, int p_73729_3_, int p_73729_4_,
-            int p_73729_5_,
-            int p_73729_6_) {
+                                      int p_73729_5_,
+                                      int p_73729_6_) {
         float var7 = 0.00390625F;
         float var8 = 0.00390625F;
         Tessellator var9 = this.mc.getTessellator();
@@ -167,7 +167,7 @@ public class Gui {
     }
 
     public void drawTexturedModelRectFromIcon(int p_94065_1_, int p_94065_2_, IIcon p_94065_3_, int p_94065_4_,
-            int p_94065_5_) {
+                                              int p_94065_5_) {
         Tessellator var6 = this.mc.getTessellator();
 
         if (var6 == null)
@@ -187,8 +187,8 @@ public class Gui {
     }
 
     public static void func_146110_a(Minecraft mc, int p_146110_0_, int p_146110_1_, float p_146110_2_,
-            float p_146110_3_,
-            int p_146110_4_, int p_146110_5_, float p_146110_6_, float p_146110_7_) {
+                                     float p_146110_3_,
+                                     int p_146110_4_, int p_146110_5_, float p_146110_6_, float p_146110_7_) {
         float var8 = 1.0F / p_146110_6_;
         float var9 = 1.0F / p_146110_7_;
         Tessellator var10 = mc.getTessellator();
@@ -209,9 +209,9 @@ public class Gui {
     }
 
     public static void func_152125_a(Minecraft mc, int p_152125_0_, int p_152125_1_, float p_152125_2_,
-            float p_152125_3_,
-            int p_152125_4_, int p_152125_5_, int p_152125_6_, int p_152125_7_, float p_152125_8_,
-            float p_152125_9_) {
+                                     float p_152125_3_,
+                                     int p_152125_4_, int p_152125_5_, int p_152125_6_, int p_152125_7_, float p_152125_8_,
+                                     float p_152125_9_) {
         float var10 = 1.0F / p_152125_8_;
         float var11 = 1.0F / p_152125_9_;
         Tessellator var12 = mc.getTessellator();
