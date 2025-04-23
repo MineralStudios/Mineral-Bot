@@ -2,8 +2,8 @@ package net.minecraft.client.renderer.tileentity;
 
 import java.util.Calendar;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.client.Minecraft;
@@ -38,7 +38,7 @@ public class TileEntityChestRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntityChest p_147500_1_, double p_147500_2_, double p_147500_4_,
-            double p_147500_6_, float p_147500_8_) {
+                                   double p_147500_6_, float p_147500_8_) {
         int var9;
 
         if (!p_147500_1_.hasWorldObj()) {
@@ -122,7 +122,7 @@ public class TileEntityChestRenderer extends TileEntitySpecialRenderer {
             if (p_147500_1_.field_145992_i != null) {
                 var13 = p_147500_1_.field_145992_i.field_145986_n
                         + (p_147500_1_.field_145992_i.field_145989_m - p_147500_1_.field_145992_i.field_145986_n)
-                                * p_147500_8_;
+                        * p_147500_8_;
 
                 if (var13 > var12) {
                     var12 = var13;
@@ -132,7 +132,7 @@ public class TileEntityChestRenderer extends TileEntitySpecialRenderer {
             if (p_147500_1_.field_145991_k != null) {
                 var13 = p_147500_1_.field_145991_k.field_145986_n
                         + (p_147500_1_.field_145991_k.field_145989_m - p_147500_1_.field_145991_k.field_145986_n)
-                                * p_147500_8_;
+                        * p_147500_8_;
 
                 if (var13 > var12) {
                     var12 = var13;
@@ -150,7 +150,7 @@ public class TileEntityChestRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_,
-            float p_147500_8_) {
+                                   float p_147500_8_) {
         this.renderTileEntityAt((TileEntityChest) p_147500_1_, p_147500_2_, p_147500_4_, p_147500_6_, p_147500_8_);
     }
 }

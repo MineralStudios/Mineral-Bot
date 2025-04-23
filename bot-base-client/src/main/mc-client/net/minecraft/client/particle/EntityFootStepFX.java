@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class EntityFootStepFX extends EntityFX {
     private static final ResourceLocation field_110126_a = new ResourceLocation("textures/particle/footprint.png");
@@ -14,7 +14,7 @@ public class EntityFootStepFX extends EntityFX {
     private TextureManager currentFootSteps;
 
     public EntityFootStepFX(TextureManager p_i1210_1_, World p_i1210_2_, double p_i1210_3_, double p_i1210_5_,
-            double p_i1210_7_) {
+                            double p_i1210_7_) {
         super(p_i1210_2_, p_i1210_3_, p_i1210_5_, p_i1210_7_, 0.0D, 0.0D, 0.0D);
         this.currentFootSteps = p_i1210_1_;
         this.motionX = this.motionY = this.motionZ = 0.0D;
@@ -22,7 +22,7 @@ public class EntityFootStepFX extends EntityFX {
     }
 
     public void renderParticle(Tessellator p_70539_1_, float p_70539_2_, float p_70539_3_, float p_70539_4_,
-            float p_70539_5_, float p_70539_6_, float p_70539_7_) {
+                               float p_70539_5_, float p_70539_6_, float p_70539_7_) {
         float var8 = ((float) this.footstepAge + p_70539_2_) / (float) this.footstepMaxAge;
         var8 *= var8;
         float var9 = 2.0F - var8 * 2.0F;

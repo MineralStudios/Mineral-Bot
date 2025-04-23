@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import gg.mineral.bot.base.lwjgl.Sys;
+import gg.mineral.bot.lwjgl.Sys;
 
 import com.google.common.collect.Lists;
 
@@ -99,13 +99,13 @@ public class GuiScreenResourcePacks extends GuiScreen {
                 if (Util.getOSType() == Util.EnumOS.OSX) {
                     try {
                         logger.info(var3);
-                        Runtime.getRuntime().exec(new String[] { "/usr/bin/open", var3 });
+                        Runtime.getRuntime().exec(new String[]{"/usr/bin/open", var3});
                         return;
                     } catch (IOException var9) {
                         logger.error("Couldn\'t open file", var9);
                     }
                 } else if (Util.getOSType() == Util.EnumOS.WINDOWS) {
-                    String var4 = String.format("cmd.exe /C start \"Open file\" \"%s\"", new Object[] { var3 });
+                    String var4 = String.format("cmd.exe /C start \"Open file\" \"%s\"", new Object[]{var3});
 
                     try {
                         Runtime.getRuntime().exec(var4);
@@ -120,7 +120,7 @@ public class GuiScreenResourcePacks extends GuiScreen {
                 try {
                     Class var5 = Class.forName("java.awt.Desktop");
                     Object var6 = var5.getMethod("getDesktop", new Class[0]).invoke((Object) null, new Object[0]);
-                    var5.getMethod("browse", new Class[] { URI.class }).invoke(var6, new Object[] { var2.toURI() });
+                    var5.getMethod("browse", new Class[]{URI.class}).invoke(var6, new Object[]{var2.toURI()});
                 } catch (Throwable var7) {
                     logger.error("Couldn\'t open link", var7);
                     var12 = true;

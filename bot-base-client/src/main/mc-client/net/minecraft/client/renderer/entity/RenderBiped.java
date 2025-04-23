@@ -3,7 +3,7 @@ package net.minecraft.client.renderer.entity;
 import java.util.Map;
 import java.util.UUID;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
@@ -33,9 +33,11 @@ public class RenderBiped extends RenderLiving {
     protected ModelBiped field_82425_h;
     private static final Map field_110859_k = Maps.newHashMap();
 
-    /** List of armor texture filenames. */
-    private static final String[] bipedArmorFilenamePrefix = new String[] { "leather", "chainmail", "iron", "diamond",
-            "gold" };
+    /**
+     * List of armor texture filenames.
+     */
+    private static final String[] bipedArmorFilenamePrefix = new String[]{"leather", "chainmail", "iron", "diamond",
+            "gold"};
 
     public RenderBiped(Minecraft mc, ModelBiped p_i1257_1_, float p_i1257_2_) {
         this(mc, p_i1257_1_, p_i1257_2_, 1.0F);
@@ -59,9 +61,9 @@ public class RenderBiped extends RenderLiving {
 
     public static ResourceLocation func_110858_a(ItemArmor p_110858_0_, int p_110858_1_, String p_110858_2_) {
         String var3 = String.format("textures/models/armor/%s_layer_%d%s.png",
-                new Object[] { bipedArmorFilenamePrefix[p_110858_0_.renderIndex],
+                new Object[]{bipedArmorFilenamePrefix[p_110858_0_.renderIndex],
                         Integer.valueOf(p_110858_1_ == 2 ? 2 : 1),
-                        p_110858_2_ == null ? "" : String.format("_%s", new Object[] { p_110858_2_ }) });
+                        p_110858_2_ == null ? "" : String.format("_%s", new Object[]{p_110858_2_})});
         ResourceLocation var4 = (ResourceLocation) field_110859_k.get(var3);
 
         if (var4 == null) {
@@ -148,7 +150,7 @@ public class RenderBiped extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityLiving p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         GL11.glColor3f(1.0F, 1.0F, 1.0F);
         ItemStack var10 = p_76986_1_.getHeldItem();
         this.func_82420_a(p_76986_1_, var10);
@@ -329,7 +331,7 @@ public class RenderBiped extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityLivingBase p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         this.doRender((EntityLiving) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 
@@ -351,7 +353,7 @@ public class RenderBiped extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         this.doRender((EntityLiving) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

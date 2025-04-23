@@ -24,6 +24,7 @@ data class BotConfiguration(
     var sprintResetAccuracy: Float = 0.5f,
     var hitSelectAccuracy: Float = 0.5f,
     var latency: Int = 0,
+    var instantFlush: Boolean = false,
     var predictionHorizon: Int = 5,
     var latencyDeviation: Int = 0,
     var pearlCooldown: Int = 15,
@@ -63,6 +64,7 @@ data class BotConfiguration(
             private var sprintResetAccuracy: Float = 0.5f
             private var hitSelectAccuracy: Float = 0.5f
             private var latency: Int = 0
+            private var instantFlush: Boolean = false
             private var predictionHorizon: Int = 5
             private var latencyDeviation: Int = 0
             private var pearlCooldown: Int = 15
@@ -100,6 +102,7 @@ data class BotConfiguration(
 
             fun hitSelectAccuracy(hitSelectAccuracy: Float) = apply { this.hitSelectAccuracy = hitSelectAccuracy }
             fun latency(latency: Int) = apply { this.latency = latency }
+            fun tcpNoDelay(tcpNoDelay: Boolean) = apply { this.instantFlush = tcpNoDelay }
             fun latencyDeviation(latencyDeviation: Int) = apply { this.latencyDeviation = latencyDeviation }
             fun pearlCooldown(pearlCooldown: Int) = apply { this.pearlCooldown = pearlCooldown }
             fun skin(skin: Skins) = apply { this.skin = skin }
@@ -129,6 +132,7 @@ data class BotConfiguration(
                 sprintResetAccuracy,
                 hitSelectAccuracy,
                 latency,
+                instantFlush,
                 predictionHorizon,
                 latencyDeviation,
                 pearlCooldown,

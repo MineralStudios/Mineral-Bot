@@ -2,6 +2,7 @@ package gg.mineral.bot.impl.config
 
 
 object BotGlobalConfig {
+    const val tickConcurrently: Boolean = false /* experimental */
     const val headless = true
     const val control = true
     const val optimizedGameLoop = true

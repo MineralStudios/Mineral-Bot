@@ -1,6 +1,7 @@
 package net.minecraft.client.renderer.entity;
 
-import java.util.Random;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBase;
@@ -18,8 +19,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+
+import java.util.Random;
 
 public abstract class RendererLivingEntity extends Render {
     private static final Logger logger = LogManager.getLogger(RendererLivingEntity.class);
@@ -27,7 +28,9 @@ public abstract class RendererLivingEntity extends Render {
             "textures/misc/enchanted_item_glint.png");
     protected ModelBase mainModel;
 
-    /** The model to be used during the render passes. */
+    /**
+     * The model to be used during the render passes.
+     */
     protected ModelBase renderPassModel;
 
     public RendererLivingEntity(Minecraft mc, ModelBase p_i1261_1_, float p_i1261_2_) {
@@ -56,7 +59,6 @@ public abstract class RendererLivingEntity extends Render {
         float var4;
 
         for (var4 = p_77034_2_ - p_77034_1_; var4 < -180.0F; var4 += 360.0F) {
-            ;
         }
 
         while (var4 >= 180.0F) {
@@ -76,7 +78,7 @@ public abstract class RendererLivingEntity extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityLivingBase p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_CULL_FACE);
         this.mainModel.onGround = this.renderSwingProgress(p_76986_1_, p_76986_9_);
@@ -104,8 +106,7 @@ public abstract class RendererLivingEntity extends Render {
                     p_76986_9_);
             float var13;
 
-            if (p_76986_1_.isRiding() && p_76986_1_.ridingEntity instanceof EntityLivingBase) {
-                EntityLivingBase var12 = (EntityLivingBase) p_76986_1_.ridingEntity;
+            if (p_76986_1_.isRiding() && p_76986_1_.ridingEntity instanceof EntityLivingBase var12) {
                 var10 = this.interpolateRotation(var12.prevRenderYawOffset, var12.renderYawOffset, p_76986_9_);
                 var13 = MathHelper.wrapAngleTo180_float(var11 - var10);
 
@@ -257,7 +258,7 @@ public abstract class RendererLivingEntity extends Render {
 
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         } catch (Exception var25) {
-            logger.error("Couldn\'t render entity", var25);
+            logger.error("Couldn't render entity", var25);
         }
 
         OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
@@ -272,7 +273,7 @@ public abstract class RendererLivingEntity extends Render {
      * Renders the model in RenderLiving
      */
     protected void renderModel(EntityLivingBase p_77036_1_, float p_77036_2_, float p_77036_3_, float p_77036_4_,
-            float p_77036_5_, float p_77036_6_, float p_77036_7_) {
+                               float p_77036_5_, float p_77036_6_, float p_77036_7_) {
         this.bindEntityTexture(p_77036_1_);
 
         if (!p_77036_1_.isInvisible()) {
@@ -299,7 +300,7 @@ public abstract class RendererLivingEntity extends Render {
      * Sets a simple glTranslate on a LivingEntity.
      */
     protected void renderLivingAt(EntityLivingBase p_77039_1_, double p_77039_2_, double p_77039_4_,
-            double p_77039_6_) {
+                                  double p_77039_6_) {
         GL11.glTranslatef((float) p_77039_2_, (float) p_77039_4_, (float) p_77039_6_);
     }
 
@@ -348,7 +349,7 @@ public abstract class RendererLivingEntity extends Render {
 
         if (var3 > 0) {
             EntityArrow var4 = new EntityArrow(p_85093_1_.worldObj, p_85093_1_.posX, p_85093_1_.posY, p_85093_1_.posZ);
-            Random var5 = new Random((long) p_85093_1_.getEntityId());
+            Random var5 = new Random(p_85093_1_.getEntityId());
             RenderHelper.disableStandardItemLighting();
 
             for (int var6 = 0; var6 < var3; ++var6) {
@@ -370,9 +371,9 @@ public abstract class RendererLivingEntity extends Render {
                 var10 *= -1.0F;
                 var11 *= -1.0F;
                 float var15 = MathHelper.sqrt_float(var9 * var9 + var11 * var11);
-                var4.prevRotationYaw = var4.rotationYaw = (float) (Math.atan2((double) var9, (double) var11) * 180.0D
+                var4.prevRotationYaw = var4.rotationYaw = (float) (Math.atan2(var9, var11) * 180.0D
                         / Math.PI);
-                var4.prevRotationPitch = var4.rotationPitch = (float) (Math.atan2((double) var10, (double) var15)
+                var4.prevRotationPitch = var4.rotationPitch = (float) (Math.atan2(var10, var15)
                         * 180.0D / Math.PI);
                 double var16 = 0.0D;
                 double var18 = 0.0D;
@@ -382,7 +383,7 @@ public abstract class RendererLivingEntity extends Render {
                 GL11.glPopMatrix();
             }
 
-            RenderHelper.enableStandardItemLighting();
+            this.mc.renderHelper.enableStandardItemLighting();
         }
     }
 
@@ -424,7 +425,7 @@ public abstract class RendererLivingEntity extends Render {
      * Passes the specialRender and renders it
      */
     protected void passSpecialRender(EntityLivingBase p_77033_1_, double p_77033_2_, double p_77033_4_,
-            double p_77033_6_) {
+                                     double p_77033_6_) {
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 
         if (this.func_110813_b(p_77033_1_)) {
@@ -456,10 +457,10 @@ public abstract class RendererLivingEntity extends Render {
                         var15.startDrawingQuads();
                         int var16 = var14.getStringWidth(var13) / 2;
                         var15.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
-                        var15.addVertex((double) (-var16 - 1), -1.0D, 0.0D);
-                        var15.addVertex((double) (-var16 - 1), 8.0D, 0.0D);
-                        var15.addVertex((double) (var16 + 1), 8.0D, 0.0D);
-                        var15.addVertex((double) (var16 + 1), -1.0D, 0.0D);
+                        var15.addVertex(-var16 - 1, -1.0D, 0.0D);
+                        var15.addVertex(-var16 - 1, 8.0D, 0.0D);
+                        var15.addVertex(var16 + 1, 8.0D, 0.0D);
+                        var15.addVertex(var16 + 1, -1.0D, 0.0D);
                         var15.draw();
                     }
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -483,7 +484,7 @@ public abstract class RendererLivingEntity extends Render {
     }
 
     protected void func_96449_a(EntityLivingBase p_96449_1_, double p_96449_2_, double p_96449_4_, double p_96449_6_,
-            String p_96449_8_, float p_96449_9_, double p_96449_10_) {
+                                String p_96449_8_, float p_96449_9_, double p_96449_10_) {
         if (p_96449_1_.isPlayerSleeping()) {
             this.func_147906_a(p_96449_1_, p_96449_8_, p_96449_2_, p_96449_4_ - 1.5D, p_96449_6_, 64);
         } else {
@@ -501,7 +502,7 @@ public abstract class RendererLivingEntity extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         this.doRender((EntityLivingBase) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

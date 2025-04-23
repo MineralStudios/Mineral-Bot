@@ -1,8 +1,8 @@
 package net.minecraft.client.gui;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GLContext;
-import gg.mineral.bot.base.lwjgl.util.glu.Project;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GLContext;
+import gg.mineral.bot.lwjgl.util.glu.Project;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;

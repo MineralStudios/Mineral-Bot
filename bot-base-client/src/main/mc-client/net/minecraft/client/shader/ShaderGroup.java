@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -23,7 +24,7 @@ import net.minecraft.client.util.JsonException;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.IOUtils;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class ShaderGroup {
     private final Framebuffer mainFramebuffer;
@@ -40,7 +41,7 @@ public class ShaderGroup {
     private final Minecraft mc;
 
     public ShaderGroup(Minecraft mc, TextureManager p_i1050_1_, IResourceManager p_i1050_2_, Framebuffer p_i1050_3_,
-            ResourceLocation p_i1050_4_) throws JsonException {
+                       ResourceLocation p_i1050_4_) throws JsonException {
         this.mc = mc;
         this.resourceManager = p_i1050_2_;
         this.mainFramebuffer = p_i1050_3_;
@@ -350,6 +351,6 @@ public class ShaderGroup {
     private Framebuffer getFramebuffer(String p_148017_1_) {
         return p_148017_1_ == null ? null
                 : (p_148017_1_.equals("minecraft:main") ? this.mainFramebuffer
-                        : (Framebuffer) this.mapFramebuffers.get(p_148017_1_));
+                : (Framebuffer) this.mapFramebuffers.get(p_148017_1_));
     }
 }

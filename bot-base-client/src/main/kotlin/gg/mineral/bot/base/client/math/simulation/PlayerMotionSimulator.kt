@@ -6,8 +6,8 @@ import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.EventHandler
 import gg.mineral.bot.api.math.simulation.PlayerMotionSimulator
 import gg.mineral.bot.api.world.ClientWorld
-import gg.mineral.bot.base.lwjgl.input.Keyboard
-import gg.mineral.bot.base.lwjgl.input.Mouse
+import gg.mineral.bot.lwjgl.input.Keyboard
+import gg.mineral.bot.lwjgl.input.Mouse
 import net.minecraft.block.Block
 import net.minecraft.block.material.Material
 import net.minecraft.client.Minecraft

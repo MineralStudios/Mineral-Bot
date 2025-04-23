@@ -2,8 +2,9 @@ package optifine;
 
 import java.nio.ByteBuffer;
 import java.util.Properties;
+
 import net.minecraft.client.renderer.GLAllocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class TextureAnimation {
     private String srcTex = null;
@@ -18,7 +19,7 @@ public class TextureAnimation {
     private ByteBuffer imageData = null;
 
     public TextureAnimation(String texFrom, byte[] srcData, String texTo, int dstTexId, int dstX, int dstY,
-            int frameWidth, int frameHeight, Properties props, int durDef) {
+                            int frameWidth, int frameHeight, Properties props, int durDef) {
         this.srcTex = texFrom;
         this.dstTex = texTo;
         this.dstTextId = dstTexId;

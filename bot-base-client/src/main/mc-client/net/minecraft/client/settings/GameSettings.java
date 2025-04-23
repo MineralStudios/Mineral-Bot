@@ -2,7 +2,7 @@ package net.minecraft.client.settings;
 
 import com.google.gson.Gson;
 import gg.mineral.bot.api.controls.Key;
-import gg.mineral.bot.base.lwjgl.opengl.Display;
+import gg.mineral.bot.lwjgl.opengl.Display;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundCategory;

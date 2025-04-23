@@ -15,4 +15,5 @@ include 'bot-intelligence'
 include 'bot-bukkit'
 include 'bot-standalone'
 include 'bot-mineral'
+include 'bot-lwjgl-bridge'
 

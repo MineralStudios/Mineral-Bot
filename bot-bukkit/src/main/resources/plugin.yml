@@ -1,10 +1,10 @@
 name: MineralBot
-version: 2.0.0
-main: gg.mineral.bot.plugin.MineralBotPlugin
+version: 2.1.0
+main: gg.mineral.bot.bukkit.plugin.MineralBotPlugin
 author: Jaiden
 description: Mineral Bot Plugin
 api: '1.8.9'
-depend: [ packetevents ]
+depend: [ packetevents, ViaVersion, ViaRewind, ViaBackwards ]
 
 commands:
   mineralbot:

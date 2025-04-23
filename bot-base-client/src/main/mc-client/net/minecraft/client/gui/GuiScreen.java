@@ -1,8 +1,8 @@
 package net.minecraft.client.gui;
 
 import gg.mineral.bot.api.screen.Screen;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
@@ -14,12 +14,11 @@ import net.minecraft.util.EnumChatFormatting;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -79,7 +78,7 @@ public class GuiScreen extends Gui implements Screen {
         int var4;
 
         for (var4 = 0; var4 < this.buttonList.size(); ++var4) {
-            ((GuiButton) this.buttonList.get(var4)).drawButton(this.mc, p_73863_1_, p_73863_2_);
+            this.buttonList.get(var4).drawButton(this.mc, p_73863_1_, p_73863_2_);
         }
 
         for (var4 = 0; var4 < this.labelList.size(); ++var4) {
@@ -93,7 +92,7 @@ public class GuiScreen extends Gui implements Screen {
      */
     protected void keyTyped(char p_73869_1_, int p_73869_2_) {
         if (p_73869_2_ == 1) {
-            this.mc.displayGuiScreen((GuiScreen) null);
+            this.mc.displayGuiScreen(null);
             this.mc.setIngameFocus();
         }
     }
@@ -103,13 +102,12 @@ public class GuiScreen extends Gui implements Screen {
      */
     public static String getClipboardString() {
         try {
-            Transferable var0 = Toolkit.getDefaultToolkit().getSystemClipboard().getContents((Object) null);
+            Transferable var0 = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
 
             if (var0 != null && var0.isDataFlavorSupported(DataFlavor.stringFlavor)) {
                 return (String) var0.getTransferData(DataFlavor.stringFlavor);
             }
         } catch (Exception var1) {
-            ;
         }
 
         return "";
@@ -121,9 +119,8 @@ public class GuiScreen extends Gui implements Screen {
     public static void setClipboardString(String p_146275_0_) {
         try {
             StringSelection var1 = new StringSelection(p_146275_0_);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(var1, (ClipboardOwner) null);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(var1, null);
         } catch (Exception var2) {
-            ;
         }
     }
 
@@ -142,7 +139,7 @@ public class GuiScreen extends Gui implements Screen {
     }
 
     protected void func_146279_a(String p_146279_1_, int p_146279_2_, int p_146279_3_) {
-        this.func_146283_a(Arrays.asList(new String[]{p_146279_1_}), p_146279_2_, p_146279_3_);
+        this.func_146283_a(Collections.singletonList(p_146279_1_), p_146279_2_, p_146279_3_);
     }
 
     protected void func_146283_a(List p_146283_1_, int p_146283_2_, int p_146283_3_) {
@@ -211,7 +208,7 @@ public class GuiScreen extends Gui implements Screen {
             itemRender.zLevel = 0.0F;
             GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glEnable(GL11.GL_DEPTH_TEST);
-            RenderHelper.enableStandardItemLighting();
+            this.mc.renderHelper.enableStandardItemLighting();
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         }
     }
@@ -222,7 +219,7 @@ public class GuiScreen extends Gui implements Screen {
     protected void mouseClicked(int p_73864_1_, int p_73864_2_, int p_73864_3_) {
         if (p_73864_3_ == 0) {
             for (int var4 = 0; var4 < this.buttonList.size(); ++var4) {
-                GuiButton var5 = (GuiButton) this.buttonList.get(var4);
+                GuiButton var5 = this.buttonList.get(var4);
 
                 if (var5.mousePressed(this.mc, p_73864_1_, p_73864_2_)) {
                     this.selectedButton = var5;
@@ -357,13 +354,13 @@ public class GuiScreen extends Gui implements Screen {
             return;
         var2.startDrawingQuads();
         var2.setColorOpaque_I(4210752);
-        var2.addVertexWithUV(0.0D, (double) this.height, 0.0D, 0.0D,
-                (double) ((float) this.height / var3 + (float) p_146278_1_));
-        var2.addVertexWithUV((double) this.width, (double) this.height, 0.0D, (double) ((float) this.width / var3),
-                (double) ((float) this.height / var3 + (float) p_146278_1_));
-        var2.addVertexWithUV((double) this.width, 0.0D, 0.0D, (double) ((float) this.width / var3),
-                (double) p_146278_1_);
-        var2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, (double) p_146278_1_);
+        var2.addVertexWithUV(0.0D, this.height, 0.0D, 0.0D,
+                (float) this.height / var3 + (float) p_146278_1_);
+        var2.addVertexWithUV(this.width, this.height, 0.0D, (float) this.width / var3,
+                (float) this.height / var3 + (float) p_146278_1_);
+        var2.addVertexWithUV(this.width, 0.0D, 0.0D, (float) this.width / var3,
+                p_146278_1_);
+        var2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, p_146278_1_);
         var2.draw();
     }
 

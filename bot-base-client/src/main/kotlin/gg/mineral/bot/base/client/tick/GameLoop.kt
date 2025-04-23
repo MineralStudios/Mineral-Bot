@@ -22,13 +22,18 @@ object GameLoop {
         // 1) Main tick loop
         scope.launch {
             while (isActive) {
-                // Launch one child coroutine per instance
-                coroutineScope {
-                    instances.values.map { instance ->
-                        launch {
-                            safeTick(instance)
-                        }
-                    }.joinAll()
+                if (BotGlobalConfig.tickConcurrently) {
+                    // old behavior: launch one child coroutine per instance
+                    coroutineScope {
+                        instances.values.map { inst ->
+                            launch { safeTick(inst) }
+                        }.joinAll()
+                    }
+                } else {
+                    // new behavior: tick each instance one after another
+                    for (inst in instances.values) {
+                        safeTick(inst)
+                    }
                 }
 
                 // After all ticks, print spawn info if needed
@@ -95,3 +100,4 @@ object GameLoop {
         }
     }
 }
+

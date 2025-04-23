@@ -1,7 +1,8 @@
 package net.minecraft.client.renderer.entity;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -43,7 +44,7 @@ public class RenderManager {
     /**
      * A map of entity classes and the associated renderer.
      */
-    private Map<Class<? extends Entity>, Render> entityRenderMap = new Object2ObjectOpenHashMap<>();
+    private final Map<Class<? extends Entity>, Render> entityRenderMap = new Object2ObjectOpenHashMap<>();
 
     /**
      * Renders fonts
@@ -76,6 +77,7 @@ public class RenderManager {
     public double viewerPosY;
     public double viewerPosZ;
     public static boolean field_85095_o;
+    @Getter
     private final Minecraft mc;
 
     public RenderManager(Minecraft mc) {
@@ -146,7 +148,7 @@ public class RenderManager {
     }
 
     public Render getEntityClassRenderObject(Class p_78715_1_) {
-        Render var2 = (Render) this.entityRenderMap.get(p_78715_1_);
+        Render var2 = this.entityRenderMap.get(p_78715_1_);
 
         if (var2 == null && p_78715_1_ != Entity.class) {
             var2 = this.getEntityClassRenderObject(p_78715_1_.getSuperclass());
@@ -223,7 +225,7 @@ public class RenderManager {
 
         int var12 = var11 % 65536;
         int var13 = var11 / 65536;
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) var12 / 1.0F, (float) var13 / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) var12, (float) var13);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         return this.func_147939_a(p_147936_1_, var4 - renderPosX, var6 - renderPosY, var8 - renderPosZ, var10,
                 p_147936_2_, p_147936_3_);
@@ -267,9 +269,7 @@ public class RenderManager {
                         }
                     }
                 }
-            } else if (this.renderEngine != null) {
-                return false;
-            }
+            } else return this.renderEngine == null;
 
             return true;
         } catch (Throwable var19) {

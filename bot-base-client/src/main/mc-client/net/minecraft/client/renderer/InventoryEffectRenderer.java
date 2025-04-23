@@ -1,7 +1,7 @@
 package net.minecraft.client.renderer;
 
 import gg.mineral.bot.api.screen.type.InvEffectRendererScreen;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;

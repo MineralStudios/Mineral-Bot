@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
@@ -55,7 +55,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
     }
 
     public void func_148279_a(int p_148279_1_, int p_148279_2_, int p_148279_3_, int p_148279_4_, int p_148279_5_,
-            Tessellator p_148279_6_, int p_148279_7_, int p_148279_8_, boolean p_148279_9_) {
+                              Tessellator p_148279_6_, int p_148279_7_, int p_148279_8_, boolean p_148279_9_) {
         if (!this.field_148301_e.field_78841_f) {
             this.field_148301_e.field_78841_f = true;
             this.field_148301_e.pingToServer = -2L;
@@ -189,7 +189,8 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
             ByteBuf var2 = Unpooled.copiedBuffer(this.field_148301_e.func_147409_e(), Charsets.UTF_8);
             ByteBuf var3 = Base64.decode(var2);
             BufferedImage var1;
-            label74: {
+            label74:
+            {
                 try {
                     var1 = ImageIO.read(new ByteBufInputStream(var3));
                     Validate.validState(var1.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
@@ -231,7 +232,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
     }
 
     public boolean func_148278_a(int p_148278_1_, int p_148278_2_, int p_148278_3_, int p_148278_4_, int p_148278_5_,
-            int p_148278_6_) {
+                                 int p_148278_6_) {
         this.field_148303_c.func_146790_a(p_148278_1_);
 
         if (Minecraft.getSystemTime() - this.field_148298_f < 250L) {
@@ -243,7 +244,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
     }
 
     public void func_148277_b(int p_148277_1_, int p_148277_2_, int p_148277_3_, int p_148277_4_, int p_148277_5_,
-            int p_148277_6_) {
+                              int p_148277_6_) {
     }
 
     public ServerData getServerData() {

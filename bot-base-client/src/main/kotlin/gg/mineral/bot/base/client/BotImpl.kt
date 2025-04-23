@@ -8,6 +8,8 @@ import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.math.ServerLocation
 import gg.mineral.bot.api.message.ChatColor
+import gg.mineral.bot.api.util.dsl.onComplete
+import gg.mineral.bot.base.client.instance.ConnectedClientInstance
 import gg.mineral.bot.base.client.manager.InstanceManager
 import gg.mineral.bot.impl.thread.ThreadManager
 import it.unimi.dsi.fastutil.objects.Object2IntMap
@@ -117,6 +119,8 @@ abstract class BotImpl : BotAPI() {
         val instance = InstanceManager.instances[uuid]
         val running = instance != null && instance.running
         instance?.shutdown()
+        if (instance is ConnectedClientInstance)
+            instance.channel.onComplete { it.getOrNull()?.close() }
 
         return running
     }
@@ -129,9 +133,8 @@ abstract class BotImpl : BotAPI() {
 
     override fun isFakePlayer(uuid: UUID): Boolean {
         val instances = InstanceManager.instances
-        synchronized(instances) {
-            return instances.containsKey(uuid)
-        }
+        val pendingInstances = InstanceManager.pendingInstances
+        return instances.containsKey(uuid) || pendingInstances.containsKey(uuid)
     }
 
     override fun despawnAll() {

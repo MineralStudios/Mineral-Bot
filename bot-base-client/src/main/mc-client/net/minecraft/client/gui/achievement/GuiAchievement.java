@@ -1,12 +1,11 @@
 package net.minecraft.client.gui.achievement;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
@@ -22,7 +21,7 @@ public class GuiAchievement extends Gui {
     private String field_146265_j;
     private Achievement field_146266_k;
     private long field_146263_l;
-    private RenderItem field_146264_m;
+    private final RenderItem field_146264_m;
     private boolean field_146262_n;
 
     public GuiAchievement(Minecraft mc) {
@@ -31,7 +30,7 @@ public class GuiAchievement extends Gui {
     }
 
     public void func_146256_a(Achievement p_146256_1_) {
-        this.field_146268_i = I18n.format("achievement.get", new Object[0]);
+        this.field_146268_i = I18n.format("achievement.get");
         this.field_146265_j = p_146256_1_.func_150951_e().getUnformattedText();
         this.field_146263_l = Minecraft.getSystemTime();
         this.field_146266_k = p_146256_1_;
@@ -60,7 +59,7 @@ public class GuiAchievement extends Gui {
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
-        GL11.glOrtho(0.0D, (double) this.field_146260_g, (double) this.field_146267_h, 0.0D, 1000.0D, 3000.0D);
+        GL11.glOrtho(0.0D, this.field_146260_g, this.field_146267_h, 0.0D, 1000.0D, 3000.0D);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadIdentity();
         GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
@@ -98,7 +97,7 @@ public class GuiAchievement extends Gui {
             var3 *= var3;
             var3 *= var3;
             int var5 = this.field_146260_g - 160;
-            int var6 = 0 - (int) (var3 * 36.0D);
+            int var6 = -(int) (var3 * 36.0D);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             TextureManager textureManager = this.mc.getTextureManager();
@@ -118,7 +117,7 @@ public class GuiAchievement extends Gui {
                 }
             }
 
-            RenderHelper.enableGUIStandardItemLighting();
+            this.mc.renderHelper.enableGUIStandardItemLighting();
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             GL11.glEnable(GL11.GL_COLOR_MATERIAL);

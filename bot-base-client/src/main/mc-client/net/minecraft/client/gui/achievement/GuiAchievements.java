@@ -1,9 +1,7 @@
 package net.minecraft.client.gui.achievement;
 
-import java.util.Random;
-
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -25,6 +23,8 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Random;
+
 public class GuiAchievements extends GuiScreen implements IProgressMeter {
     private static final int field_146572_y = AchievementList.minDisplayColumn * 24 - 112;
     private static final int field_146571_z = AchievementList.minDisplayRow * 24 - 112;
@@ -45,7 +45,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
     protected double field_146565_w;
     protected double field_146573_x;
     private int field_146554_D;
-    private StatFileWriter field_146556_E;
+    private final StatFileWriter field_146556_E;
     private boolean field_146558_F = true;
 
     public GuiAchievements(Minecraft mc, GuiScreen p_i45026_1_, StatFileWriter p_i45026_2_) {
@@ -54,10 +54,10 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
         this.field_146556_E = p_i45026_2_;
         short var3 = 141;
         short var4 = 141;
-        this.field_146569_s = this.field_146567_u = this.field_146565_w = (double) (AchievementList.openInventory.displayColumn
-                * 24 - var3 / 2 - 12);
-        this.field_146568_t = this.field_146566_v = this.field_146573_x = (double) (AchievementList.openInventory.displayRow
-                * 24 - var4 / 2);
+        this.field_146569_s = this.field_146567_u = this.field_146565_w = AchievementList.openInventory.displayColumn
+                * 24 - var3 / 2 - 12;
+        this.field_146568_t = this.field_146566_v = this.field_146573_x = AchievementList.openInventory.displayRow
+                * 24 - var4 / 2;
     }
 
     /**
@@ -68,7 +68,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
                 .addToSendQueue(new C16PacketClientStatus(C16PacketClientStatus.EnumState.REQUEST_STATS));
         this.buttonList.clear();
         this.buttonList.add(new GuiOptionButton(this.mc, 1, this.width / 2 + 24, this.height / 2 + 74, 80, 20,
-                I18n.format("gui.done", new Object[0])));
+                I18n.format("gui.done")));
     }
 
     protected void actionPerformed(GuiButton p_146284_1_) {
@@ -85,7 +85,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
      */
     protected void keyTyped(char p_73869_1_, int p_73869_2_) {
         if (p_73869_2_ == this.mc.gameSettings.keyBindInventory.getKeyCode()) {
-            this.mc.displayGuiScreen((GuiScreen) null);
+            this.mc.displayGuiScreen(null);
             this.mc.setIngameFocus();
         } else {
             super.keyTyped(p_73869_1_, p_73869_2_);
@@ -98,7 +98,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
     public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
         if (this.field_146558_F) {
             this.drawDefaultBackground();
-            this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.downloadingStats", new Object[0]),
+            this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.downloadingStats"),
                     this.width / 2, this.height / 2, 16777215);
             val fontRendererObj = this.fontRendererObj;
 
@@ -120,10 +120,10 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
                     if (this.field_146554_D == 0) {
                         this.field_146554_D = 1;
                     } else {
-                        this.field_146567_u -= (double) ((float) (p_73863_1_ - this.field_146563_h)
-                                * this.field_146570_r);
-                        this.field_146566_v -= (double) ((float) (p_73863_2_ - this.field_146564_i)
-                                * this.field_146570_r);
+                        this.field_146567_u -= (float) (p_73863_1_ - this.field_146563_h)
+                                * this.field_146570_r;
+                        this.field_146566_v -= (float) (p_73863_2_ - this.field_146564_i)
+                                * this.field_146570_r;
                         this.field_146565_w = this.field_146569_s = this.field_146567_u;
                         this.field_146573_x = this.field_146568_t = this.field_146566_v;
                     }
@@ -152,26 +152,26 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
                 float var8 = var11 * (float) this.field_146557_g;
                 float var9 = this.field_146570_r * (float) this.field_146555_f;
                 float var10 = this.field_146570_r * (float) this.field_146557_g;
-                this.field_146567_u -= (double) ((var9 - var12) * 0.5F);
-                this.field_146566_v -= (double) ((var10 - var8) * 0.5F);
+                this.field_146567_u -= (var9 - var12) * 0.5F;
+                this.field_146566_v -= (var10 - var8) * 0.5F;
                 this.field_146565_w = this.field_146569_s = this.field_146567_u;
                 this.field_146573_x = this.field_146568_t = this.field_146566_v;
             }
 
             if (this.field_146565_w < (double) field_146572_y) {
-                this.field_146565_w = (double) field_146572_y;
+                this.field_146565_w = field_146572_y;
             }
 
             if (this.field_146573_x < (double) field_146571_z) {
-                this.field_146573_x = (double) field_146571_z;
+                this.field_146573_x = field_146571_z;
             }
 
             if (this.field_146565_w >= (double) field_146559_A) {
-                this.field_146565_w = (double) (field_146559_A - 1);
+                this.field_146565_w = field_146559_A - 1;
             }
 
             if (this.field_146573_x >= (double) field_146560_B) {
-                this.field_146573_x = (double) (field_146560_B - 1);
+                this.field_146573_x = field_146560_B - 1;
             }
 
             this.drawDefaultBackground();
@@ -214,7 +214,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
         int var1 = (this.width - this.field_146555_f) / 2;
         int var2 = (this.height - this.field_146557_g) / 2;
         if (this.fontRendererObj != null)
-            this.fontRendererObj.drawString(I18n.format("gui.achievements", new Object[0]), var1 + 15, var2 + 5,
+            this.fontRendererObj.drawString(I18n.format("gui.achievements"), var1 + 15, var2 + 5,
                     4210752);
     }
 
@@ -275,7 +275,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
 
             for (var24 = 0; (float) var24 * var21 - (float) var12 < 224.0F; ++var24) {
                 var19.setSeed(
-                        (long) (this.mc.getSession().getPlayerID().hashCode() + var10 + var24 + (var11 + var22) * 16));
+                        this.mc.getSession().getPlayerID().hashCode() + var10 + var24 + (var11 + var22) * 16L);
                 var25 = var19.nextInt(1 + var11 + var22) + (var11 + var22) / 2;
                 IIcon var26 = Blocks.sand.getIcon(0, 0);
 
@@ -358,7 +358,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
         RenderItem var36 = new RenderItem(this.mc);
         float var37 = (float) (p_146552_1_ - var8) * this.field_146570_r;
         float var38 = (float) (p_146552_2_ - var9) * this.field_146570_r;
-        RenderHelper.enableGUIStandardItemLighting();
+        this.mc.renderHelper.enableGUIStandardItemLighting();
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         GL11.glEnable(GL11.GL_COLOR_MATERIAL);
@@ -456,10 +456,10 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
                 int var33;
 
                 if (var30 == 3) {
-                    var40 = I18n.format("achievement.unknown", new Object[0]);
+                    var40 = I18n.format("achievement.unknown");
                     var31 = Math.max(this.fontRendererObj.getStringWidth(var40), 120);
                     var32 = (new ChatComponentTranslation("achievement.requires",
-                            new Object[] { var34.parentAchievement.func_150951_e() })).getUnformattedText();
+                            var34.parentAchievement.func_150951_e())).getUnformattedText();
                     var33 = this.fontRendererObj.splitStringWidth(var32, var31);
                     this.drawGradientRect(var43 - 3, var44 - 3, var43 + var31 + 3, var44 + var33 + 12 + 3, -1073741824,
                             -1073741824);
@@ -467,7 +467,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
                 } else if (var30 < 3) {
                     var31 = Math.max(this.fontRendererObj.getStringWidth(var40), 120);
                     var32 = (new ChatComponentTranslation("achievement.requires",
-                            new Object[] { var34.parentAchievement.func_150951_e() })).getUnformattedText();
+                            var34.parentAchievement.func_150951_e())).getUnformattedText();
                     var33 = this.fontRendererObj.splitStringWidth(var32, var31);
                     this.drawGradientRect(var43 - 3, var44 - 3, var43 + var31 + 3, var44 + var33 + 12 + 3, -1073741824,
                             -1073741824);
@@ -488,7 +488,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
                 this.fontRendererObj.drawSplitString(var42, var43, var44 + 12, var31, -6250336);
 
                 if (this.field_146556_E.hasAchievementUnlocked(var34)) {
-                    this.fontRendererObj.drawStringWithShadow(I18n.format("achievement.taken", new Object[0]), var43,
+                    this.fontRendererObj.drawStringWithShadow(I18n.format("achievement.taken"), var43,
                             var44 + var46 + 4, -7302913);
                 }
             }

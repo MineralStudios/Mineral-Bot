@@ -19,7 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class GuiScreenBook extends GuiScreen {
     private static final Logger logger = LogManager.getLogger(GuiScreenBook.class);
@@ -297,8 +297,8 @@ public class GuiScreenBook extends GuiScreen {
     private String func_146456_p() {
         return this.field_146483_y != null && this.field_146484_x >= 0
                 && this.field_146484_x < this.field_146483_y.tagCount()
-                        ? this.field_146483_y.getStringTagAt(this.field_146484_x)
-                        : "";
+                ? this.field_146483_y.getStringTagAt(this.field_146484_x)
+                : "";
     }
 
     private void func_146457_a(String p_146457_1_) {
@@ -352,7 +352,7 @@ public class GuiScreenBook extends GuiScreen {
             this.fontRendererObj.drawString(var7, var4 + 36 + (116 - var8) / 2, var5 + 16 + 16, 0);
             int var9 = this.fontRendererObj.getStringWidth(var6);
             this.fontRendererObj.drawString(var6, var4 + 36 + (116 - var9) / 2, var5 + 48, 0);
-            String var10 = I18n.format("book.byAuthor", new Object[] { this.field_146468_g.getCommandSenderName() });
+            String var10 = I18n.format("book.byAuthor", new Object[]{this.field_146468_g.getCommandSenderName()});
             int var11 = this.fontRendererObj.getStringWidth(var10);
             this.fontRendererObj.drawString(EnumChatFormatting.DARK_GRAY + var10, var4 + 36 + (116 - var11) / 2,
                     var5 + 48 + 10, 0);
@@ -360,7 +360,7 @@ public class GuiScreenBook extends GuiScreen {
             this.fontRendererObj.drawSplitString(var12, var4 + 36, var5 + 80, 116, 0);
         } else {
             var6 = I18n.format("book.pageIndicator",
-                    new Object[] { Integer.valueOf(this.field_146484_x + 1), Integer.valueOf(this.field_146476_w) });
+                    new Object[]{Integer.valueOf(this.field_146484_x + 1), Integer.valueOf(this.field_146476_w)});
             var7 = "";
 
             if (this.field_146483_y != null && this.field_146484_x >= 0

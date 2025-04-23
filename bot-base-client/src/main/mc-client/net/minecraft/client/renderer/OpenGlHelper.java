@@ -1,15 +1,9 @@
 package net.minecraft.client.renderer;
 
-import gg.mineral.bot.base.lwjgl.opengl.ContextCapabilities;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL13;
-import gg.mineral.bot.base.lwjgl.opengl.GL14;
-import gg.mineral.bot.base.lwjgl.opengl.GL30;
-import gg.mineral.bot.base.lwjgl.opengl.GLContext;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
+import gg.mineral.bot.lwjgl.opengl.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
-import org.lwjgl.opengl.*;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -619,6 +613,6 @@ public class OpenGlHelper {
     }
 
     public static boolean isFramebufferEnabled(Minecraft mc) {
-        return mc.getConfig().isFastRender() ? false : framebufferSupported && mc.gameSettings.fboEnable;
+        return !mc.getConfig().isFastRender() && framebufferSupported && mc.gameSettings.fboEnable;
     }
 }

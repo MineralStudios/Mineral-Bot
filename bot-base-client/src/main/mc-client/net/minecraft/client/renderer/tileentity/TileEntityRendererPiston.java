@@ -1,5 +1,7 @@
 package net.minecraft.client.renderer.tileentity;
 
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.material.Material;
@@ -12,9 +14,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityPiston;
 import net.minecraft.world.World;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-
-import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class TileEntityRendererPiston extends TileEntitySpecialRenderer {
@@ -23,7 +22,7 @@ public class TileEntityRendererPiston extends TileEntitySpecialRenderer {
     private final Minecraft mc;
 
     public void renderTileEntityAt(TileEntityPiston p_147500_1_, double p_147500_2_, double p_147500_4_,
-            double p_147500_6_, float p_147500_8_) {
+                                   double p_147500_6_, float p_147500_8_) {
         Block var9 = p_147500_1_.func_145861_a();
 
         if (var9.getMaterial() != Material.air && p_147500_1_.func_145860_a(p_147500_8_) < 1.0F) {
@@ -43,12 +42,12 @@ public class TileEntityRendererPiston extends TileEntitySpecialRenderer {
             if (var10 != null) {
                 var10.startDrawingQuads();
                 var10.setTranslation(
-                        (double) ((float) p_147500_2_ - (float) p_147500_1_.field_145851_c
-                                + p_147500_1_.func_145865_b(p_147500_8_)),
-                        (double) ((float) p_147500_4_ - (float) p_147500_1_.field_145848_d
-                                + p_147500_1_.func_145862_c(p_147500_8_)),
-                        (double) ((float) p_147500_6_ - (float) p_147500_1_.field_145849_e
-                                + p_147500_1_.func_145859_d(p_147500_8_)));
+                        (float) p_147500_2_ - (float) p_147500_1_.field_145851_c
+                                + p_147500_1_.func_145865_b(p_147500_8_),
+                        (float) p_147500_4_ - (float) p_147500_1_.field_145848_d
+                                + p_147500_1_.func_145862_c(p_147500_8_),
+                        (float) p_147500_6_ - (float) p_147500_1_.field_145849_e
+                                + p_147500_1_.func_145859_d(p_147500_8_));
                 var10.setColorOpaque_F(1.0F, 1.0F, 1.0F);
             }
 
@@ -62,9 +61,9 @@ public class TileEntityRendererPiston extends TileEntitySpecialRenderer {
                         p_147500_1_.func_145860_a(p_147500_8_) < 0.5F);
                 Blocks.piston_head.func_150087_e();
                 if (var10 != null)
-                    var10.setTranslation((double) ((float) p_147500_2_ - (float) p_147500_1_.field_145851_c),
-                            (double) ((float) p_147500_4_ - (float) p_147500_1_.field_145848_d),
-                            (double) ((float) p_147500_6_ - (float) p_147500_1_.field_145849_e));
+                    var10.setTranslation((float) p_147500_2_ - (float) p_147500_1_.field_145851_c,
+                            (float) p_147500_4_ - (float) p_147500_1_.field_145848_d,
+                            (float) p_147500_6_ - (float) p_147500_1_.field_145849_e);
                 this.field_147516_b.renderPistonBaseAllFaces(var9, p_147500_1_.field_145851_c,
                         p_147500_1_.field_145848_d, p_147500_1_.field_145849_e);
             } else {
@@ -76,7 +75,7 @@ public class TileEntityRendererPiston extends TileEntitySpecialRenderer {
                 var10.setTranslation(0.0D, 0.0D, 0.0D);
                 var10.draw();
             }
-            RenderHelper.enableStandardItemLighting();
+            this.mc.renderHelper.enableStandardItemLighting();
         }
     }
 
@@ -85,7 +84,7 @@ public class TileEntityRendererPiston extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_,
-            float p_147500_8_) {
+                                   float p_147500_8_) {
         this.renderTileEntityAt((TileEntityPiston) p_147500_1_, p_147500_2_, p_147500_4_, p_147500_6_, p_147500_8_);
     }
 }

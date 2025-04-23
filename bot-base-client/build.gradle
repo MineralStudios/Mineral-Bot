@@ -21,9 +21,10 @@ repositories {
 
 dependencies {
     compileOnly project(':bot-api')
+    implementation project(':bot-lwjgl-bridge')
     implementation project(':bot-shared-library')
     implementation project(':bot-intelligence')
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
+    compileOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
     compileOnly 'io.netty:netty-all:4.1.119.Final'
@@ -43,9 +44,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation 'commons-io:commons-io:2.18.0'
     implementation 'com.google.code.gson:gson:2.12.1'
-    implementation 'org.lwjgl.lwjgl:lwjgl:2.9.3'
-    implementation 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
-    implementation 'com.mojang:authlib:1.5.21'
+    implementation 'com.mojang:authlib:3.11.50'
     implementation 'javax.vecmath:vecmath:1.5.2'
     implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
     annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'

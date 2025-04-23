@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -37,7 +37,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
 public class GuiChat extends GuiScreen implements GuiYesNoCallback {
-    private static final Set field_152175_f = Sets.newHashSet(new String[] { "http", "https" });
+    private static final Set field_152175_f = Sets.newHashSet(new String[]{"http", "https"});
     private static final Logger logger = LogManager.getLogger(GuiChat.class);
     private String field_146410_g = "";
     private int field_146416_h = -1;
@@ -197,9 +197,7 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
                             this.field_146415_a.setText(var5.getValue());
                         } else if (var5.getAction() == ClickEvent.Action.RUN_COMMAND) {
                             this.func_146403_a(var5.getValue());
-                        }
-
-                        else {
+                        } else {
                             logger.error("Don\'t know how to handle " + var5);
                         }
                     }
@@ -228,7 +226,7 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
         try {
             Class var2 = Class.forName("java.awt.Desktop");
             Object var3 = var2.getMethod("getDesktop", new Class[0]).invoke((Object) null, new Object[0]);
-            var2.getMethod("browse", new Class[] { URI.class }).invoke(var3, new Object[] { p_146407_1_ });
+            var2.getMethod("browse", new Class[]{URI.class}).invoke(var3, new Object[]{p_146407_1_});
         } catch (Throwable var4) {
             logger.error("Couldn\'t open link", var4);
         }
@@ -360,7 +358,7 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
                     var8.getChatStyle().setItalic(Boolean.valueOf(true));
                     String var9 = var12 instanceof Achievement ? ((Achievement) var12).getDescription() : null;
                     ArrayList var10 = Lists
-                            .newArrayList(new String[] { var13.getFormattedText(), var8.getFormattedText() });
+                            .newArrayList(new String[]{var13.getFormattedText(), var8.getFormattedText()});
 
                     if (var9 != null) {
                         var10.addAll(this.fontRendererObj.listFormattedStringToWidth(var9, 150));

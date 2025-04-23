@@ -28,7 +28,7 @@ import net.minecraft.world.storage.MapData;
 
 import javax.annotation.Nullable;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderItemFrame extends Render {
     private static final ResourceLocation mapBackgroundTextures = new ResourceLocation(
@@ -55,7 +55,7 @@ public class RenderItemFrame extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityItemFrame p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         GL11.glPushMatrix();
         double var10 = p_76986_1_.posX - p_76986_2_ - 0.5D;
         double var12 = p_76986_1_.posY - p_76986_4_ - 0.5D;
@@ -243,7 +243,7 @@ public class RenderItemFrame extends Render {
                     @Nullable
                     TextureAtlasSprite var14 = var12 != null
                             ? ((TextureMap) var12.getTexture(TextureMap.locationItemsTexture))
-                                    .getAtlasSprite(Items.compass.getIconIndex(var3.getEntityItem()).getIconName())
+                            .getAtlasSprite(Items.compass.getIconIndex(var3.getEntityItem()).getIconName())
                             : null;
 
                     if (var14 instanceof TextureCompass var15) {
@@ -272,7 +272,7 @@ public class RenderItemFrame extends Render {
                 if (var4 == Items.compass && textureManager != null) {
                     TextureAtlasSprite var13 = ((TextureMap) textureManager
                             .getTexture(TextureMap.locationItemsTexture))
-                                    .getAtlasSprite(Items.compass.getIconIndex(var3.getEntityItem()).getIconName());
+                            .getAtlasSprite(Items.compass.getIconIndex(var3.getEntityItem()).getIconName());
 
                     if (var13.getFrameCount() > 0) {
                         var13.updateAnimation();
@@ -285,7 +285,7 @@ public class RenderItemFrame extends Render {
     }
 
     protected void func_147914_a(EntityItemFrame p_147914_1_, double p_147914_2_, double p_147914_4_,
-            double p_147914_6_) {
+                                 double p_147914_6_) {
         if (this.mc.isGuiEnabled() && p_147914_1_.getDisplayedItem() != null
                 && p_147914_1_.getDisplayedItem().hasDisplayName()
                 && this.renderManager.field_147941_i == p_147914_1_) {
@@ -356,7 +356,7 @@ public class RenderItemFrame extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         this.doRender((EntityItemFrame) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

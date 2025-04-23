@@ -3,6 +3,7 @@ package net.minecraft.client.particle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -17,18 +18,22 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import lombok.val;
 
 public class EffectRenderer {
     private static final ResourceLocation particleTextures = new ResourceLocation("textures/particle/particles.png");
 
-    /** Reference to the World object. */
+    /**
+     * Reference to the World object.
+     */
     protected World worldObj;
     private List<EntityFX>[] fxLayers = new List[4];
     private TextureManager renderer;
 
-    /** RNG. */
+    /**
+     * RNG.
+     */
     private Random rand = new Random();
     private final Minecraft mc;
 
@@ -70,8 +75,8 @@ public class EffectRenderer {
                     var6.addCrashSectionCallable("Particle", () -> var3.toString());
                     var6.addCrashSectionCallable("Particle Type", () -> var1 == 0 ? "MISC_TEXTURE"
                             : (var1 == 1 ? "TERRAIN_TEXTURE"
-                                    : (var1 == 2 ? "ITEM_TEXTURE"
-                                            : (var1 == 3 ? "ENTITY_PARTICLE_TEXTURE" : "Unknown - " + var1))));
+                            : (var1 == 2 ? "ITEM_TEXTURE"
+                            : (var1 == 3 ? "ENTITY_PARTICLE_TEXTURE" : "Unknown - " + var1))));
                     throw new ReportedException(var5);
                 }
 
@@ -139,9 +144,9 @@ public class EffectRenderer {
                         var14.addCrashSectionCallable("Particle", () -> var11.toString());
                         var14.addCrashSectionCallable("Particle Type", () -> var8 == 0 ? "MISC_TEXTURE"
                                 : (var8 == 1 ? "TERRAIN_TEXTURE"
-                                        : (var8 == 2 ? "ITEM_TEXTURE"
-                                                : (var8 == 3 ? "ENTITY_PARTICLE_TEXTURE"
-                                                        : "Unknown - " + var8))));
+                                : (var8 == 2 ? "ITEM_TEXTURE"
+                                : (var8 == 3 ? "ENTITY_PARTICLE_TEXTURE"
+                                : "Unknown - " + var8))));
                         throw new ReportedException(var13);
                     }
                 }
@@ -215,15 +220,15 @@ public class EffectRenderer {
             float var6 = 0.1F;
             double var7 = (double) p_78867_1_
                     + this.rand.nextDouble()
-                            * (var5.getBlockBoundsMaxX() - var5.getBlockBoundsMinX() - (double) (var6 * 2.0F))
+                    * (var5.getBlockBoundsMaxX() - var5.getBlockBoundsMinX() - (double) (var6 * 2.0F))
                     + (double) var6 + var5.getBlockBoundsMinX();
             double var9 = (double) p_78867_2_
                     + this.rand.nextDouble()
-                            * (var5.getBlockBoundsMaxY() - var5.getBlockBoundsMinY() - (double) (var6 * 2.0F))
+                    * (var5.getBlockBoundsMaxY() - var5.getBlockBoundsMinY() - (double) (var6 * 2.0F))
                     + (double) var6 + var5.getBlockBoundsMinY();
             double var11 = (double) p_78867_3_
                     + this.rand.nextDouble()
-                            * (var5.getBlockBoundsMaxZ() - var5.getBlockBoundsMinZ() - (double) (var6 * 2.0F))
+                    * (var5.getBlockBoundsMaxZ() - var5.getBlockBoundsMinZ() - (double) (var6 * 2.0F))
                     + (double) var6 + var5.getBlockBoundsMinZ();
 
             if (p_78867_4_ == 0) {

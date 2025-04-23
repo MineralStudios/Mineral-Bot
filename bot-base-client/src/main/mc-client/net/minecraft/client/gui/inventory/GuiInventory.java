@@ -1,8 +1,8 @@
 package net.minecraft.client.gui.inventory;
 
 import gg.mineral.bot.api.screen.type.InventoryScreen;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiButton;
@@ -77,7 +77,7 @@ public class GuiInventory extends InventoryEffectRenderer implements InventorySc
 
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {
         if (this.fontRendererObj != null)
-            this.fontRendererObj.drawString(I18n.format("container.crafting", new Object[0]), 86, 16, 4210752);
+            this.fontRendererObj.drawString(I18n.format("container.crafting"), 86, 16, 4210752);
     }
 
     /**
@@ -99,11 +99,11 @@ public class GuiInventory extends InventoryEffectRenderer implements InventorySc
         int var4 = this.xShift;
         int var5 = this.yShift;
         this.drawTexturedModalRect(var4, var5, 0, 0, this.field_146999_f, this.field_147000_g);
-        func_147046_a(this.mc.renderManager, var4 + 51, var5 + 75, 30, (float) (var4 + 51) - this.field_147048_u,
+        func_147046_a(this.mc, this.mc.renderManager, var4 + 51, var5 + 75, 30, (float) (var4 + 51) - this.field_147048_u,
                 (float) (var5 + 75 - 50) - this.field_147047_v, this.mc.thePlayer);
     }
 
-    public static void func_147046_a(RenderManager instance, int p_147046_0_, int p_147046_1_, int p_147046_2_,
+    public static void func_147046_a(Minecraft mc, RenderManager instance, int p_147046_0_, int p_147046_1_, int p_147046_2_,
                                      float p_147046_3_,
                                      float p_147046_4_, EntityLivingBase p_147046_5_) {
         GL11.glEnable(GL11.GL_COLOR_MATERIAL);
@@ -117,12 +117,12 @@ public class GuiInventory extends InventoryEffectRenderer implements InventorySc
         float var9 = p_147046_5_.prevRotationYawHead;
         float var10 = p_147046_5_.rotationYawHead;
         GL11.glRotatef(135.0F, 0.0F, 1.0F, 0.0F);
-        RenderHelper.enableStandardItemLighting();
+        mc.renderHelper.enableStandardItemLighting();
         GL11.glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(-((float) Math.atan((double) (p_147046_4_ / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
-        p_147046_5_.renderYawOffset = (float) Math.atan((double) (p_147046_3_ / 40.0F)) * 20.0F;
-        p_147046_5_.rotationYaw = (float) Math.atan((double) (p_147046_3_ / 40.0F)) * 40.0F;
-        p_147046_5_.rotationPitch = -((float) Math.atan((double) (p_147046_4_ / 40.0F))) * 20.0F;
+        GL11.glRotatef(-((float) Math.atan(p_147046_4_ / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
+        p_147046_5_.renderYawOffset = (float) Math.atan(p_147046_3_ / 40.0F) * 20.0F;
+        p_147046_5_.rotationYaw = (float) Math.atan(p_147046_3_ / 40.0F) * 40.0F;
+        p_147046_5_.rotationPitch = -((float) Math.atan(p_147046_4_ / 40.0F)) * 20.0F;
         p_147046_5_.rotationYawHead = p_147046_5_.rotationYaw;
         p_147046_5_.prevRotationYawHead = p_147046_5_.rotationYaw;
         GL11.glTranslatef(0.0F, p_147046_5_.yOffset, 0.0F);

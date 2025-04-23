@@ -17,6 +17,9 @@ repositories {
     }
     maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
     maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
+    maven {
+        url "https://repo.viaversion.com/everything"
+    }
     mavenCentral()
 }
 
@@ -32,8 +35,9 @@ publishing {
 
 dependencies {
     compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20250226-15.29.59'
-    compileOnly 'org.projectlombok:lombok:1.18.36'
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+    compileOnly 'com.viaversion:viaversion-api:5.3.1'
+    compileOnly 'com.viaversion:viaversion-common:5.3.1'
+    compileOnly 'com.viaversion:viaversion-bukkit:5.3.1'
     implementation project(':bot-base-client')
     compileOnly project(':bot-shared-library')
     compileOnly project(':bot-api')

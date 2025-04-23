@@ -6,8 +6,8 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 
 public class RenderWitherSkull extends Render {
     public RenderWitherSkull(Minecraft mc) {
@@ -19,7 +19,9 @@ public class RenderWitherSkull extends Render {
             "textures/entity/wither/wither_invulnerable.png");
     private static final ResourceLocation witherTextures = new ResourceLocation("textures/entity/wither/wither.png");
 
-    /** The Skeleton's head model. */
+    /**
+     * The Skeleton's head model.
+     */
     private final ModelSkeletonHead skeletonHeadModel;
 
     private float func_82400_a(float p_82400_1_, float p_82400_2_, float p_82400_3_) {
@@ -46,7 +48,7 @@ public class RenderWitherSkull extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityWitherSkull p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_CULL_FACE);
         float var10 = this.func_82400_a(p_76986_1_.prevRotationYaw, p_76986_1_.rotationYaw, p_76986_9_);
@@ -88,7 +90,7 @@ public class RenderWitherSkull extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         this.doRender((EntityWitherSkull) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

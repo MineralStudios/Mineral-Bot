@@ -1,6 +1,7 @@
 package net.minecraft.client.renderer.entity;
 
 import com.google.common.collect.Maps;
+
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
@@ -11,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderHorse extends RenderLiving {
     private static final Map field_110852_a = Maps.newHashMap();
@@ -51,7 +52,7 @@ public class RenderHorse extends RenderLiving {
      * Renders the model in RenderLiving
      */
     protected void renderModel(EntityHorse p_77036_1_, float p_77036_2_, float p_77036_3_, float p_77036_4_,
-            float p_77036_5_, float p_77036_6_, float p_77036_7_) {
+                               float p_77036_5_, float p_77036_6_, float p_77036_7_) {
         if (p_77036_1_.isInvisible()) {
             this.mainModel.setRotationAngles(p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, p_77036_7_,
                     p_77036_1_);
@@ -119,7 +120,7 @@ public class RenderHorse extends RenderLiving {
      * Renders the model in RenderLiving
      */
     protected void renderModel(EntityLivingBase p_77036_1_, float p_77036_2_, float p_77036_3_, float p_77036_4_,
-            float p_77036_5_, float p_77036_6_, float p_77036_7_) {
+                               float p_77036_5_, float p_77036_6_, float p_77036_7_) {
         this.renderModel((EntityHorse) p_77036_1_, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_,
                 p_77036_7_);
     }

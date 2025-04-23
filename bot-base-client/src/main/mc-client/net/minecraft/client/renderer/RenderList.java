@@ -1,7 +1,8 @@
 package net.minecraft.client.renderer;
 
 import java.nio.IntBuffer;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderList {
     /**
@@ -19,7 +20,9 @@ public class RenderList {
     private double cameraY;
     private double cameraZ;
 
-    /** A list of OpenGL render list IDs rendered by this RenderList. */
+    /**
+     * A list of OpenGL render list IDs rendered by this RenderList.
+     */
     private IntBuffer glLists = GLAllocation.createDirectIntBuffer(65536);
 
     /**
@@ -28,11 +31,13 @@ public class RenderList {
      */
     private boolean valid;
 
-    /** Has glLists been flipped to make it ready for reading yet? */
+    /**
+     * Has glLists been flipped to make it ready for reading yet?
+     */
     private boolean bufferFlipped;
 
     public void setupRenderList(int p_78422_1_, int p_78422_2_, int p_78422_3_, double p_78422_4_, double p_78422_6_,
-            double p_78422_8_) {
+                                double p_78422_8_) {
         this.valid = true;
         this.glLists.clear();
         this.renderChunkX = p_78422_1_;

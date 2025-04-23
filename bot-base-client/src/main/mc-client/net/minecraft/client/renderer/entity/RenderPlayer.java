@@ -1,7 +1,9 @@
 package net.minecraft.client.renderer.entity;
 
 import com.mojang.authlib.GameProfile;
+
 import java.util.UUID;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -26,7 +28,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderPlayer extends RendererLivingEntity {
     private static final ResourceLocation steveTextures = new ResourceLocation("textures/entity/steve.png");
@@ -116,7 +118,7 @@ public class RenderPlayer extends RendererLivingEntity {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(AbstractClientPlayer p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         GL11.glColor3f(1.0F, 1.0F, 1.0F);
         ItemStack var10 = p_76986_1_.inventory.getCurrentItem();
         this.modelArmorChestplate.heldItemRight = this.modelArmor.heldItemRight = this.modelBipedMain.heldItemRight = var10 != null
@@ -207,7 +209,7 @@ public class RenderPlayer extends RendererLivingEntity {
                 float var22 = p_77029_1_.prevRotationYaw
                         + (p_77029_1_.rotationYaw - p_77029_1_.prevRotationYaw) * p_77029_2_
                         - (p_77029_1_.prevRenderYawOffset
-                                + (p_77029_1_.renderYawOffset - p_77029_1_.prevRenderYawOffset) * p_77029_2_);
+                        + (p_77029_1_.renderYawOffset - p_77029_1_.prevRenderYawOffset) * p_77029_2_);
                 float var25 = p_77029_1_.prevRotationPitch
                         + (p_77029_1_.rotationPitch - p_77029_1_.prevRotationPitch) * p_77029_2_;
                 GL11.glPushMatrix();
@@ -375,7 +377,7 @@ public class RenderPlayer extends RendererLivingEntity {
     }
 
     protected void func_96449_a(AbstractClientPlayer p_96449_1_, double p_96449_2_, double p_96449_4_,
-            double p_96449_6_, String p_96449_8_, float p_96449_9_, double p_96449_10_) {
+                                double p_96449_6_, String p_96449_8_, float p_96449_9_, double p_96449_10_) {
         if (p_96449_10_ < 100.0D) {
             Scoreboard var12 = p_96449_1_.getWorldScoreboard();
             ScoreObjective var13 = var12.func_96539_a(2);
@@ -411,7 +413,7 @@ public class RenderPlayer extends RendererLivingEntity {
      * Sets a simple glTranslate on a LivingEntity.
      */
     protected void renderLivingAt(AbstractClientPlayer p_77039_1_, double p_77039_2_, double p_77039_4_,
-            double p_77039_6_) {
+                                  double p_77039_6_) {
         if (p_77039_1_.isEntityAlive() && p_77039_1_.isPlayerSleeping()) {
             super.renderLivingAt(p_77039_1_, p_77039_2_ + (double) p_77039_1_.field_71079_bU,
                     p_77039_4_ + (double) p_77039_1_.field_71082_cx, p_77039_6_ + (double) p_77039_1_.field_71089_bV);
@@ -431,7 +433,7 @@ public class RenderPlayer extends RendererLivingEntity {
     }
 
     protected void func_96449_a(EntityLivingBase p_96449_1_, double p_96449_2_, double p_96449_4_, double p_96449_6_,
-            String p_96449_8_, float p_96449_9_, double p_96449_10_) {
+                                String p_96449_8_, float p_96449_9_, double p_96449_10_) {
         this.func_96449_a((AbstractClientPlayer) p_96449_1_, p_96449_2_, p_96449_4_, p_96449_6_, p_96449_8_, p_96449_9_,
                 p_96449_10_);
     }
@@ -468,7 +470,7 @@ public class RenderPlayer extends RendererLivingEntity {
      * Sets a simple glTranslate on a LivingEntity.
      */
     protected void renderLivingAt(EntityLivingBase p_77039_1_, double p_77039_2_, double p_77039_4_,
-            double p_77039_6_) {
+                                  double p_77039_6_) {
         this.renderLivingAt((AbstractClientPlayer) p_77039_1_, p_77039_2_, p_77039_4_, p_77039_6_);
     }
 
@@ -482,7 +484,7 @@ public class RenderPlayer extends RendererLivingEntity {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityLivingBase p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         this.doRender((AbstractClientPlayer) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 
@@ -504,7 +506,7 @@ public class RenderPlayer extends RendererLivingEntity {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         this.doRender((AbstractClientPlayer) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

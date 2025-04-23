@@ -1,6 +1,6 @@
 package net.minecraft.client.renderer.tileentity;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -19,7 +19,7 @@ public class TileEntitySignRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntitySign p_147500_1_, double p_147500_2_, double p_147500_4_,
-            double p_147500_6_, float p_147500_8_) {
+                                   double p_147500_6_, float p_147500_8_) {
         Block var9 = p_147500_1_.getBlockType();
         GL11.glPushMatrix();
         float var10 = 0.6666667F;
@@ -86,7 +86,7 @@ public class TileEntitySignRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_,
-            float p_147500_8_) {
+                                   float p_147500_8_) {
         this.renderTileEntityAt((TileEntitySign) p_147500_1_, p_147500_2_, p_147500_4_, p_147500_6_, p_147500_8_);
     }
 }

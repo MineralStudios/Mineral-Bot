@@ -1,6 +1,6 @@
 package net.minecraft.client.renderer.entity;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBat;
@@ -36,7 +36,7 @@ public class RenderBat extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityBat p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         int var10 = ((ModelBat) this.mainModel).getBatSize();
 
         if (var10 != this.renderedBatSize) {
@@ -91,7 +91,7 @@ public class RenderBat extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityLiving p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         this.doRender((EntityBat) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 
@@ -112,7 +112,7 @@ public class RenderBat extends RenderLiving {
      * Sets a simple glTranslate on a LivingEntity.
      */
     protected void renderLivingAt(EntityLivingBase p_77039_1_, double p_77039_2_, double p_77039_4_,
-            double p_77039_6_) {
+                                  double p_77039_6_) {
         this.renderLivingAt((EntityBat) p_77039_1_, p_77039_2_, p_77039_4_, p_77039_6_);
     }
 
@@ -126,7 +126,7 @@ public class RenderBat extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityLivingBase p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_, float p_76986_9_) {
+                         float p_76986_8_, float p_76986_9_) {
         this.doRender((EntityBat) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 
@@ -148,7 +148,7 @@ public class RenderBat extends RenderLiving {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_9_) {
         this.doRender((EntityBat) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

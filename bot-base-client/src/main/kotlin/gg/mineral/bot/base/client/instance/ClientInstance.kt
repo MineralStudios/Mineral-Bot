@@ -368,9 +368,9 @@ open class ClientInstance(
             }
         }
 
-    override fun newMouse(): Mouse = gg.mineral.bot.base.lwjgl.input.Mouse(this)
+    override fun newMouse(): Mouse = gg.mineral.bot.lwjgl.input.Mouse(this)
 
-    override fun newKeyboard(): Keyboard = gg.mineral.bot.base.lwjgl.input.Keyboard(this)
+    override fun newKeyboard(): Keyboard = gg.mineral.bot.lwjgl.input.Keyboard(this)
 
     override var displayHeight: Int
         get() = super.displayHeight

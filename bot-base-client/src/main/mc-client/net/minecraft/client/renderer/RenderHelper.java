@@ -1,12 +1,15 @@
 package net.minecraft.client.renderer;
 
-import java.nio.FloatBuffer;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.util.Vec3;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+
+import java.nio.FloatBuffer;
 
 public class RenderHelper {
-    /** Float buffer used to set OpenGL material colors */
-    private static FloatBuffer colorBuffer = GLAllocation.createDirectFloatBuffer(16);
+    /**
+     * Float buffer used to set OpenGL material colors
+     */
+    private final FloatBuffer colorBuffer = GLAllocation.createDirectFloatBuffer(16);
     private static final Vec3 field_82884_b = Vec3.createVectorHelper(0.20000000298023224D, 1.0D, -0.699999988079071D)
             .normalize();
     private static final Vec3 field_82885_c = Vec3.createVectorHelper(-0.20000000298023224D, 1.0D, 0.699999988079071D)
@@ -26,7 +29,7 @@ public class RenderHelper {
      * Sets the OpenGL lighting properties to the values used when rendering blocks
      * as items
      */
-    public static void enableStandardItemLighting() {
+    public void enableStandardItemLighting() {
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_LIGHT0);
         GL11.glEnable(GL11.GL_LIGHT1);
@@ -52,15 +55,15 @@ public class RenderHelper {
     /**
      * Update and return colorBuffer with the RGBA values passed as arguments
      */
-    private static FloatBuffer setColorBuffer(double p_74517_0_, double p_74517_2_, double p_74517_4_,
-            double p_74517_6_) {
+    private FloatBuffer setColorBuffer(double p_74517_0_, double p_74517_2_, double p_74517_4_,
+                                       double p_74517_6_) {
         return setColorBuffer((float) p_74517_0_, (float) p_74517_2_, (float) p_74517_4_, (float) p_74517_6_);
     }
 
     /**
      * Update and return colorBuffer with the RGBA values passed as arguments
      */
-    private static FloatBuffer setColorBuffer(float p_74521_0_, float p_74521_1_, float p_74521_2_, float p_74521_3_) {
+    private FloatBuffer setColorBuffer(float p_74521_0_, float p_74521_1_, float p_74521_2_, float p_74521_3_) {
         colorBuffer.clear();
         colorBuffer.put(p_74521_0_).put(p_74521_1_).put(p_74521_2_).put(p_74521_3_);
         colorBuffer.flip();
@@ -71,7 +74,7 @@ public class RenderHelper {
      * Sets OpenGL lighting for rendering blocks as items inside GUI screens (such
      * as containers).
      */
-    public static void enableGUIStandardItemLighting() {
+    public void enableGUIStandardItemLighting() {
         GL11.glPushMatrix();
         GL11.glRotatef(-30.0F, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(165.0F, 1.0F, 0.0F, 0.0F);

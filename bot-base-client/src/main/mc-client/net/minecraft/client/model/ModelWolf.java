@@ -1,6 +1,6 @@
 package net.minecraft.client.model;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -8,28 +8,44 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.util.MathHelper;
 
 public class ModelWolf extends ModelBase {
-    /** main box for the wolf head */
+    /**
+     * main box for the wolf head
+     */
     public ModelRenderer wolfHeadMain;
 
-    /** The wolf's body */
+    /**
+     * The wolf's body
+     */
     public ModelRenderer wolfBody;
 
-    /** Wolf'se first leg */
+    /**
+     * Wolf'se first leg
+     */
     public ModelRenderer wolfLeg1;
 
-    /** Wolf's second leg */
+    /**
+     * Wolf's second leg
+     */
     public ModelRenderer wolfLeg2;
 
-    /** Wolf's third leg */
+    /**
+     * Wolf's third leg
+     */
     public ModelRenderer wolfLeg3;
 
-    /** Wolf's fourth leg */
+    /**
+     * Wolf's fourth leg
+     */
     public ModelRenderer wolfLeg4;
 
-    /** The wolf's tail */
+    /**
+     * The wolf's tail
+     */
     ModelRenderer wolfTail;
 
-    /** The wolf's mane */
+    /**
+     * The wolf's mane
+     */
     ModelRenderer wolfMane;
 
     public ModelWolf(Minecraft mc) {
@@ -68,7 +84,7 @@ public class ModelWolf extends ModelBase {
      * Sets the models various rotation angles then renders the model.
      */
     public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_,
-            float p_78088_6_, float p_78088_7_) {
+                       float p_78088_6_, float p_78088_7_) {
         super.render(p_78088_1_, p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_);
         this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_, p_78088_1_);
 
@@ -160,7 +176,7 @@ public class ModelWolf extends ModelBase {
      * "far" arms and legs can swing at most.
      */
     public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_,
-            float p_78087_5_, float p_78087_6_, Entity p_78087_7_) {
+                                  float p_78087_5_, float p_78087_6_, Entity p_78087_7_) {
         super.setRotationAngles(p_78087_1_, p_78087_2_, p_78087_3_, p_78087_4_, p_78087_5_, p_78087_6_, p_78087_7_);
         this.wolfHeadMain.rotateAngleX = p_78087_5_ / (180F / (float) Math.PI);
         this.wolfHeadMain.rotateAngleY = p_78087_4_ / (180F / (float) Math.PI);

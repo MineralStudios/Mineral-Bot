@@ -7,7 +7,7 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class GuiScreenOptionsSounds extends GuiScreen {
     private final GuiScreen field_146505_f;
@@ -79,7 +79,7 @@ public class GuiScreenOptionsSounds extends GuiScreen {
         public boolean field_146155_p;
 
         public Button(int p_i45024_2_, int p_i45024_3_, int p_i45024_4_, SoundCategory p_i45024_5_,
-                boolean p_i45024_6_) {
+                      boolean p_i45024_6_) {
             super(GuiScreenOptionsSounds.this.mc, p_i45024_2_, p_i45024_3_, p_i45024_4_, p_i45024_6_ ? 310 : 150, 20,
                     "");
             this.field_146153_r = p_i45024_5_;
