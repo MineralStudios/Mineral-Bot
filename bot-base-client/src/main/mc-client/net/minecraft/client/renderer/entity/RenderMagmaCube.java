@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderMagmaCube extends RenderLiving {
     private static final ResourceLocation magmaCubeTextures = new ResourceLocation(

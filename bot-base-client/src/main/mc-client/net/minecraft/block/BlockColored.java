@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;

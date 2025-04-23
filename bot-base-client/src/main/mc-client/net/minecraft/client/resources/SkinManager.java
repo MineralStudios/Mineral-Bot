@@ -17,9 +17,8 @@ import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
@@ -51,7 +50,7 @@ public class SkinManager {
 
                     @Override
                     public @NonNull Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> load(
-                            @Nonnull GameProfile gameProfile) {
+                            @NonNull GameProfile gameProfile) {
                         MinecraftSessionService mcSessionService = mc.getAuthenticationService();
 
                         if (mcSessionService == null)
@@ -63,7 +62,7 @@ public class SkinManager {
     }
 
     public ResourceLocation func_152792_a(MinecraftProfileTexture p_152792_1_, Type p_152792_2_) {
-        return this.func_152789_a(p_152792_1_, p_152792_2_, (SkinManager.SkinAvailableCallback) null);
+        return this.func_152789_a(p_152792_1_, p_152792_2_, null);
     }
 
     public ResourceLocation func_152789_a(MinecraftProfileTexture p_152789_1_, final Type p_152789_2_,
@@ -122,7 +121,6 @@ public class SkinManager {
                 try {
                     var1.putAll(authenticationService.getTextures(p_152790_1_, p_152790_3_));
                 } catch (InsecureTextureException var3) {
-                    ;
                 }
 
                 if (var1.isEmpty()

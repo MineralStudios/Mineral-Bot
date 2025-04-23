@@ -8,14 +8,16 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderCreeper extends RenderLiving {
     private static final ResourceLocation armoredCreeperTextures = new ResourceLocation(
             "textures/entity/creeper/creeper_armor.png");
     private static final ResourceLocation creeperTextures = new ResourceLocation("textures/entity/creeper/creeper.png");
 
-    /** The creeper model. */
+    /**
+     * The creeper model.
+     */
     private final ModelBase creeperModel;
 
     public RenderCreeper(Minecraft mc) {

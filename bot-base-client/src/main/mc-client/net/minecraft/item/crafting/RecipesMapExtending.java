@@ -1,6 +1,6 @@
 package net.minecraft.item.crafting;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
@@ -13,10 +13,10 @@ public class RecipesMapExtending extends ShapedRecipes {
 
     public RecipesMapExtending() {
         super(3, 3,
-                new ItemStack[] { new ItemStack(Items.paper), new ItemStack(Items.paper), new ItemStack(Items.paper),
+                new ItemStack[]{new ItemStack(Items.paper), new ItemStack(Items.paper), new ItemStack(Items.paper),
                         new ItemStack(Items.paper), new ItemStack(Items.filled_map, 0, 32767),
                         new ItemStack(Items.paper), new ItemStack(Items.paper), new ItemStack(Items.paper),
-                        new ItemStack(Items.paper) },
+                        new ItemStack(Items.paper)},
                 new ItemStack(Items.map, 0, 0));
     }
 

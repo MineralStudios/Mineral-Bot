@@ -1,17 +1,23 @@
 package net.minecraft.client.model;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
 public class ModelEnderCrystal extends ModelBase {
-    /** The cube model for the Ender Crystal. */
+    /**
+     * The cube model for the Ender Crystal.
+     */
     private final ModelRenderer cube;
 
-    /** The glass model for the Ender Crystal. */
+    /**
+     * The glass model for the Ender Crystal.
+     */
     private final ModelRenderer glass;
 
-    /** The base model for the Ender Crystal. */
+    /**
+     * The base model for the Ender Crystal.
+     */
     private ModelRenderer base;
 
     public ModelEnderCrystal(Minecraft mc, float p_i1170_1_, boolean p_i1170_2_) {
@@ -30,7 +36,7 @@ public class ModelEnderCrystal extends ModelBase {
      * Sets the models various rotation angles then renders the model.
      */
     public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_,
-            float p_78088_6_, float p_78088_7_) {
+                       float p_78088_6_, float p_78088_7_) {
         GL11.glPushMatrix();
         GL11.glScalef(2.0F, 2.0F, 2.0F);
         GL11.glTranslatef(0.0F, -0.5F, 0.0F);

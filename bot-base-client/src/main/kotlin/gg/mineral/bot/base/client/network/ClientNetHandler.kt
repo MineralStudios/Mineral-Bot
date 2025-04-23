@@ -1,6 +1,5 @@
 package gg.mineral.bot.base.client.network
 
-import com.google.common.base.Charsets
 import gg.mineral.bot.base.client.player.controller.BotController
 import net.minecraft.client.ClientBrandRetriever
 import net.minecraft.client.Minecraft
@@ -12,6 +11,7 @@ import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.client.C17PacketCustomPayload
 import net.minecraft.network.play.server.S01PacketJoinGame
 import net.minecraft.world.WorldSettings
+import java.nio.charset.StandardCharsets
 
 class ClientNetHandler(mc: Minecraft, guiScreen: GuiScreen?, netManager: NetworkManager) :
     NetHandlerPlayClient(mc, guiScreen, netManager) {
@@ -46,7 +46,7 @@ class ClientNetHandler(mc: Minecraft, guiScreen: GuiScreen?, netManager: Network
         netManager.scheduleOutboundPacket(
             C17PacketCustomPayload(
                 "MC|Brand",
-                ClientBrandRetriever.getClientModName().toByteArray(Charsets.UTF_8)
+                ClientBrandRetriever.getClientModName().toByteArray(StandardCharsets.UTF_8)
             )
         )
     }

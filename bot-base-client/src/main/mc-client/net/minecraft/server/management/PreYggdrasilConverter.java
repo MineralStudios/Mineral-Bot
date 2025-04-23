@@ -1,25 +1,22 @@
 package net.minecraft.server.management;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.UUID;
-
-import javax.annotation.Nonnull;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.jdt.annotation.NonNull;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.UUID;
 
 public class PreYggdrasilConverter {
     private static final Logger field_152732_e = LogManager.getLogger(PreYggdrasilConverter.class);
@@ -29,14 +26,14 @@ public class PreYggdrasilConverter {
     public static final File field_152731_d = new File("white-list.txt");
 
     private static void func_152717_a(MinecraftServer p_152717_0_, Collection p_152717_1_,
-            ProfileLookupCallback p_152717_2_) {
-        String[] var3 = (String[]) Iterators.toArray(Iterators.filter(p_152717_1_.iterator(), new Predicate() {
+                                      ProfileLookupCallback p_152717_2_) {
+        String[] var3 = Iterators.toArray(Iterators.filter(p_152717_1_.iterator(), new Predicate() {
 
             public boolean func_152733_a(String p_152733_1_) {
                 return !StringUtils.isNullOrEmpty(p_152733_1_);
             }
 
-            public boolean apply(@Nonnull Object p_apply_1_) {
+            public boolean apply(@NonNull Object p_apply_1_) {
                 return this.func_152733_a((String) p_apply_1_);
             }
         }), String.class);
@@ -49,7 +46,7 @@ public class PreYggdrasilConverter {
 
             for (int var6 = 0; var6 < var5; ++var6) {
                 String var7 = var4[var6];
-                UUID var8 = EntityPlayer.getUUIDFromGameProfile(new GameProfile((UUID) null, var7));
+                UUID var8 = EntityPlayer.getUUIDFromGameProfile(new GameProfile(null, var7));
                 GameProfile var9 = new GameProfile(var8, var7);
                 p_152717_2_.onProfileLookupSucceeded(var9);
             }
@@ -73,18 +70,18 @@ public class PreYggdrasilConverter {
                     }
 
                     public void onProfileLookupFailed(GameProfile p_onProfileLookupFailed_1_,
-                            Exception p_onProfileLookupFailed_2_) {
+                                                      Exception p_onProfileLookupFailed_2_) {
                         PreYggdrasilConverter.field_152732_e.warn(
                                 "Could not lookup user whitelist entry for " + p_onProfileLookupFailed_1_.getName(),
                                 p_onProfileLookupFailed_2_);
                     }
                 };
-                func_152717_a(var1, Lists.newArrayList(new String[] { p_152719_0_ }), var4);
+                func_152717_a(var1, Lists.newArrayList(p_152719_0_), var4);
                 return var3.size() > 0 && ((GameProfile) var3.get(0)).getId() != null
                         ? ((GameProfile) var3.get(0)).getId().toString()
                         : "";
             } else {
-                return EntityPlayer.getUUIDFromGameProfile(new GameProfile((UUID) null, p_152719_0_)).toString();
+                return EntityPlayer.getUUIDFromGameProfile(new GameProfile(null, p_152719_0_)).toString();
             }
         } else {
             return p_152719_0_;

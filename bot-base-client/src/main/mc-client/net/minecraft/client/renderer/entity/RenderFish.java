@@ -7,8 +7,8 @@ import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 
 public class RenderFish extends Render {
     public RenderFish(Minecraft mc) {
@@ -27,7 +27,7 @@ public class RenderFish extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(EntityFishHook p_76986_1_, double p_76986_2_, double p_76986_4_,
-            double p_76986_6_, float p_76986_8_, float p_76986_9_) {
+                         double p_76986_6_, float p_76986_8_, float p_76986_9_) {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) p_76986_2_, (float) p_76986_4_, (float) p_76986_6_);
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -67,26 +67,26 @@ public class RenderFish extends Render {
             Vec3 var22 = Vec3.createVectorHelper(-0.5D, 0.03D, 0.8D);
             var22.rotateAroundX(-(p_76986_1_.field_146042_b.prevRotationPitch
                     + (p_76986_1_.field_146042_b.rotationPitch
-                            - p_76986_1_.field_146042_b.prevRotationPitch)
-                            * p_76986_9_)
+                    - p_76986_1_.field_146042_b.prevRotationPitch)
+                    * p_76986_9_)
                     * (float) Math.PI / 180.0F);
             var22.rotateAroundY(-(p_76986_1_.field_146042_b.prevRotationYaw
                     + (p_76986_1_.field_146042_b.rotationYaw
-                            - p_76986_1_.field_146042_b.prevRotationYaw) * p_76986_9_)
+                    - p_76986_1_.field_146042_b.prevRotationYaw) * p_76986_9_)
                     * (float) Math.PI / 180.0F);
             var22.rotateAroundY(var21 * 0.5F);
             var22.rotateAroundX(-var21 * 0.7F);
             double var23 = p_76986_1_.field_146042_b.prevPosX
                     + (p_76986_1_.field_146042_b.posX - p_76986_1_.field_146042_b.prevPosX)
-                            * (double) p_76986_9_
+                    * (double) p_76986_9_
                     + var22.xCoord;
             double var25 = p_76986_1_.field_146042_b.prevPosY
                     + (p_76986_1_.field_146042_b.posY - p_76986_1_.field_146042_b.prevPosY)
-                            * (double) p_76986_9_
+                    * (double) p_76986_9_
                     + var22.yCoord;
             double var27 = p_76986_1_.field_146042_b.prevPosZ
                     + (p_76986_1_.field_146042_b.posZ - p_76986_1_.field_146042_b.prevPosZ)
-                            * (double) p_76986_9_
+                    * (double) p_76986_9_
                     + var22.zCoord;
             double var29 = p_76986_1_.field_146042_b == this.mc.thePlayer ? 0.0D
                     : (double) p_76986_1_.field_146042_b.getEyeHeight();
@@ -95,22 +95,22 @@ public class RenderFish extends Render {
                     || p_76986_1_.field_146042_b != this.mc.thePlayer) {
                 float var31 = (p_76986_1_.field_146042_b.prevRenderYawOffset
                         + (p_76986_1_.field_146042_b.renderYawOffset
-                                - p_76986_1_.field_146042_b.prevRenderYawOffset)
-                                * p_76986_9_)
+                        - p_76986_1_.field_146042_b.prevRenderYawOffset)
+                        * p_76986_9_)
                         * (float) Math.PI / 180.0F;
                 double var32 = (double) MathHelper.sin(var31);
                 double var34 = (double) MathHelper.cos(var31);
                 var23 = p_76986_1_.field_146042_b.prevPosX
                         + (p_76986_1_.field_146042_b.posX - p_76986_1_.field_146042_b.prevPosX)
-                                * (double) p_76986_9_
+                        * (double) p_76986_9_
                         - var34 * 0.35D - var32 * 0.85D;
                 var25 = p_76986_1_.field_146042_b.prevPosY + var29
                         + (p_76986_1_.field_146042_b.posY - p_76986_1_.field_146042_b.prevPosY)
-                                * (double) p_76986_9_
+                        * (double) p_76986_9_
                         - 0.45D;
                 var27 = p_76986_1_.field_146042_b.prevPosZ
                         + (p_76986_1_.field_146042_b.posZ - p_76986_1_.field_146042_b.prevPosZ)
-                                * (double) p_76986_9_
+                        * (double) p_76986_9_
                         - var32 * 0.35D + var34 * 0.85D;
             }
 
@@ -170,8 +170,8 @@ public class RenderFish extends Render {
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
     public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_,
-            float p_76986_8_,
-            float p_76986_9_) {
+                         float p_76986_8_,
+                         float p_76986_9_) {
         this.doRender((EntityFishHook) p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }
 }

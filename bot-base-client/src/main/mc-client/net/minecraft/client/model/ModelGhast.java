@@ -2,7 +2,7 @@ package net.minecraft.client.model;
 
 import java.util.Random;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
@@ -38,7 +38,7 @@ public class ModelGhast extends ModelBase {
      * "far" arms and legs can swing at most.
      */
     public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_,
-            float p_78087_5_, float p_78087_6_, Entity p_78087_7_) {
+                                  float p_78087_5_, float p_78087_6_, Entity p_78087_7_) {
         for (int var8 = 0; var8 < this.tentacles.length; ++var8) {
             this.tentacles[var8].rotateAngleX = 0.2F * MathHelper.sin(p_78087_3_ * 0.3F + (float) var8) + 0.4F;
         }
@@ -48,7 +48,7 @@ public class ModelGhast extends ModelBase {
      * Sets the models various rotation angles then renders the model.
      */
     public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_,
-            float p_78088_6_, float p_78088_7_) {
+                       float p_78088_6_, float p_78088_7_) {
         this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_, p_78088_1_);
         GL11.glPushMatrix();
         GL11.glTranslatef(0.0F, 0.6F, 0.0F);

@@ -7,7 +7,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderSkeleton extends RenderBiped {
     private static final ResourceLocation skeletonTextures = new ResourceLocation(

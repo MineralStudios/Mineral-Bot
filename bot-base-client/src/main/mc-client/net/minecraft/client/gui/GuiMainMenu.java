@@ -1,8 +1,8 @@
 package net.minecraft.client.gui;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GLContext;
-import gg.mineral.bot.base.lwjgl.util.glu.Project;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GLContext;
+import gg.mineral.bot.lwjgl.util.glu.Project;
 import gg.mineral.bot.impl.config.BotGlobalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -20,7 +20,8 @@ import org.apache.commons.io.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

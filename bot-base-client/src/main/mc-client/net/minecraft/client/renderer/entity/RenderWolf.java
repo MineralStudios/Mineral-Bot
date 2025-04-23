@@ -7,7 +7,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderWolf extends RenderLiving {
     private static final ResourceLocation wolfTextures = new ResourceLocation("textures/entity/wolf/wolf.png");

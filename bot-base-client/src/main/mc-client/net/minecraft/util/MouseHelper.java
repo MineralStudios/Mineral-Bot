@@ -1,15 +1,19 @@
 package net.minecraft.util;
 
-import gg.mineral.bot.base.lwjgl.opengl.Display;
+import gg.mineral.bot.lwjgl.opengl.Display;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 
 @RequiredArgsConstructor
 public class MouseHelper {
-    /** Mouse delta X this frame */
+    /**
+     * Mouse delta X this frame
+     */
     public int deltaX;
 
-    /** Mouse delta Y this frame */
+    /**
+     * Mouse delta Y this frame
+     */
     public int deltaY;
     private final Minecraft mc;
 

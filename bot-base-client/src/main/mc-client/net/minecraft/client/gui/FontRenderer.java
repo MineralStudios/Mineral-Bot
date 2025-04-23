@@ -3,7 +3,7 @@ package net.minecraft.client.gui;
 import com.ibm.icu.text.ArabicShaping;
 import com.ibm.icu.text.ArabicShapingException;
 import com.ibm.icu.text.Bidi;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;

@@ -1,6 +1,6 @@
 package optifine;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class Blender {
     public static final int BLEND_ALPHA = 0;

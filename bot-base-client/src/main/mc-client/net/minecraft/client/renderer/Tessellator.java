@@ -1,6 +1,6 @@
 package net.minecraft.client.renderer;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.client.util.QuadComparator;

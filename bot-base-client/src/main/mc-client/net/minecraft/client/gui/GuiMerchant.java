@@ -1,12 +1,11 @@
 package net.minecraft.client.gui;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.IMerchant;
@@ -24,18 +23,18 @@ import org.apache.logging.log4j.Logger;
 public class GuiMerchant extends GuiContainer {
     private static final Logger logger = LogManager.getLogger(GuiMerchant.class);
     private static final ResourceLocation field_147038_v = new ResourceLocation("textures/gui/container/villager.png");
-    private IMerchant field_147037_w;
+    private final IMerchant field_147037_w;
     private GuiMerchant.MerchantButton field_147043_x;
     private GuiMerchant.MerchantButton field_147042_y;
     private int field_147041_z;
-    private String field_147040_A;
+    private final String field_147040_A;
 
     public GuiMerchant(Minecraft mc, InventoryPlayer p_i46380_1_, IMerchant p_i46380_2_, World p_i46380_3_,
                        String p_i46380_4_) {
         super(mc, new ContainerMerchant(p_i46380_1_, p_i46380_2_, p_i46380_3_));
         this.field_147037_w = p_i46380_2_;
         this.field_147040_A = p_i46380_4_ != null && p_i46380_4_.length() >= 1 ? p_i46380_4_
-                : I18n.format("entity.Villager.name", new Object[0]);
+                : I18n.format("entity.Villager.name");
     }
 
     @Override
@@ -85,7 +84,7 @@ public class GuiMerchant extends GuiContainer {
     protected void func_146979_b(int p_146979_1_, int p_146979_2_) {
         this.fontRendererObj.drawString(this.field_147040_A,
                 this.field_146999_f / 2 - this.fontRendererObj.getStringWidth(this.field_147040_A) / 2, 6, 4210752);
-        this.fontRendererObj.drawString(I18n.format("container.inventory", new Object[0]), 8,
+        this.fontRendererObj.drawString(I18n.format("container.inventory"), 8,
                 this.field_147000_g - 96 + 2, 4210752);
     }
 
@@ -121,7 +120,7 @@ public class GuiMerchant extends GuiContainer {
                 var3.writeInt(this.field_147041_z);
                 this.mc.getNetHandler().addToSendQueue(new C17PacketCustomPayload("MC|TrSel", var3));
             } catch (Exception var8) {
-                logger.error("Couldn\'t send trade info", var8);
+                logger.error("Couldn't send trade info", var8);
             } finally {
                 var3.release();
             }
@@ -141,7 +140,7 @@ public class GuiMerchant extends GuiContainer {
 
         if (var6 != null && !var6.isEmpty()) {
             int var7 = this.field_147041_z;
-            MerchantRecipe var8 = (MerchantRecipe) var6.get(var7);
+            MerchantRecipe var8 = var6.get(var7);
 
             if (var8.isRecipeDisabled()) {
                 if (textureManager != null)
@@ -165,12 +164,12 @@ public class GuiMerchant extends GuiContainer {
             int var5 = (this.width - this.field_146999_f) / 2;
             int var6 = (this.height - this.field_147000_g) / 2;
             int var7 = this.field_147041_z;
-            MerchantRecipe var8 = (MerchantRecipe) var4.get(var7);
+            MerchantRecipe var8 = var4.get(var7);
             GL11.glPushMatrix();
             ItemStack var9 = var8.getItemToBuy();
             ItemStack var10 = var8.getSecondItemToBuy();
             ItemStack var11 = var8.getItemToSell();
-            RenderHelper.enableGUIStandardItemLighting();
+            this.mc.renderHelper.enableGUIStandardItemLighting();
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             GL11.glEnable(GL11.GL_COLOR_MATERIAL);
@@ -206,7 +205,7 @@ public class GuiMerchant extends GuiContainer {
             GL11.glPopMatrix();
             GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glEnable(GL11.GL_DEPTH_TEST);
-            RenderHelper.enableStandardItemLighting();
+            this.mc.renderHelper.enableStandardItemLighting();
         }
     }
 

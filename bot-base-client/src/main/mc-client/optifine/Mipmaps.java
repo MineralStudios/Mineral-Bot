@@ -3,9 +3,10 @@ package optifine;
 import java.awt.Dimension;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+
 import net.minecraft.client.renderer.GLAllocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 
 public class Mipmaps {
     private final String iconName;

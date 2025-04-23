@@ -2,6 +2,7 @@ package net.minecraft.client.renderer.tileentity;
 
 import java.nio.FloatBuffer;
 import java.util.Random;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GLAllocation;
@@ -9,7 +10,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityEndPortal;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class RenderEndPortal extends TileEntitySpecialRenderer {
     private final Minecraft mc;
 
     public void renderTileEntityAt(TileEntityEndPortal p_147500_1_, double p_147500_2_, double p_147500_4_,
-            double p_147500_6_, float p_147500_8_) {
+                                   double p_147500_6_, float p_147500_8_) {
         float var9 = (float) this.field_147501_a.field_147560_j;
         float var10 = (float) this.field_147501_a.field_147561_k;
         float var11 = (float) this.field_147501_a.field_147558_l;
@@ -123,7 +124,7 @@ public class RenderEndPortal extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_,
-            float p_147500_8_) {
+                                   float p_147500_8_) {
         this.renderTileEntityAt((TileEntityEndPortal) p_147500_1_, p_147500_2_, p_147500_4_, p_147500_6_, p_147500_8_);
     }
 }

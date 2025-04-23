@@ -8,11 +8,12 @@ import lombok.Setter;
 import java.util.Iterator;
 import java.util.List;
 import javax.vecmath.Matrix4f;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.util.JsonException;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class Shader {
     @Getter
@@ -27,7 +28,7 @@ public class Shader {
     private final Minecraft mc;
 
     public Shader(Minecraft mc, IResourceManager p_i45089_1_, String p_i45089_2_, Framebuffer p_i45089_3_,
-            Framebuffer p_i45089_4_)
+                  Framebuffer p_i45089_4_)
             throws JsonException {
         this.mc = mc;
         this.shaderManager = new ShaderManager(p_i45089_1_, p_i45089_2_);

@@ -1,5 +1,17 @@
 package net.minecraft.util;
 
+import gg.mineral.bot.lwjgl.BufferUtils;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.event.ClickEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.IntBuffer;
@@ -7,25 +19,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.imageio.ImageIO;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.lwjgl.BufferUtils;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.shader.Framebuffer;
-import net.minecraft.event.ClickEvent;
-
 public class ScreenShotHelper {
     private static final Logger logger = LogManager.getLogger(ScreenShotHelper.class);
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
-    /** A buffer to hold pixel values returned by OpenGL. */
+    /**
+     * A buffer to hold pixel values returned by OpenGL.
+     */
     private static IntBuffer pixelBuffer;
 
     /**
@@ -39,8 +39,8 @@ public class ScreenShotHelper {
      * requestedWidthInPixels, requestedHeightInPixels, frameBuffer
      */
     public static IChatComponent saveScreenshot(Minecraft mc, File p_148260_0_, int p_148260_1_, int p_148260_2_,
-            Framebuffer p_148260_3_) {
-        return saveScreenshot(mc, p_148260_0_, (String) null, p_148260_1_, p_148260_2_, p_148260_3_);
+                                                Framebuffer p_148260_3_) {
+        return saveScreenshot(mc, p_148260_0_, null, p_148260_1_, p_148260_2_, p_148260_3_);
     }
 
     /**
@@ -50,7 +50,7 @@ public class ScreenShotHelper {
      * requestedHeightInPixels, frameBuffer
      */
     public static IChatComponent saveScreenshot(Minecraft mc, File p_148259_0_, String p_148259_1_, int p_148259_2_,
-            int p_148259_3_, Framebuffer p_148259_4_) {
+                                                int p_148259_3_, Framebuffer p_148259_4_) {
         try {
             File var5 = new File(p_148259_0_, "screenshots");
             var5.mkdir();
@@ -111,10 +111,10 @@ public class ScreenShotHelper {
             var13.getChatStyle()
                     .setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, var12.getAbsolutePath()));
             var13.getChatStyle().setUnderlined(Boolean.valueOf(true));
-            return new ChatComponentTranslation("screenshot.success", new Object[] { var13 });
+            return new ChatComponentTranslation("screenshot.success", var13);
         } catch (Exception var11) {
-            logger.warn("Couldn\'t save screenshot", var11);
-            return new ChatComponentTranslation("screenshot.failure", new Object[] { var11.getMessage() });
+            logger.warn("Couldn't save screenshot", var11);
+            return new ChatComponentTranslation("screenshot.failure", var11.getMessage());
         }
     }
 
@@ -128,7 +128,7 @@ public class ScreenShotHelper {
      * path immediately after this method returned.
      */
     private static File getTimestampedPNGFileForDirectory(File p_74290_0_) {
-        String var2 = dateFormat.format(new Date()).toString();
+        String var2 = dateFormat.format(new Date());
         int var3 = 1;
 
         while (true) {

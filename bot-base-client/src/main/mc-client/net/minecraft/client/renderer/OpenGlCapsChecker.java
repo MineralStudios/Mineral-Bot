@@ -1,6 +1,6 @@
 package net.minecraft.client.renderer;
 
-import gg.mineral.bot.base.lwjgl.opengl.GLContext;
+import gg.mineral.bot.lwjgl.opengl.GLContext;
 
 public class OpenGlCapsChecker {
 

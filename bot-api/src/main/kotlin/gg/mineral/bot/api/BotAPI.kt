@@ -7,6 +7,7 @@ import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.math.ServerLocation
 import java.lang.ref.WeakReference
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
 
 
@@ -32,7 +33,7 @@ abstract class BotAPI {
     abstract val fakePlayers: Collection<WeakReference<FakePlayer>>
 
     @JvmField
-    protected val spawnRecords: MutableList<SpawnRecord> = ArrayList()
+    protected val spawnRecords: ConcurrentLinkedQueue<SpawnRecord> = ConcurrentLinkedQueue()
 
     abstract fun collections(): OptimizedCollections
 

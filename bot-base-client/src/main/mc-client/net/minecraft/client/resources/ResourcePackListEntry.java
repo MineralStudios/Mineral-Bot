@@ -1,6 +1,7 @@
 package net.minecraft.client.resources;
 
 import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -9,7 +10,7 @@ import net.minecraft.client.gui.GuiScreenResourcePacks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListEntry {
     private static final ResourceLocation field_148316_c = new ResourceLocation("textures/gui/resource_packs.png");
@@ -22,7 +23,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
     }
 
     public void func_148279_a(int p_148279_1_, int p_148279_2_, int p_148279_3_, int p_148279_4_, int p_148279_5_,
-            Tessellator p_148279_6_, int p_148279_7_, int p_148279_8_, boolean p_148279_9_) {
+                              Tessellator p_148279_6_, int p_148279_7_, int p_148279_8_, boolean p_148279_9_) {
         this.func_148313_c();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         Gui.func_146110_a(mc, p_148279_2_, p_148279_3_, 0.0F, 0.0F, 32, 32, 32.0F, 32.0F);
@@ -123,7 +124,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
     }
 
     public boolean func_148278_a(int p_148278_1_, int p_148278_2_, int p_148278_3_, int p_148278_4_, int p_148278_5_,
-            int p_148278_6_) {
+                                 int p_148278_6_) {
         if (this.func_148310_d() && p_148278_5_ <= 32) {
             if (this.func_148309_e()) {
                 this.field_148315_b.func_146962_b(this).remove(this);
@@ -161,6 +162,6 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
     }
 
     public void func_148277_b(int p_148277_1_, int p_148277_2_, int p_148277_3_, int p_148277_4_, int p_148277_5_,
-            int p_148277_6_) {
+                              int p_148277_6_) {
     }
 }

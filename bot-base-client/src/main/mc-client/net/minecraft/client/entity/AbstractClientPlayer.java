@@ -23,7 +23,7 @@ import optifine.CapeUtils;
 import optifine.PlayerConfigurations;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 public abstract class AbstractClientPlayer extends EntityPlayer implements SkinManager.SkinAvailableCallback, ClientPlayer {
     public static final ResourceLocation locationStevePng = new ResourceLocation("textures/entity/steve.png");

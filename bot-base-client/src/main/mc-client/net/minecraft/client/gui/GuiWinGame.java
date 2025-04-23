@@ -17,7 +17,7 @@ import org.apache.commons.io.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class GuiWinGame extends GuiScreen {
     public GuiWinGame(Minecraft mc) {
@@ -93,7 +93,7 @@ public class GuiWinGame extends GuiScreen {
 
                     for (var1 = var1.replaceAll("PLAYERNAME", this.mc.getSession().getUsername()); var1
                             .contains(var2); var1 = var7 + EnumChatFormatting.WHITE + EnumChatFormatting.OBFUSCATED
-                                    + "XXXXXXXX".substring(0, var5.nextInt(4) + 3) + var8) {
+                            + "XXXXXXXX".substring(0, var5.nextInt(4) + 3) + var8) {
                         var6 = var1.indexOf(var2);
                         var7 = var1.substring(0, var6);
                         var8 = var1.substring(var6 + var2.length());

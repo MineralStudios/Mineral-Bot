@@ -1,7 +1,7 @@
 package net.minecraft.client.renderer;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.util.glu.GLU;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.EntityLivingBase;
@@ -10,38 +10,59 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 public class ActiveRenderInfo {
-    /** The calculated view object X coordinate */
+    /**
+     * The calculated view object X coordinate
+     */
     public static float objectX;
 
-    /** The calculated view object Y coordinate */
+    /**
+     * The calculated view object Y coordinate
+     */
     public static float objectY;
 
-    /** The calculated view object Z coordinate */
+    /**
+     * The calculated view object Z coordinate
+     */
     public static float objectZ;
 
-    /** The current GL viewport */
-    private static IntBuffer viewport = GLAllocation.createDirectIntBuffer(16);
+    /**
+     * The current GL viewport
+     */
+    private static final IntBuffer viewport = GLAllocation.createDirectIntBuffer(16);
 
-    /** The current GL modelview matrix */
-    private static FloatBuffer modelview = GLAllocation.createDirectFloatBuffer(16);
+    /**
+     * The current GL modelview matrix
+     */
+    private static final FloatBuffer modelview = GLAllocation.createDirectFloatBuffer(16);
 
-    /** The current GL projection matrix */
-    private static FloatBuffer projection = GLAllocation.createDirectFloatBuffer(16);
+    /**
+     * The current GL projection matrix
+     */
+    private static final FloatBuffer projection = GLAllocation.createDirectFloatBuffer(16);
 
-    /** The computed view object coordinates */
-    private static FloatBuffer objectCoords = GLAllocation.createDirectFloatBuffer(3);
+    /**
+     * The computed view object coordinates
+     */
+    private static final FloatBuffer objectCoords = GLAllocation.createDirectFloatBuffer(3);
 
-    /** The X component of the entity's yaw rotation */
+    /**
+     * The X component of the entity's yaw rotation
+     */
     public static float rotationX;
 
-    /** The combined X and Z components of the entity's pitch rotation */
+    /**
+     * The combined X and Z components of the entity's pitch rotation
+     */
     public static float rotationXZ;
 
-    /** The Z component of the entity's yaw rotation */
+    /**
+     * The Z component of the entity's yaw rotation
+     */
     public static float rotationZ;
 
     /**
@@ -87,14 +108,14 @@ public class ActiveRenderInfo {
         double var5 = p_74585_0_.prevPosY + (p_74585_0_.posY - p_74585_0_.prevPosY) * p_74585_1_
                 + (double) p_74585_0_.getEyeHeight();
         double var7 = p_74585_0_.prevPosZ + (p_74585_0_.posZ - p_74585_0_.prevPosZ) * p_74585_1_;
-        double var9 = var3 + (double) (objectX * 1.0F);
-        double var11 = var5 + (double) (objectY * 1.0F);
-        double var13 = var7 + (double) (objectZ * 1.0F);
+        double var9 = var3 + (double) (objectX);
+        double var11 = var5 + (double) (objectY);
+        double var13 = var7 + (double) (objectZ);
         return Vec3.createVectorHelper(var9, var11, var13);
     }
 
     public static Block getBlockAtEntityViewpoint(World p_151460_0_, EntityLivingBase p_151460_1_, float p_151460_2_) {
-        Vec3 var3 = projectViewFromEntity(p_151460_1_, (double) p_151460_2_);
+        Vec3 var3 = projectViewFromEntity(p_151460_1_, p_151460_2_);
         ChunkPosition var4 = new ChunkPosition(var3);
         Block var5 = p_151460_0_.getBlock(var4.x, var4.y, var4.z);
 

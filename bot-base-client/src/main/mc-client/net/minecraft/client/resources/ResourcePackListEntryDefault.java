@@ -2,7 +2,7 @@ package net.minecraft.client.resources;
 
 import java.io.IOException;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,7 +44,7 @@ public class ResourcePackListEntryDefault extends ResourcePackListEntry {
 
         this.field_148321_e = textureManager != null && var2 != null
                 ? textureManager.getDynamicTextureLocation("texturepackicon",
-                        var2)
+                var2)
                 : null;
     }
 

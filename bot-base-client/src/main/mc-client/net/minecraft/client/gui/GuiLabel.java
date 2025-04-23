@@ -1,9 +1,10 @@
 package net.minecraft.client.gui;
 
 import java.util.ArrayList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class GuiLabel extends Gui {
     public GuiLabel(Minecraft mc) {

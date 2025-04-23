@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public abstract class GuiSlot {
     protected final Minecraft mc;
@@ -76,7 +76,7 @@ public abstract class GuiSlot {
     protected abstract void drawBackground();
 
     protected abstract void drawSlot(int p_148126_1_, int p_148126_2_, int p_148126_3_, int p_148126_4_,
-            Tessellator p_148126_5_, int p_148126_6_, int p_148126_7_);
+                                     Tessellator p_148126_5_, int p_148126_6_, int p_148126_7_);
 
     protected void func_148129_a(int p_148129_1_, int p_148129_2_, Tessellator p_148129_3_) {
     }

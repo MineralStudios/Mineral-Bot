@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -118,20 +118,20 @@ public abstract class BlockLiquid extends Block {
     }
 
     public boolean isBlockSolid(IBlockAccess p_149747_1_, int p_149747_2_, int p_149747_3_, int p_149747_4_,
-            int p_149747_5_) {
+                                int p_149747_5_) {
         Material var6 = p_149747_1_.getBlock(p_149747_2_, p_149747_3_, p_149747_4_).getMaterial();
         return var6 == this.blockMaterial ? false
                 : (p_149747_5_ == 1 ? true
-                        : (var6 == Material.ice ? false
-                                : super.isBlockSolid(p_149747_1_, p_149747_2_, p_149747_3_, p_149747_4_, p_149747_5_)));
+                : (var6 == Material.ice ? false
+                : super.isBlockSolid(p_149747_1_, p_149747_2_, p_149747_3_, p_149747_4_, p_149747_5_)));
     }
 
     public boolean shouldSideBeRendered(IBlockAccess p_149646_1_, int p_149646_2_, int p_149646_3_, int p_149646_4_,
-            int p_149646_5_) {
+                                        int p_149646_5_) {
         Material var6 = p_149646_1_.getBlock(p_149646_2_, p_149646_3_, p_149646_4_).getMaterial();
         return var6 == this.blockMaterial ? false
                 : (p_149646_5_ == 1 ? true
-                        : super.shouldSideBeRendered(p_149646_1_, p_149646_2_, p_149646_3_, p_149646_4_, p_149646_5_));
+                : super.shouldSideBeRendered(p_149646_1_, p_149646_2_, p_149646_3_, p_149646_4_, p_149646_5_));
     }
 
     /**
@@ -140,7 +140,7 @@ public abstract class BlockLiquid extends Block {
      * cleared to be reused)
      */
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World p_149668_1_, int p_149668_2_, int p_149668_3_,
-            int p_149668_4_) {
+                                                         int p_149668_4_) {
         return null;
     }
 
@@ -252,7 +252,7 @@ public abstract class BlockLiquid extends Block {
     }
 
     public void velocityToAddToEntity(World p_149640_1_, int p_149640_2_, int p_149640_3_, int p_149640_4_,
-            Entity p_149640_5_, Vec3 p_149640_6_) {
+                                      Entity p_149640_5_, Vec3 p_149640_6_) {
         Vec3 var7 = this.func_149800_f(p_149640_1_, p_149640_2_, p_149640_3_, p_149640_4_);
         p_149640_6_.xCoord += var7.xCoord;
         p_149640_6_.yCoord += var7.yCoord;
@@ -287,7 +287,7 @@ public abstract class BlockLiquid extends Block {
      * for display
      */
     public void randomDisplayTick(World p_149734_1_, int p_149734_2_, int p_149734_3_, int p_149734_4_,
-            Random p_149734_5_) {
+                                  Random p_149734_5_) {
         int var6;
 
         if (this.blockMaterial == Material.water) {
@@ -324,7 +324,7 @@ public abstract class BlockLiquid extends Block {
 
                 if (p_149734_1_.getBlock(var8, p_149734_3_, var9).getMaterial() == Material.air
                         && (p_149734_1_.getBlock(var8, p_149734_3_ - 1, var9).getMaterial().blocksMovement()
-                                || p_149734_1_.getBlock(var8, p_149734_3_ - 1, var9).getMaterial().isLiquid())) {
+                        || p_149734_1_.getBlock(var8, p_149734_3_ - 1, var9).getMaterial().isLiquid())) {
                     float var10 = 0.0625F;
                     double var11 = (double) ((float) p_149734_2_ + p_149734_5_.nextFloat());
                     double var13 = (double) ((float) p_149734_3_ + p_149734_5_.nextFloat());
@@ -418,7 +418,7 @@ public abstract class BlockLiquid extends Block {
     }
 
     public static double func_149802_a(IBlockAccess p_149802_0_, int p_149802_1_, int p_149802_2_, int p_149802_3_,
-            Material p_149802_4_) {
+                                       Material p_149802_4_) {
         Vec3 var5 = null;
 
         if (p_149802_4_ == Material.water) {
@@ -438,7 +438,7 @@ public abstract class BlockLiquid extends Block {
     }
 
     public void onNeighborBlockChange(World p_149695_1_, int p_149695_2_, int p_149695_3_, int p_149695_4_,
-            Block p_149695_5_) {
+                                      Block p_149695_5_) {
         this.func_149805_n(p_149695_1_, p_149695_2_, p_149695_3_, p_149695_4_);
     }
 
@@ -500,11 +500,11 @@ public abstract class BlockLiquid extends Block {
 
     public void registerBlockIcons(IIconRegister p_149651_1_) {
         if (this.blockMaterial == Material.lava) {
-            this.field_149806_a = new IIcon[] { p_149651_1_.registerIcon("lava_still"),
-                    p_149651_1_.registerIcon("lava_flow") };
+            this.field_149806_a = new IIcon[]{p_149651_1_.registerIcon("lava_still"),
+                    p_149651_1_.registerIcon("lava_flow")};
         } else {
-            this.field_149806_a = new IIcon[] { p_149651_1_.registerIcon("water_still"),
-                    p_149651_1_.registerIcon("water_flow") };
+            this.field_149806_a = new IIcon[]{p_149651_1_.registerIcon("water_still"),
+                    p_149651_1_.registerIcon("water_flow")};
         }
     }
 
@@ -514,7 +514,7 @@ public abstract class BlockLiquid extends Block {
 
         return p_149803_0_ == "water_still" && waterArr != null ? waterArr[0]
                 : (p_149803_0_ == "water_flow" && waterArr != null ? waterArr[1]
-                        : (p_149803_0_ == "lava_still" && lavaArr != null ? lavaArr[0]
-                                : (p_149803_0_ == "lava_flow" && lavaArr != null ? lavaArr[1] : null)));
+                : (p_149803_0_ == "lava_still" && lavaArr != null ? lavaArr[0]
+                : (p_149803_0_ == "lava_flow" && lavaArr != null ? lavaArr[1] : null)));
     }
 }

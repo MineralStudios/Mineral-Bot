@@ -1,9 +1,8 @@
 package net.minecraft.client.renderer;
 
-import javax.annotation.Nullable;
-
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
-import gg.mineral.bot.base.lwjgl.opengl.GL12;
+import gg.mineral.bot.impl.config.BotGlobalConfig;
+import gg.mineral.bot.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL12;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -19,15 +18,13 @@ import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemCloth;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.MapData;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 public class ItemRenderer {
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation(
@@ -35,7 +32,9 @@ public class ItemRenderer {
     private static final ResourceLocation RES_MAP_BACKGROUND = new ResourceLocation("textures/map/map_background.png");
     private static final ResourceLocation RES_UNDERWATER_OVERLAY = new ResourceLocation("textures/misc/underwater.png");
 
-    /** A reference to the Minecraft object. */
+    /**
+     * A reference to the Minecraft object.
+     */
     private final Minecraft mc;
     private ItemStack itemToRender;
 
@@ -44,9 +43,11 @@ public class ItemRenderer {
      */
     private float equippedProgress;
     private float prevEquippedProgress;
-    private RenderBlocks renderBlocksIr;
+    private final RenderBlocks renderBlocksIr;
 
-    /** The index of the currently held item (0-8, or -1 if not yet updated) */
+    /**
+     * The index of the currently held item (0-8, or -1 if not yet updated)
+     */
     private int equippedItemSlot = -1;
 
     public ItemRenderer(Minecraft mc) {
@@ -155,20 +156,20 @@ public class ItemRenderer {
      * Renders an item held in hand as a 2D texture with thickness
      */
     public static void renderItemIn2D(Tessellator p_78439_0_, float p_78439_1_, float p_78439_2_, float p_78439_3_,
-            float p_78439_4_, int p_78439_5_, int p_78439_6_, float p_78439_7_) {
+                                      float p_78439_4_, int p_78439_5_, int p_78439_6_, float p_78439_7_) {
         p_78439_0_.startDrawingQuads();
         p_78439_0_.setNormal(0.0F, 0.0F, 1.0F);
-        p_78439_0_.addVertexWithUV(0.0D, 0.0D, 0.0D, (double) p_78439_1_, (double) p_78439_4_);
-        p_78439_0_.addVertexWithUV(1.0D, 0.0D, 0.0D, (double) p_78439_3_, (double) p_78439_4_);
-        p_78439_0_.addVertexWithUV(1.0D, 1.0D, 0.0D, (double) p_78439_3_, (double) p_78439_2_);
-        p_78439_0_.addVertexWithUV(0.0D, 1.0D, 0.0D, (double) p_78439_1_, (double) p_78439_2_);
+        p_78439_0_.addVertexWithUV(0.0D, 0.0D, 0.0D, p_78439_1_, p_78439_4_);
+        p_78439_0_.addVertexWithUV(1.0D, 0.0D, 0.0D, p_78439_3_, p_78439_4_);
+        p_78439_0_.addVertexWithUV(1.0D, 1.0D, 0.0D, p_78439_3_, p_78439_2_);
+        p_78439_0_.addVertexWithUV(0.0D, 1.0D, 0.0D, p_78439_1_, p_78439_2_);
         p_78439_0_.draw();
         p_78439_0_.startDrawingQuads();
         p_78439_0_.setNormal(0.0F, 0.0F, -1.0F);
-        p_78439_0_.addVertexWithUV(0.0D, 1.0D, (double) (0.0F - p_78439_7_), (double) p_78439_1_, (double) p_78439_2_);
-        p_78439_0_.addVertexWithUV(1.0D, 1.0D, (double) (0.0F - p_78439_7_), (double) p_78439_3_, (double) p_78439_2_);
-        p_78439_0_.addVertexWithUV(1.0D, 0.0D, (double) (0.0F - p_78439_7_), (double) p_78439_3_, (double) p_78439_4_);
-        p_78439_0_.addVertexWithUV(0.0D, 0.0D, (double) (0.0F - p_78439_7_), (double) p_78439_1_, (double) p_78439_4_);
+        p_78439_0_.addVertexWithUV(0.0D, 1.0D, 0.0F - p_78439_7_, p_78439_1_, p_78439_2_);
+        p_78439_0_.addVertexWithUV(1.0D, 1.0D, 0.0F - p_78439_7_, p_78439_3_, p_78439_2_);
+        p_78439_0_.addVertexWithUV(1.0D, 0.0D, 0.0F - p_78439_7_, p_78439_3_, p_78439_4_);
+        p_78439_0_.addVertexWithUV(0.0D, 0.0D, 0.0F - p_78439_7_, p_78439_1_, p_78439_4_);
         p_78439_0_.draw();
         float var8 = 0.5F * (p_78439_1_ - p_78439_3_) / (float) p_78439_5_;
         float var9 = 0.5F * (p_78439_4_ - p_78439_2_) / (float) p_78439_6_;
@@ -181,12 +182,12 @@ public class ItemRenderer {
         for (var10 = 0; var10 < p_78439_5_; ++var10) {
             var11 = (float) var10 / (float) p_78439_5_;
             var12 = p_78439_1_ + (p_78439_3_ - p_78439_1_) * var11 - var8;
-            p_78439_0_.addVertexWithUV((double) var11, 0.0D, (double) (0.0F - p_78439_7_), (double) var12,
-                    (double) p_78439_4_);
-            p_78439_0_.addVertexWithUV((double) var11, 0.0D, 0.0D, (double) var12, (double) p_78439_4_);
-            p_78439_0_.addVertexWithUV((double) var11, 1.0D, 0.0D, (double) var12, (double) p_78439_2_);
-            p_78439_0_.addVertexWithUV((double) var11, 1.0D, (double) (0.0F - p_78439_7_), (double) var12,
-                    (double) p_78439_2_);
+            p_78439_0_.addVertexWithUV(var11, 0.0D, 0.0F - p_78439_7_, var12,
+                    p_78439_4_);
+            p_78439_0_.addVertexWithUV(var11, 0.0D, 0.0D, var12, p_78439_4_);
+            p_78439_0_.addVertexWithUV(var11, 1.0D, 0.0D, var12, p_78439_2_);
+            p_78439_0_.addVertexWithUV(var11, 1.0D, 0.0F - p_78439_7_, var12,
+                    p_78439_2_);
         }
 
         p_78439_0_.draw();
@@ -198,12 +199,12 @@ public class ItemRenderer {
             var11 = (float) var10 / (float) p_78439_5_;
             var12 = p_78439_1_ + (p_78439_3_ - p_78439_1_) * var11 - var8;
             var13 = var11 + 1.0F / (float) p_78439_5_;
-            p_78439_0_.addVertexWithUV((double) var13, 1.0D, (double) (0.0F - p_78439_7_), (double) var12,
-                    (double) p_78439_2_);
-            p_78439_0_.addVertexWithUV((double) var13, 1.0D, 0.0D, (double) var12, (double) p_78439_2_);
-            p_78439_0_.addVertexWithUV((double) var13, 0.0D, 0.0D, (double) var12, (double) p_78439_4_);
-            p_78439_0_.addVertexWithUV((double) var13, 0.0D, (double) (0.0F - p_78439_7_), (double) var12,
-                    (double) p_78439_4_);
+            p_78439_0_.addVertexWithUV(var13, 1.0D, 0.0F - p_78439_7_, var12,
+                    p_78439_2_);
+            p_78439_0_.addVertexWithUV(var13, 1.0D, 0.0D, var12, p_78439_2_);
+            p_78439_0_.addVertexWithUV(var13, 0.0D, 0.0D, var12, p_78439_4_);
+            p_78439_0_.addVertexWithUV(var13, 0.0D, 0.0F - p_78439_7_, var12,
+                    p_78439_4_);
         }
 
         p_78439_0_.draw();
@@ -214,12 +215,12 @@ public class ItemRenderer {
             var11 = (float) var10 / (float) p_78439_6_;
             var12 = p_78439_4_ + (p_78439_2_ - p_78439_4_) * var11 - var9;
             var13 = var11 + 1.0F / (float) p_78439_6_;
-            p_78439_0_.addVertexWithUV(0.0D, (double) var13, 0.0D, (double) p_78439_1_, (double) var12);
-            p_78439_0_.addVertexWithUV(1.0D, (double) var13, 0.0D, (double) p_78439_3_, (double) var12);
-            p_78439_0_.addVertexWithUV(1.0D, (double) var13, (double) (0.0F - p_78439_7_), (double) p_78439_3_,
-                    (double) var12);
-            p_78439_0_.addVertexWithUV(0.0D, (double) var13, (double) (0.0F - p_78439_7_), (double) p_78439_1_,
-                    (double) var12);
+            p_78439_0_.addVertexWithUV(0.0D, var13, 0.0D, p_78439_1_, var12);
+            p_78439_0_.addVertexWithUV(1.0D, var13, 0.0D, p_78439_3_, var12);
+            p_78439_0_.addVertexWithUV(1.0D, var13, 0.0F - p_78439_7_, p_78439_3_,
+                    var12);
+            p_78439_0_.addVertexWithUV(0.0D, var13, 0.0F - p_78439_7_, p_78439_1_,
+                    var12);
         }
 
         p_78439_0_.draw();
@@ -229,12 +230,12 @@ public class ItemRenderer {
         for (var10 = 0; var10 < p_78439_6_; ++var10) {
             var11 = (float) var10 / (float) p_78439_6_;
             var12 = p_78439_4_ + (p_78439_2_ - p_78439_4_) * var11 - var9;
-            p_78439_0_.addVertexWithUV(1.0D, (double) var11, 0.0D, (double) p_78439_3_, (double) var12);
-            p_78439_0_.addVertexWithUV(0.0D, (double) var11, 0.0D, (double) p_78439_1_, (double) var12);
-            p_78439_0_.addVertexWithUV(0.0D, (double) var11, (double) (0.0F - p_78439_7_), (double) p_78439_1_,
-                    (double) var12);
-            p_78439_0_.addVertexWithUV(1.0D, (double) var11, (double) (0.0F - p_78439_7_), (double) p_78439_3_,
-                    (double) var12);
+            p_78439_0_.addVertexWithUV(1.0D, var11, 0.0D, p_78439_3_, var12);
+            p_78439_0_.addVertexWithUV(0.0D, var11, 0.0D, p_78439_1_, var12);
+            p_78439_0_.addVertexWithUV(0.0D, var11, 0.0F - p_78439_7_, p_78439_1_,
+                    var12);
+            p_78439_0_.addVertexWithUV(1.0D, var11, 0.0F - p_78439_7_, p_78439_3_,
+                    var12);
         }
 
         p_78439_0_.draw();
@@ -254,9 +255,9 @@ public class ItemRenderer {
         if (var3 != null)
             GL11.glRotatef(var3.prevRotationYaw + (var3.rotationYaw - var3.prevRotationYaw) * p_78440_1_, 0.0F, 1.0F,
                     0.0F);
-        RenderHelper.enableStandardItemLighting();
+        this.mc.renderHelper.enableStandardItemLighting();
         GL11.glPopMatrix();
-        EntityPlayerSP var5 = (EntityPlayerSP) var3;
+        EntityPlayerSP var5 = var3;
         float var6 = var5 != null
                 ? var5.prevRenderArmPitch + (var5.renderArmPitch - var5.prevRenderArmPitch) * p_78440_1_
                 : 0.0f;
@@ -275,11 +276,11 @@ public class ItemRenderer {
 
         int var9 = this.mc.theWorld != null && var3 != null
                 ? this.mc.theWorld.getLightBrightnessForSkyBlocks(MathHelper.floor_double(var3.posX),
-                        MathHelper.floor_double(var3.posY), MathHelper.floor_double(var3.posZ), 0)
+                MathHelper.floor_double(var3.posY), MathHelper.floor_double(var3.posZ), 0)
                 : 0;
         int var10 = var9 % 65536;
         int var11 = var9 / 65536;
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) var10 / 1.0F, (float) var11 / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) var10, (float) var11);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float var13;
         float var14;
@@ -370,10 +371,10 @@ public class ItemRenderer {
             if (var30 != null) {
                 var30.startDrawingQuads();
                 byte var31 = 7;
-                var30.addVertexWithUV((double) (0 - var31), (double) (128 + var31), 0.0D, 0.0D, 1.0D);
-                var30.addVertexWithUV((double) (128 + var31), (double) (128 + var31), 0.0D, 1.0D, 1.0D);
-                var30.addVertexWithUV((double) (128 + var31), (double) (0 - var31), 0.0D, 1.0D, 0.0D);
-                var30.addVertexWithUV((double) (0 - var31), (double) (0 - var31), 0.0D, 0.0D, 0.0D);
+                var30.addVertexWithUV(-var31, 128 + var31, 0.0D, 0.0D, 1.0D);
+                var30.addVertexWithUV(128 + var31, 128 + var31, 0.0D, 1.0D, 1.0D);
+                var30.addVertexWithUV(128 + var31, -var31, 0.0D, 1.0D, 0.0D);
+                var30.addVertexWithUV(-var31, -var31, 0.0D, 0.0D, 0.0D);
                 var30.draw();
             }
             MapData var21 = Items.filled_map.getMapData(var8, this.mc.theWorld);
@@ -474,7 +475,7 @@ public class ItemRenderer {
                 var18 = (float) (var28 >> 16 & 255) / 255.0F;
                 var19 = (float) (var28 >> 8 & 255) / 255.0F;
                 var20 = (float) (var28 & 255) / 255.0F;
-                GL11.glColor4f(1.0F * var18, 1.0F * var19, 1.0F * var20, 1.0F);
+                GL11.glColor4f(var18, var19, var20, 1.0F);
                 this.renderItem(var3, var8, 1);
             } else {
                 this.renderItem(var3, var8, 0);
@@ -532,6 +533,9 @@ public class ItemRenderer {
      * Renders all the overlays that are in first person mode. Args: partialTickTime
      */
     public void renderOverlays(float p_78447_1_) {
+        if (BotGlobalConfig.optimizedGameLoop) {
+            return;
+        }
         GL11.glDisable(GL11.GL_ALPHA_TEST);
 
         EntityClientPlayerMP thePlayer = this.mc.thePlayer;
@@ -601,10 +605,10 @@ public class ItemRenderer {
         if (var3 == null)
             return;
         var3.startDrawingQuads();
-        var3.addVertexWithUV((double) var5, (double) var7, (double) var9, (double) var11, (double) var13);
-        var3.addVertexWithUV((double) var6, (double) var7, (double) var9, (double) var10, (double) var13);
-        var3.addVertexWithUV((double) var6, (double) var8, (double) var9, (double) var10, (double) var12);
-        var3.addVertexWithUV((double) var5, (double) var8, (double) var9, (double) var11, (double) var12);
+        var3.addVertexWithUV(var5, var7, var9, var11, var13);
+        var3.addVertexWithUV(var6, var7, var9, var10, var13);
+        var3.addVertexWithUV(var6, var8, var9, var10, var12);
+        var3.addVertexWithUV(var5, var8, var9, var11, var12);
         var3.draw();
         GL11.glPopMatrix();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -639,14 +643,14 @@ public class ItemRenderer {
         if (var2 == null)
             return;
         var2.startDrawingQuads();
-        var2.addVertexWithUV((double) var5, (double) var7, (double) var9, (double) (var4 + var10),
-                (double) (var4 + var11));
-        var2.addVertexWithUV((double) var6, (double) var7, (double) var9, (double) (0.0F + var10),
-                (double) (var4 + var11));
-        var2.addVertexWithUV((double) var6, (double) var8, (double) var9, (double) (0.0F + var10),
-                (double) (0.0F + var11));
-        var2.addVertexWithUV((double) var5, (double) var8, (double) var9, (double) (var4 + var10),
-                (double) (0.0F + var11));
+        var2.addVertexWithUV(var5, var7, var9, var4 + var10,
+                var4 + var11);
+        var2.addVertexWithUV(var6, var7, var9, 0.0F + var10,
+                var4 + var11);
+        var2.addVertexWithUV(var6, var8, var9, 0.0F + var10,
+                0.0F + var11);
+        var2.addVertexWithUV(var5, var8, var9, var4 + var10,
+                0.0F + var11);
         var2.draw();
         GL11.glPopMatrix();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -685,10 +689,10 @@ public class ItemRenderer {
             if (var2 == null)
                 return;
             var2.startDrawingQuads();
-            var2.addVertexWithUV((double) var10, (double) var12, (double) var14, (double) var7, (double) var9);
-            var2.addVertexWithUV((double) var11, (double) var12, (double) var14, (double) var6, (double) var9);
-            var2.addVertexWithUV((double) var11, (double) var13, (double) var14, (double) var6, (double) var8);
-            var2.addVertexWithUV((double) var10, (double) var13, (double) var14, (double) var7, (double) var8);
+            var2.addVertexWithUV(var10, var12, var14, var7, var9);
+            var2.addVertexWithUV(var11, var12, var14, var6, var9);
+            var2.addVertexWithUV(var11, var13, var14, var6, var8);
+            var2.addVertexWithUV(var10, var13, var14, var7, var8);
             var2.draw();
             GL11.glPopMatrix();
         }

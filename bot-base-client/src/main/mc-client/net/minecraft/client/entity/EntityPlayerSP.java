@@ -23,7 +23,7 @@ import net.minecraft.tileentity.*;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class EntityPlayerSP extends AbstractClientPlayer {
     private final MouseFilter field_71162_ch = new MouseFilter();

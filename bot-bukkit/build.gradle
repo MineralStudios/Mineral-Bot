@@ -15,6 +15,11 @@ repositories {
             password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
         }
     }
+    maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
+    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
+    maven {
+        url "https://repo.viaversion.com/everything"
+    }
     mavenCentral()
 }
 
@@ -29,12 +34,14 @@ publishing {
 }
 
 dependencies {
-    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20250324-00.03.34'
-    compileOnly 'org.projectlombok:lombok:1.18.36'
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20250422-21.30.06'
+    compileOnly 'com.viaversion:viaversion-api:5.3.1'
+    compileOnly 'com.viaversion:viaversion-common:5.3.1'
+    compileOnly 'com.viaversion:viaversion-bukkit:5.3.1'
     implementation project(':bot-base-client')
     compileOnly project(':bot-shared-library')
     compileOnly project(':bot-api')
+    compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 

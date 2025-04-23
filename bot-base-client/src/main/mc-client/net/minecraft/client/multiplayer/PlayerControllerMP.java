@@ -1,6 +1,6 @@
 package net.minecraft.client.multiplayer;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import lombok.Getter;
 import net.minecraft.block.Block;
@@ -32,26 +32,38 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
 
 public class PlayerControllerMP {
-    /** The Minecraft instance. */
+    /**
+     * The Minecraft instance.
+     */
     @Getter
     private final Minecraft mc;
     @Getter
     private final NetHandlerPlayClient netClientHandler;
 
-    /** PosX of the current block being destroyed */
+    /**
+     * PosX of the current block being destroyed
+     */
     private int currentBlockX = -1;
 
-    /** PosY of the current block being destroyed */
+    /**
+     * PosY of the current block being destroyed
+     */
     private int currentBlockY = -1;
 
-    /** PosZ of the current block being destroyed */
+    /**
+     * PosZ of the current block being destroyed
+     */
     private int currentblockZ = -1;
 
-    /** The Item currently being used to destroy a block */
+    /**
+     * The Item currently being used to destroy a block
+     */
     @Nullable
     private ItemStack currentItemHittingBlock;
 
-    /** Current block damage (MP) */
+    /**
+     * Current block damage (MP)
+     */
     private float curBlockDamageMP;
 
     /**
@@ -64,13 +76,19 @@ public class PlayerControllerMP {
      */
     private int blockHitDelay;
 
-    /** Tells if the player is hitting a block */
+    /**
+     * Tells if the player is hitting a block
+     */
     private boolean isHittingBlock;
 
-    /** Current game type for the player */
+    /**
+     * Current game type for the player
+     */
     private WorldSettings.GameType currentGameType;
 
-    /** Index of the current item held by the player in the inventory hotbar */
+    /**
+     * Index of the current item held by the player in the inventory hotbar
+     */
     private int currentPlayerItem;
 
     public PlayerControllerMP(Minecraft p_i45062_1_, NetHandlerPlayClient p_i45062_2_) {
@@ -83,7 +101,7 @@ public class PlayerControllerMP {
      * Block dig operation in creative mode (instantly digs the block).
      */
     public static void clickBlockCreative(Minecraft mc, PlayerControllerMP p_78744_1_, int p_78744_2_,
-            int p_78744_3_, int p_78744_4_, int p_78744_5_) {
+                                          int p_78744_3_, int p_78744_4_, int p_78744_5_) {
         if (mc.theWorld != null
                 && !mc.theWorld.extinguishFire(mc.thePlayer, p_78744_2_, p_78744_3_, p_78744_4_, p_78744_5_))
             p_78744_1_.onPlayerDestroyBlock(p_78744_2_, p_78744_3_, p_78744_4_, p_78744_5_);
@@ -185,7 +203,7 @@ public class PlayerControllerMP {
         EntityClientPlayerMP thePlayer = this.mc.thePlayer;
         if (!this.currentGameType.isAdventure()
                 || thePlayer != null
-                        && thePlayer.isCurrentToolAdventureModeExempt(p_78743_1_, p_78743_2_, p_78743_3_)) {
+                && thePlayer.isCurrentToolAdventureModeExempt(p_78743_1_, p_78743_2_, p_78743_3_)) {
             if (this.currentGameType.isCreative()) {
                 this.netClientHandler
                         .addToSendQueue(new C07PacketPlayerDigging(0, p_78743_1_, p_78743_2_, p_78743_3_, p_78743_4_));
@@ -208,7 +226,7 @@ public class PlayerControllerMP {
 
                 if (var5 != null && thePlayer != null && var6
                         && var5.getPlayerRelativeBlockHardness(thePlayer, thePlayer.worldObj,
-                                p_78743_1_, p_78743_2_, p_78743_3_) >= 1.0F) {
+                        p_78743_1_, p_78743_2_, p_78743_3_) >= 1.0F) {
                     this.onPlayerDestroyBlock(p_78743_1_, p_78743_2_, p_78743_3_, p_78743_4_);
                 } else {
                     this.isHittingBlock = true;
@@ -331,7 +349,7 @@ public class PlayerControllerMP {
             var5 = var4.getItem() == currentItemHittingBlock.getItem()
                     && ItemStack.areItemStackTagsEqual(var4, currentItemHittingBlock)
                     && (var4.isItemStackDamageable()
-                            || var4.getItemDamage() == currentItemHittingBlock.getItemDamage());
+                    || var4.getItemDamage() == currentItemHittingBlock.getItemDamage());
 
         return p_85182_1_ == this.currentBlockX && p_85182_2_ == this.currentBlockY && p_85182_3_ == this.currentblockZ
                 && var5;
@@ -353,7 +371,7 @@ public class PlayerControllerMP {
      * Handles a players right click. Args: player, world, x, y, z, side, hitVec
      */
     public boolean onPlayerRightClick(EntityPlayer p_78760_1_, World p_78760_2_, ItemStack p_78760_3_, int p_78760_4_,
-            int p_78760_5_, int p_78760_6_, int p_78760_7_, Vec3 p_78760_8_) {
+                                      int p_78760_5_, int p_78760_6_, int p_78760_7_, Vec3 p_78760_8_) {
         this.syncCurrentPlayItem();
         float var9 = (float) p_78760_8_.xCoord - (float) p_78760_4_;
         float var10 = (float) p_78760_8_.yCoord - (float) p_78760_5_;
@@ -362,7 +380,7 @@ public class PlayerControllerMP {
 
         if ((!p_78760_1_.isSneaking() || p_78760_1_.getHeldItem() == null)
                 && p_78760_2_.getBlock(p_78760_4_, p_78760_5_, p_78760_6_).onBlockActivated(p_78760_2_, p_78760_4_,
-                        p_78760_5_, p_78760_6_, p_78760_1_, p_78760_7_, var9, var10, var11))
+                p_78760_5_, p_78760_6_, p_78760_1_, p_78760_7_, var9, var10, var11))
             var12 = true;
 
         if (!var12 && p_78760_3_ != null && p_78760_3_.getItem() instanceof ItemBlock var13)
@@ -436,7 +454,7 @@ public class PlayerControllerMP {
     }
 
     public ItemStack windowClick(int p_78753_1_, int p_78753_2_, int p_78753_3_, int p_78753_4_,
-            EntityPlayer p_78753_5_) {
+                                 EntityPlayer p_78753_5_) {
         short var6 = p_78753_5_.openContainer.getNextTransactionID(p_78753_5_.inventory);
         ItemStack var7 = p_78753_5_.openContainer.slotClick(p_78753_2_, p_78753_3_, p_78753_4_, p_78753_5_);
         this.netClientHandler

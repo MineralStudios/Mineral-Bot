@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,8 +15,8 @@ public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
     private final Minecraft mc;
 
     public void renderTileEntityAt(TileEntityMobSpawner p_147500_1_, double p_147500_2_,
-            double p_147500_4_,
-            double p_147500_6_, float p_147500_8_) {
+                                   double p_147500_4_,
+                                   double p_147500_6_, float p_147500_8_) {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) p_147500_2_ + 0.5F, (float) p_147500_4_, (float) p_147500_6_ + 0.5F);
         func_147517_a(this.mc, p_147500_1_.func_145881_a(), p_147500_2_, p_147500_4_, p_147500_6_, p_147500_8_);
@@ -24,7 +24,7 @@ public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
     }
 
     public static void func_147517_a(Minecraft mc, MobSpawnerBaseLogic p_147517_0_, double p_147517_1_,
-            double p_147517_3_, double p_147517_5_, float p_147517_7_) {
+                                     double p_147517_3_, double p_147517_5_, float p_147517_7_) {
         Entity var8 = p_147517_0_.func_98281_h();
 
         if (var8 != null) {
@@ -47,7 +47,7 @@ public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_,
-            float p_147500_8_) {
+                                   float p_147500_8_) {
         this.renderTileEntityAt((TileEntityMobSpawner) p_147500_1_, p_147500_2_, p_147500_4_, p_147500_6_, p_147500_8_);
     }
 }

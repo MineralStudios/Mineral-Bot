@@ -6,11 +6,9 @@ import net.minecraft.client.network.NetHandlerLoginClient
 import net.minecraft.network.EnumConnectionState
 import net.minecraft.network.NetworkManager
 
-class ClientLoginHandler(netManager: NetworkManager, mc: Minecraft, guiScreen: GuiScreen?) :
+class ClientLoginHandler(netManager: NetworkManager, mc: Minecraft, guiScreen: GuiScreen? = null) :
     NetHandlerLoginClient(netManager, mc, guiScreen) {
     override fun onConnectionStateTransition(prevState: EnumConnectionState, newState: EnumConnectionState) {
-        getLogger().debug("Switching protocol from {} to {}", prevState, newState)
-
         val networkManager = this.networkManager
 
         if (newState === EnumConnectionState.PLAY) networkManager.netHandler =

@@ -6,7 +6,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCaveSpider;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.util.ResourceLocation;
-import gg.mineral.bot.base.lwjgl.opengl.GL11;
+import gg.mineral.bot.lwjgl.opengl.GL11;
 
 public class RenderCaveSpider extends RenderSpider {
     private static final ResourceLocation caveSpiderTextures = new ResourceLocation(
