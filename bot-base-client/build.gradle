@@ -43,7 +43,7 @@ dependencies {
     implementation 'com.google.guava:guava:33.4.8-jre'
     implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation 'commons-io:commons-io:2.19.0'
-    implementation 'com.google.code.gson:gson:2.13.0'
+    implementation 'com.google.code.gson:gson:2.13.1'
     implementation 'com.mojang:authlib:3.11.50'
     implementation 'javax.vecmath:vecmath:1.5.2'
     implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
