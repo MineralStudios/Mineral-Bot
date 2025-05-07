@@ -242,22 +242,18 @@ class ServerBotImpl : BotImpl() {
             )
         )
 
-        serverSide.sendScoreboard()
-        serverSide.resetPlayerSampleUpdateTimer()
-
-        serverSide.onJoin()
-
-        serverSide.callSpawnEvents()
-
-        // Send location to client
-        serverSide.sendLocationToClient()
-
-        // World border, time, weather
-        serverSide.initWorld()
-
-        serverSide.initResourcePack()
-
-        serverSide.syncInventory()
+        serverSide.apply {
+            sendScoreboard()
+            resetPlayerSampleUpdateTimer()
+            onJoin()
+            callSpawnEvents()
+            // Send location to client
+            sendLocationToClient()
+            // World border, time, weather
+            initWorld()
+            initResourcePack()
+            syncInventory()
+        }
     }
 
     override fun cleanup() {}
