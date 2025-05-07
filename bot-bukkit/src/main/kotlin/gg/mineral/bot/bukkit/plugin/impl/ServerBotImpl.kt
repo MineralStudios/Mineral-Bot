@@ -28,6 +28,7 @@ import gg.mineral.bot.base.client.manager.InstanceManager.pendingInstances
 import gg.mineral.bot.base.client.network.ClientLoginHandler
 import gg.mineral.bot.bukkit.plugin.MineralBotPlugin
 import gg.mineral.bot.bukkit.plugin.compat.newBukkitServerPlayer
+import gg.mineral.bot.bukkit.plugin.compat.newPlayerConnection
 import gg.mineral.bot.bukkit.plugin.compat.setConnectionState
 import gg.mineral.bot.bukkit.plugin.impl.player.BukkitServerPlayer
 import gg.mineral.bot.bukkit.plugin.injector.BukkitChannelInjector
@@ -35,9 +36,7 @@ import gg.mineral.bot.bukkit.plugin.injector.BukkitInjectedListener
 import gg.mineral.bot.bukkit.plugin.netty.PostViaHandler
 import gg.mineral.bot.bukkit.plugin.netty.PreViaHandler
 import gg.mineral.bot.impl.thread.ThreadManager
-import io.github.retrooper.packetevents.util.SpigotReflectionUtil
 import io.netty.channel.Channel
-import io.netty.channel.local.LocalChannel
 import net.minecraft.network.EnumConnectionState
 import org.bukkit.Bukkit
 import java.io.File
@@ -148,10 +147,9 @@ class ServerBotImpl : BotImpl() {
                 )
 
                 serverNetworkManager.setConnectionState(ConnectionState.PLAY)
-                serverSide.playerConnection = playerConnectionConstructor.newInstance(
-                    SpigotReflectionUtil.getMinecraftServerInstance(Bukkit.getServer()),
+                serverSide.playerConnection = newPlayerConnection(
                     serverNetworkManager,
-                    serverSide.entityPlayer
+                    serverSide
                 )
 
                 onLoginStart(it, serverSide)
@@ -262,30 +260,11 @@ class ServerBotImpl : BotImpl() {
         serverSide.syncInventory()
     }
 
-    override fun cleanup() {
-        Bukkit.getScheduler().runTask(
-            MineralBotPlugin.instance
-        ) {
-            for (player in Bukkit.getOnlinePlayers())
-                if (PacketEvents.getAPI().playerManager.getChannel(player)
-                        .let { it is LocalChannel || it == null } && !isFakePlayer(
-                        player.uniqueId
-                    )
-                ) player.kickPlayer(
-                    "Despawned"
-                )
-        }
-    }
+    override fun cleanup() {}
 
     companion object {
         private val injector = BukkitChannelInjector()
         private val listener = BukkitInjectedListener()
-        private val playerConnectionConstructor =
-            SpigotReflectionUtil.PLAYER_CONNECTION_CLASS.getConstructor(
-                SpigotReflectionUtil.MINECRAFT_SERVER_CLASS,
-                SpigotReflectionUtil.NETWORK_MANAGER_CLASS,
-                SpigotReflectionUtil.ENTITY_PLAYER_CLASS
-            )
 
         fun init() {
             val apiInstance = ServerBotImpl()
