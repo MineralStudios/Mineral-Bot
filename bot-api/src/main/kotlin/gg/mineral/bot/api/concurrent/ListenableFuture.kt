@@ -3,6 +3,25 @@ package gg.mineral.bot.api.concurrent
 import java.lang.ref.WeakReference
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.decrementAndFetch
+
+@OptIn(ExperimentalAtomicApi::class)
+fun <T> awaitAll(futures: List<ListenableFuture<T>>, onSuccess: () -> Unit, onError: (Throwable) -> Unit) {
+    val remaining = AtomicInt(futures.size)
+    val failed = AtomicBoolean(false)
+
+    for (future in futures) {
+        future.onComplete {
+            if (remaining.decrementAndFetch() == 0 && !failed.load()) onSuccess()
+        }
+        future.onError {
+            if (failed.compareAndSet(expectedValue = false, newValue = true)) onError(it)
+        }
+    }
+}
 
 abstract class ListenableFuture<T>(instance: T) : Future<T> {
     private val instanceRef: WeakReference<T?> = WeakReference(instance)
