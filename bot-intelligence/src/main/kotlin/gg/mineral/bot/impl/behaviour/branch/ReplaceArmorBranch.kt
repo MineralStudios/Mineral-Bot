@@ -94,7 +94,7 @@ class ReplaceArmorBranch(tree: BehaviourTree, val type: Item.Type, armorPiece: I
         }
     }
 
-    override fun <T : Event> event(event: T) {
-        TODO("Not yet implemented")
+    override fun <T : Event> event(event: T): Boolean {
+        return false
     }
 }

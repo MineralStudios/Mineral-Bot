@@ -91,7 +91,7 @@ class HealSoupBranch(tree: BehaviourTree) : BTBranch(tree) {
         }
     }
 
-    override fun <T : Event> event(event: T) {
-        TODO("Not yet implemented")
+    override fun <T : Event> event(event: T): Boolean {
+        return false
     }
 }
