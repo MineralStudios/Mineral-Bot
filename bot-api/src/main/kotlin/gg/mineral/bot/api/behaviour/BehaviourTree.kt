@@ -5,9 +5,10 @@ import gg.mineral.bot.api.instance.ClientInstance
 import java.util.*
 import java.util.concurrent.Future
 
-class BehaviourTree(val clientInstance: ClientInstance, private val rootNode: BTNode) : BTNode() {
+abstract class BehaviourTree(val clientInstance: ClientInstance) : BTNode() {
     private val asyncTasks = mutableMapOf<Int, Future<*>>()
     val treeStack = Stack<BTResponse>()
+    abstract val rootNode: BTNode
 
     fun async(taskId: Int, callback: () -> BTResult) {
         asyncTasks[taskId] = clientInstance.asyncExecutor.submit { callback() }
