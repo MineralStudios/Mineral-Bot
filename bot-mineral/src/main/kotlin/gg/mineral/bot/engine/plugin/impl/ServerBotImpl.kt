@@ -2,11 +2,13 @@ package gg.mineral.bot.engine.plugin.impl
 
 import com.google.common.collect.HashMultimap
 import gg.mineral.api.network.packet.rw.ByteWriter
+import gg.mineral.bot.api.concurrent.ListenableFuture
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.math.ServerLocation
 import gg.mineral.bot.api.util.dsl.onComplete
 import gg.mineral.bot.base.client.BotImpl
+import gg.mineral.bot.base.client.concurrent.ListenableFutureImpl
 import gg.mineral.bot.base.client.instance.ConnectedClientInstance
 import gg.mineral.bot.base.client.manager.InstanceManager
 import gg.mineral.bot.base.client.network.ClientLoginHandler
@@ -15,7 +17,6 @@ import gg.mineral.bot.impl.thread.ThreadManager
 import io.netty.buffer.Unpooled
 import net.minecraft.network.EnumConnectionState
 import java.io.File
-import java.lang.ref.WeakReference
 import java.net.Proxy
 
 
@@ -28,7 +29,7 @@ class ServerBotImpl : BotImpl(), ByteWriter {
         }
     }
 
-    override fun spawn(configuration: BotConfiguration, location: ServerLocation): WeakReference<ClientInstance> {
+    override fun spawn(configuration: BotConfiguration, location: ServerLocation): ListenableFuture<ClientInstance> {
         val startTime = System.nanoTime() / 1000000
         val file = configuration.runDirectory
 
@@ -109,7 +110,7 @@ class ServerBotImpl : BotImpl(), ByteWriter {
             spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
         }
 
-        return WeakReference(instance)
+        return ListenableFutureImpl(instance as ClientInstance).apply { complete() }
     }
 
     override fun cleanup() {

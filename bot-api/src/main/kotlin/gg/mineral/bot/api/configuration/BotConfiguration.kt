@@ -16,6 +16,10 @@ data class BotConfiguration(
     var targetSearchRange: Int = 32,
     var horizontalAimSpeed: Float = 0.5f,
     var verticalAimSpeed: Float = 0.5f,
+    var horizontalAimAcceleration: Float = 1.015f,
+    var verticalAimAcceleration: Float = 1.015f,
+    var horizontalAimMaxAccel: Float = 1.5f,
+    var verticalAimMaxAccel: Float = 1.5f,
     var horizontalAimAccuracy: Float = 0.5f,
     var verticalAimAccuracy: Float = 0.5f,
     var horizontalErraticness: Float = 0.5f,
@@ -55,6 +59,10 @@ data class BotConfiguration(
             private var cpsDeviation: Float = 1.0f
             private var targetSearchRange: Int = 32
             private var horizontalAimSpeed: Float = 0.5f
+            private var horizontalAimAcceleration: Float = 1.015f
+            private var verticalAimAcceleration: Float = 1.015f
+            private var horizontalAimMaxAccel: Float = 1.5f
+            private var verticalAimMaxAccel: Float = 1.5f
             private var verticalAimSpeed: Float = 0.5f
             private var horizontalAimAccuracy: Float = 0.5f
             private var verticalAimAccuracy: Float = 0.5f
@@ -84,6 +92,18 @@ data class BotConfiguration(
             fun targetSearchRange(targetSearchRange: Int) = apply { this.targetSearchRange = targetSearchRange }
             fun horizontalAimSpeed(horizontalAimSpeed: Float) = apply { this.horizontalAimSpeed = horizontalAimSpeed }
             fun verticalAimSpeed(verticalAimSpeed: Float) = apply { this.verticalAimSpeed = verticalAimSpeed }
+            fun horizontalAimAcceleration(horizontalAimAcceleration: Float) =
+                apply { this.horizontalAimAcceleration = horizontalAimAcceleration }
+
+            fun verticalAimAcceleration(verticalAimAcceleration: Float) =
+                apply { this.verticalAimAcceleration = verticalAimAcceleration }
+
+            fun horizontalAimMaxAccel(horizontalAimMaxAccel: Float) =
+                apply { this.horizontalAimMaxAccel = horizontalAimMaxAccel }
+
+            fun verticalAimMaxAccel(verticalAimMaxAccel: Float) =
+                apply { this.verticalAimMaxAccel = verticalAimMaxAccel }
+
             fun horizontalAimAccuracy(horizontalAimAccuracy: Float) =
                 apply { this.horizontalAimAccuracy = horizontalAimAccuracy }
 
@@ -124,6 +144,10 @@ data class BotConfiguration(
                 targetSearchRange,
                 horizontalAimSpeed,
                 verticalAimSpeed,
+                horizontalAimAcceleration,
+                verticalAimAcceleration,
+                horizontalAimMaxAccel,
+                verticalAimMaxAccel,
                 horizontalAimAccuracy,
                 verticalAimAccuracy,
                 horizontalErraticness,

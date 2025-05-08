@@ -5,6 +5,8 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelOutboundHandlerAdapter
 import io.netty.channel.ChannelPromise
 import net.minecraft.client.Minecraft
+import net.minecraft.network.EnumConnectionState
+import net.minecraft.network.NetworkManager
 import java.util.concurrent.TimeUnit
 
 class LatencySimulatorHandler(private val mc: Minecraft) : ChannelOutboundHandlerAdapter() {
@@ -15,7 +17,9 @@ class LatencySimulatorHandler(private val mc: Minecraft) : ChannelOutboundHandle
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
         val delay = latencyNano
         val channel = ctx.channel()
-        if (delay > 0 && mc is ClientInstance) {
+        if (delay > 0 && mc is ClientInstance && channel.attr(NetworkManager.attrKeyConnectionState)
+                ?.get() == EnumConnectionState.PLAY
+        ) {
             ctx.executor().schedule({
                 try {
                     if (!channel.isOpen || !channel.isActive) return@schedule
@@ -34,7 +38,9 @@ class LatencySimulatorHandler(private val mc: Minecraft) : ChannelOutboundHandle
     override fun flush(ctx: ChannelHandlerContext) {
         val delay = latencyNano
         val channel = ctx.channel()
-        if (delay > 0 && mc is ClientInstance && !mc.configuration.instantFlush) {
+        if (delay > 0 && mc is ClientInstance && !mc.configuration.instantFlush && channel.attr(NetworkManager.attrKeyConnectionState)
+                ?.get() == EnumConnectionState.PLAY
+        ) {
             ctx.executor().schedule({
                 if (!channel.isOpen || !channel.isActive) return@schedule
                 super.flush(ctx)
