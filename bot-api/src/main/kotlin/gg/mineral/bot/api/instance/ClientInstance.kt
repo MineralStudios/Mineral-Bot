@@ -1,22 +1,22 @@
 package gg.mineral.bot.api.instance
 
+import gg.mineral.bot.api.behaviour.BehaviourTree
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.controls.Keyboard
 import gg.mineral.bot.api.controls.Mouse
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.event.EventHandler
-import gg.mineral.bot.api.goal.Goal
 import gg.mineral.bot.api.screen.Screen
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ScheduledExecutorService
 
 interface ClientInstance : EventHandler {
     /**
-     * Sets the player's goals.
+     * Sets the player's behaviour tree.
      *
-     * @param goals the goals
+     * @param behaviourTree the behaviour tree to set
      */
-    fun <T : Goal> startGoals(vararg goals: T)
+    var behaviourTree: BehaviourTree?
 
     /**
      * Gets the current latency.

@@ -1,4 +1,4 @@
-package gg.mineral.bot.api.util
+package gg.mineral.bot.api.util.dsl
 
 import gg.mineral.bot.api.entity.ClientEntity
 import gg.mineral.bot.api.entity.living.ClientLivingEntity
@@ -17,6 +17,10 @@ fun angleDifference(angle1: Float, angle2: Float): Float {
 
 fun absAngleDifference(angle1: Float, angle2: Float): Float {
     return abs(angleDifference(angle1, angle2).toDouble()).toFloat()
+}
+
+fun timeMillis(): Long {
+    return System.nanoTime() / 1000000
 }
 
 fun fastArcTan(a: Double): Double {

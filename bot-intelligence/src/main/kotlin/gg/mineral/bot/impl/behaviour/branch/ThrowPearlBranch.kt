@@ -8,11 +8,12 @@ import gg.mineral.bot.api.behaviour.selector
 import gg.mineral.bot.api.behaviour.sequence
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
+import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.math.trajectory.Trajectory
 import gg.mineral.bot.api.math.trajectory.throwable.EnderPearlTrajectory
-import gg.mineral.bot.api.util.floor
-import gg.mineral.bot.api.util.sqrt
+import gg.mineral.bot.api.util.dsl.floor
+import gg.mineral.bot.api.util.dsl.sqrt
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
 import kotlin.math.abs
@@ -152,5 +153,9 @@ class ThrowPearlBranch(tree: BehaviourTree) : BTBranch(tree) {
                 }
             }
         }
+    }
+
+    override fun <T : Event> event(event: T) {
+        TODO("Not yet implemented")
     }
 }

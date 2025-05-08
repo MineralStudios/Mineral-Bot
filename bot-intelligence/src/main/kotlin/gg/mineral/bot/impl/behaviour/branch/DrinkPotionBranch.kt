@@ -9,6 +9,7 @@ import gg.mineral.bot.api.behaviour.sequence
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
+import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.inv.item.ItemStack
 import gg.mineral.bot.api.inv.potion.Potion
@@ -59,6 +60,10 @@ class DrinkPotionBranch(tree: BehaviourTree) : BTBranch(tree) {
             pressButton(MouseButton.Type.RIGHT_CLICK)
             BTResult.SUCCESS
         })
+    }
+
+    override fun <T : Event> event(event: T) {
+        TODO("Not yet implemented")
     }
 
     override val child: ChildNode = selector(tree) {

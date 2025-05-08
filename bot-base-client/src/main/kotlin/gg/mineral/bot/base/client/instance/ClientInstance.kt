@@ -1,14 +1,13 @@
 package gg.mineral.bot.base.client.instance
 
 import com.google.common.collect.Multimap
+import gg.mineral.bot.api.behaviour.BehaviourTree
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.controls.Keyboard
 import gg.mineral.bot.api.controls.Mouse
 import gg.mineral.bot.api.entity.ClientEntity
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.event.Event
-import gg.mineral.bot.api.goal.Goal
-import gg.mineral.bot.api.goal.Sporadic
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.inv.Inventory
 import gg.mineral.bot.api.inv.InventoryContainer
@@ -22,7 +21,6 @@ import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
 import gg.mineral.bot.base.client.manager.InstanceManager
 import gg.mineral.bot.impl.thread.ThreadManager
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.multiplayer.WorldClient
@@ -63,8 +61,8 @@ open class ClientInstance(
     assetIndex
 ), ClientInstance {
 
-    // Active goals.
-    private val goals = ObjectLinkedOpenHashSet<Goal>()
+    // Active behaviour tree.
+    override var behaviourTree: BehaviourTree? = null
 
     // Delayed tasks queue.
     private val delayedTasks = ConcurrentLinkedQueue<DelayedTask>()
@@ -117,22 +115,7 @@ open class ClientInstance(
     override fun runGameLoop() {
         if (!running) return
 
-        var executing = false
-        for (goal in goals) {
-            if (goal is Sporadic && goal.executing) {
-                goal.callGameLoop()
-                executing = true
-                break
-            }
-        }
-        if (!executing) {
-            for (goal in goals) {
-                if (goal.checkExecute()) {
-                    goal.callGameLoop()
-                    break
-                }
-            }
-        }
+        behaviourTree?.frame()
 
         val currentTime = getSystemTime()
         while (delayedTasks.isNotEmpty()) {
@@ -157,23 +140,7 @@ open class ClientInstance(
         get() = super.getSession()
 
     override fun <T : Event> callEvent(event: T): Boolean {
-        var executing = false
-        for (goal in goals) {
-            if (goal is Sporadic && goal.executing) {
-                goal.onEvent(event)
-                executing = true
-                break
-            }
-        }
-        if (!executing) {
-            for (goal in goals) {
-                if (goal.checkExecute()) {
-                    goal.onEvent(event)
-                    break
-                }
-            }
-        }
-        return false
+        return behaviourTree?.event(event) ?: false
     }
 
     override fun runTick() {
@@ -187,33 +154,7 @@ open class ClientInstance(
             configuration.latencyDeviation.toDouble()
         ).toInt()
 
-        var executing = false
-        for (goal in goals) {
-            if (goal is Sporadic && goal.executing) {
-                goal.callTick()
-                executing = true
-                break
-            }
-        }
-        if (!executing) {
-            for (goal in goals) {
-                if (goal.checkExecute()) {
-                    goal.callTick()
-                    break
-                }
-            }
-        }
-    }
-
-    @SafeVarargs
-    override fun <T : Goal> startGoals(vararg goals: T) {
-        for (goal in goals) {
-            if (this.goals.add(goal)) {
-                logger.debug("Added goal: {}", goal.javaClass.simpleName)
-            } else {
-                logger.debug("Failed to add goal: {}", goal.javaClass.simpleName)
-            }
-        }
+        behaviourTree?.tick()
     }
 
     override fun shutdownMinecraftApplet() {
@@ -221,7 +162,7 @@ open class ClientInstance(
             logger.debug("Removed instance: {}", configuration.uuid)
         if (InstanceManager.pendingInstances.remove(configuration.uuid) != null)
             logger.debug("Removed pending instance: {}", configuration.uuid)
-        goals.clear()
+        this.behaviourTree = null
         running = false
         logger.debug("Stopping!")
         try {

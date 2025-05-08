@@ -12,14 +12,15 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.entity.throwable.ClientPotion
+import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.inv.item.ItemStack
 import gg.mineral.bot.api.math.trajectory.Trajectory
 import gg.mineral.bot.api.math.trajectory.throwable.SplashPotionTrajectory
-import gg.mineral.bot.api.util.fastArcTan
-import gg.mineral.bot.api.util.floor
-import gg.mineral.bot.api.util.sqrt
-import gg.mineral.bot.api.util.vectorForRotation
+import gg.mineral.bot.api.util.dsl.fastArcTan
+import gg.mineral.bot.api.util.dsl.floor
+import gg.mineral.bot.api.util.dsl.sqrt
+import gg.mineral.bot.api.util.dsl.vectorForRotation
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
 import org.apache.commons.math3.analysis.UnivariateFunction
@@ -364,5 +365,9 @@ class ThrowHealthPotBranch(tree: BehaviourTree) : BTBranch(tree) {
                 leaf { openInventory() }
             }
         }
+    }
+
+    override fun <T : Event> event(event: T) {
+        TODO("Not yet implemented")
     }
 }

@@ -8,12 +8,16 @@ import gg.mineral.bot.api.behaviour.selector
 import gg.mineral.bot.api.behaviour.sequence
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
+import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
-import gg.mineral.bot.api.goal.Goal.Companion.timeMillis
+import gg.mineral.bot.api.event.Event
+import gg.mineral.bot.api.event.entity.EntityHurtEvent
+import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.inv.item.ItemStack
 import gg.mineral.bot.api.screen.type.ContainerScreen
-import gg.mineral.bot.api.util.fastArcTan2
-import gg.mineral.bot.api.util.vectorForRotation
+import gg.mineral.bot.api.util.dsl.fastArcTan2
+import gg.mineral.bot.api.util.dsl.timeMillis
+import gg.mineral.bot.api.util.dsl.vectorForRotation
 import gg.mineral.bot.api.world.block.Block
 import kotlin.math.*
 
@@ -25,6 +29,12 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
     private var lastBounceTime: Long = 0
     private var lastTargetSwitchTick = 0
     private var nextClick: Long = 0
+    private var currentHorizontalAimAcceleration = 1.0f
+    private var currentVerticalAimAcceleration = 1.0f
+    private var lastHorizontalTurnSignum = 1
+    private var lastVerticalTurnSignum = 1
+    private var resetType = ResetType.OFFENSIVE
+    private val lastResetType = ResetType.OFFENSIVE
 
     // Finds and updates the current target.
     private fun findTarget() {
@@ -132,9 +142,18 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
         val distX = abs(fakePlayer.x - tgt.x)
         val distZ = abs(fakePlayer.z - tgt.z)
         val horizontalDist = sqrt(distX * distX + distZ * distZ)
-        val yawSpeed = calculateHorizontalAimSpeed(horizontalDist, yawDiff.toDouble()).toFloat()
-        val pitchSpeed = calculateVerticalAimSpeed(pitchDiff.toDouble()).toFloat()
+        val yawSpeed =
+            calculateHorizontalAimSpeed(horizontalDist, yawDiff.toDouble()).toFloat() * currentHorizontalAimAcceleration
+        val pitchSpeed = calculateVerticalAimSpeed(pitchDiff.toDouble()).toFloat() * currentVerticalAimAcceleration
         val config = tree.clientInstance.configuration
+
+        val currentHorizontalTurnSignum = signum(
+            angleDifference(fakePlayer.yaw, optimalAngles[1])
+        ).toInt()
+
+        if (currentHorizontalTurnSignum != lastHorizontalTurnSignum || currentHorizontalTurnSignum == 0) currentHorizontalAimAcceleration =
+            1.0f
+        else currentHorizontalAimAcceleration *= config.horizontalAimAcceleration
 
         setMouseYaw(
             getRotationTarget(
@@ -146,8 +165,19 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
             )
         )
 
+        lastHorizontalTurnSignum = currentHorizontalTurnSignum
+
+        // Give it a higher chance of aiming down
         val verAccuracy = max(0.01f, config.verticalAimAccuracy)
         val deviation = if (verAccuracy >= 1) 0f else 3f / verAccuracy
+
+        val currentVerticalTurnSignum = signum(
+            angleDifference(fakePlayer.pitch, optimalAngles[0])
+        ).toInt()
+
+        if (currentVerticalTurnSignum != lastVerticalTurnSignum || currentVerticalTurnSignum == 0) currentVerticalAimAcceleration =
+            1.0f
+        else currentVerticalAimAcceleration *= config.verticalAimAcceleration
 
         setMousePitch(
             getRotationTarget(
@@ -158,6 +188,8 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
                 config.verticalErraticness
             )
         )
+
+        lastVerticalTurnSignum = currentVerticalTurnSignum
     }
 
     private fun calculateHorizontalAimSpeed(distHorizontal: Double, yawDiff: Double): Double {
@@ -342,9 +374,7 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
         }
         // Reflect off wall if no target and colliding.
         leaf {
-            if (target == null && timeMillis() - lastBounceTime > 1000 && isCollidingWithWall) {
-                reflectOffWall()
-            }
+            if (target == null && timeMillis() - lastBounceTime > 1000 && isCollidingWithWall) reflectOffWall()
             BTResult.SUCCESS
         }
         // Strafe around the target.
@@ -352,5 +382,99 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
             strafe()
             BTResult.SUCCESS
         }
+    }
+
+    override fun <T : Event> event(event: T): Boolean {
+        if (event is EntityHurtEvent) return onEntityHurt(event)
+        return false
+    }
+
+    fun onEntityHurt(event: EntityHurtEvent): Boolean {
+        val entity = event.attackedEntity
+
+        val fakePlayer = clientInstance.fakePlayer
+        if (entity.y - fakePlayer.y > 1.5) return false
+
+        val target = this.target
+
+        if (target != null && entity.uuid == target.uuid) sprintReset()
+
+        return false
+    }
+
+    internal enum class ResetType {
+        EXTRA_OFFENSIVE, OFFENSIVE, DEFENSIVE, EXTRA_DEFENSIVE
+    }
+
+    private fun getKB(entity: ClientLivingEntity, meanX: Double, meanY: Double, meanZ: Double): Double {
+        val motX = entity.x - entity.lastX
+        val motY = entity.y - entity.lastY
+        val motZ = entity.z - entity.lastZ
+
+        val newX = entity.x + motX
+        val newY = entity.y + motY
+        val newZ = entity.z + motZ
+
+        val kbX = newX - meanX
+        val kbY = newY - meanY
+        val kbZ = newZ - meanZ
+
+        return sqrt(kbX * kbX + kbY * kbY + kbZ * kbZ)
+    }
+
+    private fun sprintReset() {
+        val target = this.target ?: return
+
+        val fakePlayer = clientInstance.fakePlayer
+        val meanX = (fakePlayer.x + target.x) / 2
+        val meanY = (fakePlayer.y + target.y) / 2
+        val meanZ = (fakePlayer.z + target.z) / 2
+
+        // Offensive if dealing more kb to the target
+        val kb = getKB(fakePlayer, meanX, meanY, meanZ)
+        val targetKB = getKB(target, meanX, meanY, meanZ)
+
+        val dist = fakePlayer.distance3DTo(target)
+
+        val inventory = fakePlayer.inventory
+        val itemStack = inventory.heldItemStack
+
+        resetType =
+            if (kb < targetKB) if (dist < 2 && fakePlayer.isOnGround) ResetType.EXTRA_OFFENSIVE else ResetType.OFFENSIVE
+            else if (lastResetType == ResetType.DEFENSIVE && itemStack != null && Item.Type.SWORD.isType(itemStack.item.id)) ResetType.EXTRA_DEFENSIVE
+            else ResetType.DEFENSIVE
+
+        val config = clientInstance.configuration
+
+        val runnable = Runnable {
+            when (resetType) {
+                ResetType.EXTRA_OFFENSIVE -> {
+                    if (config.sprintResetAccuracy >= 1
+                        || fakePlayer.random.nextFloat() < config
+                            .sprintResetAccuracy
+                    ) {
+                        pressKey(150, Key.Type.KEY_S)
+                        unpressKey(150, Key.Type.KEY_W)
+                    }
+                }
+
+                ResetType.DEFENSIVE, ResetType.OFFENSIVE -> if (config.sprintResetAccuracy >= 1
+                    || fakePlayer.random.nextFloat() < config
+                        .sprintResetAccuracy
+                ) unpressKey(150, Key.Type.KEY_W)
+
+                ResetType.EXTRA_DEFENSIVE -> if (config.sprintResetAccuracy >= 1
+                    || fakePlayer.random.nextFloat() < config
+                        .sprintResetAccuracy
+                ) pressButton(75, MouseButton.Type.RIGHT_CLICK)
+            }
+        }
+
+        if (resetType == ResetType.OFFENSIVE || resetType == ResetType.EXTRA_OFFENSIVE) {
+            runnable.run()
+            return
+        }
+
+        clientInstance.schedule(runnable, 350)
     }
 }

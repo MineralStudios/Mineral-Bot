@@ -7,6 +7,7 @@ import gg.mineral.bot.api.behaviour.node.ChildNode
 import gg.mineral.bot.api.behaviour.selector
 import gg.mineral.bot.api.behaviour.sequence
 import gg.mineral.bot.api.controls.Key
+import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.screen.type.ContainerScreen
 
@@ -76,5 +77,9 @@ class DropEmptyBowlBranch(tree: BehaviourTree) : BTBranch(tree) {
                 BTResult.SUCCESS
             }
         }
+    }
+
+    override fun <T : Event> event(event: T) {
+        TODO("Not yet implemented")
     }
 }

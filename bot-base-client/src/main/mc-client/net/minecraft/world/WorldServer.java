@@ -43,8 +43,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
-import static gg.mineral.bot.api.util.MathUtilKt.highInt;
-import static gg.mineral.bot.api.util.MathUtilKt.lowInt;
+import static gg.mineral.bot.api.util.dsl.MathDSLKt.highInt;
+import static gg.mineral.bot.api.util.dsl.MathDSLKt.lowInt;
 
 public class WorldServer extends World implements ServerWorld<WorldServer> {
     private static final Logger logger = LogManager.getLogger(WorldServer.class);

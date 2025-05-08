@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static gg.mineral.bot.api.util.MathUtilKt.combineIntsToLong;
+import static gg.mineral.bot.api.util.dsl.MathDSLKt.combineIntsToLong;
 
 public class WorldServerOF extends WorldServer {
     private NextTickHashSet pendingTickListEntriesHashSet;

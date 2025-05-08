@@ -7,6 +7,7 @@ import gg.mineral.bot.api.behaviour.node.ChildNode
 import gg.mineral.bot.api.behaviour.sequence
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
+import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.inv.item.Item
 
 class HealSoupBranch(tree: BehaviourTree) : BTBranch(tree) {
@@ -88,5 +89,9 @@ class HealSoupBranch(tree: BehaviourTree) : BTBranch(tree) {
 
             leaf { openInventory() }
         }
+    }
+
+    override fun <T : Event> event(event: T) {
+        TODO("Not yet implemented")
     }
 }

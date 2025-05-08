@@ -4,12 +4,14 @@ import gg.mineral.api.command.Command
 import gg.mineral.api.command.CommandExecutor
 import gg.mineral.api.entity.living.human.Player
 import gg.mineral.api.world.World
-import gg.mineral.bot.ai.goal.*
 import gg.mineral.bot.api.BotAPI
+import gg.mineral.bot.api.behaviour.BehaviourTree
+import gg.mineral.bot.api.behaviour.node.BTNode
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.entity.living.player.skin.Skins
 import gg.mineral.bot.api.math.ServerLocation
 import gg.mineral.bot.api.world.ServerWorld
+import gg.mineral.bot.impl.behaviour.RootNode
 
 class MineralBotCommand : Command("mineralbot", "mineralbot.admin") {
     override fun execute(commandExecutor: CommandExecutor, arguments: Array<String?>) {
@@ -42,12 +44,10 @@ class MineralBotCommand : Command("mineralbot", "mineralbot.admin") {
                         }
                 })
 
-            instance.get()?.run {
-                startGoals(
-                    ReplaceArmorGoal(this), DrinkPotionGoal(this),
-                    EatGappleGoal(this),
-                    MeleeCombatGoal(this), ThrowPearlGoal(this)
-                )
+            instance.get().apply {
+                behaviourTree = object : BehaviourTree(this) {
+                    override val rootNode: BTNode = RootNode(this)
+                }
             }
         }
     }

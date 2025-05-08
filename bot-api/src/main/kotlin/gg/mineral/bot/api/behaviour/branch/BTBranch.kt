@@ -6,15 +6,18 @@ import gg.mineral.bot.api.behaviour.node.DecoratorNode
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.entity.ClientEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
+import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.inv.item.ItemStack
 import gg.mineral.bot.api.screen.type.ContainerScreen
-import gg.mineral.bot.api.util.computeOptimalYawAndPitch
+import gg.mineral.bot.api.util.dsl.computeOptimalYawAndPitch
 import kotlin.math.abs
 
 abstract class BTBranch(tree: BehaviourTree) : DecoratorNode(tree) {
     override fun tick(): BTResult {
         return child.callTick()
     }
+
+    abstract override fun <T : Event> event(event: T): Boolean
 
     // ─── NEW AIMING LOGIC ──────────────────────────────────────────────
     /**

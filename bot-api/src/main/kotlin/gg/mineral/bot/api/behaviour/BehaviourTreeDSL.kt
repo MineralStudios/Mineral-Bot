@@ -1,6 +1,5 @@
 package gg.mineral.bot.api.behaviour
 
-import gg.mineral.bot.api.behaviour.node.BTNode
 import gg.mineral.bot.api.behaviour.node.ChildNode
 import gg.mineral.bot.api.behaviour.node.LeafNode
 import gg.mineral.bot.api.behaviour.node.composite.SelectorNode
@@ -11,10 +10,6 @@ import gg.mineral.bot.api.behaviour.node.decorator.RepeaterNode
 import gg.mineral.bot.api.behaviour.node.decorator.SucceederNode
 import gg.mineral.bot.api.behaviour.node.leaf.AsyncNode
 import gg.mineral.bot.api.behaviour.node.leaf.ConditionNode
-import gg.mineral.bot.api.instance.ClientInstance
-
-fun behaviourTree(clientInstance: ClientInstance, root: BTNode): BehaviourTree =
-    BehaviourTree(clientInstance, root)
 
 fun sequence(tree: BehaviourTree, init: CompositeBuilder.() -> Unit): SequenceNode {
     val builder = CompositeBuilder(tree)

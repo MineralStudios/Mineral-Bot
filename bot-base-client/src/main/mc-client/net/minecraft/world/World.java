@@ -34,7 +34,7 @@ import net.minecraft.world.storage.WorldInfo;
 
 import java.util.*;
 
-import static gg.mineral.bot.api.util.MathUtilKt.combineIntsToLong;
+import static gg.mineral.bot.api.util.dsl.MathDSLKt.combineIntsToLong;
 
 public abstract class World implements IBlockAccess {
     /**

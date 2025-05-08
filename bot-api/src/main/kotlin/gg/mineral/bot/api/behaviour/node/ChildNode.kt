@@ -4,7 +4,7 @@ import gg.mineral.bot.api.behaviour.BehaviourTree
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.instance.ClientInstance
-import gg.mineral.bot.api.util.angleDifference
+import gg.mineral.bot.api.util.dsl.angleDifference
 
 abstract class ChildNode(open val tree: BehaviourTree) : BTNode() {
     fun callTick() = callTick(tree.treeStack)

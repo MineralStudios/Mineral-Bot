@@ -2,6 +2,7 @@ package gg.mineral.bot.api.behaviour.node
 
 import gg.mineral.bot.api.behaviour.BTResponse
 import gg.mineral.bot.api.behaviour.BTResult
+import gg.mineral.bot.api.event.Event
 import java.util.*
 
 abstract class BTNode {
@@ -12,4 +13,12 @@ abstract class BTNode {
     }
 
     abstract fun tick(): BTResult
+
+    open fun <T : Event> event(event: T): Boolean {
+        return false
+    }
+
+    open fun frame(): BTResult {
+        return BTResult.SUCCESS
+    }
 }

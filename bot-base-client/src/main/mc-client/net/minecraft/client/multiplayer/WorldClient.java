@@ -40,8 +40,8 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
 
-import static gg.mineral.bot.api.util.MathUtilKt.highInt;
-import static gg.mineral.bot.api.util.MathUtilKt.lowInt;
+import static gg.mineral.bot.api.util.dsl.MathDSLKt.highInt;
+import static gg.mineral.bot.api.util.dsl.MathDSLKt.lowInt;
 
 public class WorldClient extends World implements ClientWorld {
 

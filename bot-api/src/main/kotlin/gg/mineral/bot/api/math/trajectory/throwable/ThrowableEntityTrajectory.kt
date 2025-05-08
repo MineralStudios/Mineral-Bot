@@ -1,7 +1,7 @@
 package gg.mineral.bot.api.math.trajectory.throwable
 
 import gg.mineral.bot.api.math.trajectory.Trajectory
-import gg.mineral.bot.api.util.*
+import gg.mineral.bot.api.util.dsl.*
 import gg.mineral.bot.api.world.ClientWorld
 import gg.mineral.bot.api.world.block.Block
 
