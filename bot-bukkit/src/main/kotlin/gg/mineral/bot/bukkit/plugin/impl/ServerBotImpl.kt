@@ -2,6 +2,7 @@ package gg.mineral.bot.bukkit.plugin.impl
 
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.event.PacketListenerPriority
+import com.github.retrooper.packetevents.protocol.ConnectionState
 import com.github.retrooper.packetevents.protocol.nbt.NBTCompound
 import com.github.retrooper.packetevents.protocol.player.GameMode
 import com.github.retrooper.packetevents.protocol.world.Difficulty
@@ -11,39 +12,41 @@ import com.github.retrooper.packetevents.resources.ResourceLocation
 import com.github.retrooper.packetevents.util.Vector3i
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import com.github.retrooper.packetevents.wrapper.login.server.WrapperLoginServerLoginSuccess
-import com.github.retrooper.packetevents.wrapper.play.server.*
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDifficulty
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerHeldItemChange
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerJoinGame
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnPosition
 import com.google.common.collect.HashMultimap
 import com.mojang.authlib.GameProfile
+import gg.mineral.bot.api.concurrent.ListenableFuture
 import gg.mineral.bot.api.configuration.BotConfiguration
+import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.math.ServerLocation
 import gg.mineral.bot.api.util.dsl.onComplete
 import gg.mineral.bot.base.client.BotImpl
+import gg.mineral.bot.base.client.concurrent.ListenableFutureImpl
 import gg.mineral.bot.base.client.instance.ConnectedClientInstance
 import gg.mineral.bot.base.client.manager.InstanceManager.instances
 import gg.mineral.bot.base.client.manager.InstanceManager.pendingInstances
 import gg.mineral.bot.base.client.network.ClientLoginHandler
 import gg.mineral.bot.bukkit.plugin.MineralBotPlugin
-import gg.mineral.bot.bukkit.plugin.impl.player.NMSServerPlayer
+import gg.mineral.bot.bukkit.plugin.compat.newBukkitServerPlayer
+import gg.mineral.bot.bukkit.plugin.compat.newPlayerConnection
+import gg.mineral.bot.bukkit.plugin.compat.setConnectionState
+import gg.mineral.bot.bukkit.plugin.impl.player.BukkitServerPlayer
 import gg.mineral.bot.bukkit.plugin.injector.BukkitChannelInjector
 import gg.mineral.bot.bukkit.plugin.injector.BukkitInjectedListener
 import gg.mineral.bot.bukkit.plugin.netty.PostViaHandler
 import gg.mineral.bot.bukkit.plugin.netty.PreViaHandler
 import gg.mineral.bot.impl.thread.ThreadManager
 import io.netty.channel.Channel
-import io.netty.channel.local.LocalChannel
 import net.minecraft.network.EnumConnectionState
-import net.minecraft.network.handshake.client.C00Handshake
-import net.minecraft.network.login.client.C00PacketLoginStart
-import net.minecraft.server.v1_8_R3.EnumProtocol
-import net.minecraft.server.v1_8_R3.MinecraftServer
-import net.minecraft.server.v1_8_R3.NetworkManager
-import net.minecraft.server.v1_8_R3.PlayerConnection
 import org.bukkit.Bukkit
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import java.io.File
-import java.lang.ref.WeakReference
 import java.net.Proxy
 import java.util.*
+import net.minecraft.network.handshake.client.C00Handshake as HandshakePacket
+import net.minecraft.network.login.client.C00PacketLoginStart as LoginStartPacket
 
 
 class ServerBotImpl : BotImpl() {
@@ -54,7 +57,7 @@ class ServerBotImpl : BotImpl() {
     override fun spawn(
         configuration: BotConfiguration,
         location: ServerLocation
-    ): WeakReference<gg.mineral.bot.api.instance.ClientInstance> {
+    ): ListenableFuture<ClientInstance> {
         val startTime = System.nanoTime() / 1000000
 
         val uuid = configuration.uuid
@@ -90,18 +93,18 @@ class ServerBotImpl : BotImpl() {
                 )
 
                 scheduleOutboundPacket(
-                    C00Handshake(5, injector.address.toString(), Bukkit.getPort(), EnumConnectionState.LOGIN)
+                    HandshakePacket(5, injector.address.toString(), Bukkit.getPort(), EnumConnectionState.LOGIN)
                 )
 
                 scheduleOutboundPacket(
-                    C00PacketLoginStart(GameProfile(configuration.uuid, name))
+                    LoginStartPacket(GameProfile(configuration.uuid, name))
                 )
             }
         }
 
         instance.setServer(injector.address.toString(), Bukkit.getServer().port)
 
-        val serverSide = NMSServerPlayer(
+        val serverSide: BukkitServerPlayer<*> = newBukkitServerPlayer(
             location.world,
             configuration.uuid, name, configuration.skin.value,
             configuration.skin.signature,
@@ -114,19 +117,26 @@ class ServerBotImpl : BotImpl() {
 
         pendingInstances[configuration.uuid] = instance
 
+        val listenableFuture = ListenableFutureImpl(instance as ClientInstance)
+
         instance.channel.onComplete {
-            onConnect(it.getOrThrow(), configuration, serverSide, instance)
+            try {
+                onConnect(it.getOrThrow(), configuration, serverSide, listenableFuture, instance)
+            } catch (e: Exception) {
+                listenableFuture.fail(e)
+            }
         }
 
         spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
 
-        return WeakReference(instance)
+        return listenableFuture
     }
 
     private fun onConnect(
         channel: Channel,
         configuration: BotConfiguration,
-        serverSide: NMSServerPlayer,
+        serverSide: BukkitServerPlayer<*>,
+        future: ListenableFutureImpl<ClientInstance>,
         instance: ConnectedClientInstance
     ) {
         val localAddress = channel.localAddress()
@@ -134,7 +144,7 @@ class ServerBotImpl : BotImpl() {
         listener.onceChannelRegistered(localAddress) { serverChannel ->
             val pipeline = serverChannel.pipeline()
             val serverNetworkManager =
-                pipeline.get("packet_handler") as NetworkManager?
+                pipeline.get("packet_handler")
                     ?: error("Unable to find server network manager for address $localAddress")
 
             pipeline.addAfter("splitter", "mineral_bot_pre_via", PreViaHandler {
@@ -145,13 +155,13 @@ class ServerBotImpl : BotImpl() {
                     )
                 )
 
-                serverNetworkManager.a(EnumProtocol.PLAY)
-                serverSide.playerConnection = PlayerConnection(
-                    MinecraftServer.getServer(), serverNetworkManager,
+                serverNetworkManager.setConnectionState(ConnectionState.PLAY)
+                serverSide.playerConnection = newPlayerConnection(
+                    serverNetworkManager,
                     serverSide
                 )
 
-                onLoginStart(it, serverSide)
+                onLoginStart(it, serverSide, future)
             })
 
             pipeline.addBefore("decoder", "mineral_bot_post_via", PostViaHandler())
@@ -170,13 +180,17 @@ class ServerBotImpl : BotImpl() {
         }
     }
 
-    private fun onLoginStart(serverChannel: Channel, serverSide: NMSServerPlayer) {
+    private fun onLoginStart(
+        serverChannel: Channel,
+        serverSide: BukkitServerPlayer<*>,
+        future: ListenableFutureImpl<ClientInstance>
+    ) {
 
-        val player = serverSide.bukkitEntity
+        val player = serverSide.bukkitPlayer
 
         serverChannel.sendPacket(
             WrapperPlayServerJoinGame(
-                serverSide.id,
+                serverSide.getId(),
                 serverSide.isWorldHardcore,
                 GameMode.getById(serverSide.gameModeId),
                 GameMode.defaultGameMode(),
@@ -205,12 +219,15 @@ class ServerBotImpl : BotImpl() {
 
         Bukkit.getScheduler().runTask(
             MineralBotPlugin.instance
-        ) { onJoin(serverChannel, serverSide) }
+        ) { onJoin(serverChannel, serverSide, future) }
     }
 
-    private fun onJoin(serverChannel: Channel, serverSide: NMSServerPlayer) {
+    private fun onJoin(
+        serverChannel: Channel,
+        serverSide: BukkitServerPlayer<*>,
+        future: ListenableFutureImpl<ClientInstance>
+    ) {
         val spawn = serverSide.worldSpawn
-        val player = serverSide.bukkitEntity
         serverSide.initializeGameMode()
 
         serverSide.sendSupportedChannels()
@@ -232,17 +249,8 @@ class ServerBotImpl : BotImpl() {
             )
         )
 
-        val abilities = serverSide.abilities
-
         serverChannel.sendPacket(
-            WrapperPlayServerPlayerAbilities(
-                abilities.isInvulnerable,
-                abilities.isFlying,
-                abilities.canFly,
-                player.gameMode == org.bukkit.GameMode.CREATIVE,
-                abilities.flySpeed,
-                abilities.walkSpeed
-            )
+            serverSide.abilities
         )
 
         serverChannel.sendPacket(
@@ -251,37 +259,23 @@ class ServerBotImpl : BotImpl() {
             )
         )
 
-        serverSide.sendScoreboard()
-        serverSide.resetPlayerSampleUpdateTimer()
-
-        serverSide.onJoin()
-
-        serverSide.callSpawnEvents()
-
-        // Send location to client
-        serverSide.sendLocationToClient()
-
-        // World border, time, weather
-        serverSide.initWorld()
-
-        serverSide.initResourcePack()
-
-        serverSide.syncInventory()
-    }
-
-    override fun cleanup() {
-        Bukkit.getScheduler().runTask(
-            MineralBotPlugin.instance
-        ) {
-            for (player in Bukkit.getOnlinePlayers()) {
-                if ((player as CraftPlayer).handle.playerConnection.networkManager.channel.let { it is LocalChannel || it == null } && !isFakePlayer(
-                        player.uniqueId
-                    )) player.kickPlayer(
-                    "Despawned"
-                )
-            }
+        serverSide.apply {
+            sendScoreboard()
+            resetPlayerSampleUpdateTimer()
+            onJoin()
+            callSpawnEvents()
+            // Send location to client
+            sendLocationToClient()
+            // World border, time, weather
+            initWorld()
+            initResourcePack()
+            syncInventory()
         }
+
+        future.complete()
     }
+
+    override fun cleanup() {}
 
     companion object {
         private val injector = BukkitChannelInjector()

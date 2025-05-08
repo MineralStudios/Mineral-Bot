@@ -23,6 +23,10 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
     private var lastBounceTime: Long = 0
     private var lastTargetSwitchTick = 0
     private var lastSprintResetTick = 0
+    private var currentHorizontalAimAcceleration = 1.0f
+    private var currentVerticalAimAcceleration = 1.0f
+    private var lastHorizontalTurnSignum = 1
+    private var lastVerticalTurnSignum = 1
 
     override fun shouldExecute() = true
 
@@ -120,10 +124,19 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         val distX = abs(fakePlayer.x - target.x)
         val distZ = abs(fakePlayer.z - target.z)
 
-        val yawSpeed = calculateHorizontalAimSpeed(sqrt(distX * distX + distZ * distZ), yawDiff)
-        val pitchSpeed = calculateVerticalAimSpeed(pitchDiff)
+        val yawSpeed =
+            calculateHorizontalAimSpeed(sqrt(distX * distX + distZ * distZ), yawDiff) * currentHorizontalAimAcceleration
+        val pitchSpeed = calculateVerticalAimSpeed(pitchDiff) * currentVerticalAimAcceleration
 
         val config = clientInstance.configuration
+
+        val currentHorizontalTurnSignum = signum(
+            angleDifference(fakePlayer.yaw, optimalAngles[1])
+        ).toInt()
+
+        if (currentHorizontalTurnSignum != lastHorizontalTurnSignum || currentHorizontalTurnSignum == 0) currentHorizontalAimAcceleration =
+            1.0f
+        else currentHorizontalAimAcceleration *= config.horizontalAimAcceleration
 
         setMouseYaw(
             getRotationTarget(
@@ -137,9 +150,19 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
             )
         )
 
+        lastHorizontalTurnSignum = currentHorizontalTurnSignum
+
         // Give it a higher chance of aiming down
         val verAccuracy = max(0.01f, config.verticalAimAccuracy)
         val deviation = if (verAccuracy >= 1) 0f else 3f / verAccuracy
+
+        val currentVerticalTurnSignum = signum(
+            angleDifference(fakePlayer.pitch, optimalAngles[0])
+        ).toInt()
+
+        if (currentVerticalTurnSignum != lastVerticalTurnSignum || currentVerticalTurnSignum == 0) currentVerticalAimAcceleration =
+            1.0f
+        else currentVerticalAimAcceleration *= config.verticalAimAcceleration
 
         setMousePitch(
             getRotationTarget(
@@ -153,6 +176,8 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
                 config.verticalErraticness
             )
         )
+
+        lastVerticalTurnSignum = currentVerticalTurnSignum
     }
 
     private fun calculateHorizontalAimSpeed(distHorizontal: Double, yawDiff: Double): Double {
