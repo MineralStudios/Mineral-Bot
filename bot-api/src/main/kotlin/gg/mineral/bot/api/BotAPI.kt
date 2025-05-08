@@ -1,6 +1,7 @@
 package gg.mineral.bot.api
 
 import gg.mineral.bot.api.collections.OptimizedCollections
+import gg.mineral.bot.api.concurrent.ListenableFuture
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.instance.ClientInstance
@@ -15,9 +16,9 @@ abstract class BotAPI {
         configuration: BotConfiguration,
         serverIp: String,
         serverPort: Int
-    ): WeakReference<ClientInstance>
+    ): ListenableFuture<ClientInstance>
 
-    abstract fun spawn(configuration: BotConfiguration, location: ServerLocation): WeakReference<ClientInstance>
+    abstract fun spawn(configuration: BotConfiguration, location: ServerLocation): ListenableFuture<ClientInstance>
 
     abstract fun despawn(vararg uuids: UUID): BooleanArray
 

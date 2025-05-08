@@ -18,10 +18,13 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerJo
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnPosition
 import com.google.common.collect.HashMultimap
 import com.mojang.authlib.GameProfile
+import gg.mineral.bot.api.concurrent.ListenableFuture
 import gg.mineral.bot.api.configuration.BotConfiguration
+import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.math.ServerLocation
 import gg.mineral.bot.api.util.dsl.onComplete
 import gg.mineral.bot.base.client.BotImpl
+import gg.mineral.bot.base.client.concurrent.ListenableFutureImpl
 import gg.mineral.bot.base.client.instance.ConnectedClientInstance
 import gg.mineral.bot.base.client.manager.InstanceManager.instances
 import gg.mineral.bot.base.client.manager.InstanceManager.pendingInstances
@@ -40,7 +43,6 @@ import io.netty.channel.Channel
 import net.minecraft.network.EnumConnectionState
 import org.bukkit.Bukkit
 import java.io.File
-import java.lang.ref.WeakReference
 import java.net.Proxy
 import java.util.*
 import net.minecraft.network.handshake.client.C00Handshake as HandshakePacket
@@ -55,7 +57,7 @@ class ServerBotImpl : BotImpl() {
     override fun spawn(
         configuration: BotConfiguration,
         location: ServerLocation
-    ): WeakReference<gg.mineral.bot.api.instance.ClientInstance> {
+    ): ListenableFuture<ClientInstance> {
         val startTime = System.nanoTime() / 1000000
 
         val uuid = configuration.uuid
@@ -115,19 +117,26 @@ class ServerBotImpl : BotImpl() {
 
         pendingInstances[configuration.uuid] = instance
 
+        val listenableFuture = ListenableFutureImpl(instance as ClientInstance)
+
         instance.channel.onComplete {
-            onConnect(it.getOrThrow(), configuration, serverSide, instance)
+            try {
+                onConnect(it.getOrThrow(), configuration, serverSide, listenableFuture, instance)
+            } catch (e: Exception) {
+                listenableFuture.fail(e)
+            }
         }
 
         spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
 
-        return WeakReference(instance)
+        return listenableFuture
     }
 
     private fun onConnect(
         channel: Channel,
         configuration: BotConfiguration,
         serverSide: BukkitServerPlayer<*>,
+        future: ListenableFutureImpl<ClientInstance>,
         instance: ConnectedClientInstance
     ) {
         val localAddress = channel.localAddress()
@@ -152,7 +161,7 @@ class ServerBotImpl : BotImpl() {
                     serverSide
                 )
 
-                onLoginStart(it, serverSide)
+                onLoginStart(it, serverSide, future)
             })
 
             pipeline.addBefore("decoder", "mineral_bot_post_via", PostViaHandler())
@@ -171,7 +180,11 @@ class ServerBotImpl : BotImpl() {
         }
     }
 
-    private fun onLoginStart(serverChannel: Channel, serverSide: BukkitServerPlayer<*>) {
+    private fun onLoginStart(
+        serverChannel: Channel,
+        serverSide: BukkitServerPlayer<*>,
+        future: ListenableFutureImpl<ClientInstance>
+    ) {
 
         val player = serverSide.bukkitPlayer
 
@@ -206,10 +219,14 @@ class ServerBotImpl : BotImpl() {
 
         Bukkit.getScheduler().runTask(
             MineralBotPlugin.instance
-        ) { onJoin(serverChannel, serverSide) }
+        ) { onJoin(serverChannel, serverSide, future) }
     }
 
-    private fun onJoin(serverChannel: Channel, serverSide: BukkitServerPlayer<*>) {
+    private fun onJoin(
+        serverChannel: Channel,
+        serverSide: BukkitServerPlayer<*>,
+        future: ListenableFutureImpl<ClientInstance>
+    ) {
         val spawn = serverSide.worldSpawn
         serverSide.initializeGameMode()
 
@@ -254,6 +271,8 @@ class ServerBotImpl : BotImpl() {
             initResourcePack()
             syncInventory()
         }
+
+        future.complete()
     }
 
     override fun cleanup() {}

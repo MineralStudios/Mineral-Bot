@@ -3,12 +3,14 @@ package gg.mineral.bot.base.client
 import com.google.common.collect.HashMultimap
 import gg.mineral.bot.api.BotAPI
 import gg.mineral.bot.api.collections.OptimizedCollections
+import gg.mineral.bot.api.concurrent.ListenableFuture
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.math.ServerLocation
 import gg.mineral.bot.api.message.ChatColor
 import gg.mineral.bot.api.util.dsl.onComplete
+import gg.mineral.bot.base.client.concurrent.ListenableFutureImpl
 import gg.mineral.bot.base.client.instance.ConnectedClientInstance
 import gg.mineral.bot.base.client.manager.InstanceManager
 import gg.mineral.bot.impl.thread.ThreadManager
@@ -87,7 +89,7 @@ abstract class BotImpl : BotAPI() {
         configuration: BotConfiguration,
         serverIp: String,
         serverPort: Int
-    ): WeakReference<ClientInstance> {
+    ): ListenableFuture<ClientInstance> {
         val startTime = System.nanoTime() / 1000000
         val file = configuration.runDirectory
 
@@ -112,7 +114,7 @@ abstract class BotImpl : BotAPI() {
         }
 
         spawnRecords.add(SpawnRecord(configuration.username, (System.nanoTime() / 1000000) - startTime))
-        return WeakReference(instance)
+        return ListenableFutureImpl(instance as ClientInstance).apply { complete() }
     }
 
     override fun despawn(uuid: UUID): Boolean {
@@ -160,7 +162,7 @@ abstract class BotImpl : BotAPI() {
                 override fun spawn(
                     configuration: BotConfiguration,
                     location: ServerLocation
-                ): WeakReference<ClientInstance> {
+                ): ListenableFuture<ClientInstance> {
                     return spawn(configuration, "localhost", 25565)
                 }
 
