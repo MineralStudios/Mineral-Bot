@@ -21,6 +21,7 @@ abstract class BehaviourTree(val clientInstance: ClientInstance) : BTNode() {
     }
 
     override fun tick(): BTResult {
+        if (treeStack.empty()) return rootNode.callTick(treeStack)
         val (node, result) = treeStack.pop()
         if (result == BTResult.RUNNING) return node.callTick(treeStack)
 
