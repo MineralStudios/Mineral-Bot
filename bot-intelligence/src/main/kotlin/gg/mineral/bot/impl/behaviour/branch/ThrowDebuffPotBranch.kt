@@ -12,7 +12,6 @@ import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.entity.living.player.FakePlayer
 import gg.mineral.bot.api.entity.throwable.ClientPotion
-import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.inv.item.ItemStack
 import gg.mineral.bot.api.math.trajectory.Trajectory
@@ -359,9 +358,5 @@ class ThrowDebuffPotBranch(tree: BehaviourTree) : BTBranch(tree) {
                 leaf { openInventory() }
             }
         }
-    }
-
-    override fun <T : Event> event(event: T): Boolean {
-        return false
     }
 }

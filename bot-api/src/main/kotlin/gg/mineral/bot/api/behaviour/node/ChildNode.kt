@@ -3,11 +3,17 @@ package gg.mineral.bot.api.behaviour.node
 import gg.mineral.bot.api.behaviour.BehaviourTree
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
+import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.bot.api.util.dsl.angleDifference
 
 abstract class ChildNode(open val tree: BehaviourTree) : BTNode() {
-    fun callTick() = callTick(tree.treeStack)
+    fun callTick() = callTick(tree.tickTreeStack)
+
+    fun callFrame() = callFrame(tree.frameTreeStack)
+
+    fun callEvent(event: Event) = callEvent(tree.eventTreeStack, event)
+
 
     val clientInstance: ClientInstance
         get() = tree.clientInstance

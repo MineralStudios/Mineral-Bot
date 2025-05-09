@@ -4,17 +4,16 @@ import gg.mineral.bot.api.behaviour.BTResult
 import gg.mineral.bot.api.behaviour.BehaviourTree
 import gg.mineral.bot.api.behaviour.branch.BTBranch
 import gg.mineral.bot.api.behaviour.node.ChildNode
-import gg.mineral.bot.api.behaviour.selector
 import gg.mineral.bot.api.behaviour.sequence
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.ClientLivingEntity
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
-import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.event.entity.EntityHurtEvent
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.inv.item.ItemStack
 import gg.mineral.bot.api.screen.type.ContainerScreen
+import gg.mineral.bot.api.util.dsl.computeOptimalYawAndPitch
 import gg.mineral.bot.api.util.dsl.fastArcTan2
 import gg.mineral.bot.api.util.dsl.timeMillis
 import gg.mineral.bot.api.util.dsl.vectorForRotation
@@ -35,6 +34,7 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
     private var lastVerticalTurnSignum = 1
     private var resetType = ResetType.OFFENSIVE
     private val lastResetType = ResetType.OFFENSIVE
+    private var started = false
 
     // Finds and updates the current target.
     private fun findTarget() {
@@ -74,7 +74,7 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
     }
 
     // Computes optimal yaw and pitch toward the target.
-    private fun computeOptimalYawAndPitch(player: ClientPlayer, target: ClientPlayer): FloatArray {
+    private fun computeOptimalYawAndPitchBow(player: ClientPlayer, target: ClientPlayer): FloatArray {
         val xDelta = (target.x - target.lastX) * 0.4
         val zDelta = (target.z - target.lastZ) * 0.4
         var d = player.distance3DTo(target)
@@ -336,13 +336,8 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
     }
 
     override val child: ChildNode = sequence(tree) {
-        // Start sprinting.
-        succeeder(leaf {
-            pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
-            BTResult.SUCCESS
-        })
         // Ensure the best melee weapon is in the hotbar using moveToHotbar.
-        selector(tree) {
+        selector {
             condition {
                 val slot = getBestMeleeWeaponSlot()
                 tree.clientInstance.fakePlayer.inventory.heldSlot == slot
@@ -352,54 +347,46 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
             }
         }
         // Ensure inventory is closed.
-        selector(tree) {
+        selector {
             condition { tree.clientInstance.currentScreen !is ContainerScreen }
             leaf {
                 pressKey(10, Key.Type.KEY_ESCAPE)
                 BTResult.SUCCESS
             }
         }
-        // Acquire target and adjust aim.
-        leaf {
+        // Acquire target, adjust aim and attack.
+        leaf({
             findTarget()
             aimAtTarget()
             BTResult.SUCCESS
-        }
-        // Attack if ready.
-        leaf {
-            if (timeMillis() >= nextClick) {
+        }, onFrame = {
+            strafe()
+            if (timeMillis() >= nextClick)
                 attackTarget()
-                BTResult.SUCCESS
-            } else BTResult.RUNNING
-        }
+            BTResult.SUCCESS
+        }, onEvent = {
+            if (it is EntityHurtEvent) return@leaf onEntityHurt(it)
+            BTResult.SUCCESS
+        })
+
         // Reflect off wall if no target and colliding.
         leaf {
             if (target == null && timeMillis() - lastBounceTime > 1000 && isCollidingWithWall) reflectOffWall()
             BTResult.SUCCESS
         }
-        // Strafe around the target.
-        leaf {
-            strafe()
-            BTResult.SUCCESS
-        }
     }
 
-    override fun <T : Event> event(event: T): Boolean {
-        if (event is EntityHurtEvent) return onEntityHurt(event)
-        return false
-    }
-
-    fun onEntityHurt(event: EntityHurtEvent): Boolean {
+    private fun onEntityHurt(event: EntityHurtEvent): BTResult {
         val entity = event.attackedEntity
 
         val fakePlayer = clientInstance.fakePlayer
-        if (entity.y - fakePlayer.y > 1.5) return false
+        if (entity.y - fakePlayer.y > 1.5) return BTResult.SUCCESS
 
         val target = this.target
 
         if (target != null && entity.uuid == target.uuid) sprintReset()
 
-        return false
+        return BTResult.FAILURE
     }
 
     internal enum class ResetType {
@@ -411,15 +398,13 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
         val motY = entity.y - entity.lastY
         val motZ = entity.z - entity.lastZ
 
-        val newX = entity.x + motX
-        val newY = entity.y + motY
-        val newZ = entity.z + motZ
+        val toEntityX = entity.x - meanX
+        val toEntityY = entity.y - meanY
+        val toEntityZ = entity.z - meanZ
 
-        val kbX = newX - meanX
-        val kbY = newY - meanY
-        val kbZ = newZ - meanZ
+        val dot = motX * toEntityX + motY * toEntityY + motZ * toEntityZ
 
-        return sqrt(kbX * kbX + kbY * kbY + kbZ * kbZ)
+        return if (dot > 0) sqrt(motX * motX + motY * motY + motZ * motZ) else 0.0
     }
 
     private fun sprintReset() {
@@ -434,47 +419,41 @@ class MeleeCombatBranch(tree: BehaviourTree) : BTBranch(tree) {
         val kb = getKB(fakePlayer, meanX, meanY, meanZ)
         val targetKB = getKB(target, meanX, meanY, meanZ)
 
-        val dist = fakePlayer.distance3DTo(target)
-
         val inventory = fakePlayer.inventory
         val itemStack = inventory.heldItemStack
 
         resetType =
-            if (kb < targetKB) if (dist < 2 && fakePlayer.isOnGround) ResetType.EXTRA_OFFENSIVE else ResetType.OFFENSIVE
+            if (kb < targetKB) if (fakePlayer.isOnGround && kb <= 0) ResetType.EXTRA_OFFENSIVE else ResetType.OFFENSIVE
             else if (lastResetType == ResetType.DEFENSIVE && itemStack != null && Item.Type.SWORD.isType(itemStack.item.id)) ResetType.EXTRA_DEFENSIVE
             else ResetType.DEFENSIVE
 
         val config = clientInstance.configuration
 
-        val runnable = Runnable {
-            when (resetType) {
-                ResetType.EXTRA_OFFENSIVE -> {
-                    if (config.sprintResetAccuracy >= 1
-                        || fakePlayer.random.nextFloat() < config
-                            .sprintResetAccuracy
-                    ) {
-                        pressKey(150, Key.Type.KEY_S)
-                        unpressKey(150, Key.Type.KEY_W)
-                    }
+        when (resetType) {
+            ResetType.EXTRA_OFFENSIVE -> {
+                if (config.sprintResetAccuracy >= 1
+                    || fakePlayer.random.nextFloat() < config
+                        .sprintResetAccuracy
+                ) {
+                    pressKey(150, Key.Type.KEY_S)
+                    unpressKey(150, Key.Type.KEY_W)
                 }
-
-                ResetType.DEFENSIVE, ResetType.OFFENSIVE -> if (config.sprintResetAccuracy >= 1
-                    || fakePlayer.random.nextFloat() < config
-                        .sprintResetAccuracy
-                ) unpressKey(150, Key.Type.KEY_W)
-
-                ResetType.EXTRA_DEFENSIVE -> if (config.sprintResetAccuracy >= 1
-                    || fakePlayer.random.nextFloat() < config
-                        .sprintResetAccuracy
-                ) pressButton(75, MouseButton.Type.RIGHT_CLICK)
             }
-        }
 
-        if (resetType == ResetType.OFFENSIVE || resetType == ResetType.EXTRA_OFFENSIVE) {
-            runnable.run()
-            return
-        }
+            ResetType.OFFENSIVE -> if (config.sprintResetAccuracy >= 1
+                || fakePlayer.random.nextFloat() < config
+                    .sprintResetAccuracy
+            ) unpressKey(150, Key.Type.KEY_W)
 
-        clientInstance.schedule(runnable, 350)
+            ResetType.DEFENSIVE -> if (config.sprintResetAccuracy >= 1
+                || fakePlayer.random.nextFloat() < config
+                    .sprintResetAccuracy
+            ) unpressKey(100, Key.Type.KEY_W)
+
+            ResetType.EXTRA_DEFENSIVE -> if (config.sprintResetAccuracy >= 1
+                || fakePlayer.random.nextFloat() < config
+                    .sprintResetAccuracy
+            ) pressButton(75, MouseButton.Type.RIGHT_CLICK)
+        }
     }
 }

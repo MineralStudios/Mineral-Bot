@@ -1,42 +1,107 @@
 package gg.mineral.bot.api.behaviour
 
 import gg.mineral.bot.api.behaviour.node.BTNode
+import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.instance.ClientInstance
 import java.util.*
 import java.util.concurrent.Future
 
 abstract class BehaviourTree(val clientInstance: ClientInstance) : BTNode() {
-    private val asyncTasks = mutableMapOf<Int, Future<*>>()
-    val treeStack = Stack<BTResponse>()
+    private val asyncTickTasks = mutableMapOf<Int, Future<*>>()
+    private val asyncFrameTasks = mutableMapOf<Int, Future<*>>()
+    private val asyncEventTasks = mutableMapOf<Int, Future<*>>()
+    val tickTreeStack = Stack<BTResponse>()
+    val frameTreeStack = Stack<BTResponse>()
+    val eventTreeStack = Stack<BTResponse>()
     abstract val rootNode: BTNode
 
-    fun async(taskId: Int, callback: () -> BTResult) {
-        asyncTasks[taskId] = clientInstance.asyncExecutor.submit { callback() }
+    fun asyncTick(taskId: Int, callback: () -> BTResult) {
+        asyncTickTasks[taskId] = clientInstance.asyncExecutor.submit { callback() }
     }
 
-    fun asyncResult(taskId: Int): BTResult? {
-        val future = asyncTasks[taskId] ?: return null
+    fun asyncFrame(taskId: Int, callback: () -> BTResult) {
+        asyncFrameTasks[taskId] = clientInstance.asyncExecutor.submit { callback() }
+    }
+
+    fun asyncEvent(taskId: Int, callback: () -> BTResult) {
+        asyncEventTasks[taskId] = clientInstance.asyncExecutor.submit { callback() }
+    }
+
+    fun asyncTickResult(taskId: Int): BTResult? {
+        val future = asyncTickTasks[taskId] ?: return null
         if (!future.isDone) return BTResult.RUNNING
-        return asyncTasks.remove(taskId)?.get() as BTResult
+        return asyncTickTasks.remove(taskId)?.get() as BTResult?
+    }
+
+    fun asyncFrameResult(taskId: Int): BTResult? {
+        val future = asyncFrameTasks[taskId] ?: return null
+        if (!future.isDone) return BTResult.RUNNING
+        return asyncFrameTasks.remove(taskId)?.get() as BTResult
+    }
+
+    fun asyncEventResult(taskId: Int): BTResult? {
+        val future = asyncEventTasks[taskId] ?: return null
+        if (!future.isDone) return BTResult.RUNNING
+        return asyncEventTasks.remove(taskId)?.get() as BTResult
     }
 
     override fun tick(): BTResult {
-        if (treeStack.empty()) return rootNode.callTick(treeStack)
-        val (node, result) = treeStack.pop()
-        if (result == BTResult.RUNNING) return node.callTick(treeStack)
+        if (tickTreeStack.empty()) return rootNode.callTick(tickTreeStack)
+        val (node, result) = tickTreeStack.pop()
+        if (result == BTResult.RUNNING) return node.callTick(tickTreeStack)
 
         if (clientInstance.configuration.debug)
-            println("Current Node: ${node.javaClass.typeName} with result $result (stack size: ${treeStack.size}) (tick: ${clientInstance.currentTick})")
+            println("[TICK] Current Node: ${node.javaClass.typeName} with result $result (stack size: ${tickTreeStack.size}) (tick: ${clientInstance.currentTick})")
 
-        while (!treeStack.empty()) {
-            val (currentNode, currentResult) = treeStack.pop()
-            val rootNode = treeStack.empty()
+        while (!tickTreeStack.empty()) {
+            val (currentNode, currentResult) = tickTreeStack.pop()
+            val rootNode = tickTreeStack.empty()
             val rootNodeString = if (rootNode) " (root)" else ""
             if (clientInstance.configuration.debug)
                 println("\tat ${currentNode.javaClass.typeName} with result $currentResult" + rootNodeString)
         }
 
-        treeStack.clear()
-        return rootNode.callTick(treeStack)
+        tickTreeStack.clear()
+        return rootNode.callTick(tickTreeStack)
+    }
+
+    override fun frame(): BTResult {
+        if (frameTreeStack.empty()) return rootNode.callFrame(frameTreeStack)
+        val (node, result) = frameTreeStack.pop()
+        if (result == BTResult.RUNNING) return node.callFrame(frameTreeStack)
+
+        /*  if (clientInstance.configuration.debug)
+              println("[FRAME] Current Node: ${node.javaClass.typeName} with result $result (stack size: ${frameTreeStack.size}) (tick: ${clientInstance.currentTick})")
+
+          while (!frameTreeStack.empty()) {
+              val (currentNode, currentResult) = frameTreeStack.pop()
+              val rootNode = frameTreeStack.empty()
+              val rootNodeString = if (rootNode) " (root)" else ""
+              if (clientInstance.configuration.debug)
+                  println("\tat ${currentNode.javaClass.typeName} with result $currentResult" + rootNodeString)
+          }*/
+
+        frameTreeStack.clear()
+        return rootNode.callFrame(frameTreeStack)
+    }
+
+    override fun <T : Event> event(event: T): BTResult {
+        if (eventTreeStack.empty()) return rootNode.callEvent(eventTreeStack, event)
+        val (node, result) = eventTreeStack.pop()
+        if (result == BTResult.RUNNING) return node.callEvent(eventTreeStack, event)
+
+        if (clientInstance.configuration.debug)
+            println("[EVENT] Current Node: ${node.javaClass.typeName} with result $result (stack size: ${eventTreeStack.size}) (tick: ${clientInstance.currentTick}) (event: $event)")
+
+        while (!eventTreeStack.empty()) {
+            val (currentNode, currentResult) = eventTreeStack.pop()
+            val rootNode = eventTreeStack.empty()
+            val rootNodeString = if (rootNode) " (root)" else ""
+            if (clientInstance.configuration.debug)
+                println("\tat ${currentNode.javaClass.typeName} with result $currentResult" + rootNodeString)
+        }
+
+        eventTreeStack.clear()
+        return rootNode.callEvent(eventTreeStack, event)
     }
 }

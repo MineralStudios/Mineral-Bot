@@ -2,6 +2,7 @@ package gg.mineral.bot.api.util.dsl
 
 import gg.mineral.bot.api.entity.ClientEntity
 import gg.mineral.bot.api.entity.living.ClientLivingEntity
+import gg.mineral.bot.api.entity.living.player.ClientPlayer
 import gg.mineral.bot.api.math.Positionable
 import kotlin.math.atan
 import kotlin.math.sign
@@ -80,7 +81,7 @@ fun sqrt(x: Float): Float {
 }
 
 fun computeOptimalYawAndPitch(
-    player: ClientEntity,
+    player: ClientPlayer,
     entity: ClientEntity
 ): FloatArray {
     val x = entity.x - player.x

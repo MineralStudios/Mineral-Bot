@@ -9,7 +9,6 @@ import gg.mineral.bot.api.behaviour.sequence
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
-import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.inv.item.ItemStack
 import gg.mineral.bot.api.inv.potion.Potion
@@ -62,22 +61,20 @@ class DrinkPotionBranch(tree: BehaviourTree) : BTBranch(tree) {
         })
     }
 
-    override fun <T : Event> event(event: T): Boolean {
-        return false
-    }
-
     override val child: ChildNode = selector(tree) {
         drinkPot
         sequence {
-            condition { clientInstance.fakePlayer.inventory.containsPotion { isValidPotion(it) } }
             condition { canSeeEnemy() }
+            condition { clientInstance.fakePlayer.inventory.containsPotion { isValidPotion(it) } }
             selector {
                 sequence {
                     condition { hotbarContains { isValidPotion(this) } }
                     selector {
                         sequence {
                             condition { inventoryClosed() }
-                            succeeder(leaf { aimAtOptimalTarget() })
+                            succeeder(leaf {
+                                aimAtOptimalTarget()
+                            })
 
                             selector {
                                 sequence {

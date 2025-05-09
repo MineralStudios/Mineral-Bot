@@ -1,6 +1,7 @@
 package gg.mineral.bot.base.client.instance
 
 import com.google.common.collect.Multimap
+import gg.mineral.bot.api.behaviour.BTResult
 import gg.mineral.bot.api.behaviour.BehaviourTree
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.controls.Keyboard
@@ -123,9 +124,7 @@ open class ClientInstance(
             if (task.canSend(currentTime)) {
                 task.runnable.run()
                 delayedTasks.poll()
-            } else {
-                break
-            }
+            } else break
         }
 
         // Call game-loop updates for keyboard and mouse.
@@ -140,7 +139,7 @@ open class ClientInstance(
         get() = super.getSession()
 
     override fun <T : Event> callEvent(event: T): Boolean {
-        return behaviourTree?.event(event) ?: false
+        return behaviourTree?.event(event) == BTResult.FAILURE
     }
 
     override fun runTick() {

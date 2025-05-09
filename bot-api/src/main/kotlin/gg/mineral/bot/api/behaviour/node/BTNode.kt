@@ -12,13 +12,21 @@ abstract class BTNode {
         return result
     }
 
+    fun callFrame(stack: Stack<BTResponse>): BTResult {
+        val result = frame()
+        stack.find { it.node == this }?.let { it.result = result } ?: stack.push(BTResponse(this, result))
+        return result
+    }
+
+    fun <T : Event> callEvent(stack: Stack<BTResponse>, event: T): BTResult {
+        val result = event(event)
+        stack.find { it.node == this }?.let { it.result = result } ?: stack.push(BTResponse(this, result))
+        return result
+    }
+
     abstract fun tick(): BTResult
 
-    open fun <T : Event> event(event: T): Boolean {
-        return false
-    }
+    abstract fun <T : Event> event(event: T): BTResult
 
-    open fun frame(): BTResult {
-        return BTResult.SUCCESS
-    }
+    abstract fun frame(): BTResult
 }

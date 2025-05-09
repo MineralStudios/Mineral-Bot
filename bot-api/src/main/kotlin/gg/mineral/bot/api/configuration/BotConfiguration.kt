@@ -33,7 +33,7 @@ data class BotConfiguration(
     var latencyDeviation: Int = 0,
     var pearlCooldown: Int = 15,
     var skin: Skins = Skins.MINERAL_DEFAULT,
-    var debug: Boolean = false,
+    var debug: Boolean = true,
     var disableEntityCollisions: Boolean = true,
     var friendlyUUIDs: MutableSet<UUID> = BotAPI.INSTANCE.collections().newSet(),
     var potAccuracy: Double = 0.5
@@ -77,7 +77,7 @@ data class BotConfiguration(
             private var latencyDeviation: Int = 0
             private var pearlCooldown: Int = 15
             private var skin: Skins = Skins.MINERAL_DEFAULT
-            private var debug: Boolean = false
+            private var debug: Boolean = true
             private var disableEntityCollisions: Boolean = true
             private var friendlyUUIDs: MutableSet<UUID> = BotAPI.INSTANCE.collections().newSet()
             private var potAccuracy: Double = 0.5

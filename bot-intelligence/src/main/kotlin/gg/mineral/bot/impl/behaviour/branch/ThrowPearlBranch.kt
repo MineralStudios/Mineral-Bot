@@ -8,7 +8,6 @@ import gg.mineral.bot.api.behaviour.selector
 import gg.mineral.bot.api.behaviour.sequence
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
-import gg.mineral.bot.api.event.Event
 import gg.mineral.bot.api.inv.item.Item
 import gg.mineral.bot.api.math.trajectory.Trajectory
 import gg.mineral.bot.api.math.trajectory.throwable.EnderPearlTrajectory
@@ -153,9 +152,5 @@ class ThrowPearlBranch(tree: BehaviourTree) : BTBranch(tree) {
                 }
             }
         }
-    }
-
-    override fun <T : Event> event(event: T): Boolean {
-        return false
     }
 }

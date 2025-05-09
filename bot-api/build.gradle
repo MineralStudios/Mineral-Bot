@@ -7,6 +7,7 @@ dependencies {
     compileOnly 'io.netty:netty-all:4.2.1.Final'
     compileOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:2.1.20"
 }
 
 jar {
@@ -14,6 +15,10 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+}
+
+test {
+    useJUnitPlatform()
 }
 
 repositories {

@@ -17,7 +17,13 @@ abstract class BTBranch(tree: BehaviourTree) : DecoratorNode(tree) {
         return child.callTick()
     }
 
-    abstract override fun <T : Event> event(event: T): Boolean
+    override fun frame(): BTResult {
+        return child.callFrame()
+    }
+
+    override fun <T : Event> event(event: T): BTResult {
+        return child.callEvent(event)
+    }
 
     // ─── NEW AIMING LOGIC ──────────────────────────────────────────────
     /**

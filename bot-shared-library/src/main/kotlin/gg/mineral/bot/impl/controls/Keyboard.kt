@@ -44,7 +44,7 @@ open class Keyboard(private val eventHandler: EventHandler) : gg.mineral.bot.api
         // --- End added logic ---
     }
 
-    fun schedule(runnable: Runnable, delay: Long) {
+    private fun schedule(runnable: Runnable, delay: Long) {
         scheduledTasks.put(runnable, (System.nanoTime() / 1000000) + delay)
     }
 
