@@ -87,7 +87,7 @@ class CompositeBuilder(val tree: BehaviourTree) {
     fun leaf(
         onTick: () -> BTResult
     ): LeafNode =
-        leaf(tree, onTick)
+        leaf(onTick, { BTResult.SUCCESS }, { BTResult.SUCCESS })
 
     fun leaf(
         onTick: () -> BTResult,
@@ -133,7 +133,7 @@ class CompositeBuilder(val tree: BehaviourTree) {
 
     fun async(
         taskId: Int, waitForCompletion: Boolean = true, onTick: () -> BTResult
-    ) = async(tree, taskId, waitForCompletion, onTick)
+    ) = async(taskId, waitForCompletion, onTick, { BTResult.SUCCESS }, { BTResult.SUCCESS })
 
     fun async(
         taskId: Int, waitForCompletion: Boolean = true, onTick: () -> BTResult,

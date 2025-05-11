@@ -2,7 +2,6 @@ package gg.mineral.bot.impl.behaviour
 
 import gg.mineral.bot.api.behaviour.BTResult
 import gg.mineral.bot.api.behaviour.BehaviourTree
-import gg.mineral.bot.api.behaviour.inverter
 import gg.mineral.bot.api.behaviour.leaf
 import gg.mineral.bot.api.behaviour.node.ChildNode
 import gg.mineral.bot.api.behaviour.node.composite.SelectorNode
@@ -15,12 +14,12 @@ class RootNode(tree: BehaviourTree) : SelectorNode(tree) {
     override val children: Array<ChildNode> = arrayOf(
 
         // Start sprinting.
-        inverter(tree, leaf(tree, onTick = {
-            if (started) return@leaf BTResult.SUCCESS
+        leaf(tree) {
+            if (started) return@leaf BTResult.FAILURE
             started = true
             pressKey(Key.Type.KEY_W, Key.Type.KEY_LCONTROL)
-            BTResult.SUCCESS
-        })),
+            BTResult.FAILURE
+        },
         // TODO: Safe walk (don't walk into danger)
 
         // Replace armor

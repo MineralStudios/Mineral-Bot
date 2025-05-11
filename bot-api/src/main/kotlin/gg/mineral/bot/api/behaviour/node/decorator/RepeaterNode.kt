@@ -9,19 +9,31 @@ abstract class RepeaterNode(tree: BehaviourTree, private val times: Int = Int.MA
     DecoratorNode(tree) {
     final override fun tick(): BTResult {
         var result = child.callTick()
-        for (i in 0 until times) result = child.callTick()
+        var i = 1
+        while (i < times && result == BTResult.SUCCESS) {
+            result = child.callTick()
+            i++
+        }
         return result
     }
 
     final override fun frame(): BTResult {
         var result = child.callFrame()
-        for (i in 0 until times) result = child.callFrame()
+        var i = 1
+        while (i < times && result == BTResult.SUCCESS) {
+            result = child.callFrame()
+            i++
+        }
         return result
     }
 
     final override fun <T : Event> event(event: T): BTResult {
         var result = child.callEvent(event)
-        for (i in 0 until times) result = child.callEvent(event)
+        var i = 1
+        while (i < times && result == BTResult.SUCCESS) {
+            result = child.callEvent(event)
+            i++
+        }
         return result
     }
 }
