@@ -27,13 +27,13 @@ fun selector(tree: BehaviourTree, init: CompositeBuilder.() -> Unit): SelectorNo
 fun leaf(
     tree: BehaviourTree,
     onTick: () -> BTResult
-) = leaf(tree, onTick, { BTResult.SUCCESS }, { BTResult.SUCCESS })
+) = leaf(tree, onTick, { BTResult.SKIP }, { BTResult.SKIP })
 
 fun leaf(
     tree: BehaviourTree,
     onTick: () -> BTResult,
-    onFrame: () -> BTResult = { BTResult.SUCCESS },
-    onEvent: (Event) -> BTResult = { BTResult.SUCCESS }
+    onFrame: () -> BTResult = { BTResult.SKIP },
+    onEvent: (Event) -> BTResult = { BTResult.SKIP }
 ): LeafNode =
     object : LeafNode(tree) {
         override fun tick(): BTResult = onTick()
@@ -70,8 +70,8 @@ fun async(
     taskId: Int,
     waitForCompletion: Boolean = true,
     processTick: () -> BTResult,
-    processFrame: () -> BTResult = { BTResult.SUCCESS },
-    processEvent: (Event) -> BTResult = { BTResult.SUCCESS }
+    processFrame: () -> BTResult = { BTResult.SKIP },
+    processEvent: (Event) -> BTResult = { BTResult.SKIP }
 ): AsyncNode =
     object : AsyncNode(tree, taskId, waitForCompletion) {
         override fun processTick() = processTick()
@@ -87,12 +87,12 @@ class CompositeBuilder(val tree: BehaviourTree) {
     fun leaf(
         onTick: () -> BTResult
     ): LeafNode =
-        leaf(onTick, { BTResult.SUCCESS }, { BTResult.SUCCESS })
+        leaf(onTick, { BTResult.SKIP }, { BTResult.SKIP })
 
     fun leaf(
         onTick: () -> BTResult,
-        onFrame: () -> BTResult = { BTResult.SUCCESS },
-        onEvent: (Event) -> BTResult = { BTResult.SUCCESS }
+        onFrame: () -> BTResult = { BTResult.SKIP },
+        onEvent: (Event) -> BTResult = { BTResult.SKIP }
     ): LeafNode {
         val node = leaf(tree, onTick, onFrame, onEvent)
         children.add(node)
@@ -133,12 +133,12 @@ class CompositeBuilder(val tree: BehaviourTree) {
 
     fun async(
         taskId: Int, waitForCompletion: Boolean = true, onTick: () -> BTResult
-    ) = async(taskId, waitForCompletion, onTick, { BTResult.SUCCESS }, { BTResult.SUCCESS })
+    ) = async(taskId, waitForCompletion, onTick, { BTResult.SKIP }, { BTResult.SKIP })
 
     fun async(
         taskId: Int, waitForCompletion: Boolean = true, onTick: () -> BTResult,
-        onFrame: () -> BTResult = { BTResult.SUCCESS },
-        onEvent: (Event) -> BTResult = { BTResult.SUCCESS }
+        onFrame: () -> BTResult = { BTResult.SKIP },
+        onEvent: (Event) -> BTResult = { BTResult.SKIP }
     ): AsyncNode {
         val node = async(tree, taskId, waitForCompletion, onTick, onFrame, onEvent)
         children.add(node)

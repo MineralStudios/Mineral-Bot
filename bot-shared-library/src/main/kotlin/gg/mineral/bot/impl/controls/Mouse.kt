@@ -220,6 +220,9 @@ open class Mouse(private val eventHandler: EventHandler) : gg.mineral.bot.api.co
     override fun stopAll() {
         unpressButton(*gg.mineral.bot.api.controls.MouseButton.Type.entries.toTypedArray())
         scheduledTasks.clear()
+        logs.clear()
+        iterator = null
+        currentLog = null
     }
 
     override fun changeYaw(dYaw: Float) {

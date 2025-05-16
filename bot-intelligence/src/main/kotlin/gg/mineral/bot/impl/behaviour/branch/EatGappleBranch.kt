@@ -5,7 +5,6 @@ import gg.mineral.bot.api.behaviour.BehaviourTree
 import gg.mineral.bot.api.behaviour.branch.BTBranch
 import gg.mineral.bot.api.behaviour.node.ChildNode
 import gg.mineral.bot.api.behaviour.selector
-import gg.mineral.bot.api.behaviour.sequence
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
@@ -14,7 +13,7 @@ import gg.mineral.bot.api.inv.item.Item
 class EatGappleBranch(tree: BehaviourTree) : BTBranch(tree) {
     private fun gappleSlot(): Int {
         val inventory = tree.clientInstance.fakePlayer.inventory
-        for (i in 0..8)
+        for (i in 0..35)
             if (inventory.items[i]?.item?.id?.let { it == Item.GOLDEN_APPLE } == true)
                 return i
 
@@ -33,31 +32,17 @@ class EatGappleBranch(tree: BehaviourTree) : BTBranch(tree) {
         return canSeeEnemy
     }
 
-    private val eatGapple = sequence(tree) {
-        condition { inventoryClosed() }
-
-        condition {
-            clientInstance.fakePlayer.eating
-        }
-
-        succeeder(leaf {
-            pressButton(MouseButton.Type.RIGHT_CLICK)
-            BTResult.SUCCESS
-        })
-    }
-
     override val child: ChildNode = selector(tree) {
-        eatGapple
         sequence {
-            condition { clientInstance.fakePlayer.inventory.contains { it.item.id == Item.GOLDEN_APPLE } }
             condition { canSeeEnemy() }
+            condition { clientInstance.fakePlayer.inventory.contains { it.item.id == Item.GOLDEN_APPLE } }
             selector {
                 sequence {
                     condition { hotbarContains { item.id == Item.GOLDEN_APPLE } }
                     selector {
                         sequence {
                             condition { inventoryClosed() }
-                            succeeder(leaf { aimAtOptimalTarget() })
+                            succeeder(leaf { aimAwayFromOptimalTarget() })
 
                             selector {
                                 sequence {
@@ -67,28 +52,30 @@ class EatGappleBranch(tree: BehaviourTree) : BTBranch(tree) {
                                     }
 
                                     leaf {
-                                        if (clientInstance.fakePlayer.eating) BTResult.SUCCESS
+                                        if (clientInstance.fakePlayer.usingItem) BTResult.SUCCESS
                                         else {
-                                            pressButton(10, MouseButton.Type.RIGHT_CLICK)
+                                            pressButton(MouseButton.Type.RIGHT_CLICK)
                                             BTResult.RUNNING
                                         }
                                     }
                                 }
 
                                 leaf {
-                                    val potionSlot = gappleSlot()
+                                    val gappleSlot = gappleSlot()
 
-                                    if (potionSlot == -1)
+                                    if (gappleSlot == -1)
                                         BTResult.FAILURE
 
                                     val inventory = tree.clientInstance.fakePlayer.inventory
                                     val heldSlot = inventory.heldSlot
-                                    if (heldSlot != potionSlot) {
-                                        pressKey(10, Key.Type.valueOf("KEY_" + (potionSlot + 1)))
+                                    if (heldSlot != gappleSlot) {
+                                        pressKey(10, Key.Type.valueOf("KEY_" + (gappleSlot + 1)))
+                                        val using = clientInstance.fakePlayer.usingItem
+                                        val rmbDown = getButton(MouseButton.Type.RIGHT_CLICK).isPressed
+                                        println("Held slot: $heldSlot, Gapple slot: $gappleSlot, Using: $using, RMB down: $rmbDown")
+                                        Thread.dumpStack()
                                         BTResult.RUNNING
-                                    }
-
-                                    BTResult.SUCCESS
+                                    } else BTResult.SUCCESS
                                 }
                             }
                         }

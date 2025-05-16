@@ -36,11 +36,11 @@ interface ClientPlayer : ClientLivingEntity {
     val hunger: Float
 
     /**
-     * Gets if the player is eating.
+     * Gets if the player is using an item.
      *
-     * @return if the player is eating
+     * @return if the player is using an item
      */
-    val eating: Boolean
+    val usingItem: Boolean
 
     /**
      * Gets the player's motion simulator.

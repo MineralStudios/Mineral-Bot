@@ -61,6 +61,19 @@ abstract class BTBranch(tree: BehaviourTree) : DecoratorNode(tree) {
         return aimAt(target)
     }
 
+    protected fun aimAwayFromOptimalTarget(): BTResult {
+        val target = getOptimalTarget() ?: return BTResult.FAILURE
+        return aimAway(target)
+    }
+
+    protected fun aimAway(entity: ClientEntity): BTResult {
+        val fakePlayer = clientInstance.fakePlayer
+        val optimalAngles = computeOptimalYawAndPitch(fakePlayer, entity)
+        setMouseYaw(optimalAngles[1] + 180)
+        setMousePitch(optimalAngles[0])
+        return BTResult.SUCCESS
+    }
+
     protected fun aimAt(entity: ClientEntity): BTResult {
         val fakePlayer = clientInstance.fakePlayer
         val optimalAngles = computeOptimalYawAndPitch(fakePlayer, entity)

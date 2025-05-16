@@ -48,7 +48,6 @@ abstract class BehaviourTree(val clientInstance: ClientInstance) : BTNode() {
     override fun tick(): BTResult {
         if (tickTreeStack.empty()) return rootNode.callTick(tickTreeStack)
         val (node, result) = tickTreeStack.pop()
-        if (result == BTResult.RUNNING) return node.callTick(tickTreeStack)
 
         if (clientInstance.configuration.debug)
             println("[TICK] Current Node: ${node.javaClass.typeName} with result $result (stack size: ${tickTreeStack.size}) (tick: ${clientInstance.currentTick})")
@@ -62,46 +61,47 @@ abstract class BehaviourTree(val clientInstance: ClientInstance) : BTNode() {
         }
 
         tickTreeStack.clear()
+        if (result == BTResult.RUNNING) return node.callTick(tickTreeStack)
         return rootNode.callTick(tickTreeStack)
     }
 
     override fun frame(): BTResult {
         if (frameTreeStack.empty()) return rootNode.callFrame(frameTreeStack)
         val (node, result) = frameTreeStack.pop()
-        if (result == BTResult.RUNNING) return node.callFrame(frameTreeStack)
 
-        /*  if (clientInstance.configuration.debug)
-              println("[FRAME] Current Node: ${node.javaClass.typeName} with result $result (stack size: ${frameTreeStack.size}) (tick: ${clientInstance.currentTick})")
+        /*if (clientInstance.configuration.debug)
+            println("[FRAME] Current Node: ${node.javaClass.typeName} with result $result (stack size: ${frameTreeStack.size}) (tick: ${clientInstance.currentTick})")
 
-          while (!frameTreeStack.empty()) {
-              val (currentNode, currentResult) = frameTreeStack.pop()
-              val rootNode = frameTreeStack.empty()
-              val rootNodeString = if (rootNode) " (root)" else ""
-              if (clientInstance.configuration.debug)
-                  println("\tat ${currentNode.javaClass.typeName} with result $currentResult" + rootNodeString)
-          }*/
+        while (!frameTreeStack.empty()) {
+            val (currentNode, currentResult) = frameTreeStack.pop()
+            val rootNode = frameTreeStack.empty()
+            val rootNodeString = if (rootNode) " (root)" else ""
+            if (clientInstance.configuration.debug)
+                println("\tat ${currentNode.javaClass.typeName} with result $currentResult" + rootNodeString)
+        }*/
 
         frameTreeStack.clear()
+        if (result == BTResult.RUNNING) return node.callFrame(frameTreeStack)
         return rootNode.callFrame(frameTreeStack)
     }
 
     override fun <T : Event> event(event: T): BTResult {
         if (eventTreeStack.empty()) return rootNode.callEvent(eventTreeStack, event)
         val (node, result) = eventTreeStack.pop()
-        if (result == BTResult.RUNNING) return node.callEvent(eventTreeStack, event)
 
-        if (clientInstance.configuration.debug)
+        /*if (clientInstance.configuration.debug)
             println("[EVENT] Current Node: ${node.javaClass.typeName} with result $result (stack size: ${eventTreeStack.size}) (tick: ${clientInstance.currentTick}) (event: $event)")
 
-        while (!eventTreeStack.empty()) {
-            val (currentNode, currentResult) = eventTreeStack.pop()
-            val rootNode = eventTreeStack.empty()
-            val rootNodeString = if (rootNode) " (root)" else ""
-            if (clientInstance.configuration.debug)
-                println("\tat ${currentNode.javaClass.typeName} with result $currentResult" + rootNodeString)
-        }
+         while (!eventTreeStack.empty()) {
+             val (currentNode, currentResult) = eventTreeStack.pop()
+             val rootNode = eventTreeStack.empty()
+             val rootNodeString = if (rootNode) " (root)" else ""
+             if (clientInstance.configuration.debug)
+                 println("\tat ${currentNode.javaClass.typeName} with result $currentResult" + rootNodeString)
+         }*/
 
         eventTreeStack.clear()
+        if (result == BTResult.RUNNING) return node.callEvent(eventTreeStack, event)
         return rootNode.callEvent(eventTreeStack, event)
     }
 }

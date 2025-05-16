@@ -5,7 +5,6 @@ import gg.mineral.bot.api.behaviour.BehaviourTree
 import gg.mineral.bot.api.behaviour.branch.BTBranch
 import gg.mineral.bot.api.behaviour.node.ChildNode
 import gg.mineral.bot.api.behaviour.selector
-import gg.mineral.bot.api.behaviour.sequence
 import gg.mineral.bot.api.controls.Key
 import gg.mineral.bot.api.controls.MouseButton
 import gg.mineral.bot.api.entity.living.player.ClientPlayer
@@ -16,7 +15,7 @@ import gg.mineral.bot.api.inv.potion.Potion
 class DrinkPotionBranch(tree: BehaviourTree) : BTBranch(tree) {
     private fun potionSlot(): Int {
         val inventory = tree.clientInstance.fakePlayer.inventory
-        for (i in 0..8)
+        for (i in 0..35)
             if (inventory.items[i]?.let { isValidPotion(it) } == true)
                 return i
 
@@ -48,21 +47,7 @@ class DrinkPotionBranch(tree: BehaviourTree) : BTBranch(tree) {
         return canSeeEnemy
     }
 
-    private val drinkPot = sequence(tree) {
-        condition { inventoryClosed() }
-
-        condition {
-            clientInstance.fakePlayer.eating
-        }
-
-        succeeder(leaf {
-            pressButton(MouseButton.Type.RIGHT_CLICK)
-            BTResult.SUCCESS
-        })
-    }
-
     override val child: ChildNode = selector(tree) {
-        drinkPot
         sequence {
             condition { canSeeEnemy() }
             condition { clientInstance.fakePlayer.inventory.containsPotion { isValidPotion(it) } }
@@ -73,7 +58,7 @@ class DrinkPotionBranch(tree: BehaviourTree) : BTBranch(tree) {
                         sequence {
                             condition { inventoryClosed() }
                             succeeder(leaf {
-                                aimAtOptimalTarget()
+                                aimAwayFromOptimalTarget()
                             })
 
                             selector {
@@ -84,9 +69,9 @@ class DrinkPotionBranch(tree: BehaviourTree) : BTBranch(tree) {
                                     }
 
                                     leaf {
-                                        if (clientInstance.fakePlayer.eating) BTResult.SUCCESS
+                                        if (clientInstance.fakePlayer.usingItem) BTResult.SUCCESS
                                         else {
-                                            pressButton(10, MouseButton.Type.RIGHT_CLICK)
+                                            pressButton(MouseButton.Type.RIGHT_CLICK)
                                             BTResult.RUNNING
                                         }
                                     }
@@ -103,9 +88,7 @@ class DrinkPotionBranch(tree: BehaviourTree) : BTBranch(tree) {
                                     if (heldSlot != potionSlot) {
                                         pressKey(10, Key.Type.valueOf("KEY_" + (potionSlot + 1)))
                                         BTResult.RUNNING
-                                    }
-
-                                    BTResult.SUCCESS
+                                    } else BTResult.SUCCESS
                                 }
                             }
                         }

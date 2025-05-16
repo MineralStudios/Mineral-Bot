@@ -21,9 +21,8 @@ import net.minecraft.util.StringUtils;
 import net.minecraft.world.World;
 import optifine.CapeUtils;
 import optifine.PlayerConfigurations;
-import org.jetbrains.annotations.NotNull;
-
 import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractClientPlayer extends EntityPlayer implements SkinManager.SkinAvailableCallback, ClientPlayer {
     public static final ResourceLocation locationStevePng = new ResourceLocation("textures/entity/steve.png");
@@ -35,8 +34,8 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
     private String nameClear = null;
 
     @Override
-    public boolean getEating() {
-        return isEating();
+    public boolean getUsingItem() {
+        return isUsingItem();
     }
 
     public AbstractClientPlayer(Minecraft mc, World p_i45074_1_, GameProfile p_i45074_2_) {

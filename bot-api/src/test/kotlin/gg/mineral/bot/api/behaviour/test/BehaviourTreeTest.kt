@@ -1,4 +1,4 @@
-package gg.mineral.api.behaviour.test
+package gg.mineral.bot.api.behaviour.test
 
 import gg.mineral.bot.api.behaviour.*
 import gg.mineral.bot.api.behaviour.node.BTNode

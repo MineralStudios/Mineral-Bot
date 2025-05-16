@@ -144,6 +144,9 @@ open class Keyboard(private val eventHandler: EventHandler) : gg.mineral.bot.api
     override fun stopAll() {
         unpressKey(Int.MAX_VALUE, *gg.mineral.bot.api.controls.Key.Type.entries.toTypedArray())
         scheduledTasks.clear()
+        logs.clear()
+        iterator = null
+        currentLog = null
     }
 
     override fun setState(vararg types: gg.mineral.bot.api.controls.Key.Type) {

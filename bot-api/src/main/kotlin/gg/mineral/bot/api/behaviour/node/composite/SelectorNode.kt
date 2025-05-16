@@ -9,9 +9,7 @@ abstract class SelectorNode(tree: BehaviourTree) : CompositeNode(tree) {
     final override fun tick(): BTResult {
         for (child in children) {
             val result = child.callTick()
-            if (result != BTResult.FAILURE) {
-                return result
-            }
+            if (result != BTResult.FAILURE && result != BTResult.SKIP) return result
         }
         return BTResult.FAILURE
     }
@@ -19,9 +17,7 @@ abstract class SelectorNode(tree: BehaviourTree) : CompositeNode(tree) {
     final override fun frame(): BTResult {
         for (child in children) {
             val result = child.callFrame()
-            if (result != BTResult.FAILURE) {
-                return result
-            }
+            if (result != BTResult.FAILURE && result != BTResult.SKIP) return result
         }
         return BTResult.FAILURE
     }
@@ -29,9 +25,7 @@ abstract class SelectorNode(tree: BehaviourTree) : CompositeNode(tree) {
     final override fun <T : Event> event(event: T): BTResult {
         for (child in children) {
             val result = child.callEvent(event)
-            if (result != BTResult.FAILURE) {
-                return result
-            }
+            if (result != BTResult.FAILURE && result != BTResult.SKIP) return result
         }
         return BTResult.FAILURE
     }
