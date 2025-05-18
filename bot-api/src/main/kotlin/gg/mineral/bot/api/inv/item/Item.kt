@@ -18,6 +18,9 @@ interface Item {
             CHICKEN, COOKED_CHICKEN, ROTTEN_FLESH, SPIDER_EYE, CARROT, POTATO, BAKED_POTATO, POISONOUS_POTATO,
             PUMPKIN_PIE, COOKIE, GOLDEN_CARROT
         ),
+        SWORD(
+            IRON_SWORD, WOODEN_SWORD, STONE_SWORD, DIAMOND_SWORD, GOLDEN_SWORD
+        ),
         NONE(0);
 
         fun isType(id: Int): Boolean {
