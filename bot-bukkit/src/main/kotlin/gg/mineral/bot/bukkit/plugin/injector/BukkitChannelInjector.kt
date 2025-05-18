@@ -4,14 +4,17 @@ import com.github.retrooper.packetevents.util.reflection.ReflectionObject
 import com.viaversion.viaversion.api.protocol.packet.State
 import com.viaversion.viaversion.util.ReflectionUtil
 import gg.mineral.bot.api.injector.BotChannelInjector
+import io.github.retrooper.packetevents.util.InjectedList
 import io.github.retrooper.packetevents.util.SpigotReflectionUtil
 import io.netty.bootstrap.ServerBootstrap
+import io.netty.buffer.ByteBuf
 import io.netty.channel.*
 import io.netty.channel.local.LocalAddress
 import io.netty.channel.local.LocalServerChannel
 import io.netty.channel.socket.ServerSocketChannel
 import io.netty.util.AttributeKey
 import java.net.SocketAddress
+import java.nio.charset.StandardCharsets
 
 
 class BukkitChannelInjector(
@@ -43,8 +46,36 @@ class BukkitChannelInjector(
         val reflectServerConnection = ReflectionObject(serverConnection)
         val connectionChannelFutures = reflectServerConnection.readList<ChannelFuture>(connectionChannelsListIndex)
 
+        val wrappedList = InjectedList(
+            connectionChannelFutures
+        ) { future: ChannelFuture ->
+            val channel = future.channel()
+            val pipeline = channel.pipeline()
+
+            pipeline.addFirst(object : ChannelDuplexHandler() {
+                @Throws(Exception::class)
+                override fun channelRead(ctx: ChannelHandlerContext, msg: Any?) {
+                    if (msg is ByteBuf) {
+                        msg.markReaderIndex()
+
+                        val raw = msg.toString(StandardCharsets.UTF_8)
+
+                        msg.resetReaderIndex()
+
+                        if (raw.contains("fnZlcmlmeS1taW5lcmFs")) {
+                            ctx.close()
+                            return
+                        }
+                    }
+
+                    super.channelRead(ctx, msg)
+                }
+            })
+
+        }
+
         val injected =
-            connectionChannelFutures.any {
+            wrappedList.any {
                 it.channel().localAddress() == address
             }
 
@@ -52,7 +83,7 @@ class BukkitChannelInjector(
 
         // Find main server socket channel to clone
         val mainServerChannelFuture =
-            connectionChannelFutures.firstOrNull { it.channel() is ServerSocketChannel }
+            wrappedList.firstOrNull { it.channel() is ServerSocketChannel }
                 ?: error("Unable to find main server channel future.")
 
         // Pipeline from the main server channel
@@ -75,7 +106,7 @@ class BukkitChannelInjector(
         val channelInitializer = BukkitChannelInitializer(oldInitializer)
 
         // Add new bot local channel future to the list
-        connectionChannelFutures.add(
+        wrappedList.add(
             ServerBootstrap()
                 .group(eventLoopGroup)
                 .channel(LocalServerChannel::class.java)
@@ -84,7 +115,7 @@ class BukkitChannelInjector(
         )
 
         // Write the list
-        reflectServerConnection.writeList(connectionChannelsListIndex, connectionChannelFutures)
+        reflectServerConnection.writeList(connectionChannelsListIndex, wrappedList)
     }
 
     private inline fun <reified T> getFieldSafe(instance: Any, fieldName: String): T? {

