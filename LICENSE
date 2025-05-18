@@ -1,26 +1,48 @@
-Mineral Non-Commercial Public License (MNPL-1.0)
+Mineral Non-Commercial Public License (MNPL-1.2)
 Copyright (c) 2025 Mineral
 
 Permission is hereby granted, free of charge, to any individual or organization (the "User") to use, copy, modify, and distribute this software and associated documentation files (the "Software"), subject to the following conditions:
 
-1. **Non-Commercial Use Only**  
-   The Software may only be used for non-commercial purposes, including personal, educational, academic, and research purposes.  
-   Commercial use of any kind — including use in proprietary software, business applications, or services intended for monetary compensation — is strictly prohibited without prior written permission from Mineral.
+---
+
+Definitions:
+
+1. "Commercial Use" refers to any use of the Software:
+   - In connection with any business, enterprise, product, or service intended for commercial advantage or monetary compensation;
+   - By or on behalf of a non-profit organization, foundation, educational institution, government entity, or any legally registered organization, regardless of whether direct profit is involved;
+   - In environments that solicit donations, membership fees, or any form of compensation or funding.
+
+2. "Personal Use" refers to private use of the Software by an individual:
+   - Not affiliated with any organization;
+   - For non-commercial purposes such as experimentation, local testing, education, or gameplay with friends;
+   - Without any form of compensation, monetization, public promotion, or fundraising.
+
+---
+
+License Terms:
+
+1. **Permitted Use**  
+   The Software may be used solely for Personal Use as defined above.  
+   Any form of Commercial Use is strictly prohibited without prior written permission from Mineral.
 
 2. **Attribution Required**  
-   Any use or redistribution of the Software, or any substantial portion thereof, must include clear attribution to Mineral and retain this license in its entirety.
+   Any use, redistribution, or modification of the Software must include clear attribution to Mineral and retain this license in its entirety.
 
 3. **Source Disclosure of Modifications**  
    Any modifications, enhancements, or derivative works based on the Software must be made publicly available under the same license terms and include a link to the modified source code.
 
 4. **License Distribution Requirement**  
-   All copies, forks, or redistributions of the Software, whether modified or unmodified, must include this license in full. Any distribution without the license is prohibited.
+   All copies, forks, or redistributions of the Software, whether modified or unmodified, must include this license in full. Distribution without this license is prohibited.
 
-5. **No Warranty**  
+5. **Right to Modify License**  
+   Mineral reserves the right to update, change, or replace this license at any time. Continued use of the Software after any such changes shall constitute your acceptance of the new terms.
+
+6. **No Warranty**  
    The Software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability.
 
-6. **Right to Modify License**  
-   Mineral reserves the right to update, change, or replace this license at any time. Continued use of the Software after any such changes shall constitute your consent to the updated license terms.
+7. **Enforcement and Termination**  
+   Any use of the Software that violates these terms may result in immediate termination of all rights granted under this license. Unauthorized use may also constitute copyright infringement or breach of contract and may be subject to legal action.
 
-For inquiries about commercial licensing or exceptions, please contact: license@mineral.gg
+---
 
+For commercial licensing or organizational exceptions, please contact: license@mineral.gg
