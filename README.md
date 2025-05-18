@@ -4,5 +4,9 @@
 The most realistic bots in existence, based off an actual Minecraft Client.
 
 ## Build
-`USERNAME=<Github Username> TOKEN=<Github Token> ./gradlew build`
-Your Github Token must have the read:package permission.
+`./gradlew build`
+
+## How does it work?
+
+This features a modified 1.7.10 Client with the static fields removed. This allows multiple client instances to be created under one JVM instance. Everything can be loaded as a Bukkit Plugin. Nothing is standalone.
+It is also exceptionally light weight. It can handle 1500 bots fighting on a $20 dedicated server.
