@@ -366,49 +366,42 @@ class MeleeCombatGoal(clientInstance: ClientInstance) : InventoryGoal(clientInst
         val kb = getKB(fakePlayer, meanX, meanY, meanZ)
         val targetKB = getKB(target, meanX, meanY, meanZ)
 
-        val dist = fakePlayer.distance3DTo(target)
-
         val inventory = fakePlayer.inventory
         val itemStack = inventory.heldItemStack
 
         resetType =
-            if (kb < targetKB) if (dist < 2 && fakePlayer.isOnGround) ResetType.EXTRA_OFFENSIVE else ResetType.OFFENSIVE
-            else if (lastResetType == ResetType.DEFENSIVE && itemStack != null && itemStack.item.id == Item.DIAMOND_SWORD) ResetType.EXTRA_DEFENSIVE
+            if (kb < targetKB) if (fakePlayer.isOnGround && kb <= 0) ResetType.EXTRA_OFFENSIVE else ResetType.OFFENSIVE
+            else if (lastResetType == ResetType.DEFENSIVE && itemStack != null && Item.Type.SWORD.isType(itemStack.item.id)) ResetType.EXTRA_DEFENSIVE
             else ResetType.DEFENSIVE
 
         val config = clientInstance.configuration
 
-        val runnable = Runnable {
-            when (resetType) {
-                ResetType.EXTRA_OFFENSIVE -> {
-                    if (config.sprintResetAccuracy >= 1
-                        || fakePlayer.random.nextFloat() < config
-                            .sprintResetAccuracy
-                    ) pressKey(150, Key.Type.KEY_S)
-                    if (config.sprintResetAccuracy >= 1
-                        || fakePlayer.random.nextFloat() < config
-                            .sprintResetAccuracy
-                    ) unpressKey(150, Key.Type.KEY_W)
+        when (resetType) {
+            ResetType.EXTRA_OFFENSIVE -> {
+                if (config.sprintResetAccuracy >= 1
+                    || fakePlayer.random.nextFloat() < config
+                        .sprintResetAccuracy
+                ) {
+                    pressKey(150, Key.Type.KEY_S)
+                    unpressKey(150, Key.Type.KEY_W)
                 }
-
-                ResetType.DEFENSIVE, ResetType.OFFENSIVE -> if (config.sprintResetAccuracy >= 1
-                    || fakePlayer.random.nextFloat() < config
-                        .sprintResetAccuracy
-                ) unpressKey(150, Key.Type.KEY_W)
-
-                ResetType.EXTRA_DEFENSIVE -> if (config.sprintResetAccuracy >= 1
-                    || fakePlayer.random.nextFloat() < config
-                        .sprintResetAccuracy
-                ) pressButton(75, MouseButton.Type.RIGHT_CLICK)
             }
-        }
 
-        if (resetType == ResetType.OFFENSIVE || resetType == ResetType.EXTRA_OFFENSIVE) {
-            runnable.run()
-            return
-        }
+            ResetType.OFFENSIVE -> if (config.sprintResetAccuracy >= 1
+                || fakePlayer.random.nextFloat() < config
+                    .sprintResetAccuracy
+            ) unpressKey(150, Key.Type.KEY_W)
 
-        schedule(runnable, 350)
+            ResetType.DEFENSIVE -> if (config.sprintResetAccuracy >= 1
+                || fakePlayer.random.nextFloat() < config
+                    .sprintResetAccuracy
+            ) unpressKey(100, Key.Type.KEY_W)
+
+            ResetType.EXTRA_DEFENSIVE -> if (config.sprintResetAccuracy >= 1
+                || fakePlayer.random.nextFloat() < config
+                    .sprintResetAccuracy
+            ) pressButton(75, MouseButton.Type.RIGHT_CLICK)
+        }
     }
 
     private fun getKB(entity: ClientLivingEntity, meanX: Double, meanY: Double, meanZ: Double): Double {
