@@ -1,23 +1,9 @@
 package net.minecraft.client.gui;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import gg.mineral.bot.lwjgl.opengl.GL11;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
+import gg.mineral.bot.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.event.ClickEvent;
@@ -35,6 +21,17 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class GuiChat extends GuiScreen implements GuiYesNoCallback {
     private static final Set field_152175_f = Sets.newHashSet(new String[]{"http", "https"});
@@ -44,7 +41,7 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
     private boolean field_146417_i;
     private boolean field_146414_r;
     private int field_146413_s;
-    private List field_146412_t = new ArrayList();
+    private final List<String> field_146412_t = new ArrayList<>();
     private URI field_146411_u;
     protected GuiTextField field_146415_a;
     private String textInput = "";
@@ -101,7 +98,7 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
         }
 
         if (p_73869_2_ == 1) {
-            this.mc.displayGuiScreen((GuiScreen) null);
+            this.mc.displayGuiScreen(null);
         } else if (p_73869_2_ != 28 && p_73869_2_ != 156) {
             if (p_73869_2_ == 200) {
                 this.func_146402_a(-1);
@@ -117,11 +114,11 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
         } else {
             String var3 = this.field_146415_a.getText().trim();
 
-            if (var3.length() > 0) {
+            if (!var3.isEmpty()) {
                 this.func_146403_a(var3);
             }
 
-            this.mc.displayGuiScreen((GuiScreen) null);
+            this.mc.displayGuiScreen(null);
         }
     }
 
@@ -188,7 +185,7 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
                                     this.func_146407_a(var6);
                                 }
                             } catch (URISyntaxException var7) {
-                                logger.error("Can\'t open url for " + var5, var7);
+                                logger.error("Can't open url for {}", var5, var7);
                             }
                         } else if (var5.getAction() == ClickEvent.Action.OPEN_FILE) {
                             var6 = (new File(var5.getValue())).toURI();
@@ -198,7 +195,7 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
                         } else if (var5.getAction() == ClickEvent.Action.RUN_COMMAND) {
                             this.func_146403_a(var5.getValue());
                         } else {
-                            logger.error("Don\'t know how to handle " + var5);
+                            logger.error("Don't know how to handle {}", var5);
                         }
                     }
 
@@ -225,8 +222,8 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
     private void func_146407_a(URI p_146407_1_) {
         try {
             Class var2 = Class.forName("java.awt.Desktop");
-            Object var3 = var2.getMethod("getDesktop", new Class[0]).invoke((Object) null, new Object[0]);
-            var2.getMethod("browse", new Class[]{URI.class}).invoke(var3, new Object[]{p_146407_1_});
+            Object var3 = var2.getMethod("getDesktop").invoke(null);
+            var2.getMethod("browse", URI.class).invoke(var3, p_146407_1_);
         } catch (Throwable var4) {
             logger.error("Couldn\'t open link", var4);
         }
@@ -265,7 +262,7 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
             for (Iterator var5 = this.field_146412_t.iterator(); var5.hasNext(); var4.append(var3)) {
                 var3 = (String) var5.next();
 
-                if (var4.length() > 0) {
+                if (!var4.isEmpty()) {
                     var4.append(", ");
                 }
             }
@@ -273,11 +270,11 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
             this.mc.ingameGUI.getChatGUI().func_146234_a(new ChatComponentText(var4.toString()), 1);
         }
 
-        this.field_146415_a.func_146191_b((String) this.field_146412_t.get(this.field_146413_s++));
+        this.field_146415_a.func_146191_b(this.field_146412_t.get(this.field_146413_s++));
     }
 
     private void func_146405_a(String p_146405_1_, String p_146405_2_) {
-        if (p_146405_1_.length() >= 1) {
+        if (!p_146405_1_.isEmpty()) {
             EntityClientPlayerMP thePlayer = this.mc.thePlayer;
 
             if (thePlayer != null) {
@@ -353,15 +350,16 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
                 if (var12 != null) {
                     IChatComponent var13 = var12.func_150951_e();
                     ChatComponentTranslation var8 = new ChatComponentTranslation(
-                            "stats.tooltip.type." + (var12.isAchievement() ? "achievement" : "statistic"),
-                            new Object[0]);
-                    var8.getChatStyle().setItalic(Boolean.valueOf(true));
+                            "stats.tooltip.type." + (var12.isAchievement() ? "achievement" : "statistic")
+                    );
+                    var8.getChatStyle().setItalic(Boolean.TRUE);
                     String var9 = var12 instanceof Achievement ? ((Achievement) var12).getDescription() : null;
-                    ArrayList var10 = Lists
-                            .newArrayList(new String[]{var13.getFormattedText(), var8.getFormattedText()});
+                    ArrayList<String> var10 = Lists
+                            .newArrayList(var13.getFormattedText(), var8.getFormattedText());
 
                     if (var9 != null) {
-                        var10.addAll(this.fontRendererObj.listFormattedStringToWidth(var9, 150));
+                        if (fontRendererObj != null)
+                            var10.addAll(fontRendererObj.listFormattedStringToWidth(var9, 150));
                     }
 
                     this.func_146283_a(var10, p_73863_1_, p_73863_2_);
@@ -381,13 +379,9 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
         if (this.field_146414_r) {
             this.field_146417_i = false;
             this.field_146412_t.clear();
-            String[] var2 = p_146406_1_;
-            int var3 = p_146406_1_.length;
 
-            for (int var4 = 0; var4 < var3; ++var4) {
-                String var5 = var2[var4];
-
-                if (var5.length() > 0) {
+            for (String var5 : p_146406_1_) {
+                if (!var5.isEmpty()) {
                     this.field_146412_t.add(var5);
                 }
             }
@@ -396,12 +390,12 @@ public class GuiChat extends GuiScreen implements GuiYesNoCallback {
                     .substring(this.field_146415_a.func_146197_a(-1, this.field_146415_a.func_146198_h(), false));
             String var7 = StringUtils.getCommonPrefix(p_146406_1_);
 
-            if (var7.length() > 0 && !var6.equalsIgnoreCase(var7)) {
+            if (!var7.isEmpty() && !var6.equalsIgnoreCase(var7)) {
                 this.field_146415_a
                         .func_146175_b(this.field_146415_a.func_146197_a(-1, this.field_146415_a.func_146198_h(), false)
                                 - this.field_146415_a.func_146198_h());
                 this.field_146415_a.func_146191_b(var7);
-            } else if (this.field_146412_t.size() > 0) {
+            } else if (!this.field_146412_t.isEmpty()) {
                 this.field_146417_i = true;
                 this.func_146404_p_();
             }
