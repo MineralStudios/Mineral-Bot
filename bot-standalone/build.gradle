@@ -15,7 +15,7 @@ dependencies {
     compileOnly project(':bot-api')
     compileOnly project(':bot-shared-library')
     compileOnly 'com.google.guava:guava:33.4.8-jre'
-    implementation 'org.jline:jline:3.30.1'
+    implementation 'org.jline:jline:3.30.2'
     implementation 'io.netty:netty-all:4.2.1.Final'
     implementation 'it.unimi.dsi:fastutil:8.5.15'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
