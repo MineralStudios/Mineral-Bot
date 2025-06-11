@@ -17,9 +17,9 @@ interface Mouse {
      *
      * @param durationMillis The duration in milliseconds the button is to be
      * pressed.
-     * @param type           The type of the button to press.
+     * @param types           The type of the button to press.
      */
-    fun pressButton(durationMillis: Int, vararg type: MouseButton.Type)
+    fun pressButton(durationMillis: Int, vararg types: MouseButton.Type)
 
     /**
      * Presses a button indefinitely.
@@ -33,11 +33,11 @@ interface Mouse {
     /**
      * Unpresses a button.
      *
-     * @param type           The type of the button to unpress.
+     * @param types           The type of the button to unpress.
      * @param durationMillis The duration in milliseconds the button is to be
      * unpressed.
      */
-    fun unpressButton(durationMillis: Int, vararg type: MouseButton.Type)
+    fun unpressButton(durationMillis: Int, vararg types: MouseButton.Type)
 
     /**
      * Unpresses a button indefinitely.

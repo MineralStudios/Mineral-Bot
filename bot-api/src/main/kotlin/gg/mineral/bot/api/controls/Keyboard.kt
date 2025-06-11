@@ -109,10 +109,10 @@ interface Keyboard {
     /**
      * Sets the state of the specified keys.
      *
-     * @param type
+     * @param types
      * The types of the keys to set the state of.
      */
-    fun setState(vararg type: Key.Type)
+    fun setState(vararg types: Key.Type)
 
     @JvmRecord
     data class Log(val type: Key.Type, val pressed: Boolean)
