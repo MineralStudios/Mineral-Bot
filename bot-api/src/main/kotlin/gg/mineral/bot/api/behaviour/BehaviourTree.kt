@@ -46,62 +46,59 @@ abstract class BehaviourTree(val clientInstance: ClientInstance) : BTNode() {
     }
 
     override fun tick(): BTResult {
-        if (tickTreeStack.empty()) return rootNode.callTick(tickTreeStack)
-        val (node, result) = tickTreeStack.pop()
-
-        if (clientInstance.configuration.debug)
-            println("[TICK] Current Node: ${node.javaClass.typeName} with result $result (stack size: ${tickTreeStack.size}) (tick: ${clientInstance.currentTick})")
-
-        while (!tickTreeStack.empty()) {
-            val (currentNode, currentResult) = tickTreeStack.pop()
-            val rootNode = tickTreeStack.empty()
-            val rootNodeString = if (rootNode) " (root)" else ""
-            if (clientInstance.configuration.debug)
-                println("\tat ${currentNode.javaClass.typeName} with result $currentResult" + rootNodeString)
+        // If stack is empty, start from root
+        if (tickTreeStack.empty()) {
+            return rootNode.callTick(tickTreeStack)
         }
-
+        
+        // Resume from the RUNNING node that was on the stack
+        val (node, result) = tickTreeStack.pop()
+        
+        // If the previous result was RUNNING, try ticking the node again
+        if (result == BTResult.RUNNING) {
+            return node.callTick(tickTreeStack)
+        }
+        
+        // If the node finished (SUCCESS/FAILURE/SKIP), continue from root
         tickTreeStack.clear()
-        if (result == BTResult.RUNNING) return node.callTick(tickTreeStack)
         return rootNode.callTick(tickTreeStack)
     }
 
     override fun frame(): BTResult {
-        if (frameTreeStack.empty()) return rootNode.callFrame(frameTreeStack)
+        // If stack is empty, start from root
+        if (frameTreeStack.empty()) {
+            return rootNode.callFrame(frameTreeStack)
+        }
+        
+        // Resume from the RUNNING node that was on the stack
         val (node, result) = frameTreeStack.pop()
-
-        /*if (clientInstance.configuration.debug)
-            println("[FRAME] Current Node: ${node.javaClass.typeName} with result $result (stack size: ${frameTreeStack.size}) (tick: ${clientInstance.currentTick})")
-
-        while (!frameTreeStack.empty()) {
-            val (currentNode, currentResult) = frameTreeStack.pop()
-            val rootNode = frameTreeStack.empty()
-            val rootNodeString = if (rootNode) " (root)" else ""
-            if (clientInstance.configuration.debug)
-                println("\tat ${currentNode.javaClass.typeName} with result $currentResult" + rootNodeString)
-        }*/
-
+        
+        // If the previous result was RUNNING, try calling frame on the node again
+        if (result == BTResult.RUNNING) {
+            return node.callFrame(frameTreeStack)
+        }
+        
+        // If the node finished (SUCCESS/FAILURE/SKIP), continue from root
         frameTreeStack.clear()
-        if (result == BTResult.RUNNING) return node.callFrame(frameTreeStack)
         return rootNode.callFrame(frameTreeStack)
     }
 
     override fun <T : Event> event(event: T): BTResult {
-        if (eventTreeStack.empty()) return rootNode.callEvent(eventTreeStack, event)
+        // If stack is empty, start from root
+        if (eventTreeStack.empty()) {
+            return rootNode.callEvent(eventTreeStack, event)
+        }
+        
+        // Resume from the RUNNING node that was on the stack
         val (node, result) = eventTreeStack.pop()
-
-        /*if (clientInstance.configuration.debug)
-            println("[EVENT] Current Node: ${node.javaClass.typeName} with result $result (stack size: ${eventTreeStack.size}) (tick: ${clientInstance.currentTick}) (event: $event)")
-
-         while (!eventTreeStack.empty()) {
-             val (currentNode, currentResult) = eventTreeStack.pop()
-             val rootNode = eventTreeStack.empty()
-             val rootNodeString = if (rootNode) " (root)" else ""
-             if (clientInstance.configuration.debug)
-                 println("\tat ${currentNode.javaClass.typeName} with result $currentResult" + rootNodeString)
-         }*/
-
+        
+        // If the previous result was RUNNING, try calling event on the node again
+        if (result == BTResult.RUNNING) {
+            return node.callEvent(eventTreeStack, event)
+        }
+        
+        // If the node finished (SUCCESS/FAILURE/SKIP), continue from root
         eventTreeStack.clear()
-        if (result == BTResult.RUNNING) return node.callEvent(eventTreeStack, event)
         return rootNode.callEvent(eventTreeStack, event)
     }
 }

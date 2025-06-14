@@ -67,9 +67,10 @@ jar {
 }
 
 apply plugin: 'application'
-apply plugin: 'kotlin'
 
-mainClassName = 'gg.mineral.bot.base.client.StandaloneLauncher'
+application {
+    mainClass = 'gg.mineral.bot.base.client.StandaloneLauncher'
+}
 
 tasks.register('runMinecraftClient') {
     doLast {
@@ -88,7 +89,7 @@ tasks.register('runMinecraftClient') {
         def nativesDir = new File(projectDir, "natives")
 
         javaexec {
-            main = mainClassName
+            mainClass = application.mainClass
             classpath = sourceSets.main.runtimeClasspath
             jvmArgs = ['-Djava.library.path=' + nativesDir.absolutePath]
         }
@@ -97,6 +98,3 @@ tasks.register('runMinecraftClient') {
 
 runMinecraftClient.dependsOn build
 
-kotlin {
-    jvmToolchain(21)
-}

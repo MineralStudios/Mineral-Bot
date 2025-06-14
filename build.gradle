@@ -1,6 +1,19 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'org.jetbrains.kotlin.jvm' apply false
+}
+
+// Apply Kotlin plugin to Kotlin projects
+configure(subprojects.findAll { 
+    it.name in ['bot-api', 'bot-base-client', 'bot-bukkit', 'bot-intelligence', 
+                'bot-lwjgl-bridge', 'bot-mineral', 'bot-shared-library', 'bot-standalone'] 
+}) {
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+    
+    kotlin {
+        jvmToolchain(21)
+    }
 }
 
 allprojects {

@@ -14,10 +14,17 @@ abstract class AsyncNode(
     final override fun tick(): BTResult {
         tree.asyncTickResult(taskId)
             ?.let {
-                if (waitForCompletion && it == BTResult.RUNNING || it == BTResult.SUCCESS) return@tick BTResult.SUCCESS
-                return@tick it
+                // If we have a result from the async task
+                if (waitForCompletion) {
+                    // Wait for completion: return actual result
+                    return@tick it
+                } else {
+                    // Don't wait for completion: return SUCCESS unless task failed
+                    return@tick if (it == BTResult.FAILURE) BTResult.FAILURE else BTResult.SUCCESS
+                }
             }
             ?: run {
+                // No async task running, start one
                 tree.asyncTick(taskId) { processTick() }
                 return@tick if (waitForCompletion) BTResult.RUNNING else BTResult.SUCCESS
             }
@@ -26,10 +33,17 @@ abstract class AsyncNode(
     final override fun frame(): BTResult {
         tree.asyncFrameResult(taskId)
             ?.let {
-                if (waitForCompletion && it == BTResult.RUNNING || it == BTResult.SUCCESS) return@frame BTResult.SUCCESS
-                return@frame it
+                // If we have a result from the async task
+                if (waitForCompletion) {
+                    // Wait for completion: return actual result
+                    return@frame it
+                } else {
+                    // Don't wait for completion: return SUCCESS unless task failed
+                    return@frame if (it == BTResult.FAILURE) BTResult.FAILURE else BTResult.SUCCESS
+                }
             }
             ?: run {
+                // No async task running, start one
                 tree.asyncFrame(taskId) { processFrame() }
                 return@frame if (waitForCompletion) BTResult.RUNNING else BTResult.SUCCESS
             }
@@ -38,10 +52,17 @@ abstract class AsyncNode(
     final override fun <T : Event> event(event: T): BTResult {
         tree.asyncEventResult(taskId)
             ?.let {
-                if (waitForCompletion && it == BTResult.RUNNING || it == BTResult.SUCCESS) return@event BTResult.SUCCESS
-                return@event it
+                // If we have a result from the async task
+                if (waitForCompletion) {
+                    // Wait for completion: return actual result
+                    return@event it
+                } else {
+                    // Don't wait for completion: return SUCCESS unless task failed
+                    return@event if (it == BTResult.FAILURE) BTResult.FAILURE else BTResult.SUCCESS
+                }
             }
             ?: run {
+                // No async task running, start one
                 tree.asyncEvent(taskId) { processEvent(event) }
                 return@event if (waitForCompletion) BTResult.RUNNING else BTResult.SUCCESS
             }
