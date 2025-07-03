@@ -186,9 +186,11 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             pressKey(10, Key.Type.KEY_ESCAPE)
         }
 
-        tick.prerequisite("Isn't Potting", pottingTicks <= 0) {
+        // If we're currently potting (countdown > 0), handle the countdown and skip rest of logic
+        if (pottingTicks > 0) {
             pottingTicks--
             setMouseYaw(thrownYaw)
+            return
         }
 
         tick.execute {
@@ -256,10 +258,7 @@ class ThrowHealthPotGoal(clientInstance: ClientInstance) : InventoryGoal(clientI
             }
         }
 
-        tick.prerequisite(
-            "Potting",
-            pottingTicks > 0
-        ) {
+        tick.execute {
             if ((trajectory.compute(100) == Trajectory.Result.VALID && (isAtWall() || distanceCondition)) || min(
                     fakePlayer.health.toDouble(),
                     healthRegression.predict((clientInstance.currentTick + trajectory.airTimeTicks).toDouble())

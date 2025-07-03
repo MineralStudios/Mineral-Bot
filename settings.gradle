@@ -1,7 +1,5 @@
 pluginManagement {
-    plugins {
-        id 'org.jetbrains.kotlin.jvm' version '2.1.21'
-    }
+    // Kotlin plugin version is now managed in root build.gradle
 }
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.10.0'

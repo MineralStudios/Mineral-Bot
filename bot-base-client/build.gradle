@@ -1,15 +1,6 @@
-buildscript {
-    ext.kotlin_version = '2.1.21'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 plugins {
-    id 'org.jetbrains.kotlin.plugin.lombok' version '2.1.21'
+    id 'org.jetbrains.kotlin.plugin.lombok'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 repositories {
@@ -48,7 +39,7 @@ dependencies {
     implementation 'javax.vecmath:vecmath:1.5.2'
     implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
     annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 sourceSets {
@@ -67,7 +58,6 @@ jar {
 }
 
 apply plugin: 'application'
-apply plugin: 'kotlin'
 
 mainClassName = 'gg.mineral.bot.base.client.StandaloneLauncher'
 
