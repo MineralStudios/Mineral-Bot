@@ -51,7 +51,7 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer {
      * posY, posZ, yaw, pitch
      */
     public void setPositionAndRotation2(double p_70056_1_, double p_70056_3_, double p_70056_5_, float p_70056_7_,
-            float p_70056_8_, int p_70056_9_) {
+                                        float p_70056_8_, int p_70056_9_) {
         this.otherPlayerMPX = p_70056_1_;
         this.otherPlayerMPY = p_70056_3_;
         this.otherPlayerMPZ = p_70056_5_;
@@ -122,7 +122,7 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer {
                     + var7 / (double) this.otherPlayerMPPosRotationIncrements);
             this.rotationPitch = (float) ((double) this.rotationPitch
                     + (this.otherPlayerMPPitch - (double) this.rotationPitch)
-                            / (double) this.otherPlayerMPPosRotationIncrements);
+                    / (double) this.otherPlayerMPPosRotationIncrements);
             --this.otherPlayerMPPosRotationIncrements;
             this.setPosition(var1, var3, var5);
             this.setRotation(this.rotationYaw, this.rotationPitch);

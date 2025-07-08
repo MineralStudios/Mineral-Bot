@@ -16,9 +16,9 @@ abstract class ThrowableEntityTrajectory(
 ) :
     MathUtil, Trajectory {
     var airTimeTicks: Int = 0
-    private var motX: Float
-    private var motY: Float
-    private var motZ: Float
+    protected var motX: Float = 0f
+    protected var motY: Float = 0f
+    protected var motZ: Float = 0f
 
     init {
         val yawRadians = toRadians(yaw)
