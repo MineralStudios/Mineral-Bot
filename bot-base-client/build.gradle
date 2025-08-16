@@ -88,5 +88,5 @@ tasks.register('runMinecraftClient') {
 runMinecraftClient.dependsOn build
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }

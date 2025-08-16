@@ -17,10 +17,19 @@ allprojects {
         options.encoding = 'UTF-8'
     }
 
-    compileJava {
-        sourceCompatibility = '21'
-        targetCompatibility = '21'
-        options.compilerArgs += ['-parameters']
+    // Default to Java 17, but allow bot-mineral to override
+    if (project.name != 'bot-mineral') {
+        compileJava {
+            sourceCompatibility = '17'
+            targetCompatibility = '17'
+            options.compilerArgs += ['-parameters']
+        }
+    } else {
+        compileJava {
+            sourceCompatibility = '21'
+            targetCompatibility = '21'
+            options.compilerArgs += ['-parameters']
+        }
     }
 
     group = "gg.mineral"
