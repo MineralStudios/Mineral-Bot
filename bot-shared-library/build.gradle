@@ -2,8 +2,8 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
 }
 dependencies {
-    compileOnly 'org.apache.logging.log4j:log4j-api:2.24.3'
-    compileOnly 'org.apache.logging.log4j:log4j-core:2.24.3'
+    compileOnly 'org.apache.logging.log4j:log4j-api:2.25.1'
+    compileOnly 'org.apache.logging.log4j:log4j-core:2.25.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
     implementation project(':bot-api')
     compileOnly 'it.unimi.dsi:fastutil:8.5.15'
