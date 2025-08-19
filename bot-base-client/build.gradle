@@ -18,7 +18,7 @@ dependencies {
     compileOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
     compileOnly 'org.projectlombok:lombok:1.18.38'
     annotationProcessor 'org.projectlombok:lombok:1.18.38'
-    compileOnly 'io.netty:netty-all:4.2.1.Final'
+    compileOnly 'io.netty:netty-all:4.2.4.Final'
     compileOnly 'it.unimi.dsi:fastutil:8.5.15'
     compileOnly 'org.apache.logging.log4j:log4j-api:2.25.1'
     compileOnly 'org.apache.logging.log4j:log4j-core:2.25.1'
@@ -32,7 +32,7 @@ dependencies {
     implementation 'com.paulscode:librarylwjglopenal:20100824'
     implementation 'com.paulscode:soundsystem:20120107'
     implementation 'com.google.guava:guava:33.4.8-jre'
-    implementation 'org.apache.commons:commons-lang3:3.17.0'
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
     implementation 'commons-io:commons-io:2.19.0'
     implementation 'com.google.code.gson:gson:2.13.1'
     implementation 'com.mojang:authlib:3.11.50'
@@ -88,5 +88,5 @@ tasks.register('runMinecraftClient') {
 runMinecraftClient.dependsOn build
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }
