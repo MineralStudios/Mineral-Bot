@@ -4,7 +4,7 @@ plugins {
 dependencies {
     compileOnly 'org.apache.logging.log4j:log4j-api:2.25.1'
     compileOnly 'org.apache.logging.log4j:log4j-core:2.25.1'
-    compileOnly 'io.netty:netty-all:4.2.4.Final'
+    compileOnly 'io.netty:netty-all:4.2.6.Final'
     compileOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
