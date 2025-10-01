@@ -17,7 +17,7 @@ dependencies {
     compileOnly 'com.google.guava:guava:33.5.0-jre'
     implementation 'org.jline:jline:3.30.6'
     implementation 'io.netty:netty-all:4.2.6.Final'
-    implementation 'it.unimi.dsi:fastutil:8.5.16'
+    implementation 'it.unimi.dsi:fastutil:8.5.17'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
