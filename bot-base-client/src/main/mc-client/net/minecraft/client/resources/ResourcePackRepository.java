@@ -1,23 +1,8 @@
 package net.minecraft.client.resources;
 
-import java.awt.image.BufferedImage;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreenWorking;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -29,6 +14,14 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.HttpUtil;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.io.IOUtils;
+
+import java.awt.image.BufferedImage;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.*;
 
 public class ResourcePackRepository {
     protected static final FileFilter resourcePackFilter = new FileFilter() {
@@ -50,7 +43,7 @@ public class ResourcePackRepository {
     private final Minecraft mc;
 
     public ResourcePackRepository(Minecraft mc, File p_i45101_1_, File p_i45101_2_, IResourcePack p_i45101_3_,
-            IMetadataSerializer p_i45101_4_, GameSettings p_i45101_5_) {
+                                  IMetadataSerializer p_i45101_4_, GameSettings p_i45101_5_) {
         this.mc = mc;
         this.dirResourcepacks = p_i45101_1_;
         this.field_148534_e = p_i45101_2_;
@@ -82,9 +75,19 @@ public class ResourcePackRepository {
         }
     }
 
-    private List getResourcePackFiles() {
-        return this.dirResourcepacks.isDirectory() ? Arrays.asList(this.dirResourcepacks.listFiles(resourcePackFilter))
-                : Collections.emptyList();
+    private List<File> getResourcePackFiles() {
+        if (dirResourcepacks == null || !dirResourcepacks.isDirectory()) {
+            return Collections.emptyList();
+        }
+
+        FileFilter filter = resourcePackFilter != null ? resourcePackFilter : pathname -> true;
+
+        File[] files = dirResourcepacks.listFiles(filter);
+        if (files == null) {
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(files);
     }
 
     public void updateRepositoryEntriesAll() {
@@ -248,8 +251,8 @@ public class ResourcePackRepository {
         public boolean equals(Object p_equals_1_) {
             return this == p_equals_1_ ? true
                     : (p_equals_1_ instanceof ResourcePackRepository.Entry
-                            ? this.toString().equals(p_equals_1_.toString())
-                            : false);
+                    ? this.toString().equals(p_equals_1_.toString())
+                    : false);
         }
 
         public int hashCode() {
@@ -258,9 +261,9 @@ public class ResourcePackRepository {
 
         public String toString() {
             return String.format("%s:%s:%d",
-                    new Object[] { this.resourcePackFile.getName(),
+                    new Object[]{this.resourcePackFile.getName(),
                             this.resourcePackFile.isDirectory() ? "folder" : "zip",
-                            Long.valueOf(this.resourcePackFile.lastModified()) });
+                            Long.valueOf(this.resourcePackFile.lastModified())});
         }
 
         Entry(File p_i1296_2_, Object p_i1296_3_) {
