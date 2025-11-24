@@ -1,5 +1,5 @@
 plugins {
-    id "com.gradleup.shadow" version "8.3.6"
+    id "com.gradleup.shadow" version "9.2.2"
     id 'org.jetbrains.kotlin.jvm'
 }
 
@@ -34,7 +34,7 @@ publishing {
 }
 
 dependencies {
-    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20250507-18.30.42'
+    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20250717-19.37.32'
     compileOnly 'com.viaversion:viaversion-api:5.3.1'
     compileOnly 'com.viaversion:viaversion-common:5.3.1'
     compileOnly 'com.viaversion:viaversion-bukkit:5.3.1'
@@ -61,5 +61,5 @@ jar {
 
 tasks.build.dependsOn tasks.shadowJar
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }

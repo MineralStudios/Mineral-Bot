@@ -1,6 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id "com.gradleup.shadow" version "8.3.6"
+    id "com.gradleup.shadow" version "9.2.2"
 }
 
 kotlin {
@@ -32,8 +32,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'io.netty:netty-all:4.2.1.Final'
-    compileOnly "gg.mineral.engine:api:20250507-20.50.40"
+    compileOnly 'io.netty:netty-all:4.2.7.Final'
+    compileOnly "gg.mineral.engine:api:20251104-14.00.47"
     implementation project(':bot-base-client')
     compileOnly project(':bot-shared-library')
     compileOnly project(':bot-api')

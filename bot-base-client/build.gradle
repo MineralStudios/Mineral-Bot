@@ -16,29 +16,29 @@ dependencies {
     implementation project(':bot-shared-library')
     implementation project(':bot-intelligence')
     compileOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
-    compileOnly 'org.projectlombok:lombok:1.18.38'
-    annotationProcessor 'org.projectlombok:lombok:1.18.38'
-    compileOnly 'io.netty:netty-all:4.2.1.Final'
-    compileOnly 'it.unimi.dsi:fastutil:8.5.15'
-    compileOnly 'org.apache.logging.log4j:log4j-api:2.24.3'
-    compileOnly 'org.apache.logging.log4j:log4j-core:2.24.3'
-    implementation 'net.java.dev.jna:jna:5.17.0'
-    implementation 'net.java.dev.jna:jna-platform:5.17.0'
-    implementation 'com.ibm.icu:icu4j:77.1'
+    compileOnly 'org.projectlombok:lombok:1.18.42'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+    compileOnly 'io.netty:netty-all:4.2.7.Final'
+    compileOnly 'it.unimi.dsi:fastutil:8.5.18'
+    compileOnly 'org.apache.logging.log4j:log4j-api:2.25.2'
+    compileOnly 'org.apache.logging.log4j:log4j-core:2.25.2'
+    implementation 'net.java.dev.jna:jna:5.18.1'
+    implementation 'net.java.dev.jna:jna-platform:5.18.1'
+    implementation 'com.ibm.icu:icu4j:78.1'
     implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
     implementation 'com.paulscode:codecjorbis:20101023'
     implementation 'com.paulscode:codecwav:20101023'
     implementation 'com.paulscode:libraryjavasound:20101123'
     implementation 'com.paulscode:librarylwjglopenal:20100824'
     implementation 'com.paulscode:soundsystem:20120107'
-    implementation 'com.google.guava:guava:33.4.8-jre'
-    implementation 'org.apache.commons:commons-lang3:3.17.0'
-    implementation 'commons-io:commons-io:2.19.0'
-    implementation 'com.google.code.gson:gson:2.13.1'
+    implementation 'com.google.guava:guava:33.5.0-jre'
+    implementation 'org.apache.commons:commons-lang3:3.19.0'
+    implementation 'commons-io:commons-io:2.21.0'
+    implementation 'com.google.code.gson:gson:2.13.2'
     implementation 'com.mojang:authlib:3.11.50'
     implementation 'javax.vecmath:vecmath:1.5.2'
-    implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
-    annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.100'
+    implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.4.0'
+    annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.4.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
@@ -88,5 +88,5 @@ tasks.register('runMinecraftClient') {
 runMinecraftClient.dependsOn build
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }
