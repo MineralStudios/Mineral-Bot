@@ -37,8 +37,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.13.2'
     implementation 'com.mojang:authlib:3.11.50'
     implementation 'javax.vecmath:vecmath:1.5.2'
-    implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.4.0'
-    annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.4.0'
+    implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.4.100'
+    annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.4.100'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
